@@ -13,7 +13,7 @@ export class Veicolo {
     kmPercorsi: number;
 
 
-//costruttore classe
+//*costruttore classe
 
     constructor(_targa: string, marca: string, modello: string, alimentazione: string, cambio: string, dataRevisione: Date, dataRca: Date, kmPercorsi: number) {
         this._id_veicolo = uuidv4();
@@ -43,7 +43,7 @@ export class Veicolo {
         this._targa = targa;
     }
 
-//metodi classe
+//*metodi classe
 
     updateTarga(newTarga: string): void {
         this._targa = newTarga;
