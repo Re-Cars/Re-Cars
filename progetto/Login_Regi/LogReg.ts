@@ -20,6 +20,8 @@ class utente extends notlog_utente {
             this.pass = pass;
             this.email = email;
         }
+
+    //login nota scritta da fra da cancellare - ps ci sono cose da istallare da sul pc    
     async login(){
         console.log("===LOGIN===")
      let emailog:string = await input({message:"Inserisci l'email"}); 
