@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 
-class Auto extends Veicolo {
+class Auto extends Veicolo {  
     id_auto: string;
     numPorte: string;degg
     
