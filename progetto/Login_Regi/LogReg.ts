@@ -22,6 +22,7 @@ class utente extends notlog_utente {
         }
     async login(){
         console.log("===LOGIN===")
+        
      let emailog:string = await input({message:"Inserisci l'email"}); 
     while(!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailog))){
         console.log("Email non valida")
