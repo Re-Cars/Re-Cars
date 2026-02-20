@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="YouDrive, monitoro, auto, veicoli">
+    <meta name="title" content="YouDrive">
+    <title>YouDrive</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<header id="header">
+    <div class="logo">
+        <img src="img/logo.png" alt="Logo YouDrive">
+    </div>
+
+    <nav>
+        <a href="#chi_siamo">Chi siamo</a>
+        <a href="#servizi">Servizi</a>
+        <a href="#chiedi-info">Prenota</a>
+        <a href="#contatti">Contatti</a>
+    </nav>
+</header>
+
+<main>
+
+    <!-- TITOLO PRINCIPALE -->
+    <section class="titolo">
+        <h1>YouDrive</h1>
+        <p><i>“Potere alla guida, controllo in tasca.”</i></p>
+    </section>
+
+
+
+    
+
+    <!-- CHI SIAMO -->
+    <section id="chi_siamo">
+        <h2>CHI SIAMO</h2>
+
+        <div class="section-content">
+            <img src="img/chisiamo.jpg" alt="Team WorkHub Milano">
+            <p>
+                <i>
+                    YouDrive nasce dall'idea di offrire un modo semplice e immediato per tenere sempre sotto controllo i propri veicoli,
+                    che si tratti dell'auto di famiglia o di un'intera flotta aziendale!
+                    Mettiamo a disposizione strumenti intuitivi per monitorare posizione, stato e utilizzo dei mezzi,
+                    garantendo sicurezza, organizzazione e una visione sempre aggiornata.
+                    La nostra piattaforma è pensata per chi vuole avere tutto sotto controllo,
+                    dal singolo automobilista alle aziende che coordinano più mezzi.
+                </i>
+            </p>
+        </div>
+    </section>
+
+
+
+
+
+    <!-- SERVIZI -->
+    <section id="servizi">
+        <h2>SERVIZI</h2>
+
+        <div class="section-content">
+            <img src="img/servizi.png" alt="Servizi offerti da WorkHub Milano">
+
+            <ul class="servizi-lista">
+               <ul class="servizi-lista">
+                    <li>Monitoraggio posizione in tempo reale</li>
+                    <li>Storico percorsi e utilizzo del veicolo</li>
+                    <li>Notifiche su movimenti sospetti</li>
+                    <li>Promemoria manutenzione programmata</li>
+                    <li>Report dettagliati su consumi e utilizzo</li>
+                    <li>Prenotazione alle officine per vari interventi</li>
+                    <li>Scadenze assicurazione e bollo</li>
+                    <li>Gestione flotte aziendali</li>
+                    <li>Accessi multi-utente per aziende</li>
+                    <li>Supporto clienti dedicato</li>
+                </ul>
+            </ul>
+        </div>
+    </section>
+
+
+
+
+
+    <!-- FORM INFO -->
+    <section id="chiedi-info">
+        <h2>RICHIEDI QUI LE INFO</h2>
+
+        <form action="conferma.html" method="post" class="form-prenotazione">
+
+            <div class="form-row">
+                <div>
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+
+                <div>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="telefono">Telefono</label>
+                    <input type="tel" id="telefono" name="telefono" required>
+                </div>
+
+                <div>
+                    <label for="interesse">Tipo di interesse</label>
+                    <select id="interesse" name="interesse" required>
+                        <option value="freelancer">Privato</option>
+                        <option value="azienda">Azienda</option>
+                    </select>
+                </div>
+            </div>
+
+            <label for="messaggio">Messaggio (opzionale)</label>
+            <textarea id="messaggio" name="messaggio" rows="4"></textarea>
+
+            <button type="submit">Invia</button>
+        </form>
+    </section>
+
+</main>
+
+
+
+
+
+<footer class="footer">
+
+    <!-- CONTATTI -->
+    <div class="footer-contatti">
+      <h4>Info generali</h4>
+        
+        <section id="contatti">
+                <p>🏷️<b>Nome:</b> YouDrive</p>
+                <p>💡<b>Slogan:</b> “Potere alla guida, controllo in tasca.”</p>
+                <p>📍<b>Indirizzo:</b> Via Torino 45, Milano</p>
+                <p>📞<b>Telefono:</b> 02 1234567</p>
+                <p>📬<b>Email:</b><a href="mailto:info@YouDrive.it">info@YouDrive.it</a></p>
+        </section>
+
+    </div>
+
+    
+    <!-- SOCIAL -->
+    <div class="footer-social">
+      <h4>Seguici</h4>
+
+      <div class="social-links">
+        <a href="https://www.facebook.com/YouDrive" target="_blank" rel="noopener" aria-label="Facebook">
+            <i class="fa-brands fa-facebook"></i> Facebook
+        </a><br>
+
+        <a href="https://www.instagram.com/YouDrive" target="_blank" rel="noopener" aria-label="Instagram">
+            <i class="fa-brands fa-instagram"></i> Instagram
+        </a><br>
+
+        <a href="https://www.linkedin.com/YouDrive" target="_blank" rel="noopener" aria-label="Linkedin">
+            <i class="fa-brands fa-linkedin"></i> Linkedin
+        </a><br>
+
+        <a href="https://www.tiktok.com/YouDrive" target="_blank" rel="noopener" aria-label="Tiktok">
+            <i class="fa-brands fa-tiktok"></i> Tiktok
+        </a><br>
+      </div>
+
+    </div>
+
+
+    <!-- PRIVACY & LEGALE -->
+    <div class="footer-privacy">
+      <h4>Legale</h4>
+
+      <ul>
+        <li><a href="/privacy-policy" target="_blank">Privacy Policy</a></li>
+        <li><a href="/cookie-policy" target="_blank">Cookie Policy</a></li>
+      </ul>
+
+    </div>
+
+
+    <!-- MAPPA DI GOOGLE -->
+    <div class="footer-map">
+      <h4>Dove siamo</h4>
+
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2798.4143245561327!2d9.182952375759596!3d45.461457033622395!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4786c6ab09aafd41%3A0x3734d875ef1eb334!2sVia%20Torino%2C%2045%2C%2020123%20Milano%20MI!5e0!3m2!1sit!2sit!4v1770641375722!5m2!1sit!2sit"
+            width="100%" height="400" style="border:0; border-radius: 8px; max-width: 900px; margin: 0 auto; display: block;"
+            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+
+
+  <div class="footer-info">
+    <p>&copy; 2021 WorkHub Milano | P.IVA 12345678901</p>
+  </div>
+
+</footer>
+
+</body>
+</html>
