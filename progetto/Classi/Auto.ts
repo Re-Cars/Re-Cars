@@ -1,15 +1,15 @@
 import { Veicolo } from "./Veicolo";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid'; 
 
 
 
 class Auto extends Veicolo {
-    id_auto: string;
+    id_auto: string; 
     numPorte: string;
     
 
 
-//costruttore classe
+//*costruttore classe
 
     constructor(_targa: string, marca: string, modello: string, alimentazione: string, cambio: string, dataRevisione: Date, dataRca: Date, kmPercorsi: number, id_auto: string, numPorte: string) {
         super(_targa, marca, modello, alimentazione, cambio, dataRevisione, dataRca, kmPercorsi);
@@ -17,7 +17,7 @@ class Auto extends Veicolo {
         this.numPorte = numPorte;
     }
 
-//metodi classe
+//*metodi classe
 
     alertManutenzione(): boolean {
         let intervalloManutenzione = 20000;

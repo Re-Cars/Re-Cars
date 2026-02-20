@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Veicolo = void 0;
 var uuid_1 = require("uuid");
 var Veicolo = /** @class */ (function () {
-    //costruttore classe
+    //*costruttore classe
     function Veicolo(_targa, marca, modello, alimentazione, cambio, dataRevisione, dataRca, kmPercorsi) {
         this._id_veicolo = (0, uuid_1.v4)();
         this._targa = _targa;
@@ -35,7 +35,7 @@ var Veicolo = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    //metodi classe
+    //*metodi classe
     Veicolo.prototype.updateTarga = function (newTarga) {
         this._targa = newTarga;
     };

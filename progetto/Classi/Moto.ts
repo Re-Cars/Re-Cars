@@ -9,7 +9,7 @@ class Moto extends Veicolo {
     
 
 
-//costruttore classe
+//*costruttore classe
 
     constructor(_targa: string, marca: string, modello: string, alimentazione: string, cambio: string, dataRevisione: Date, dataRca: Date, kmPercorsi: number, id_moto: string, numRuote: string) {
         super(_targa, marca, modello, alimentazione, cambio, dataRevisione, dataRca, kmPercorsi);
@@ -17,7 +17,7 @@ class Moto extends Veicolo {
         this.numRuote = numRuote;
     }
 
-//metodi classe
+//*metodi classe
 
     alertManutenzione(): boolean {
         let intervalloManutenzione = 10000;

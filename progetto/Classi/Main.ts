@@ -25,7 +25,7 @@ async function creaUtente(): Promise<Utente> {
         {
             type: 'input',
             name: 'email',
-            message: 'inserisci email:'
+            message: 'inserisci email:'  
         },
         {
             type: 'input',
