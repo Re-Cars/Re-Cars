@@ -12,7 +12,7 @@ export class Utente {
     veicoli: Veicolo[];
 
 
-//costruttore classe
+//*costruttore classe
 
     constructor(username: string, passwordHash: string, email: string, cellulare: string) {
         this.id_utente = uuidv4();
@@ -31,7 +31,7 @@ export class Utente {
         this.veicoli = [];
     }
 
-//metodi classe
+//*metodi classe
 
     login(password: string): boolean {
         if (password === this.passwordHash) {
