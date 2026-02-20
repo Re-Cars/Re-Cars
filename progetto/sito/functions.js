@@ -35,16 +35,27 @@ function mostraPrezzi(tipo) {
 /* --------------------------------------------------
    FAQ
 -------------------------------------------------- */
-// FAQ accordion
 document.querySelectorAll('.faq-domanda').forEach(button => {
     button.addEventListener('click', () => {
         const risposta = button.nextElementSibling;
-        const isOpen = risposta.style.display === 'block';
 
-        // Chiude tutte le altre FAQ
-        document.querySelectorAll('.faq-risposta').forEach(r => r.style.display = 'none');
+        document.querySelectorAll('.faq-risposta').forEach(r => {
+            if (r !== risposta) r.classList.remove('open');
+        });
 
-        // Apre/chiude quella cliccata
-        risposta.style.display = isOpen ? 'none' : 'block';
+        risposta.classList.toggle('open');
     });
+});
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+});
+
+document.querySelectorAll('section').forEach(section => {
+    section.classList.add('fade-in');
+    observer.observe(section);
 });

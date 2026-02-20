@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
     <link rel="stylesheet" href="style.css">
-    <script src="main.js"></script>
+    <script src="functions.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
@@ -46,19 +46,19 @@
     <section id="chi_siamo">
         <h2>CHI SIAMO</h2>
 
-        <div class="section-content">
-            <img src="img/chisiamo.jpg" alt="Team WorkHub Milano">
-            <p>
-                <i>
-                    YouDrive nasce dall'idea di offrire un modo semplice e immediato per tenere sempre sotto controllo i propri veicoli,
-                    che si tratti dell'auto di famiglia o di un'intera flotta aziendale!
-                    Mettiamo a disposizione strumenti intuitivi per monitorare posizione, stato e utilizzo dei mezzi,
-                    garantendo sicurezza, organizzazione e una visione sempre aggiornata.
-                    La nostra piattaforma è pensata per chi vuole avere tutto sotto controllo,
-                    dal singolo automobilista alle aziende che coordinano più mezzi.
-                </i>
-            </p>
-        </div>
+            <div class="section-content">
+                <img src="img/chisiamo.jpg" alt="Team YouDrive">
+                <p>
+                    <i>
+                        YouDrive nasce dall'idea di offrire un modo semplice e immediato per tenere sempre sotto controllo i propri veicoli,
+                        che si tratti dell'auto di famiglia o di un'intera flotta aziendale!
+                        Mettiamo a disposizione strumenti intuitivi per monitorare posizione, stato e utilizzo dei mezzi,
+                        garantendo sicurezza, organizzazione e una visione sempre aggiornata.
+                        La nostra piattaforma è pensata per chi vuole avere tutto sotto controllo,
+                        dal singolo automobilista alle aziende che coordinano più mezzi.
+                    </i>
+                </p>
+            </div>
     </section>
 
 
@@ -69,36 +69,40 @@
     <section id="servizi">
         <h2>SERVIZI</h2>
 
-        <div class="switch-servizi">
-            <button onclick="mostraServizi('privati')" id="btn-privati" class="active">Privati</button>
-            <button onclick="mostraServizi('aziende')" id="btn-aziende">Aziende</button>
-        </div>
+            <div class="switch-servizi">
+                <button onclick="mostraServizi('privati')" id="btn-privati" class="active">Privati</button>
+                <button onclick="mostraServizi('aziende')" id="btn-aziende">Aziende</button>
+            </div>
 
-        <div id="servizi-privati" class="servizi-lista">
-            <ul>
-                <li>Monitoraggio posizione in tempo reale</li>
-                <li>Storico percorsi e utilizzo del veicolo</li>
-                <li>Notifiche su movimenti sospetti</li>
-                <li>Promemoria manutenzione programmata</li>
-                <li>Scadenze assicurazione e bollo</li>
-                <li>Analisi stile di guida</li>
-                <li>Condivisione sicura del veicolo</li>
-                <li>Supporto clienti dedicato</li>
-            </ul>
-        </div>
+            <!-- SERVIZI PRIVATO -->
+            <div id="servizi-privati" class="servizi-box">
+                <h3>Servizi per Privati</h3>
+                <ul>
+                    <li>Monitoraggio posizione in tempo reale</li>
+                    <li>Storico percorsi e utilizzo del veicolo</li>
+                    <li>Notifiche su movimenti sospetti</li>
+                    <li>Promemoria manutenzione programmata</li>
+                    <li>Scadenze assicurazione e bollo</li>
+                    <li>Analisi stile di guida</li>
+                    <li>Condivisione sicura del veicolo</li>
+                    <li>Supporto clienti dedicato</li>
+                </ul>
+            </div>
 
-        <div id="servizi-aziende" class="servizi-lista" style="display:none;">
-            <ul>
-                <li>Gestione flotte multi-veicolo</li>
-                <li>Report dettagliati su consumi e utilizzo</li>
-                <li>Accessi multi-utente con ruoli</li>
-                <li>Geofence e alert personalizzati</li>
-                <li>Integrazione con dispositivi GPS</li>
-                <li>Storico interventi e manutenzioni</li>
-                <li>Prenotazione officine convenzionate</li>
-                <li>Dashboard centralizzata per il fleet manager</li>
-            </ul>
-        </div>
+            <!-- SERVIZI AZIENDA -->
+            <div id="servizi-aziende" class="servizi-box" style="display:none;">
+                <h3>Servizi per Aziende</h3>
+                <ul>
+                    <li>Gestione flotte multi-veicolo</li>
+                    <li>Report dettagliati su consumi e utilizzo</li>
+                    <li>Accessi multi-utente con ruoli</li>
+                    <li>Geofence e alert personalizzati</li>
+                    <li>Integrazione con dispositivi GPS</li>
+                    <li>Storico interventi e manutenzioni</li>
+                    <li>Prenotazione officine convenzionate</li>
+                    <li>Dashboard centralizzata per il fleet manager</li>
+                </ul>
+            </div>
     </section>
 
 
@@ -108,30 +112,30 @@
     <section id="prezzi">
         <h2>PIANI & PREZZI</h2>
 
-        <div class="switch-servizi">
-            <button onclick="mostraPrezzi('privato')" id="btn-privato" class="active">Privato</button>
-            <button onclick="mostraPrezzi('azienda')" id="btn-azienda">Azienda</button>
-        </div>
+            <div class="switch-servizi">
+                <button onclick="mostraPrezzi('privato')" id="btn-privato" class="active">Privato</button>
+                <button onclick="mostraPrezzi('azienda')" id="btn-azienda">Azienda</button>
+            </div>
 
         <!-- PIANO PRIVATO -->
-        <div id="prezzi-privato" class="prezzi-box">
-            <h3>Piano Privato</h3>
-            <p class="prezzo">€ 4,99 / mese</p>
-            <p class="descrizione-prezzo">
-                Ideale per automobilisti che vogliono monitorare il proprio veicolo in modo semplice e immediato.
-            </p>
-            <a href="#chiedi-info" class="cta-prezzi">Attiva ora</a>
-        </div>
+            <div id="prezzi-privato" class="prezzi-box">
+                <h3>Piano Privato</h3>
+                <p class="prezzo">€ 4,99 / mese</p>
+                <p class="descrizione-prezzo">
+                    Ideale per automobilisti che vogliono monitorare il proprio veicolo in modo semplice e immediato.
+                </p>
+                <a href="#chiedi-info" class="cta-prezzi">Attiva ora</a>
+            </div>
 
         <!-- PIANO AZIENDA -->
-        <div id="prezzi-azienda" class="prezzi-box" style="display:none;">
-            <h3>Piano Azienda</h3>
-            <p class="prezzo">€ 14,99 / mese per veicolo</p>
-            <p class="descrizione-prezzo">
-                Pensato per aziende che gestiscono flotte e necessitano di strumenti avanzati di controllo e analisi.
-            </p>
-            <a href="#chiedi-info" class="cta-prezzi">Richiedi preventivo</a>
-        </div>
+            <div id="prezzi-azienda" class="prezzi-box" style="display:none;">
+                <h3>Piano Azienda</h3>
+                <p class="prezzo">€ 14,99 / mese per veicolo</p>
+                <p class="descrizione-prezzo">
+                    Pensato per aziende che gestiscono flotte e necessitano di strumenti avanzati di controllo e analisi.
+                </p>
+                <a href="#chiedi-info" class="cta-prezzi">Richiedi preventivo</a>
+            </div>
     </section>
 
 
@@ -142,40 +146,43 @@
     <section id="chiedi-info">
         <h2>RICHIEDI QUI LE INFO</h2>
 
-        <form action="conferma.html" method="post" class="form-prenotazione">
+            <div class="form-box">
 
-            <div class="form-row">
-                <div>
-                    <label for="nome">Nome</label>
-                    <input type="text" id="nome" name="nome" required>
-                </div>
+                <form action="conferma.html" method="post" class="form-info">
+                    <div class="form-row">
+                        <div>
+                            <label for="nome">Nome</label>
+                            <input type="text" id="nome" name="nome" required>
+                        </div>
 
-                <div>
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
+                        <div>
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div>
+                            <label for="telefono">Telefono</label>
+                            <input type="tel" id="telefono" name="telefono" required>
+                        </div>
+
+                        <div>
+                            <label for="interesse">Tipo di interesse</label>
+                            <select id="interesse" name="interesse" required>
+                                <option value="freelancer">Privato</option>
+                                <option value="azienda">Azienda</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label for="messaggio">Messaggio (opzionale)</label>
+                    <textarea id="messaggio" name="messaggio" rows="4"></textarea>
+
+                    <button type="submit">Invia</button>
+                </form>
+
             </div>
-
-            <div class="form-row">
-                <div>
-                    <label for="telefono">Telefono</label>
-                    <input type="tel" id="telefono" name="telefono" required>
-                </div>
-
-                <div>
-                    <label for="interesse">Tipo di interesse</label>
-                    <select id="interesse" name="interesse" required>
-                        <option value="freelancer">Privato</option>
-                        <option value="azienda">Azienda</option>
-                    </select>
-                </div>
-            </div>
-
-            <label for="messaggio">Messaggio (opzionale)</label>
-            <textarea id="messaggio" name="messaggio" rows="4"></textarea>
-
-            <button type="submit">Invia</button>
-        </form>
     </section>
 
 
@@ -185,33 +192,33 @@
     <section id="faq">
         <h2>DOMANDE FREQUENTI</h2>
 
-        <div class="faq-item">
-            <button class="faq-domanda">L’app è compatibile con tutti i veicoli?</button>
-            <div class="faq-risposta">
-                <p>Sì, YouDrive funziona con qualsiasi veicolo dotato di dispositivo GPS compatibile.</p>
+            <div class="faq-item">
+                <button class="faq-domanda">L'app è compatibile con tutti i veicoli?</button>
+                <div class="faq-risposta">
+                    <p>Sì, YouDrive funziona con qualsiasi veicolo dotato di dispositivo GPS compatibile.</p>
+                </div>
             </div>
-        </div>
 
-        <div class="faq-item">
-            <button class="faq-domanda">Come proteggete i miei dati?</button>
-            <div class="faq-risposta">
-                <p>I dati vengono criptati e archiviati in server sicuri conformi alle normative europee.</p>
+            <div class="faq-item">
+                <button class="faq-domanda">Come proteggete i miei dati?</button>
+                <div class="faq-risposta">
+                    <p>I dati vengono criptati e archiviati in server sicuri conformi alle normative europee.</p>
+                </div>
             </div>
-        </div>
 
-        <div class="faq-item">
-            <button class="faq-domanda">Posso usare l’app su più dispositivi?</button>
-            <div class="faq-risposta">
-                <p>Sì, puoi accedere da smartphone, tablet e PC con lo stesso account.</p>
+            <div class="faq-item">
+                <button class="faq-domanda">Posso usare l'app su più dispositivi?</button>
+                <div class="faq-risposta">
+                    <p>Sì, puoi accedere da smartphone, tablet e PC con lo stesso account.</p>
+                </div>
             </div>
-        </div>
 
-        <div class="faq-item">
-            <button class="faq-domanda">È disponibile assistenza clienti?</button>
-            <div class="faq-risposta">
-                <p>Sì, offriamo supporto dedicato via email e telefono per privati e aziende.</p>
+            <div class="faq-item">
+                <button class="faq-domanda">È disponibile assistenza clienti?</button>
+                <div class="faq-risposta">
+                    <p>Sì, offriamo supporto dedicato via email e telefono per privati e aziende.</p>
+                </div>
             </div>
-        </div>
     </section>
 
 </main>
@@ -224,70 +231,70 @@
 
     <!-- CONTATTI -->
     <div class="footer-contatti">
-      <h4>Info generali</h4>
+        <h4>Info generali</h4>
         
-        <section id="contatti">
+            <div class="contatti">
                 <p>🏷️<b>Nome:</b> YouDrive</p>
                 <p>💡<b>Slogan:</b> “Potere alla guida, controllo in tasca.”</p>
                 <p>📍<b>Indirizzo:</b> Via Torino 45, Milano</p>
                 <p>📞<b>Telefono:</b> 02 1234567</p>
                 <p>📬<b>Email:</b><a href="mailto:info@YouDrive.it">info@YouDrive.it</a></p>
-        </section>
+            </div>
 
     </div>
 
     
     <!-- SOCIAL -->
     <div class="footer-social">
-      <h4>Seguici</h4>
+        <h4>Seguici</h4>
 
-      <div class="social-links">
-        <a href="https://www.facebook.com/YouDrive" target="_blank" rel="noopener" aria-label="Facebook">
-            <i class="fa-brands fa-facebook"></i> Facebook
-        </a><br>
+            <div class="social-links">
+                    <a href="https://www.facebook.com/YouDrive" target="_blank" rel="noopener" aria-label="Facebook">
+                        <i class="fa-brands fa-facebook"></i> Facebook
+                    </a><br>
 
-        <a href="https://www.instagram.com/YouDrive" target="_blank" rel="noopener" aria-label="Instagram">
-            <i class="fa-brands fa-instagram"></i> Instagram
-        </a><br>
+                    <a href="https://www.instagram.com/YouDrive" target="_blank" rel="noopener" aria-label="Instagram">
+                        <i class="fa-brands fa-instagram"></i> Instagram
+                    </a><br>
 
-        <a href="https://www.linkedin.com/YouDrive" target="_blank" rel="noopener" aria-label="Linkedin">
-            <i class="fa-brands fa-linkedin"></i> Linkedin
-        </a><br>
+                    <a href="https://www.linkedin.com/YouDrive" target="_blank" rel="noopener" aria-label="Linkedin">
+                        <i class="fa-brands fa-linkedin"></i> Linkedin
+                    </a><br>
 
-        <a href="https://www.tiktok.com/YouDrive" target="_blank" rel="noopener" aria-label="Tiktok">
-            <i class="fa-brands fa-tiktok"></i> Tiktok
-        </a><br>
-      </div>
+                    <a href="https://www.tiktok.com/YouDrive" target="_blank" rel="noopener" aria-label="Tiktok">
+                        <i class="fa-brands fa-tiktok"></i> Tiktok
+                    </a><br>
+            </div>
 
     </div>
 
 
     <!-- PRIVACY & LEGALE -->
     <div class="footer-privacy">
-      <h4>Legale</h4>
-
-      <ul>
-        <li><a href="/privacy-policy" target="_blank">Privacy Policy</a></li>
-        <li><a href="/cookie-policy" target="_blank">Cookie Policy</a></li>
-      </ul>
-
+        <h4>Legale</h4>
+            <div class="privacy-links">
+                <ul>
+                    <li><a href="/privacy-policy" target="_blank">Privacy Policy</a></li>
+                    <li><a href="/cookie-policy" target="_blank">Cookie Policy</a></li>
+                </ul>
+            </div>
     </div>
 
 
     <!-- MAPPA DI GOOGLE -->
     <div class="footer-map">
-      <h4>Dove siamo</h4>
+        <h4>Dove siamo</h4>
 
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2798.4143245561327!2d9.182952375759596!3d45.461457033622395!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4786c6ab09aafd41%3A0x3734d875ef1eb334!2sVia%20Torino%2C%2045%2C%2020123%20Milano%20MI!5e0!3m2!1sit!2sit!4v1770641375722!5m2!1sit!2sit"
-            width="100%" height="400" style="border:0; border-radius: 8px; max-width: 900px; margin: 0 auto; display: block;"
-            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2798.4143245561327!2d9.182952375759596!3d45.461457033622395!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4786c6ab09aafd41%3A0x3734d875ef1eb334!2sVia%20Torino%2C%2045%2C%2020123%20Milano%20MI!5e0!3m2!1sit!2sit!4v1770641375722!5m2!1sit!2sit"
+                width="100%" height="400" style="border:0; border-radius: 8px; max-width: 900px; margin: 0 auto; display: block;"
+                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
     </div>
 
 
-  <div class="footer-info">
-    <p>&copy; 2021 WorkHub Milano | P.IVA 12345678901</p>
-  </div>
+    <div class="footer-info">
+            <p>&copy; 2021 WorkHub Milano | P.IVA 12345678901</p>
+    </div>
 
 </footer>
 
