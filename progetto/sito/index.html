@@ -10,6 +10,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
     <link rel="stylesheet" href="style.css">
+    <script src="main.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
@@ -34,6 +35,7 @@
     <section class="titolo">
         <h1>YouDrive</h1>
         <p><i>“Potere alla guida, controllo in tasca.”</i></p>
+        <a href="#servizi" class="cta-app">Scopri l'app</a>
     </section>
 
 
@@ -67,23 +69,68 @@
     <section id="servizi">
         <h2>SERVIZI</h2>
 
-        <div class="section-content">
-            <img src="img/servizi.png" alt="Servizi offerti da WorkHub Milano">
+        <div class="switch-servizi">
+            <button onclick="mostraServizi('privati')" id="btn-privati" class="active">Privati</button>
+            <button onclick="mostraServizi('aziende')" id="btn-aziende">Aziende</button>
+        </div>
 
-            <ul class="servizi-lista">
-               <ul class="servizi-lista">
-                    <li>Monitoraggio posizione in tempo reale</li>
-                    <li>Storico percorsi e utilizzo del veicolo</li>
-                    <li>Notifiche su movimenti sospetti</li>
-                    <li>Promemoria manutenzione programmata</li>
-                    <li>Report dettagliati su consumi e utilizzo</li>
-                    <li>Prenotazione alle officine per vari interventi</li>
-                    <li>Scadenze assicurazione e bollo</li>
-                    <li>Gestione flotte aziendali</li>
-                    <li>Accessi multi-utente per aziende</li>
-                    <li>Supporto clienti dedicato</li>
-                </ul>
+        <div id="servizi-privati" class="servizi-lista">
+            <ul>
+                <li>Monitoraggio posizione in tempo reale</li>
+                <li>Storico percorsi e utilizzo del veicolo</li>
+                <li>Notifiche su movimenti sospetti</li>
+                <li>Promemoria manutenzione programmata</li>
+                <li>Scadenze assicurazione e bollo</li>
+                <li>Analisi stile di guida</li>
+                <li>Condivisione sicura del veicolo</li>
+                <li>Supporto clienti dedicato</li>
             </ul>
+        </div>
+
+        <div id="servizi-aziende" class="servizi-lista" style="display:none;">
+            <ul>
+                <li>Gestione flotte multi-veicolo</li>
+                <li>Report dettagliati su consumi e utilizzo</li>
+                <li>Accessi multi-utente con ruoli</li>
+                <li>Geofence e alert personalizzati</li>
+                <li>Integrazione con dispositivi GPS</li>
+                <li>Storico interventi e manutenzioni</li>
+                <li>Prenotazione officine convenzionate</li>
+                <li>Dashboard centralizzata per il fleet manager</li>
+            </ul>
+        </div>
+    </section>
+
+
+
+
+
+    <section id="prezzi">
+        <h2>PIANI & PREZZI</h2>
+
+        <div class="switch-servizi">
+            <button onclick="mostraPrezzi('privato')" id="btn-privato" class="active">Privato</button>
+            <button onclick="mostraPrezzi('azienda')" id="btn-azienda">Azienda</button>
+        </div>
+
+        <!-- PIANO PRIVATO -->
+        <div id="prezzi-privato" class="prezzi-box">
+            <h3>Piano Privato</h3>
+            <p class="prezzo">€ 4,99 / mese</p>
+            <p class="descrizione-prezzo">
+                Ideale per automobilisti che vogliono monitorare il proprio veicolo in modo semplice e immediato.
+            </p>
+            <a href="#chiedi-info" class="cta-prezzi">Attiva ora</a>
+        </div>
+
+        <!-- PIANO AZIENDA -->
+        <div id="prezzi-azienda" class="prezzi-box" style="display:none;">
+            <h3>Piano Azienda</h3>
+            <p class="prezzo">€ 14,99 / mese per veicolo</p>
+            <p class="descrizione-prezzo">
+                Pensato per aziende che gestiscono flotte e necessitano di strumenti avanzati di controllo e analisi.
+            </p>
+            <a href="#chiedi-info" class="cta-prezzi">Richiedi preventivo</a>
         </div>
     </section>
 
@@ -129,6 +176,42 @@
 
             <button type="submit">Invia</button>
         </form>
+    </section>
+
+
+
+
+
+    <section id="faq">
+        <h2>DOMANDE FREQUENTI</h2>
+
+        <div class="faq-item">
+            <button class="faq-domanda">L’app è compatibile con tutti i veicoli?</button>
+            <div class="faq-risposta">
+                <p>Sì, YouDrive funziona con qualsiasi veicolo dotato di dispositivo GPS compatibile.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-domanda">Come proteggete i miei dati?</button>
+            <div class="faq-risposta">
+                <p>I dati vengono criptati e archiviati in server sicuri conformi alle normative europee.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-domanda">Posso usare l’app su più dispositivi?</button>
+            <div class="faq-risposta">
+                <p>Sì, puoi accedere da smartphone, tablet e PC con lo stesso account.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-domanda">È disponibile assistenza clienti?</button>
+            <div class="faq-risposta">
+                <p>Sì, offriamo supporto dedicato via email e telefono per privati e aziende.</p>
+            </div>
+        </div>
     </section>
 
 </main>
