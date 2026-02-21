@@ -1,4 +1,33 @@
 /* --------------------------------------------------
+   EFFETTO TITOLO E SLOGAN
+-------------------------------------------------- */
+document.addEventListener("DOMContentLoaded", () => {
+    const titolo = document.getElementById("titolo-animato");
+    const slogan = document.getElementById("slogan-animato");
+
+    setTimeout(() => {
+        titolo.classList.add("testo-animato");
+        slogan.classList.add("testo-animato");
+    }, 300);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const downloadTitle = document.getElementById("download-title");
+    const downloadSlogan = document.getElementById("download-slogan");
+
+    if (downloadTitle) {
+        setTimeout(() => {
+            downloadTitle.classList.add("testo-animato");
+        }, 300);
+    }
+
+    if (downloadSlogan) {
+        setTimeout(() => {
+            downloadSlogan.classList.add("testo-animato");
+        }, 500);
+    }
+});
+/* --------------------------------------------------
    EFFETTO LISTA SERVIZI
 -------------------------------------------------- */
 function mostraServizi(tipo) {
