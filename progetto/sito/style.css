@@ -108,6 +108,19 @@ h1, h2 {
     color: #121212;
 }
 
+.testo-animato {
+    background: linear-gradient(90deg, #0A3C7D, #00AEEF, #0A3C7D);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: anim-colore 6s linear infinite;
+}
+
+@keyframes anim-colore {
+    0% { background-position: 0%; }
+    100% { background-position: 300%; }
+}
+
 /* --------------------------------------------------
    CTA
 -------------------------------------------------- */
@@ -126,6 +139,88 @@ h1, h2 {
 
 .cta-app:hover {
     background-color: #121212;
+}
+
+/* PAGINA DOWNLOAD */
+.download-page {
+    background: #F5F7FA;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.download-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 80px;
+    max-width: 1200px;
+    width: 100%;
+    color: #0A3C7D;
+    margin-top: -40px;
+}
+
+.download-text {
+    max-width: 500px;
+    text-align: center;
+}
+
+.download-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    margin-top: 0;
+    color: #0A3C7D;
+}
+
+.download-slogan {
+    font-size: 1.3rem;
+    color: #4A5B70;
+    margin-bottom: 30px;
+    margin-top: 5px;
+}
+
+.download-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.btn-store {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #fff;
+    transition: 0.3s ease;
+}
+
+.btn-store i {
+    font-size: 1.6rem;
+}
+
+.btn-store.android {
+    background: #3DDC84;
+}
+
+.btn-store.ios {
+    background: #000000;
+}
+
+.btn-store:hover {
+    transform: translateY(-3px);
+    opacity: 0.9;
+}
+
+.download-image img {
+    width: 320px;
+    filter: drop-shadow(0 10px 25px rgba(0,0,0,0.25));
 }
 
 /* --------------------------------------------------
@@ -563,34 +658,38 @@ button:hover {
     height: 300px;
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     background-attachment: fixed; /* effetto scorrimento */
+    position: relative;
     margin: 40px 0;
     border-radius: 0;
 }
 
-/* img background */
+.bg-break::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    z-index: 1;
+}
+
+.bg-break > * {
+    position: relative;
+    z-index: 2;
+}
+
+
+
 .bg1 {
     background-image: url("img/bg1.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 300px;
 }
 
 .bg2 {
     background-image: url("img/bg2.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 300px;
 }
 
 .bg3 {
     background-image: url("img/bg3.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 300px;
 }
 
 /* --------------------------------------------------
