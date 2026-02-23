@@ -113,7 +113,7 @@ h1, h2 {
     background-size: 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: anim-colore 6s linear infinite;
+    animation: anim-colore 10s linear infinite;
 }
 
 @keyframes anim-colore {
@@ -167,17 +167,15 @@ h1, h2 {
     text-align: center;
 }
 
-.download-title {
+#download-title {
     font-size: 3rem;
     font-weight: 700;
     margin-bottom: 10px;
     margin-top: 0;
-    color: #0A3C7D;
 }
 
-.download-slogan {
+#download-slogan {
     font-size: 1.3rem;
-    color: #4A5B70;
     margin-bottom: 30px;
     margin-top: 5px;
 }
