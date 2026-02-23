@@ -15,17 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const downloadTitle = document.getElementById("download-title");
     const downloadSlogan = document.getElementById("download-slogan");
 
-    if (downloadTitle) {
-        setTimeout(() => {
+    setTimeout(() => {
             downloadTitle.classList.add("testo-animato");
-        }, 300);
-    }
-
-    if (downloadSlogan) {
-        setTimeout(() => {
             downloadSlogan.classList.add("testo-animato");
-        }, 500);
-    }
+    }, 300);
 });
 /* --------------------------------------------------
    EFFETTO LISTA SERVIZI
