@@ -14,12 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     cards.forEach(card => observer.observe(card));
 
-    // Footer automatico
-    const footer = document.getElementById("footer");
-    if (footer) {
-        const year = new Date().getFullYear();
-        footer.innerHTML = `<p>© ${year} — YouDrive</p>`;
-    }
+/* -----------------------------------------------------
+/        FOOTER CHE SI AGGIORNA AUTOMATICAMENTE        /
+-----------------------------------------------------*/
+const year = new Date().getFullYear();
+document.getElementById('footer').innerHTML = `© ${year} — Youdrive`;
 
     // Header utente
     const headerUser = document.getElementById("header-user");
@@ -32,17 +31,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Protezione pagine: se non loggato, rimanda al login
     const paginaAttuale = window.location.pathname.split("/").pop();
-    const paginePubbliche = ["index.html", ""];
+    const paginePubbliche = ["login.html", ""];
     if (!paginePubbliche.includes(paginaAttuale)) {
         const utente = getUtenteLoggato();
         if (!utente) {
-            window.location.href = "index.html";
+            window.location.href = "login.html";
             return;
         }
     }
 
     // Inizializzazione per pagina
-    if (paginaAttuale === "home.html") {
+    if (paginaAttuale === "homepage.html") {
         initHome();
     }
     if (paginaAttuale === "veicoli.html") {
@@ -160,7 +159,7 @@ function switchTab(tab) {
 }
 
 function register() {
-    const nome = document.getElementById("reg-nome").value.trim();
+    const nome = document.getElementById("reg-user").value.trim();
     const email = document.getElementById("reg-email").value.trim();
     const password = document.getElementById("reg-password").value;
     const errEl = document.getElementById("reg-error");
@@ -191,7 +190,7 @@ function register() {
 
     // Login automatico dopo registrazione
     setData("youdrive_utente_loggato", { nome, email });
-    window.location.href = "home.html";
+    window.location.href = "homepage.html";
 }
 
 function login() {
@@ -213,12 +212,12 @@ function login() {
     }
 
     setData("youdrive_utente_loggato", { nome: utente.nome, email: utente.email });
-    window.location.href = "home.html";
+    window.location.href = "homepage.html";
 }
 
 function logout() {
     localStorage.removeItem("youdrive_utente_loggato");
-    window.location.href = "index.html";
+    window.location.href = "login.html";
 }
 
 /* =====================================================

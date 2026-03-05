@@ -453,7 +453,7 @@ a.home-card h3 {
     background: #0b0f2a;
 }
 
-.auth-container {
+.auth-card {
     width: 100%;
     max-width: 420px;
     padding: 40px 32px;
@@ -797,7 +797,7 @@ a.home-card h3 {
         padding: 0 16px 40px;
     }
 
-    .auth-container {
+    .auth-card {
         margin: 20px;
         padding: 28px 20px;
     }
