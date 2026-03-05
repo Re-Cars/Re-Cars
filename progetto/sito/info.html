@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouDrive — Info & Contatti</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="functions.js" defer></script>
+</head>
+<body>
+
+    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-logo"><i class="fa-solid fa-car"></i> YouDrive</span>
+            <button class="sidebar-close" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="info.html"><i class="fa-solid fa-circle-info"></i> Info & Contatti</a>
+            <a href="#" onclick="downloadStoricoPDF()"><i class="fa-solid fa-file-pdf"></i> Scarica Storico Interventi</a>
+            <a href="veicoli.html"><i class="fa-solid fa-car"></i> I miei Veicoli</a>
+            <a href="scadenze.html"><i class="fa-solid fa-calendar-days"></i> Scadenze</a>
+            <a href="prenotazioni.html"><i class="fa-solid fa-wrench"></i> Prenotazioni</a>
+            <a href="recensioni.html"><i class="fa-solid fa-star"></i> Recensioni</a>
+            <a href="#" onclick="logout()" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </div>
+
+    <header class="header">
+        <button class="hamburger-btn" onclick="openMenu()"><i class="fa-solid fa-bars"></i></button>
+        <div class="header-logo"><i class="fa-solid fa-car"></i> YouDrive</div>
+        <div class="header-user" id="header-user"></div>
+    </header>
+
+    <section class="page-hero">
+        <h2 class="section-title-page">Info & Contatti</h2>
+    </section>
+
+    <section class="section">
+        <div class="section-row-page">
+
+            <div class="card">
+                <h3><i class="fa-solid fa-circle-info"></i> Cos'è YouDrive?</h3>
+                <p>YouDrive è l'app che ti aiuta a gestire il tuo veicolo in modo semplice. Tieni traccia delle scadenze, prenota officine e lascia recensioni, tutto in un unico posto.</p>
+                <ul class="info-list">
+                    <li><i class="fa-solid fa-check"></i> Aggiungi i tuoi veicoli tramite targa</li>
+                    <li><i class="fa-solid fa-check"></i> Monitora bollo, revisione e tagliando</li>
+                    <li><i class="fa-solid fa-check"></i> Cerca e prenota officine vicino a te</li>
+                    <li><i class="fa-solid fa-check"></i> Valuta i servizi ricevuti</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-envelope"></i> Contatti</h3>
+                <p><b>Email:</b> <a href="mailto:support@youdrive.it" style="color:#b48cff">support@youdrive.it</a></p>
+                <p><b>Telefono:</b> +39 02 1234567</p>
+                <p><b>Orari:</b> Lun-Ven, 9:00-18:00</p>
+                <br>
+                <h3><i class="fa-solid fa-circle-question"></i> FAQ</h3>
+                <p><b>Come aggiungo un veicolo?</b><br>Vai nella sezione "I miei Veicoli" e inserisci la targa.</p>
+                <p><b>Posso avere più veicoli?</b><br>Sì, puoi aggiungere tutti i veicoli che vuoi.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <footer id="footer" class="footer"></footer>
+
+</body>
+</html>
