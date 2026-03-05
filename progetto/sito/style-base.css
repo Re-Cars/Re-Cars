@@ -1,0 +1,36 @@
+ /* -----------------------------------------------------
+/                      RESET                           /
+-----------------------------------------------------*/
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+    background: #1a1a2e;
+    color: #f0f0f0;
+}
+
+footer {
+    margin-top: auto;
+}
+
+ /* -----------------------------------------------------
+/                      FOOTER                          /
+-----------------------------------------------------*/
+.footer {
+    text-align: center;
+    padding: 20px 0;
+    opacity: 0.6;
+    color: #f97316;
+}
+
+ /* -----------------------------------------------------
+/                      UTILITY                         /
+-----------------------------------------------------*/
+.hidden {
+    display: none !important;
+}

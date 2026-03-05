@@ -3,88 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouDrive — Scadenze</title>
-    <link rel="stylesheet" href="style.css">
+    <title>YOUdrive — Scadenze</title>
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <script src="functions.js" defer></script>
 </head>
 <body>
 
     <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <span class="sidebar-logo"><i class="fa-solid fa-car"></i> YouDrive</span>
+            <img src="img/logo.png" alt="logo" class="sidebar-logo-img">
             <button class="sidebar-close" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <nav class="sidebar-nav">
-            <a href="info.html"><i class="fa-solid fa-circle-info"></i> Info & Contatti</a>
-            <a href="#" onclick="downloadStoricoPDF()"><i class="fa-solid fa-file-pdf"></i> Scarica Storico Interventi</a>
-            <a href="veicoli.html"><i class="fa-solid fa-car"></i> I miei Veicoli</a>
-            <a href="scadenze.html"><i class="fa-solid fa-calendar-days"></i> Scadenze</a>
-            <a href="prenotazioni.html"><i class="fa-solid fa-wrench"></i> Prenotazioni</a>
-            <a href="recensioni.html"><i class="fa-solid fa-star"></i> Recensioni</a>
-            <a href="#" onclick="logout()" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <a href="#"><i class="fa-solid fa-circle-info"></i> Info & Contatti</a>
+            <a href="#"><i class="fa-solid fa-file-pdf"></i> Scarica Storico Interventi</a>
+            <a href="#"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+            <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
     </div>
 
     <header class="header">
-        <button class="hamburger-btn" onclick="openMenu()"><i class="fa-solid fa-bars"></i></button>
-        <div class="header-logo"><i class="fa-solid fa-car"></i> YouDrive</div>
-        <div class="header-user" id="header-user"></div>
+        <div class="header-left">
+            <img src="img/logo.png" alt="logo" class="header-logo-img">
+            <span class="header-brand">YouDrive</span>
+            <button class="hamburger-btn" onclick="openMenu()"><i class="fa-solid fa-bars"></i></button>
+        </div>
+        <div class="header-right">
+            <span class="header-nickname">nickname</span>
+            <div class="header-avatar"><i class="fa-solid fa-user"></i></div>
+        </div>
     </header>
 
     <section class="page-hero">
-        <h2 class="section-title-page">Scadenze Veicolo</h2>
+        <h2 class="section-title-page">Scadenze</h2>
     </section>
 
-
     <section class="section">
-        <div class="section-row-page">
-            <div id="card-seleziona-veicolo" class="card">
+        <div class="section-row">
+            <div class="card">
                 <h3><i class="fa-solid fa-car"></i> Seleziona Veicolo</h3>
                 <div class="input-group">
                     <i class="fa-solid fa-list"></i>
-                    <select id="select-veicolo-scadenze" onchange="caricaScadenze()">
-                        <option value="">— Scegli un veicolo —</option>
+                    <select>
+                        <option value="">— Nessun veicolo aggiunto —</option>
                     </select>
                 </div>
             </div>
         </div>
     </section>
 
+    <section class="section section-no-top">
+        <div class="section-row scadenze-grid">
 
-    <section  id="section-scadenze" class="section section-no-top">
-        <div class="section-row-page scadenze-grid" id="scadenze-grid">
-
-            <div  id="card-bollo" class="card scadenza-card">
+            <div class="card scadenza-card">
                 <div class="card-icon"><i class="fa-solid fa-receipt"></i></div>
                 <h3>Bollo Auto</h3>
-                <div id="info-bollo" class="scadenza-info">
-                    <p>Seleziona un veicolo</p>
-                </div>
-                <button class="btn-secondary" onclick="impostaScadenza('bollo')">
+                <p>Nessuna data impostata.</p>
+                <button class="btn-landing btn-landing-small">
                     <i class="fa-solid fa-pen"></i> Imposta Data
                 </button>
             </div>
 
-            <div  id="card-revisione" class="card scadenza-card">
+            <div class="card scadenza-card">
                 <div class="card-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
                 <h3>Revisione</h3>
-                <div id="info-revisione" class="scadenza-info">
-                    <p>Seleziona un veicolo</p>
-                </div>
-                <button class="btn-secondary" onclick="impostaScadenza('revisione')">
+                <p>Nessuna data impostata.</p>
+                <button class="btn-landing btn-landing-small">
                     <i class="fa-solid fa-pen"></i> Imposta Data
                 </button>
             </div>
 
-            <div  id="card-tagliando" class="card scadenza-card">
+            <div class="card scadenza-card">
                 <div class="card-icon"><i class="fa-solid fa-oil-can"></i></div>
                 <h3>Tagliando</h3>
-                <div id="info-tagliando" class="scadenza-info">
-                    <p>Seleziona un veicolo</p>
-                </div>
-                <button class="btn-secondary" onclick="impostaScadenza('tagliando')">
+                <p>Nessuna data impostata.</p>
+                <button class="btn-landing btn-landing-small">
                     <i class="fa-solid fa-pen"></i> Imposta Data
                 </button>
             </div>
@@ -92,22 +87,7 @@
         </div>
     </section>
 
-
-    <div  id="modal-scadenza" class="modal-overlay hidden">
-        <div class="modal-box">
-            <h3 id="modal-scadenza-titolo">Imposta Scadenza</h3>
-            <div class="input-group">
-                <i class="fa-solid fa-calendar"></i>
-                <input type="date" id="input-data-scadenza">
-            </div>
-            <div class="modal-buttons">
-                <button class="btn-primary" onclick="salvaScadenza()">Salva</button>
-                <button class="btn-secondary" onclick="chiudiModal('modal-scadenza')">Annulla</button>
-            </div>
-        </div>
-    </div>
-
-    <footer id="footer" class="footer">
+    <footer class="footer">
         <p>© 2025 — YouDrive</p>
     </footer>
 
