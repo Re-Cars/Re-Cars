@@ -1,4 +1,4 @@
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      SFONDO                          /
 -----------------------------------------------------*/
 .landing-body,
@@ -18,7 +18,7 @@
     z-index: 0;
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      LANDING                         /
 -----------------------------------------------------*/
 .landing-content {
@@ -46,27 +46,39 @@
 .landing-title {
     font-size: 3rem;
     font-weight: 800;
-    color: #ffffff;
     margin: 0;
     letter-spacing: 2px;
+    background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: anim-colore 8s linear infinite;
 }
 
 .landing-subtitle {
     font-size: 1.1rem;
     font-style: italic;
-    color: rgba(255, 255, 255, 0.85);
-    margin: 0;
+    margin: 0 0 100px 0;
+    background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: anim-colore 8s linear infinite;
 }
 
 .landing-buttons {
     display: flex;
     gap: 24px;
-    margin-top: 20px;
     flex-wrap: wrap;
     justify-content: center;
 }
 
-/* -----------------------------------------------------
+@keyframes anim-colore {
+    0%   { background-position: 0%; }
+    100% { background-position: 300%; }
+}
+
+ /* ----------------------------------------------------
 /                      BOTTONE                         /
 -----------------------------------------------------*/
 .btn-landing {
@@ -92,7 +104,7 @@
     transform: scale(1.05);
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      LOGIN / REGISTER                /
 -----------------------------------------------------*/
 .auth-container {
@@ -120,7 +132,7 @@
 }
 
 .auth-back:hover {
-    color: #ffffff;
+    color: #ea580c;
 }
 
 .auth-logo {
@@ -161,7 +173,14 @@
     font-weight: 600;
 }
 
-/* -----------------------------------------------------
+.btn-login,
+.btn-register {
+    padding: 11px 28px;
+    font-size: 0.9rem;
+    align-self: center;
+}
+
+ /* ----------------------------------------------------
 /                      VISITOR                         /
 -----------------------------------------------------*/
 .header {
@@ -173,10 +192,19 @@
     border-bottom: 1px solid rgba(249, 115, 22, 0.2);
 }
 
-.header-logo {
-    font-weight: 800;
-    font-size: 1.2rem;
-    color: #f97316;
+.header-title {
+    font-size: 2.8rem;
+    font-weight: 600;
+    background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: anim-colore 8s linear infinite;
+}
+
+.header a,
+.header div:last-child {
+    width: 120px;
 }
 
 .page-hero {
@@ -200,14 +228,21 @@
     margin: auto;
     display: flex;
     gap: 24px;
-    align-items: flex-start;
+    justify-content: center;
 }
 
-.section-row .card {
-    flex: 1;
+.visitor-card {
+    max-width: 700px;
+    width: 100%;
 }
 
-/* -----------------------------------------------------
+.btn-visitor {
+    padding: 11px 28px;
+    font-size: 0.9rem;
+    align-self: center;
+}
+
+ /* ----------------------------------------------------
 /                      INPUT                           /
 -----------------------------------------------------*/
 .input-group {
@@ -250,7 +285,7 @@
     background: #1a1a2e;
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      CARD                            /
 -----------------------------------------------------*/
 .card {
@@ -276,7 +311,7 @@
     color: rgba(255, 255, 255, 0.6);
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      RESPONSIVE                      /
 -----------------------------------------------------*/
 @media (max-width: 768px) {
