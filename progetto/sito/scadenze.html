@@ -40,7 +40,7 @@
 
     <section class="section">
         <div class="section-row-page">
-            <div class="card" style="width:100%">
+            <div id="card-seleziona-veicolo" class="card">
                 <h3><i class="fa-solid fa-car"></i> Seleziona Veicolo</h3>
                 <div class="input-group">
                     <i class="fa-solid fa-list"></i>
@@ -53,36 +53,36 @@
     </section>
 
 
-    <section class="section" style="padding-top:0" id="section-scadenze" >
+    <section  id="section-scadenze" class="section section-no-top">
         <div class="section-row-page scadenze-grid" id="scadenze-grid">
 
-            <div class="card scadenza-card" id="card-bollo">
+            <div  id="card-bollo" class="card scadenza-card">
                 <div class="card-icon"><i class="fa-solid fa-receipt"></i></div>
                 <h3>Bollo Auto</h3>
                 <div id="info-bollo" class="scadenza-info">
-                    <p style="color:#7a6aaa">Seleziona un veicolo</p>
+                    <p>Seleziona un veicolo</p>
                 </div>
                 <button class="btn-secondary" onclick="impostaScadenza('bollo')">
                     <i class="fa-solid fa-pen"></i> Imposta Data
                 </button>
             </div>
 
-            <div class="card scadenza-card" id="card-revisione">
+            <div  id="card-revisione" class="card scadenza-card">
                 <div class="card-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
                 <h3>Revisione</h3>
                 <div id="info-revisione" class="scadenza-info">
-                    <p style="color:#7a6aaa">Seleziona un veicolo</p>
+                    <p>Seleziona un veicolo</p>
                 </div>
                 <button class="btn-secondary" onclick="impostaScadenza('revisione')">
                     <i class="fa-solid fa-pen"></i> Imposta Data
                 </button>
             </div>
 
-            <div class="card scadenza-card" id="card-tagliando">
+            <div  id="card-tagliando" class="card scadenza-card">
                 <div class="card-icon"><i class="fa-solid fa-oil-can"></i></div>
                 <h3>Tagliando</h3>
                 <div id="info-tagliando" class="scadenza-info">
-                    <p style="color:#7a6aaa">Seleziona un veicolo</p>
+                    <p>Seleziona un veicolo</p>
                 </div>
                 <button class="btn-secondary" onclick="impostaScadenza('tagliando')">
                     <i class="fa-solid fa-pen"></i> Imposta Data
@@ -93,7 +93,7 @@
     </section>
 
 
-    <div class="modal-overlay hidden" id="modal-scadenza">
+    <div  id="modal-scadenza" class="modal-overlay hidden">
         <div class="modal-box">
             <h3 id="modal-scadenza-titolo">Imposta Scadenza</h3>
             <div class="input-group">
