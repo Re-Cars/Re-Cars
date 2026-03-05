@@ -46,17 +46,17 @@
                 <p>Inserisci la targa del veicolo per visualizzare tutti i dati e aggiungerlo al tuo profilo.</p>
                 <div class="input-group">
                     <i class="fa-solid fa-car"></i>
-                    <input type="text" id="input-targa" placeholder="Es. AA123BB" maxlength="7" style="text-transform:uppercase">
+                    <input type="text" id="input-targa" placeholder="Es. AA123BB" maxlength="7">
                 </div>
                 <p id="targa-error" class="auth-error"></p>
                 <button class="btn-primary" onclick="cercaVeicolo()">Cerca Veicolo</button>
             </div>
 
 
-            <div class="card hidden" id="card-dati-veicolo">
-                <h3><i class="fa-solid fa-circle-check" style="color:#7b61ff"></i> Dati Veicolo</h3>
+            <div  id="card-dati-veicolo" class="card hidden">
+                <h3><i class="fa-solid fa-circle-check"></i> Dati Veicolo</h3>
                 <div id="dati-veicolo-content"></div>
-                <button class="btn-primary" onclick="aggiungiVeicolo()" style="margin-top:16px">
+                <button class="btn-primary" onclick="aggiungiVeicolo()">
                     <i class="fa-solid fa-plus"></i> Aggiungi ai miei veicoli
                 </button>
             </div>
@@ -65,12 +65,12 @@
     </section>
 
 
-    <section class="section" style="padding-top: 0">
+    <section class="section section-no-top">
         <div class="section-row-page">
-            <div class="card" style="width:100%">
+            <div  id="card-lista-veicoli" class="card">
                 <h3><i class="fa-solid fa-list"></i> I tuoi Veicoli Salvati</h3>
                 <div id="lista-veicoli">
-                    <p style="color:#7a6aaa">Nessun veicolo aggiunto.</p>
+                    <p>Nessun veicolo aggiunto.</p>
                 </div>
             </div>
         </div>

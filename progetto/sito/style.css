@@ -231,7 +231,7 @@ footer {
 }
 
  /*------------------------------------------------------
-/                         CARD                          /
+/                         CARDS                         /
 ------------------------------------------------------*/
 .card {
     padding: 30px;
@@ -292,6 +292,84 @@ a.home-card h3 {
     background: linear-gradient(90deg, #6a00ff, #b48cff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.card a {
+    color: #b48cff;
+}
+
+.scadenza-info p {
+    color: #7a6aaa;
+}
+
+#card-form-recensione > p {
+    color: #7a6aaa;
+    font-size: 0.9rem;
+}
+
+.stelle-container > p {
+    color: #b48cff;
+    margin-bottom: 8px;
+}
+
+.input-group-textarea {
+    align-items: flex-start;
+}
+
+.input-group-textarea i {
+    margin-top: 12px;
+}
+
+.icon-warning {
+    color: #ffaa00;
+}
+
+.btn-primary-link {
+    display: inline-block;
+    text-decoration: none;
+    margin-top: 8px;
+}
+
+#card-lista-recensioni {
+    width: 100%;
+}
+
+.section-no-top {
+    padding-top: 0;
+}
+
+#card-mappa {
+    width: 100%;
+}
+
+#mappa-info {
+    color: #b48cff;
+    margin-top: 12px;
+    font-size: 0.95rem;
+}
+
+#card-risultati {
+    min-height: 200px;
+}
+
+#input-targa {
+    text-transform: uppercase;
+}
+
+#card-dati-veicolo h3 i {
+    color: #7b61ff;
+}
+
+#card-dati-veicolo .btn-primary {
+    margin-top: 16px;
+}
+
+#card-lista-veicoli {
+    width: 100%;
+}
+
+#lista-veicoli p {
+    color: #7a6aaa;
 }
 
  /*------------------------------------------------------

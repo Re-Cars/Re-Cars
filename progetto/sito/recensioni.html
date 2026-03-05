@@ -10,8 +10,8 @@
 </head>
 <body>
 
-    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
-    <div class="sidebar" id="sidebar">
+    <div id="hamburger-overlay" class="hamburger-overlay" onclick="closeMenu()"></div>
+    <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <span class="sidebar-logo"><i class="fa-solid fa-car"></i> YouDrive</span>
             <button class="sidebar-close" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button>
@@ -30,7 +30,7 @@
     <header class="header">
         <button class="hamburger-btn" onclick="openMenu()"><i class="fa-solid fa-bars"></i></button>
         <div class="header-logo"><i class="fa-solid fa-car"></i> YouDrive</div>
-        <div class="header-user" id="header-user"></div>
+        <div  id="header-user" class="header-user"></div>
     </header>
 
     <section class="page-hero">
@@ -41,9 +41,9 @@
         <div class="section-row-page">
 
 
-            <div class="card" id="card-form-recensione">
+            <div  id="card-form-recensione" class="card">
                 <h3><i class="fa-solid fa-pen-to-square"></i> Lascia una Recensione</h3>
-                <p style="color:#7a6aaa; font-size:0.9rem">Puoi recensire solo le officine dove hai prenotato.</p>
+                <p>Puoi recensire solo le officine dove hai prenotato.</p>
 
                 <div class="input-group">
                     <i class="fa-solid fa-wrench"></i>
@@ -53,8 +53,8 @@
                 </div>
 
                 <div class="stelle-container">
-                    <p style="color:#b48cff; margin-bottom:8px">Voto:</p>
-                    <div class="stelle" id="stelle-input">
+                    <p>Voto:</p>
+                    <div  id="stelle-input" class="stelle">
                         <i class="fa-solid fa-star stella" data-val="1" onclick="setStella(1)"></i>
                         <i class="fa-solid fa-star stella" data-val="2" onclick="setStella(2)"></i>
                         <i class="fa-solid fa-star stella" data-val="3" onclick="setStella(3)"></i>
@@ -63,9 +63,9 @@
                     </div>
                 </div>
 
-                <div class="input-group" style="align-items:flex-start">
-                    <i class="fa-solid fa-comment" style="margin-top:12px"></i>
-                    <textarea id="input-testo-recensione" placeholder="Scrivi la tua recensione..." rows="4" style="resize:vertical"></textarea>
+                <div class="input-group input-group-textarea">
+                    <i class="fa-solid fa-comment"></i>
+                    <textarea id="input-testo-recensione" placeholder="Scrivi la tua recensione..." rows="4"></textarea>
                 </div>
 
                 <p id="rec-error" class="auth-error"></p>
@@ -75,11 +75,11 @@
             </div>
 
  
-            <div class="card hidden" id="card-no-prenotazioni">
-                <div class="card-icon"><i class="fa-solid fa-triangle-exclamation" style="color:#ffaa00"></i></div>
+            <div  id="card-no-prenotazioni" class="card hidden">
+                <div class="card-icon"><i class="fa-solid fa-triangle-exclamation icon-warning"></i></div>
                 <h3>Nessuna Prenotazione</h3>
                 <p>Per lasciare una recensione devi prima effettuare una prenotazione in un'officina.</p>
-                <a href="prenotazioni.html" class="btn-primary" style="display:inline-block; text-decoration:none; margin-top:8px">
+                <a href="prenotazioni.html" class="btn-primary btn-primary-link">
                     <i class="fa-solid fa-wrench"></i> Prenota ora
                 </a>
             </div>
@@ -88,12 +88,12 @@
     </section>
 
 
-    <section class="section" style="padding-top:0">
+    <section class="section section-no-top">
         <div class="section-row-page">
-            <div class="card" style="width:100%">
+            <div id="card-lista-recensioni" class="card">
                 <h3><i class="fa-solid fa-star-half-stroke"></i> Le tue Recensioni</h3>
                 <div id="lista-recensioni">
-                    <p style="color:#7a6aaa">Non hai ancora lasciato recensioni.</p>
+                    <p>Non hai ancora lasciato recensioni.</p>
                 </div>
             </div>
         </div>
