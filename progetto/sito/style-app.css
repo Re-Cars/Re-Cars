@@ -1,4 +1,4 @@
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      HEADER                          /
 -----------------------------------------------------*/
 .header {
@@ -19,7 +19,7 @@
     gap: 12px;
 }
 
-.header-logo-img {
+.header-title {
     width: 40px;
     height: 40px;
     object-fit: contain;
@@ -27,9 +27,18 @@
 
 .header-brand {
     font-weight: 800;
-    font-size: 1.2rem;
-    color: #f97316;
+    font-size: 2.5rem;
     letter-spacing: 1px;
+    background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: anim-colore 8s linear infinite;
+}
+
+@keyframes anim-colore {
+    0%   { background-position: 0%; }
+    100% { background-position: 300%; }
 }
 
 .header-right {
@@ -54,7 +63,7 @@
     color: #ffffff;
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      HAMBURGER                       /
 -----------------------------------------------------*/
 .hamburger-btn {
@@ -77,7 +86,51 @@
     display: block;
 }
 
-/* -----------------------------------------------------
+#hamburger9-input {
+    display: none;
+}
+
+.hamburger9 {
+    display: flex;
+    width: 30px;
+}
+
+.hamburger9 div {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.hamburger9 .line {
+    position: absolute;
+    display: block;
+    width: 30px;
+    height: 3px;
+    border-radius: 5px;
+    background-color: #f97316;
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.hamburger9 .line1 { top: 0; }
+.hamburger9 .line2,
+.hamburger9 .line3 { top: 13.5px; }
+.hamburger9 .line4 { bottom: 0; }
+
+.hamburger9 input:checked + label > .hamburger9-container > .line1 {
+    transform: translateX(40px) scale(0);
+}
+.hamburger9 input:checked + label > .hamburger9-container > .line2 {
+    transform: rotate(45deg) scale(1.2);
+}
+.hamburger9 input:checked + label > .hamburger9-container > .line3 {
+    transform: rotate(-45deg) scale(1.2);
+}
+.hamburger9 input:checked + label > .hamburger9-container > .line4 {
+    transform: translateX(-40px) scale(0);
+}
+
+ /* ----------------------------------------------------
 /                      SIDEBAR                         /
 -----------------------------------------------------*/
 .sidebar {
@@ -148,7 +201,19 @@
     color: #ff6b6b !important;
 }
 
-/* -----------------------------------------------------
+.sidebar-brand {
+    font-weight: 800;
+    font-size: 1.8rem;
+    flex: 1;
+    margin-left: 8px;
+    background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: anim-colore 8s linear infinite;
+}
+
+ /* ----------------------------------------------------
 /                      PAGE HERO                       /
 -----------------------------------------------------*/
 .page-hero {
@@ -163,7 +228,7 @@
     margin: 0;
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      LAYOUT SECTION                  /
 -----------------------------------------------------*/
 .section {
@@ -186,7 +251,7 @@
     flex: 1;
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      CARD                            /
 -----------------------------------------------------*/
 .card {
@@ -229,7 +294,7 @@
     color: #f97316;
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      INPUT                           /
 -----------------------------------------------------*/
 .input-group {
@@ -282,7 +347,7 @@
     margin-top: 4px;
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      BOTTONE                         /
 -----------------------------------------------------*/
 .btn-landing {
@@ -307,7 +372,7 @@
     transform: scale(1.03);
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      HOME CARDS                      /
 -----------------------------------------------------*/
 .home-intro {
@@ -330,15 +395,15 @@
 }
 
 .home-cards-section {
-    padding: 30px;
+    padding: 180px 30px 30px;
 }
 
 .home-cards-grid {
-    max-width: 900px;
+    max-width: 1100px;
     margin: auto;
     display: flex;
     gap: 16px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .home-card {
@@ -367,12 +432,13 @@
     font-size: 1.8rem;
 }
 
-.home-card-blu        { background: #1e3a5f; }
-.home-card-bluchiaro  { background: #2a5298; }
-.home-card-arancione  { background: #ea580c; }
-.home-card-grigio     { background: #4b5563; }
+.card-veicolo { background: #1d4ed8;}
+.card-problemi { background: #b91c1c;}
+.card-scadenze { background: #c2410c;}
+.card-prenotazioni { background: #15803d;}
+.card-recensioni { background: #7c3aed;}
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      BTN AGGIUNGI                    /
 -----------------------------------------------------*/
 .btn-aggiungi-container {
@@ -394,7 +460,7 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: #f97316;
+    background: #1d4ed8;
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -405,11 +471,29 @@
 }
 
 .btn-aggiungi:hover {
-    background: #ea580c;
+    background: #0044ff;
     transform: scale(1.1);
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
+/                      INFO VEICOLO                    /
+-----------------------------------------------------*/
+.btn-info-veicolo {
+    padding: 11px 28px;
+    font-size: 0.9rem;
+    align-self: center;
+}
+
+ /* ----------------------------------------------------
+/                    SEGNA PROBLEMI                    /
+-----------------------------------------------------*/
+.btn-problemi {
+    padding: 11px 28px;
+    font-size: 0.9rem;
+    align-self: center;
+}
+
+ /* ----------------------------------------------------
 /                      SCADENZE                        /
 -----------------------------------------------------*/
 .scadenze-grid {
@@ -424,7 +508,31 @@
 .scadenza-warn    { color: #f97316; }
 .scadenza-expired { color: #ef4444; }
 
-/* -----------------------------------------------------
+.btn-scadenze {
+    padding: 11px 28px;
+    font-size: 0.9rem;
+    align-self: center;
+}
+
+ /* ----------------------------------------------------
+/                      PRENOTAZIONI                    /
+-----------------------------------------------------*/
+.btn-prenotazioni {
+    padding: 11px 28px;
+    font-size: 0.9rem;
+    align-self: center;
+}
+
+ /* ----------------------------------------------------
+/                      RECENSIONI                      /
+-----------------------------------------------------*/
+.btn-recensioni {
+    padding: 11px 28px;
+    font-size: 0.9rem;
+    align-self: center;
+}
+
+ /* ----------------------------------------------------
 /                      BADGE TARGA                     /
 -----------------------------------------------------*/
 .badge-targa {
@@ -438,7 +546,7 @@
     letter-spacing: 1px;
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      STELLE                          /
 -----------------------------------------------------*/
 .stelle-container {
@@ -463,7 +571,7 @@
     color: #f97316;
 }
 
-/* -----------------------------------------------------
+ /* ----------------------------------------------------
 /                      RESPONSIVE                      /
 -----------------------------------------------------*/
 @media (scripting: none) {

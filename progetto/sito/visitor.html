@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUdrive — Visitatore</title>
+    <title>YouDrive — Visitatore</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-auth.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <script src="functions.js" defer></script>
+    <script src="functions-base.js" defer></script>
+    <script src="functions-auth.js" defer></script>
 </head>
 
 <body>
@@ -17,7 +18,7 @@
         <a href="landing.html" class="auth-back">
             <i class="fa-solid fa-arrow-left"></i> Torna indietro
         </a>
-        <div class="header-logo">YouDrive</div>
+        <div class="header-title">YouDrive</div>
         <div></div>
     </header>
 
@@ -27,9 +28,9 @@
     </section>
 
     <section class="section">
-        <div class="section-row-page">
+        <div class="section-row">
 
-            <div class="card">
+            <div class="card visitor-card">
                 <h3><i class="fa-solid fa-magnifying-glass"></i> Ricerca per Targa</h3>
                 <p>Inserisci la targa del veicolo che vuoi consultare.</p>
                 <div class="input-group">
@@ -37,7 +38,7 @@
                     <input type="text" id="input-targa-visitor" placeholder="Es. AA123BB" maxlength="7" id="input-targa">
                 </div>
                 <p id="targa-error" class="auth-error"></p>
-                <button class="btn-landing btn-landing-small" onclick="cercaVeicoloVisitatore()">
+                <button class="btn-landing btn-landing-visitor" onclick="cercaVeicoloVisitatore()">
                     <i class="fa-solid fa-search"></i> Cerca
                 </button>
             </div>
@@ -46,7 +47,7 @@
                 <h3><i class="fa-solid fa-circle-check"></i> Dati Veicolo</h3>
                 <div id="dati-veicolo-visitor"></div>
                 <p class="visitor-cta">Vuoi salvare questo veicolo e gestire scadenze e prenotazioni?</p>
-                <a href="register.html" class="btn-landing btn-landing-small">Registrati gratis</a>
+                <a href="register.html" class="btn-landing btn-landing-visitor">Registrati gratis</a>
             </div>
 
         </div>

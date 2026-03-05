@@ -3,18 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUdrive — Problemi</title>
+    <title>YouDrive — Problemi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-app.js" defer></script>
 </head>
 <body>
 
     <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <img src="img/logo.png" alt="logo" class="sidebar-logo-img">
-            <button class="sidebar-close" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button>
+            <span class="sidebar-brand">YouDrive</span>
+                <div class="hamburger9">
+                    <input type="checkbox" id="hamburger9-input">
+                    <label for="hamburger9-input" onclick="openMenu()">
+                        <div class="hamburger9-container">
+                            <span class="line line1"></span>
+                            <span class="line line2"></span>
+                            <span class="line line3"></span>
+                            <span class="line line4"></span>
+                        </div>
+                    </label>
+                </div>
         </div>
         <nav class="sidebar-nav">
             <a href="#"><i class="fa-solid fa-circle-info"></i> Info & Contatti</a>
@@ -24,15 +38,22 @@
         </nav>
     </div>
 
+
     <header class="header">
         <div class="header-left">
+            <button class="hamburger-btn" onclick="openMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+        <div class="header-center">
             <img src="img/logo.png" alt="logo" class="header-logo-img">
             <span class="header-brand">YouDrive</span>
-            <button class="hamburger-btn" onclick="openMenu()"><i class="fa-solid fa-bars"></i></button>
         </div>
         <div class="header-right">
-            <span class="header-nickname">nickname</span>
-            <div class="header-avatar"><i class="fa-solid fa-user"></i></div>
+            <span class="header-nickname" id="header-nickname">nickname</span>
+            <div class="header-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>
         </div>
     </header>
 
@@ -71,7 +92,7 @@
                     <i class="fa-solid fa-pen"></i>
                     <textarea placeholder="Descrivi il problema..." rows="4"></textarea>
                 </div>
-                <button class="btn-landing btn-landing-small">
+                <button class="btn-landing btn-problemi">
                     <i class="fa-solid fa-plus"></i> Aggiungi
                 </button>
             </div>
@@ -84,7 +105,7 @@
         </div>
     </section>
 
-    <footer class="footer">
+    <footer class="footer" id="footer">
         <p>© 2025 — YouDrive</p>
     </footer>
 

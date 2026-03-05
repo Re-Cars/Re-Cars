@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUdrive — Login</title>
+    <title>YouDrive — Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-auth.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <script src="functions.js" defer></script>
+    <script src="functions-base.js" defer></script>
+    <script src="functions-auth.js" defer></script>
 </head>
 
 <body class="auth-body">
@@ -36,7 +37,7 @@
                 <input type="password" id="login-password" placeholder="Password">
             </div>
             <p id="login-error" class="auth-error"></p>
-            <button class="btn-landing" onclick="login()">ACCEDI</button>
+            <button class="btn-landing btn-login" onclick="login()">ACCEDI</button>
         </div>
 
         <p class="auth-switch">Non hai un account? <a href="register.html">Registrati</a></p>
