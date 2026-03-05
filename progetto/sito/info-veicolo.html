@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUdrive — Recensioni</title>
+    <title>YOUdrive — Info Veicolo</title>
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -37,43 +37,27 @@
     </header>
 
     <section class="page-hero">
-        <h2 class="section-title-page">Recensioni</h2>
+        <h2 class="section-title-page">Info Veicolo</h2>
     </section>
 
     <section class="section">
         <div class="section-row">
 
             <div class="card">
-                <h3><i class="fa-solid fa-pen-to-square"></i> Lascia una Recensione</h3>
-                <p>Puoi recensire solo le officine dove hai prenotato.</p>
+                <h3><i class="fa-solid fa-plus"></i> Aggiungi Veicolo</h3>
+                <p>Inserisci la targa per cercare il tuo veicolo.</p>
                 <div class="input-group">
-                    <i class="fa-solid fa-wrench"></i>
-                    <select>
-                        <option value="">— Seleziona prenotazione —</option>
-                    </select>
-                </div>
-                <div class="stelle-container">
-                    <p>Voto:</p>
-                    <div class="stelle">
-                        <i class="fa-solid fa-star stella"></i>
-                        <i class="fa-solid fa-star stella"></i>
-                        <i class="fa-solid fa-star stella"></i>
-                        <i class="fa-solid fa-star stella"></i>
-                        <i class="fa-solid fa-star stella"></i>
-                    </div>
-                </div>
-                <div class="input-group input-group-textarea">
-                    <i class="fa-solid fa-comment"></i>
-                    <textarea placeholder="Scrivi la tua recensione..." rows="4"></textarea>
+                    <i class="fa-solid fa-car"></i>
+                    <input type="text" placeholder="Es. AA123BB" maxlength="7">
                 </div>
                 <button class="btn-landing btn-landing-small">
-                    <i class="fa-solid fa-paper-plane"></i> Invia Recensione
+                    <i class="fa-solid fa-magnifying-glass"></i> Cerca
                 </button>
             </div>
 
             <div class="card">
-                <h3><i class="fa-solid fa-star-half-stroke"></i> Le tue Recensioni</h3>
-                <p>Non hai ancora lasciato recensioni.</p>
+                <h3><i class="fa-solid fa-list"></i> I tuoi Veicoli Salvati</h3>
+                <p>Nessun veicolo aggiunto.</p>
             </div>
 
         </div>

@@ -1,83 +1,97 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouDrive — Home</title>
-    <link rel="stylesheet" href="style.css">
+    <title>YOUdrive — Home</title>
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="functions.js" defer></script>
 </head>
-<body>
 
+<body>
 
     <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <span class="sidebar-logo"><i class="fa-solid fa-car"></i> YouDrive</span>
-            <button class="sidebar-close" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button>
+            <img src="img/logo.png" alt="logo" class="sidebar-logo-img">
+            <button class="sidebar-close" onclick="closeMenu()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
         <nav class="sidebar-nav">
-            <a href="info.html"><i class="fa-solid fa-circle-info"></i> Info & Contatti</a>
-            <a href="#" onclick="downloadStoricoPDF()"><i class="fa-solid fa-file-pdf"></i> Scarica Storico Interventi</a>
-            <a href="veicoli.html"><i class="fa-solid fa-car"></i> I miei Veicoli</a>
-            <a href="scadenze.html"><i class="fa-solid fa-calendar-days"></i> Scadenze</a>
-            <a href="prenotazioni.html"><i class="fa-solid fa-wrench"></i> Prenotazioni</a>
-            <a href="recensioni.html"><i class="fa-solid fa-star"></i> Recensioni</a>
-            <a href="#" onclick="logout()" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <a href="#"><i class="fa-solid fa-circle-info"></i> Info & Contatti</a>
+            <a href="#"><i class="fa-solid fa-file-pdf"></i> Scarica Storico Interventi</a>
+            <a href="#"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+            <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
     </div>
 
-
     <header class="header">
-        <button class="hamburger-btn" onclick="openMenu()">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-        <div class="header-logo">
-            <i class="fa-solid fa-car"></i> YouDrive
+        <div class="header-left">
+            <img src="img/logo.png" alt="logo" class="header-logo-img">
+            <span class="header-brand">YOUdrive</span>
+            <button class="hamburger-btn" onclick="openMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </div>
-        <div class="header-user" id="header-user"></div>
+        <div class="header-right">
+            <span class="header-nickname">nickname</span>
+            <div class="header-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>
+        </div>
     </header>
 
-
-    <section class="hero">
-        <h1 class="hero-title">Bentornato!</h1>
-        <h4 class="hero-title" id="hero-username">Ciao, utente</h4>
+    <section class="home-intro">
+        <div class="home-intro-veicolo">
+            <div class="veicolo-dot"></div>
+            <span>veicolo?</span>
+        </div>
     </section>
-
 
     <section class="home-cards-section">
         <div class="home-cards-grid">
 
-            <a href="veicoli.html" class="card home-card">
-                <div class="card-icon"><i class="fa-solid fa-car-side"></i></div>
-                <h3>I miei Veicoli</h3>
-                <p>Inserisci la targa del tuo veicolo e visualizza tutti i dati completi.</p>
+            <a href="info-veicolo.html" class="home-card card-veicolo">
+                <i class="fa-solid fa-car"></i>
+                <span>INFO VEICOLO</span>
             </a>
 
-            <a href="scadenze.html" class="card home-card">
-                <div class="card-icon"><i class="fa-solid fa-calendar-check"></i></div>
-                <h3>Scadenze</h3>
-                <p>Tieni traccia di bollo, revisione e tagliando. Non dimenticare più nessuna scadenza.</p>
+            <a href="problemi.html" class="home-card card-problemi">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>SEGNA PROBLEMI</span>
             </a>
 
-            <a href="prenotazioni.html" class="card home-card">
-                <div class="card-icon"><i class="fa-solid fa-wrench"></i></div>
-                <h3>Prenota Officina</h3>
-                <p>Cerca officine vicino a te, scegli data e tipo di intervento e vedi il percorso sulla mappa.</p>
+            <a href="scadenze.html" class="home-card card-scadenze">
+                <i class="fa-solid fa-receipt"></i>
+                <span>SCADENZE PAGAMENTI</span>
             </a>
 
-            <a href="recensioni.html" class="card home-card">
-                <div class="card-icon"><i class="fa-solid fa-star"></i></div>
-                <h3>Recensioni</h3>
-                <p>Lascia una recensione per le officine che ti hanno assistito per le tue prenotazioni.</p>
+            <a href="prenotazioni.html" class="home-card card-prenotazioni">
+                <i class="fa-solid fa-wrench"></i>
+                <span>SOS + APPUNT. MECCANICO</span>
+            </a>
+
+            <a href="recensioni.html" class="home-card card-recensioni">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>SCADENZE CONTROLLI</span>
             </a>
 
         </div>
     </section>
 
-    <footer id="footer" class="footer">
+    <div class="btn-aggiungi-container">
+        <span class="btn-aggiungi-label">cerca e<br>aggiungi veicolo!</span>
+        <a href="veicoli.html" class="btn-aggiungi">
+            <i class="fa-solid fa-plus"></i>
+        </a>
+    </div>
+
+    <footer class="footer">
         <p>© 2025 — YouDrive</p>
     </footer>
 
