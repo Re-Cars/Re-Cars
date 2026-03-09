@@ -214,6 +214,29 @@
 }
 
  /* ----------------------------------------------------
+/                      BREADCRUMB                      /
+-----------------------------------------------------*/
+.breadcrumb {
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.4);
+    border-bottom: 1px solid rgba(249, 115, 22, 0.1);
+}
+
+.breadcrumb a {
+    color: #f97316;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.breadcrumb a:hover {
+    color: #ffffff;
+}
+
+ /* ----------------------------------------------------
 /                      PAGE HERO                       /
 -----------------------------------------------------*/
 .page-hero {
