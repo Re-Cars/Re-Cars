@@ -36,6 +36,10 @@
     animation: anim-colore 8s linear infinite;
 }
 
+.header-center a {
+    text-decoration: none;
+}
+
 @keyframes anim-colore {
     0%   { background-position: 0%; }
     100% { background-position: 300%; }
