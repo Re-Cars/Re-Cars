@@ -36,6 +36,10 @@
     animation: anim-colore 8s linear infinite;
 }
 
+.header-center a {
+    text-decoration: none;
+}
+
 @keyframes anim-colore {
     0%   { background-position: 0%; }
     100% { background-position: 300%; }
@@ -211,6 +215,29 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: anim-colore 8s linear infinite;
+}
+
+ /* ----------------------------------------------------
+/                      BREADCRUMB                      /
+-----------------------------------------------------*/
+.breadcrumb {
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.4);
+    border-bottom: 1px solid rgba(249, 115, 22, 0.1);
+}
+
+.breadcrumb a {
+    color: #f97316;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.breadcrumb a:hover {
+    color: #ffffff;
 }
 
  /* ----------------------------------------------------

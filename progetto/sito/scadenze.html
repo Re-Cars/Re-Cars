@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
 </head>
+
 <body>
 
     <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
@@ -18,17 +20,9 @@
         <div class="sidebar-header">
             <img src="img/logo.png" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">YouDrive</span>
-                <div class="hamburger9">
-                    <input type="checkbox" id="hamburger9-input">
-                    <label for="hamburger9-input" onclick="openMenu()">
-                        <div class="hamburger9-container">
-                            <span class="line line1"></span>
-                            <span class="line line2"></span>
-                            <span class="line line3"></span>
-                            <span class="line line4"></span>
-                        </div>
-                    </label>
-                </div>
+                <button class="sidebar-close" onclick="closeMenu()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
         <nav class="sidebar-nav">
             <a href="#"><i class="fa-solid fa-circle-info"></i> Info & Contatti</a>
@@ -41,9 +35,17 @@
 
     <header class="header">
         <div class="header-left">
-            <button class="hamburger-btn" onclick="openMenu()">
-                <i class="fa-solid fa-bars"></i>
-            </button>
+            <div class="hamburger9">
+                <input type="checkbox" id="hamburger9-input">
+                <label for="hamburger9-input">
+                    <div class="hamburger9-container">
+                        <span class="line line1"></span>
+                        <span class="line line2"></span>
+                        <span class="line line3"></span>
+                        <span class="line line4"></span>
+                    </div>
+                </label>
+            </div>
         </div>
         <div class="header-center">
             <img src="img/logo.png" alt="logo" class="header-logo-img">
@@ -56,6 +58,12 @@
             </div>
         </div>
     </header>
+
+    <div class="breadcrumb">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
+        <span>›</span>
+        <span>Info Veicolo</span>
+    </div>
 
     <section class="page-hero">
         <h2 class="section-title-page">Scadenze</h2>
