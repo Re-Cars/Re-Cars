@@ -11,6 +11,7 @@
     position: sticky;
     top: 0;
     z-index: 300;
+    min-height: 60px;
 }
 
 .header-left {
@@ -34,6 +35,15 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: anim-colore 8s linear infinite;
+}
+
+.header-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .header-center a {
@@ -72,7 +82,7 @@
 -----------------------------------------------------*/
 #hamburger9 {
     position: fixed;
-    top: 18px;
+    top: 30px;
     left: 20px;
     z-index: 500;
 }
