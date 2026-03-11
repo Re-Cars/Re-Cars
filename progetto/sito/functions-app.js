@@ -29,11 +29,13 @@ function toggleMenu() {
         overlay.classList.remove('open');
         hamburger.classList.remove('open');
         hamburger.style.left = '24px';
+        hamburger.style.top = '30px';
     } else {
         sidebar.classList.add('open');
         overlay.classList.add('open');
         hamburger.classList.add('open');
         hamburger.style.left = '225px';
+        hamburger.style.top = '18px';
     }
 }
 
@@ -42,6 +44,7 @@ function closeMenu() {
     document.getElementById('hamburger-overlay').classList.remove('open');
     document.getElementById('hamburger9').classList.remove('open');
     document.getElementById('hamburger9').style.left = '24px';
+    document.getElementById('hamburger9').style.top = '30px';
 }
  /* ----------------------------------------------------
 /                   LOGOUT                             /
