@@ -28,7 +28,7 @@ function toggleMenu() {
         sidebar.classList.remove('open');
         overlay.classList.remove('open');
         hamburger.classList.remove('open');
-        hamburger.style.left = '24px';
+        hamburger.style.left = '20px';
         hamburger.style.top = '30px';
     } else {
         sidebar.classList.add('open');
@@ -43,7 +43,7 @@ function closeMenu() {
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('hamburger-overlay').classList.remove('open');
     document.getElementById('hamburger9').classList.remove('open');
-    document.getElementById('hamburger9').style.left = '24px';
+    document.getElementById('hamburger9').style.left = '20px';
     document.getElementById('hamburger9').style.top = '30px';
 }
  /* ----------------------------------------------------
