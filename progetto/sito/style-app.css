@@ -406,13 +406,12 @@
 }
 
 .home-cards-section {
-    padding: 180px 30px 30px;
+    padding: 170px 30px 30px 30px;
 }
 
 .home-cards-grid {
-    max-width: 1100px;
-    margin: auto;
     display: flex;
+    justify-content: center;
     gap: 16px;
     flex-wrap: nowrap;
 }
