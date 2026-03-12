@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YOUdrive – Dati di Pagamento</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style_abb_pag.css">
+    <link rel="stylesheet" href="style-app.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-app.js" defer></script>
+</head>
+<body>
+
+<!-- NAVBAR -->
+ <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+        <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="img/logo.png" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">YouDrive</span>
+            <button class="sidebar-close" onclick="closeMenu()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#"><i class="fa-solid fa-circle-info"></i> Info & Contatti</a>
+            <a href="#"><i class="fa-solid fa-file-pdf"></i> Scarica Storico Interventi</a>
+            <a href="#"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+            <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </div>
+<header class="header">
+        <div class="header-left">
+            <div class="hamburger9">
+                <input type="checkbox" id="hamburger9-input">
+                <label for="hamburger9-input">
+                    <div class="hamburger9-container">
+                        <span class="line line1"></span>
+                        <span class="line line2"></span>
+                        <span class="line line3"></span>
+                        <span class="line line4"></span>
+                    </div>
+                </label>
+            </div>
+        </div>
+        <div class="header-center">
+            <img src="img/logo.png" alt="logo" class="header-logo-img">
+            <a href="homepage.html"><span class="header-brand">YouDrive</span></a>
+        </div>
+        <div class="header-right">
+            <span class="header-nickname" id="header-nickname">nickname</span>
+            <div class="header-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>
+        </div>
+    </header>
+<!-- MAIN -->
+<main>
+  <div class="breadcrumb">
+    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <a href="abbonamenti.html">Abbonamenti</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Dati di Pagamento</span>
+  </div>
+
+  <div class="payment-card">
+
+    <!-- ── BILLING FORM ── -->
+    <div class="billing-panel">
+      <h2 class="panel-title">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+        DATI DI FATTURAZIONE
+      </h2>
+
+      <div class="form-grid">
+
+        <div class="section-label">Intestatario</div>
+
+        <div class="form-group">
+          <label for="nome">Nome *</label>
+          <input type="text" id="nome" placeholder="Mario" autocomplete="given-name"/>
+          <span class="field-error" id="err-nome">Inserisci il nome</span>
+        </div>
+
+        <div class="form-group">
+          <label for="cognome">Cognome *</label>
+          <input type="text" id="cognome" placeholder="Rossi" autocomplete="family-name"/>
+          <span class="field-error" id="err-cognome">Inserisci il cognome</span>
+        </div>
+
+        <div class="form-group full">
+          <label for="email">Email *</label>
+          <input type="email" id="email" placeholder="mario.rossi@email.com" autocomplete="email"/>
+          <span class="field-error" id="err-email">Inserisci un'email valida</span>
+        </div>
+
+        <div class="form-group full">
+          <label for="indirizzo">Indirizzo di fatturazione *</label>
+          <input type="text" id="indirizzo" placeholder="Via Roma, 1" autocomplete="street-address"/>
+          <span class="field-error" id="err-indirizzo">Inserisci l'indirizzo</span>
+        </div>
+
+        <div class="form-group">
+          <label for="citta">Città *</label>
+          <input type="text" id="citta" placeholder="Roma" autocomplete="address-level2"/>
+          <span class="field-error" id="err-citta">Inserisci la città</span>
+        </div>
+
+        <div class="form-group">
+          <label for="cap">CAP *</label>
+          <input type="text" id="cap" placeholder="00100" maxlength="5" autocomplete="postal-code"/>
+          <span class="field-error" id="err-cap">CAP non valido</span>
+        </div>
+
+        <div class="form-group full">
+          <label for="cf">Codice Fiscale / P.IVA</label>
+          <input type="text" id="cf" placeholder="RSSMRA80A01H501U (opzionale)"/>
+        </div>
+
+        <div class="section-label">Dati Carta</div>
+
+        <div class="form-group full">
+          <label for="card-number">Numero Carta *</label>
+          <div class="card-input-wrap">
+            <input type="text" id="card-number" placeholder="1234 5678 9012 3456"
+                   maxlength="19" autocomplete="cc-number"
+                   oninput="formatCard(this)"/>
+            <img class="card-brand-icon" id="card-brand" src="" alt="" />
+          </div>
+          <span class="field-error" id="err-card">Numero carta non valido</span>
+        </div>
+
+        <div class="form-group">
+          <label for="expiry">Scadenza *</label>
+          <input type="text" id="expiry" placeholder="MM/AA" maxlength="5"
+                 autocomplete="cc-exp" oninput="formatExpiry(this)"/>
+          <span class="field-error" id="err-expiry">Data non valida</span>
+        </div>
+
+        <div class="form-group">
+          <label for="cvv">CVV *</label>
+          <input type="password" id="cvv" placeholder="•••" maxlength="4" autocomplete="cc-csc"/>
+          <span class="field-error" id="err-cvv">CVV non valido</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── SUMMARY PANEL ── -->
+    <div class="summary-panel">
+      <h2 class="plan-summary-title">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+        TIPO ABBONAMENTO
+      </h2>
+
+      <div class="plan-tag">
+        <svg viewBox="0 0 24 24"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/></svg>
+        <span id="plan-label">Piano Standard</span>
+      </div>
+
+      <div class="summary-rows">
+        <div class="summary-row">
+          <span class="label">Piano</span>
+          <span class="value" id="sum-piano">Standard</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Durata</span>
+          <span class="value">Mensile</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Rinnovo automatico</span>
+          <span class="value">Sì</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">IVA (22%)</span>
+          <span class="value" id="sum-iva">€ 0,00</span>
+        </div>
+        <hr class="summary-divider"/>
+      </div>
+
+      <div class="summary-total">
+        <span class="label">Totale oggi</span>
+        <span class="amount" id="sum-total">€ 0,00</span>
+      </div>
+
+      <div class="secure-badge">
+        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+        Pagamento sicuro e cifrato SSL
+      </div>
+
+      <button class="btn-pay" onclick="submitPagamento()">ABBONATI ORA</button>
+
+      <p class="terms-note">
+        Procedendo accetti i <a href="#">Termini di Servizio</a> e la 
+        <a href="#">Privacy Policy</a>. Puoi disdire in qualsiasi momento.
+      </p>
+    </div>
+  </div>
+</main>
+
+<!-- SUCCESS MODAL -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-modal">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+    </div>
+    <h2>Abbonamento Attivato!</h2>
+    <p>Il tuo piano <strong id="modal-plan"></strong> è stato attivato con successo. 
+    Riceverai una conferma via email.</p>
+    <button class="btn-back" onclick="window.location.href='abbonamenti.html'">Torna alla Dashboard</button>
+  </div>
+</div>
+
+<script>
+  // ── Read URL params ──
+  const params = new URLSearchParams(window.location.search);
+  const piano   = params.get('piano') || 'standard';
+  const prezzo  = parseFloat(params.get('prezzo') || '4.99');
+
+  const labels = { standard: 'Piano Standard', premium: 'Piano Premium' };
+  const nomi   = { standard: 'Standard', premium: 'Premium' };
+
+  document.getElementById('plan-label').textContent = labels[piano] || labels.standard;
+  document.getElementById('sum-piano').textContent  = nomi[piano]   || nomi.standard;
+
+  const iva    = +(prezzo * 0.08).toFixed(2);
+  const totale = +(prezzo + iva).toFixed(2);
+
+  document.getElementById('sum-iva').textContent   = '€ ' + iva.toFixed(2).replace('.', ',');
+  document.getElementById('sum-total').textContent = '€ ' + totale.toFixed(2).replace('.', ',');
+  document.getElementById('modal-plan').textContent = labels[piano] || labels.standard;
+
+  // ── Card number formatter ──
+  function formatCard(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = v.replace(/(.{4})/g, '$1 ').trim();
+  }
+
+  // ── Expiry formatter ──
+  function formatExpiry(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 4);
+    if (v.length >= 2) v = v.substring(0, 2) + '/' + v.substring(2);
+    input.value = v;
+  }
+
+  // ── Validation ──
+  function showErr(id, show) {
+    const el = document.getElementById('err-' + id);
+    const inp = document.getElementById(id === 'card' ? 'card-number' : id);
+    if (el)  el.classList.toggle('show', show);
+    if (inp) inp.classList.toggle('error', show);
+  }
+
+  function validate() {
+    let ok = true;
+
+    const req = ['nome', 'cognome', 'email', 'indirizzo', 'citta', 'cap'];
+    req.forEach(f => {
+      const val = document.getElementById(f).value.trim();
+      const empty = !val;
+      showErr(f, empty);
+      if (empty) ok = false;
+    });
+
+    // email format
+    const email = document.getElementById('email').value.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showErr('email', true); ok = false;
+    }
+
+    // CAP
+    const cap = document.getElementById('cap').value.trim();
+    if (cap && !/^\d{5}$/.test(cap)) {
+      showErr('cap', true); ok = false;
+    }
+
+    // Card number
+    const card = document.getElementById('card-number').value.replace(/\s/g, '');
+    if (card.length < 13) { showErr('card', true); ok = false; }
+    else showErr('card', false);
+
+    // Expiry
+    const exp = document.getElementById('expiry').value;
+    if (!/^\d{2}\/\d{2}$/.test(exp)) { showErr('expiry', true); ok = false; }
+    else showErr('expiry', false);
+
+    // CVV
+    const cvv = document.getElementById('cvv').value;
+    if (!/^\d{3,4}$/.test(cvv)) { showErr('cvv', true); ok = false; }
+    else showErr('cvv', false);
+
+    return ok;
+  }
+
+  function submitPagamento() {
+    if (!validate()) return;
+    document.getElementById('successOverlay').classList.add('show');
+  }
+</script>
+</body>
+</html>
