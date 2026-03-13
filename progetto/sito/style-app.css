@@ -30,8 +30,8 @@
     font-weight: 800;
     font-size: 2.5rem;
     letter-spacing: 1px;
-    background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);
-    background-size: 300%;
+    background: linear-gradient(90deg, #f97316, #ffffff, #ea580c, #ffffff, #f97316);
+    background-size: 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: anim-colore 8s linear infinite;
