@@ -1,0 +1,121 @@
+ /* ── TITOLI PAGINA ── */
+.sotto-title {
+  padding: 0 24px;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  font-size: 1.3rem;
+  color: var(--orange);
+}
+ 
+.page-sub {
+  padding: 0 24px;
+  margin-bottom: 40px;
+  color: var(--muted);
+  font-size: .95rem;
+}
+ 
+ 
+ /* ── ACCORDION VEICOLI ── */
+    .yd-accordion {
+      max-width: 860px;
+      margin: 40px auto;
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+ 
+    .yd-accordion-row {
+      border-bottom: 1px solid rgba(249, 115, 22, 0.15);
+    }
+ 
+    .yd-accordion-trigger {
+      width: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 20px 8px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-align: left;
+      color: #f0f0f0;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+ 
+    .yd-accordion-trigger:hover {
+      color: #f97316;
+    }
+ 
+    .yd-accordion-trigger .yd-dash {
+      color: #f97316;
+      font-weight: 700;
+      font-size: 1.2rem;
+      width: 16px;
+      flex-shrink: 0;
+    }
+ 
+    .yd-accordion-trigger .yd-label {
+      flex: 1;
+    }
+ 
+    .yd-accordion-trigger .yd-arrow {
+      color: rgba(255,255,255,0.3);
+      font-size: 0.8rem;
+      transition: transform 0.3s ease, color 0.2s;
+    }
+ 
+    .yd-accordion-trigger.yd-open .yd-arrow {
+      transform: rotate(180deg);
+      color: #f97316;
+    }
+ 
+    /* ── SOTTOMENU ── */
+    .yd-submenu {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      padding-left: 38px;
+      padding-bottom: 8px;
+    }
+ 
+    .yd-submenu.yd-open {
+      display: flex;
+    }
+ 
+    .yd-submenu-row {
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+ 
+    .yd-submenu-row a,
+    .yd-submenu-row button {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 8px;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.92rem;
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      width: 100%;
+      text-align: left;
+      transition: color 0.2s;
+    }
+ 
+    .yd-submenu-row a:hover,
+    .yd-submenu-row button:hover {
+      color: #f97316;
+    }
+ 
+    .yd-submenu-row .yd-sub-dash {
+      color: #f97316;
+      font-weight: 700;
+      width: 12px;
+      flex-shrink: 0;
+    }
