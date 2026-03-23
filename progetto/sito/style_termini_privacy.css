@@ -1,0 +1,40 @@
+
+
+.highlight{
+background:#232e43;
+padding:15px;
+border-left:4px solid #f97316;
+margin:20px 0;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+background:white;
+padding:40px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.termini_e_privacy h1{
+color:#1e2a38;
+border-bottom:3px solid #f97316;
+padding-bottom:10px;
+}
+
+.termini_e_privacy h2{
+margin-top:40px;
+color:#f97316;
+}
+
+.termini_e_privacy h3{
+margin-top:20px;
+color:#7f7e7e;
+}
+
+.termini_e_privacy p{
+margin:10px 0;
+}
+
+ul{
+margin-left:20px;
+}
