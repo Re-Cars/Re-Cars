@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+       <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouDrive — Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style_abbonamento.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-app.js" defer></script>
+</head>
+<body>
+
+    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="img/logo.png" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">YouDrive</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#"><i class="fa-solid fa-circle-info"></i> Info & Contatti</a>
+            <a href="#"><i class="fa-solid fa-file-pdf"></i> Scarica Storico Interventi</a>
+            <a href="#"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+            <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </div>
+
+    <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+        <span class="line line1"></span>
+        <span class="line line2"></span>
+        <span class="line line3"></span>
+        <span class="line line4"></span>
+    </div>
+
+    <header class="header">
+        <div class="header-left"></div>
+        <div class="header-center">
+            <img src="img/logo.png" alt="logo" class="header-logo-img">
+            <a href="homepage.html"><span class="header-brand">YouDrive</span></a>
+        </div>
+        <div class="header-right">
+            <span class="header-nickname" id="header-nickname">nickname</span>
+            <div class="header-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="breadcrumb">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
+        <span>›</span>
+        <span>Abbonamenti</span>
+    </div>
+
+    <!-- <section class="page-hero">
+       <h2 class="section-title-page">Abbonamenti</h2>
+    </section>-->
+
+  <h6 class="sotto-title">Scegli il tuo piano</h6>
+  <p class="page-sub">Gestisci i tuoi veicoli con il piano più adatto alle tue esigenze.</p>
+
+  <div class="plans-grid">
+
+    <!-- PIANO GRATUITO -->
+    <div class="plan-card">
+      <h2 class="plan-name">PIANO GRATUITO</h2>
+      <ul class="plan-features">
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Registrazione 2 veicoli
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Storico veicoli
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Servizio di notifica scadenze
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Annotazione problemi veicoli
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Ricerca meccanico
+        </li>
+        <li>
+          <svg class="icon icon-warn" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+          Pubblicità presente
+        </li>
+        <li>
+          <svg class="icon icon-x" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          Prenota e recencisci meccanico
+        </li>
+        <li>
+          <svg class="icon icon-x" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          Registrazione flotte
+        </li>
+      </ul>
+      <div class="plan-footer">
+        <div class="plan-price">Gratis</div>
+        <button class="btn-abbonati disabled" disabled>ATTIVO</button>
+      </div>
+      <p class="plan-note">Piano corrente</p>
+    </div>
+
+    <!-- PIANO STANDARD -->
+    <div class="plan-card featured">
+      <div class="plan-badge">Popolare</div>
+      <h2 class="plan-name">PIANO STANDARD</h2>
+      <ul class="plan-features">
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Registrazione 10 veicoli
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Storico veicoli
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Servizio di notifica scadenze
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Annotazione problemi veicoli
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Ricerca meccanico
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          0 pubblicità
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Prenota e recencisci meccanico
+        </li>
+        <li>
+          <svg class="icon icon-x" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          Registrazione flotte
+        </li>
+      </ul>
+      <div class="plan-footer">
+        <div class="plan-price">€ 4,99 <span>/mese</span></div>
+        <button class="btn-abbonati" onclick="goToPagamento('standard', '4.99')">ABBONATI</button>
+      </div>
+    </div>
+
+    <!-- PIANO PREMIUM -->
+    <div class="plan-card">
+      <h2 class="plan-name">PIANO PREMIUM</h2>
+      <ul class="plan-features">
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Registrazione flotte (illimitata)
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Storico veicoli
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Servizio di notifica scadenze
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Annotazione problemi veicoli
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Ricerca meccanico
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          0 pubblicità
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Prenota e recencisci meccanico
+        </li>
+        <li>
+          <svg class="icon icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Supporto prioritario dedicato
+        </li>
+      </ul>
+      <div class="plan-footer">
+        <div class="plan-price">€ 9,99 <span>/mese</span></div>
+        <button class="btn-abbonati" onclick="goToPagamento('premium', '9.99')">ABBONATI</button>
+      </div>
+    </div>
+
+  </div>
+
+
+    
+
+
+
+<footer class="footer" id="footer">
+        <p>© 2025 — YouDrive</p>
+</footer>
+<script>
+  function goToPagamento(piano, prezzo) {
+    const params = new URLSearchParams({ piano, prezzo });
+    window.location.href = `pagamento.html?${params.toString()}`;
+  }
+</script>
+</body>
+
+</html>

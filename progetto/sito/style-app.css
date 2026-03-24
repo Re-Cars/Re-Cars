@@ -10,7 +10,8 @@
     border-bottom: 1px solid rgba(249, 115, 22, 0.2);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 300;
+    min-height: 60px;
 }
 
 .header-left {
@@ -29,11 +30,20 @@
     font-weight: 800;
     font-size: 2.5rem;
     letter-spacing: 1px;
-    background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);
-    background-size: 300%;
+    background: linear-gradient(90deg, #f97316, #ffffff, #ea580c, #ffffff, #f97316);
+    background-size: 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: anim-colore 8s linear infinite;
+}
+
+.header-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .header-center a {
@@ -70,12 +80,11 @@
  /* ----------------------------------------------------
 /                      HAMBURGER                       /
 -----------------------------------------------------*/
-.hamburger-btn {
-    background: none;
-    border: none;
-    color: #f97316;
-    font-size: 1.3rem;
-    cursor: pointer;
+#hamburger9 {
+    position: fixed;
+    top: 30px;
+    left: 20px;
+    z-index: 500;
 }
 
 .hamburger-overlay {
@@ -90,16 +99,7 @@
     display: block;
 }
 
-#hamburger9-input {
-    display: none;
-}
-
 .hamburger9 {
-    display: flex;
-    width: 30px;
-}
-
-.hamburger9 div {
     position: relative;
     width: 30px;
     height: 30px;
@@ -121,18 +121,10 @@
 .hamburger9 .line3 { top: 13.5px; }
 .hamburger9 .line4 { bottom: 0; }
 
-.hamburger9 input:checked + label > .hamburger9-container > .line1 {
-    transform: translateX(40px) scale(0);
-}
-.hamburger9 input:checked + label > .hamburger9-container > .line2 {
-    transform: rotate(45deg) scale(1.2);
-}
-.hamburger9 input:checked + label > .hamburger9-container > .line3 {
-    transform: rotate(-45deg) scale(1.2);
-}
-.hamburger9 input:checked + label > .hamburger9-container > .line4 {
-    transform: translateX(-40px) scale(0);
-}
+.hamburger9.open .line1 { transform: translateX(40px) scale(0); }
+.hamburger9.open .line2 { transform: rotate(45deg) scale(1.2); }
+.hamburger9.open .line3 { transform: rotate(-45deg) scale(1.2); }
+.hamburger9.open .line4 { transform: translateX(-40px) scale(0); }
 
  /* ----------------------------------------------------
 /                      SIDEBAR                         /
@@ -144,7 +136,7 @@
     width: 280px;
     height: 100%;
     background: #0b0e26;
-    z-index: 300;
+    z-index: 400;
     display: flex;
     flex-direction: column;
     transition: left 0.3s ease;
@@ -158,7 +150,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px;
+    padding: 10px;
     border-bottom: 1px solid rgba(249, 115, 22, 0.2);
 }
 
@@ -166,14 +158,6 @@
     width: 40px;
     height: 40px;
     object-fit: contain;
-}
-
-.sidebar-close {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 1.2rem;
-    cursor: pointer;
 }
 
 .sidebar-nav {
@@ -422,13 +406,12 @@
 }
 
 .home-cards-section {
-    padding: 180px 30px 30px;
+    padding: 170px 30px 30px 30px;
 }
 
 .home-cards-grid {
-    max-width: 1100px;
-    margin: auto;
     display: flex;
+    justify-content: center;
     gap: 16px;
     flex-wrap: nowrap;
 }
