@@ -79,7 +79,16 @@ function logout() {
  /* ----------------------------------------------------
 /                   VISITATORE - CERCA VEICOLO         /
 -----------------------------------------------------*/
-
+window.addEventListener('scroll', () => {
+    const hint = document.querySelector('.scroll-hint');
+    if (!hint) return;
+    
+    if (window.scrollY > 320) {
+        hint.classList.add('hint-hidden');
+    } else {
+        hint.classList.remove('hint-hidden');
+    }
+});
 function cercaVeicoloVisitatore() {
     var input  = document.getElementById('input-targa-visitor').value.trim().toUpperCase();
     var errore = document.getElementById('targa-error');
