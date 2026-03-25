@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+       <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouDrive — Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-imp_v_e_info.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-app.js" defer></script>
+</head>
+<body>
+
+    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="img/logo.png" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">YouDrive</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#"><i class="fa-solid fa-circle-info"></i> Info & Contatti</a>
+            <a href="#"><i class="fa-solid fa-file-pdf"></i> Scarica Storico Interventi</a>
+            <a href="#"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+            <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </div>
+
+    <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+        <span class="line line1"></span>
+        <span class="line line2"></span>
+        <span class="line line3"></span>
+        <span class="line line4"></span>
+    </div>
+
+    <header class="header">
+        <div class="header-left"></div>
+        <div class="header-center">
+            <img src="img/logo.png" alt="logo" class="header-logo-img">
+            <a href="homepage.html"><span class="header-brand">YouDrive</span></a>
+        </div>
+        <div class="header-right">
+            <span class="header-nickname" id="header-nickname">nickname</span>
+            <div class="header-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="breadcrumb">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
+        <span>›</span> <span>Impostazioni</span> <span>›</span>
+        <span>I miei veicoli</span>
+    </div>
+
+  <h6 class="sotto-title">I miei veicoli</h6>
+  <p class="page-sub">di cosa hai bisogno?</p>
+
+ 
+  <section class="yd-accordion">
+ 
+    <!-- CERCA VEICOLO (link diretto) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="window.location.href='cerca-veicolo.html'">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Cerca veicolo</span>
+      </button>
+    </div>
+ 
+    <!-- CANCELLA VEICOLO (link diretto) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="window.location.href='cancella-veicolo.html'">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Cancella veicolo</span>
+      </button>
+    </div>
+ 
+    <!-- SCARICA PDF STORICO (con sottomenu) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Scarica PDF storico</span>
+        <i class="fa-solid fa-chevron-down yd-arrow"></i>
+      </button>
+      <div class="yd-submenu">
+        <div class="yd-submenu-row">
+          <a href="scarica-storico.html?tipo=tutti">
+            <span class="yd-sub-dash">-</span>
+            Scarica PDF storico tutti veicoli
+          </a>
+        </div>
+        <div class="yd-submenu-row">
+          <a href="scarica-storico.html?tipo=singolo">
+            <span class="yd-sub-dash">-</span>
+            Scarica PDF storico veicolo specifico
+          </a>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- SCARICA PDF PRENOTAZIONE (con sottomenu) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Scarica PDF prenotazione</span>
+        <i class="fa-solid fa-chevron-down yd-arrow"></i>
+      </button>
+      <div class="yd-submenu">
+        <div class="yd-submenu-row">
+          <a href="scarica-prenotazione.html?tipo=tutti">
+            <span class="yd-sub-dash">-</span>
+            Scarica PDF prenotazioni tutti veicoli
+          </a>
+        </div>
+        <div class="yd-submenu-row">
+          <a href="scarica-prenotazione.html?tipo=singolo">
+            <span class="yd-sub-dash">-</span>
+            Scarica PDF prenotazioni veicolo specifico
+          </a>
+        </div>
+      </div>
+    </div>
+ 
+  </section>
+
+  <footer class="footer" id="footer">
+        <p>© 2025 — YouDrive</p>
+</footer>
+<script>
+ function toggleYdSubmenu(btn) {
+      const submenu = btn.nextElementSibling;
+      const isOpen = submenu.classList.contains('yd-open');
+ 
+      // chiudi tutti gli altri sottomenu aperti
+      document.querySelectorAll('.yd-submenu.yd-open').forEach(s => s.classList.remove('yd-open'));
+      document.querySelectorAll('.yd-accordion-trigger.yd-open').forEach(b => b.classList.remove('yd-open'));
+ 
+      // apri o chiudi quello cliccato
+      if (!isOpen) {
+        submenu.classList.add('yd-open');
+        btn.classList.add('yd-open');
+      }
+    }
+</script>
+</body>
+
+</html>
