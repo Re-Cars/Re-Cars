@@ -6,8 +6,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(10, 14, 40, 0.95);
-    border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+    /*background: rgba(10, 14, 40, 0.95);*/
+    background:#0068a5;
+    /*border-bottom: 1px solid rgba(249, 115, 22, 0.2);*/
+    border-bottom: 1px solid #023350;
     position: sticky;
     top: 0;
     z-index: 300;
@@ -30,7 +32,8 @@
     font-weight: 800;
     font-size: 2.5rem;
     letter-spacing: 1px;
-    background: linear-gradient(90deg, #f97316, #ffffff, #ea580c, #ffffff, #f97316);
+    /*background: linear-gradient(90deg, #f97316, #ffffff, #ea580c, #ffffff, #f97316);*/
+    background:#ffffff;
     background-size: 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -77,6 +80,10 @@
     color: #ffffff;
 }
 
+.header-logo-img{
+    width: 50px;
+}
+
  /* ----------------------------------------------------
 /                      HAMBURGER                       /
 -----------------------------------------------------*/
@@ -112,6 +119,7 @@
     width: 30px;
     height: 3px;
     border-radius: 5px;
+    /*background-color: #f97316;*/
     background-color: #f97316;
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
@@ -135,7 +143,8 @@
     left: -280px;
     width: 280px;
     height: 100%;
-    background: #0b0e26;
+    /*background: #0b0e26;*/
+    background: #ededed;
     z-index: 400;
     display: flex;
     flex-direction: column;
@@ -151,7 +160,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px;
-    border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+    /*border-bottom: 1px solid rgba(249, 115, 22, 0.2);*/
+    border-bottom: 1px solid rgb(240, 106, 10);
 }
 
 .sidebar-logo-img {
@@ -168,7 +178,8 @@
 }
 
 .sidebar-nav a {
-    color: rgba(255, 255, 255, 0.7);
+    /*color: rgba(255, 255, 255, 0.7);*/
+    color:#434343;
     text-decoration: none;
     padding: 12px 16px;
     border-radius: 10px;
@@ -186,7 +197,9 @@
 
 .sidebar-logout {
     margin-top: auto;
-    color: #ff6b6b !important;
+    /*color: #ff6b6b !important;*/
+    color: #eb2020 !important;
+
 }
 
 .sidebar-brand {
@@ -194,7 +207,8 @@
     font-size: 1.8rem;
     flex: 1;
     margin-left: 8px;
-    background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);
+    /*background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);*/
+    background: #2b88b8;
     background-size: 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -221,7 +235,12 @@
 }
 
 .breadcrumb a:hover {
-    color: #ffffff;
+    /*color: #ffffff;*/
+    color:#c2410c;
+}
+
+.breadcrumb span {
+    color:#08080877;
 }
 
  /* ----------------------------------------------------
@@ -267,7 +286,8 @@
 -----------------------------------------------------*/
 .card {
     padding: 30px;
-    background: rgba(17, 22, 61, 0.85);
+   /* background: rgba(17, 22, 61, 0.85);*/
+   background:#f0f0f2;
     border-radius: 18px;
     box-shadow: 0 0 25px rgba(249, 115, 22, 0.15);
     border: 1px solid rgba(249, 115, 22, 0.2);
@@ -291,19 +311,22 @@
 .card h3 {
     margin: 0;
     font-size: 1.1rem;
-    color: #ffffff;
+    /*color: #ffffff;*/
+    color:#f26f21
 }
 
 .card p {
     margin: 0;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.6);
+    /*color: rgba(255, 255, 255, 0.6);*/
+    color:#141414
 }
 
 .card-icon {
     font-size: 2rem;
     color: #f97316;
 }
+
 
  /* ----------------------------------------------------
 /                      INPUT                           /
@@ -312,8 +335,10 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+   /* background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.15);*/
+    background: #d3d3d3;
+    border: 1px solid rgba(0, 0, 0, 0.067);
     border-radius: 10px;
     padding: 10px 14px;
     transition: 0.3s;
@@ -336,7 +361,8 @@
     background: none;
     border: none;
     outline: none;
-    color: #f0f0f0;
+    /*color: #f0f0f0;*/
+    color:#141414;
     font-size: 0.95rem;
     font-family: inherit;
 }
@@ -442,11 +468,16 @@
     font-size: 1.8rem;
 }
 
-.card-veicolo { background: #1d4ed8;}
+/*.card-veicolo { background: #1d4ed8;}
 .card-problemi { background: #b91c1c;}
 .card-scadenze { background: #c2410c;}
 .card-prenotazioni { background: #15803d;}
-.card-recensioni { background: #7c3aed;}
+.card-recensioni { background: #7c3aed;}*/
+.card-veicolo { background: #2b88b8;}
+.card-problemi { background: #d14019;}
+.card-scadenze { background: #f26f21;}
+.card-prenotazioni { background: #f39c12;}
+.card-recensioni { background: #8e44ad;}
 
  /* ----------------------------------------------------
 /                      BTN AGGIUNGI                    /
@@ -460,7 +491,8 @@
 }
 
 .btn-aggiungi-label {
-    color: rgba(255, 255, 255, 0.6);
+    /*color: rgba(255, 255, 255, 0.6);*/
+    color:#434343;
     font-size: 0.9rem;
     text-align: right;
     font-style: italic;
@@ -470,8 +502,10 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: #1d4ed8;
-    color: #ffffff;
+    /*background: #1d4ed8;
+    color: #ffffff;*/
+    background: #f26f21;
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -481,7 +515,8 @@
 }
 
 .btn-aggiungi:hover {
-    background: #0044ff;
+    /*background: #0044ff;*/
+     background: #df470b;
     transform: scale(1.1);
 }
 
@@ -609,3 +644,199 @@
         height: 140px;
     }
 }
+
+    /* ----------------------------------------------------
+        /      VEICOLO SWITCHER - agg ad style app        /
+        -----------------------------------------------------*/
+            .home-intro {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 20px 30px 0;
+                position: relative;  
+            }
+
+            .veicolo-switcher {
+                position: relative;
+            }
+
+            .switcher-btn {
+                background: rgba(249, 115, 22, 0.15);
+                border: 1px solid rgba(249, 115, 22, 0.4);
+                color: #f97316;
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 700;
+                font-family: inherit;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: 0.3s;
+            }
+
+            .switcher-btn:hover {
+                background: rgba(249, 115, 22, 0.25);
+            }
+
+            .switcher-btn i {
+                transition: transform 0.3s;
+            }
+
+            .switcher-btn.open i {
+                transform: rotate(180deg);
+            }
+
+            .switcher-dropdown {
+                display: none;
+                position: absolute;
+                top: calc(100% + 8px);
+                right: 0;
+                background: #ebebec;
+                border: 1px solid rgba(249, 115, 22, 0.3);
+                border-radius: 14px;
+                padding: 8px;
+                min-width: 220px;
+                z-index: 100;
+                box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .switcher-dropdown.open {
+                display: flex;
+            }
+
+            .switcher-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 14px;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: 0.2s;
+                color: rgba(239, 129, 12, 0.7);
+                font-size: 0.9rem;
+                border: none;
+                background: none;
+                width: 100%;
+                text-align: left;
+                font-family: inherit;
+            }
+
+            .switcher-item:hover {
+                background: rgba(249, 115, 22, 0.1);
+                color: #0f0e0e;
+            }
+
+            .switcher-item.attivo {
+                background: rgba(249, 115, 22, 0.15);
+                color: #f97316;
+                font-weight: 700;
+            }
+
+            .switcher-item i {
+                color: #f97316;
+                width: 16px;
+            }
+
+            .switcher-item .item-targa {
+                margin-left: auto;
+                background: rgba(249, 115, 22, 0.2);
+                border: 1px solid #f97316;
+                color: #f97316;
+                padding: 1px 8px;
+                border-radius: 5px;
+                font-size: 0.75rem;
+                font-weight: 700;
+                letter-spacing: 1px;
+            }
+
+            .switcher-aggiungi {
+                border-top: 1px solid rgba(249, 115, 22, 0.15);
+                margin-top: 4px;
+                padding-top: 4px;
+            }
+
+            /* ----------------------------------------------------
+            /                   AVATAR DROPDOWN                  /
+            -----------------------------------------------------*/
+            .header-avatar-wrapper {
+                position: relative;
+                cursor: pointer;
+            }
+
+            .avatar-dropdown {
+                display: none;
+                position: absolute;
+                top: calc(100% + 10px);
+                right: 0;
+                /*background: #0b0e26;*/
+                background:#ebeaea;
+                border: 1px solid rgba(249, 115, 22, 0.3);
+                border-radius: 14px;
+                padding: 8px;
+                min-width: 190px;
+                z-index: 350;
+                box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .avatar-dropdown.open {
+                display: flex;
+            }
+
+            .avatar-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 14px;
+                border-radius: 10px;
+                color: rgba(20, 20, 20, 0.7);
+                text-decoration: none;
+                font-size: 0.9rem;
+                transition: 0.2s;
+            }
+
+            .avatar-item:hover {
+                background: rgba(249, 115, 22, 0.1);
+                color: #434343;
+            }
+
+            .avatar-item i {
+                color: #f97316;
+                width: 14px;
+            }
+
+            .avatar-item-logout {
+                border-top: 1px solid rgba(249, 115, 22, 0.15);
+                margin-top: 4px;
+                padding-top: 14px;
+                color: #ff6b6b !important;
+            }
+
+            .avatar-item-logout i {
+                color: #ff6b6b !important;
+            }
+
+            .avatar-item-logout:hover {
+                background: rgba(255, 107, 107, 0.1) !important;
+            }
+
+            .avatar-header {
+                padding: 10px 14px 12px;
+                border-bottom: 1px solid rgba(249, 115, 22, 0.15);
+                margin-bottom: 4px;
+            }
+
+            .avatar-header-name {
+                font-size: 0.9rem;
+                color: rgba(29, 29, 29, 0.885);
+            }
+
+            .avatar-header-name span {
+                color: #f97316;
+                font-weight: 700;
+            }

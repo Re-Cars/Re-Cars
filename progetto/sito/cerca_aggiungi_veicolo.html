@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RE|CARS — Home</title>
+    <title>YouDrive — Visitatore</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
@@ -75,61 +75,45 @@
         </div>
     </header>
 
-    <section class="home-intro">
-            <div class="home-intro-veicolo">
-                <div class="veicolo-dot"></div>
-                <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
-            </div>
-            <div class="veicolo-switcher" id="veicolo-switcher">
-                <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
-                    <span id="switcher-label">[ 1 - ... ]</span>
-                    <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
-                </button>
-                <div class="switcher-dropdown" id="switcher-dropdown">
-                    <!-- popolato da JS -->
-                </div>
-            </div>
+     <div class="breadcrumb">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
+        <span>›</span>
+        <span>Cerca Veicolo</span>
+    </div>
+
+
+    <section class="page-hero">
+        <h2 class="section-title-page">Cerca Veicolo</h2>
+        <p class="page-hero-sub">Inserisci una targa per visualizzare i dati del veicolo</p>
     </section>
 
-    <section class="home-cards-section">
-        <div class="home-cards-grid">
+    <section class="section">
+        <div class="section-row">
 
-            <a href="info-veicolo.html" class="home-card card-veicolo">
-                <i class="fa-solid fa-car"></i>
-                <span>INFO VEICOLO</span>
-            </a>
+            <div class="card visitor-card">
+                <h3><i class="fa-solid fa-magnifying-glass"></i> Ricerca per Targa</h3>
+                <p>Inserisci la targa del veicolo che vuoi consultare.</p>
+                <div class="input-group">
+                    <i class="fa-solid fa-car"></i>
+                    <input type="text" id="input-targa-visitor" placeholder="Es. AA123BB" maxlength="7" id="input-targa">
+                </div>
+                <p id="targa-error" class="auth-error"></p>
+                <button class="btn-landing btn-visitor" onclick="cercaVeicoloVisitatore()">
+                    <i class="fa-solid fa-search"></i> Cerca
+                </button>
+            </div>
 
-            <a href="problemi.html" class="home-card card-problemi">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <span>SEGNA PROBLEMI</span>
-            </a>
-
-            <a href="scadenze.html" class="home-card card-scadenze">
-                <i class="fa-solid fa-receipt"></i>
-                <span>SCADENZE</span>
-            </a>
-
-            <a href="prenotazioni.html" class="home-card card-prenotazioni">
-                <i class="fa-solid fa-wrench"></i>
-                <span>PRENOTA APPUNTAMENTO</span>
-            </a>
-
-            <a href="recensioni.html" class="home-card card-recensioni">
-                <i class="fa-solid fa-calendar-check"></i>
-                <span>RECENSIONI</span>
-            </a>
+            <div class="card hidden" id="card-dati-veicolo-visitor">
+                <h3><i class="fa-solid fa-circle-check"></i> Dati Veicolo</h3>
+                <div id="dati-veicolo-visitor"></div>
+                <p class="visitor-cta">Vuoi salvare questo veicolo e gestire scadenze e prenotazioni?</p>
+                <a href="register.html" class="btn-landing btn-landing-visitor">Registrati gratis</a>
+            </div>
 
         </div>
     </section>
 
-    <div class="btn-aggiungi-container">
-        <span class="btn-aggiungi-label">cerca e<br>aggiungi veicolo!</span>
-        <a href="info-veicolo.html" class="btn-aggiungi">
-            <i class="fa-solid fa-plus"></i>
-        </a>
-    </div>
-
-    <footer class="footer" id="footer">
+    <footer class="footer">
         <p>© 2025 — YouDrive</p>
     </footer>
 
