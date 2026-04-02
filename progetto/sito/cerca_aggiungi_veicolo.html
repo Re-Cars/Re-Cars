@@ -78,37 +78,34 @@
      <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
         <span>›</span>
-        <span>Cerca Veicolo</span>
+        <span>Cerca e Aggiungi Veicolo</span>
     </div>
 
 
-    <section class="page-hero">
-        <h2 class="section-title-page">Cerca Veicolo</h2>
-        <p class="page-hero-sub">Inserisci una targa per visualizzare i dati del veicolo</p>
+
+<section class="page-hero">
+        <h2 class="section-title-page">Cerca e Aggiungi Veicolo</h2>
     </section>
 
     <section class="section">
         <div class="section-row">
 
-            <div class="card visitor-card">
-                <h3><i class="fa-solid fa-magnifying-glass"></i> Ricerca per Targa</h3>
-                <p>Inserisci la targa del veicolo che vuoi consultare.</p>
+            <div class="card">
+                <h3><i class="fa-solid fa-plus"></i> Aggiungi Veicolo</h3>
+                <p>Inserisci la targa per cercare il tuo veicolo.</p>
                 <div class="input-group">
                     <i class="fa-solid fa-car"></i>
-                    <input type="text" id="input-targa-visitor" placeholder="Es. AA123BB" maxlength="7" id="input-targa">
+                    <input type="text" placeholder="Es. AA123BB" maxlength="7">
                 </div>
-                <p id="targa-error" class="auth-error"></p>
-                <button class="btn-landing btn-visitor" onclick="cercaVeicoloVisitatore()">
-                    <i class="fa-solid fa-search"></i> Cerca
+                <button class="btn-landing btn-info-veicolo">
+                    <i class="fa-solid fa-magnifying-glass"></i> Cerca
                 </button>
             </div>
 
-            <div class="card hidden" id="card-dati-veicolo-visitor">
-                <h3><i class="fa-solid fa-circle-check"></i> Dati Veicolo</h3>
-                <div id="dati-veicolo-visitor"></div>
-                <p class="visitor-cta">Vuoi salvare questo veicolo e gestire scadenze e prenotazioni?</p>
-                <a href="register.html" class="btn-landing btn-landing-visitor">Registrati gratis</a>
-            </div>
+        <!-- <div class="card">
+                <h3><i class="fa-solid fa-list"></i> I tuoi Veicoli Salvati</h3>
+                <p>Nessun veicolo aggiunto.</p> 
+            </div>-->
 
         </div>
     </section>
