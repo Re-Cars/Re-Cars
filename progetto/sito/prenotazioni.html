@@ -14,20 +14,24 @@
 
 <body>
 
-    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+   <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="img/logo.png" alt="logo" class="sidebar-logo-img">
-            <span class="sidebar-brand">YouDrive</span>
+            <img src="RECAR/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">RE<span>|</span>CARS</span>
         </div>
         <nav class="sidebar-nav">
-            <a href="#"><i class="fa-solid fa-circle-info"></i> Info & Contatti</a>
-            <a href="#"><i class="fa-solid fa-file-pdf"></i> Scarica Storico Interventi</a>
-            <a href="#"><i class="fa-solid fa-gear"></i> Impostazioni</a>
-            <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-        </nav>
-    </div>
+      <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+      <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
+      <a href="impostazioni-html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+      <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
+      <a href="infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+      <a href="#"><i class="fa-solid fa-envelope"></i> Contatti</a>
+       <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+      <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </nav>
+  </div>
 
     <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
         <span class="line line1"></span>
@@ -39,14 +43,35 @@
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="img/logo.png" alt="logo" class="header-logo-img">
-            <a href="homepage.html"><span class="header-brand">YouDrive</span></a>
+            <img src="RECAR/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
+           <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
-            <span class="header-nickname" id="header-nickname">nickname</span>
+           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
             <div class="header-avatar">
                 <i class="fa-solid fa-user"></i>
-            </div>
+            </div>   -->
+
+               <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                    <div class="header-avatar"> 
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="avatar-dropdown" id="avatar-dropdown">
+                            <div class="avatar-header">
+                                <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name">nickname</span></p>
+                            </div>                
+                            <a href="il_mio_account.html" class="avatar-item">
+                            <i class="fa-solid fa-pen"></i>
+                            <span>Modifica profilo</span>
+                        </a>
+                        <a href="landing.html" class="avatar-item avatar-item-logout">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+
+            
         </div>
     </header>
 
