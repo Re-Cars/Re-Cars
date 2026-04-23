@@ -37,3 +37,11 @@ footer {
 .hidden {
     display: none !important;
 }
+
+/*-------------------------------------------------
+/                               wrapper
+--------------------------------------------------*/
+.page-wrapper {
+    flex: 1;
+    overflow-y: auto;
+}
