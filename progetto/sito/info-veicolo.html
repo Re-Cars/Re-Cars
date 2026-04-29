@@ -10,6 +10,223 @@
     <link rel="stylesheet" href="style-app.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
+
+<style>
+.info-veicolo-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px 24px 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+ 
+        /* Blocco singolo (header blu + tabella) */
+        .iv-block {}
+ 
+        .iv-block-header {
+            background: #2b9fd4;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 10px 18px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+ 
+        .iv-block-header .iv-aggiornamento {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+ 
+        .iv-block-header .iv-aggiornamento i {
+            color: #f97316;
+            font-size: 1rem;
+        }
+ 
+        /* Tabella desktop — una riga con N colonne */
+        .iv-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #d0d0d0;
+            border-top: none;
+            background: #fff;
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+        }
+ 
+        .iv-table thead th {
+            border: 1px solid #d0d0d0;
+            padding: 10px 14px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-align: center;
+            color: #191919;
+            background: #f9f9f9;
+            letter-spacing: 0.5px;
+        }
+ 
+        .iv-table tbody td {
+            border: 1px solid #d0d0d0;
+            padding: 14px;
+            font-size: 0.88rem;
+            text-align: center;
+            color: #333;
+            min-height: 36px;
+        }
+ 
+        /* Tabella spese di mantenimento */
+        .iv-table-maint tbody tr {
+            border-bottom: 1px solid #e5e5e5;
+        }
+ 
+        .iv-table-maint tbody td {
+            text-align: left;
+            vertical-align: middle;
+        }
+ 
+        .iv-table-maint .cell-label {
+            font-weight: 700;
+            font-size: 0.82rem;
+            width: 130px;
+            letter-spacing: 0.5px;
+        }
+ 
+        .iv-table-maint .cell-val {
+            color: #555;
+            font-size: 0.83rem;
+        }
+ 
+        .iv-table-maint .cell-info {
+            color: #555;
+            font-size: 0.83rem;
+        }
+ 
+        .iv-table-maint .cell-info i {
+            color: #2b9fd4;
+            margin-left: 4px;
+        }
+ 
+        .iv-table-maint .cell-status {
+            font-weight: 700;
+            font-size: 0.83rem;
+        }
+ 
+        .status-attivo   { color: #22c55e; }
+        .status-scadenza { color: #ef4444; }
+        .status-warn     { color: #f97316; }
+ 
+        /* =============================================
+           RESPONSIVE — tablet (≤ 768px)
+           2 colonne affiancate nell header + dati
+        ============================================= */
+        @media (max-width: 768px) {
+ 
+            .iv-table {
+                display: none; /* nasconde la tabella classica */
+            }
+ 
+            /* Card-grid per le prime 2 sezioni */
+            .iv-mobile-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                border: 1px solid #d0d0d0;
+                border-top: none;
+                background: #fff;
+                border-radius: 0 0 8px 8px;
+                overflow: hidden;
+            }
+ 
+            .iv-mobile-grid.single-col {
+                grid-template-columns: 1fr;
+            }
+ 
+            .iv-mobile-cell {
+                border: 1px solid #d0d0d0;
+                padding: 10px 12px;
+            }
+ 
+            .iv-mobile-cell .cell-head {
+                font-size: 0.72rem;
+                font-weight: 700;
+                color: #555;
+                letter-spacing: 0.5px;
+                margin-bottom: 6px;
+            }
+ 
+            .iv-mobile-cell .cell-body {
+                font-size: 0.88rem;
+                color: #191919;
+                min-height: 28px;
+            }
+ 
+            /* Tabella manutenzione mobile: colonna singola */
+            .iv-table-maint-mobile {
+                display: flex;
+                flex-direction: column;
+                border: 1px solid #d0d0d0;
+                border-top: none;
+                background: #fff;
+                border-radius: 0 0 8px 8px;
+                overflow: hidden;
+            }
+ 
+            .iv-maint-row {
+                display: grid;
+                grid-template-columns: 110px 1fr;
+                border-bottom: 1px solid #e5e5e5;
+                padding: 10px 12px;
+                gap: 8px;
+                align-items: center;
+            }
+ 
+            .iv-maint-row:last-child {
+                border-bottom: none;
+            }
+ 
+            .iv-maint-label {
+                font-weight: 700;
+                font-size: 0.8rem;
+                letter-spacing: 0.5px;
+            }
+ 
+            .iv-maint-details {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+ 
+            .iv-maint-details .val { font-size: 0.82rem; color: #555; }
+            .iv-maint-details .info { font-size: 0.82rem; color: #555; }
+            .iv-maint-details .info i { color: #2b9fd4; margin-left: 4px; }
+            .iv-maint-details .status { font-size: 0.82rem; font-weight: 700; }
+        }
+ 
+        /* =============================================
+           RESPONSIVE — mobile stretto (≤ 480px)
+           Tutto a colonna singola
+        ============================================= */
+        @media (max-width: 480px) {
+            .iv-mobile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+ 
+        /* Nascondi elementi mobile su desktop */
+        @media (min-width: 769px) {
+            .iv-mobile-grid,
+            .iv-table-maint-mobile {
+                display: none;
+            }
+        }
+</style>
+
 </head>
 
 <body>
@@ -75,39 +292,220 @@
         </div>
     </header>
 
-    <div class="breadcrumb">
+   <!----> <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
         <span>›</span>
         <span>Info Veicolo</span>
     </div>
-
-    <section class="page-hero">
-        <h2 class="section-title-page">Info Veicolo</h2>
-        <a>Scheda profilo del veicolo</a>
+        <section class="home-intro">
+            <div class="home-intro-veicolo">
+                <div class="veicolo-dot"></div>
+                <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
+            </div>
+            <div class="veicolo-switcher" id="veicolo-switcher">
+                <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                    <span id="switcher-label">[ 1 - ... ]</span>
+                    <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+                </button>
+                <div class="switcher-dropdown" id="switcher-dropdown">
+                    <!-- popolato da JS -->
+                </div>
+            </div>
     </section>
 
-     <!--<section class="section">
-        <div class="section-row">
+    <!--<section class="page-hero">
+        <h2 class="section-title-page">Info Veicolo</h2>
+        <a>Scheda profilo del veicolo</a>
+    </section>-->
 
-            <div class="card">
-                <h3><i class="fa-solid fa-plus"></i> Aggiungi Veicolo</h3>
-                <p>Inserisci la targa per cercare il tuo veicolo.</p>
-                <div class="input-group">
-                    <i class="fa-solid fa-car"></i>
-                    <input type="text" placeholder="Es. AA123BB" maxlength="7">
-                </div>
-                <button class="btn-landing btn-info-veicolo">
-                    <i class="fa-solid fa-magnifying-glass"></i> Cerca
-                </button>
+       <div class="info-veicolo-wrapper">
+ 
+        <!-- BLOCCO 1: Info generali -->
+        <div class="iv-block">
+            <div class="iv-block-header">
+                INFO VEICOLO — generali
             </div>
-
-        <div class="card">
-                <h3><i class="fa-solid fa-list"></i> I tuoi Veicoli Salvati</h3>
-                <p>Nessun veicolo aggiunto.</p> 
-            </div>-->
+ 
+            <!-- Desktop: una riga con 5 colonne -->
+            <table class="iv-table">
+                <thead>
+                    <tr>
+                        <th>TIPO VEICOLO</th>
+                        <th>TARGA</th>
+                        <th>MARCA</th>
+                        <th>MODELLO</th>
+                        <th>PROPRIETARIO VEICOLO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="gen-tipo"></td>
+                        <td id="gen-targa"></td>
+                        <td id="gen-marca"></td>
+                        <td id="gen-modello"></td>
+                        <td id="gen-proprietario"></td>
+                    </tr>
+                </tbody>
+            </table>
+ 
+            <!-- Tablet/Mobile: griglia 2 colonne -->
+            <div class="iv-mobile-grid">
+                <div class="iv-mobile-cell">
+                    <div class="cell-head">TIPO VEICOLO</div>
+                    <div class="cell-body" id="gen-tipo-m"></div>
+                </div>
+                <div class="iv-mobile-cell">
+                    <div class="cell-head">TARGA</div>
+                    <div class="cell-body" id="gen-targa-m"></div>
+                </div>
+                <div class="iv-mobile-cell">
+                    <div class="cell-head">MARCA</div>
+                    <div class="cell-body" id="gen-marca-m"></div>
+                </div>
+                <div class="iv-mobile-cell">
+                    <div class="cell-head">MODELLO</div>
+                    <div class="cell-body" id="gen-modello-m"></div>
+                </div>
+                <div class="iv-mobile-cell" style="grid-column: span 2;">
+                    <div class="cell-head">PROPRIETARIO VEICOLO</div>
+                    <div class="cell-body" id="gen-proprietario-m"></div>
+                </div>
+            </div>
+        </div>
+ 
+        <!-- BLOCCO 2: Caratteristiche specifiche -->
+        <div class="iv-block">
+            <div class="iv-block-header">
+                INFO VEICOLO — caratteristiche specifiche
+            </div>
+ 
+            <!-- Desktop -->
+            <table class="iv-table">
+                <thead>
+                    <tr>
+                        <th>CAVALLI</th>
+                        <th>NUMERO PORTE</th>
+                        <th>ALIMENTAZIONE</th>
+                        <th>CILINDRATA</th>
+                        <th>COLORE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="spec-cavalli"></td>
+                        <td id="spec-porte"></td>
+                        <td id="spec-alim"></td>
+                        <td id="spec-cilindrata"></td>
+                        <td id="spec-colore"></td>
+                    </tr>
+                </tbody>
+            </table>
+ 
+            <!-- Tablet/Mobile: 2 colonne poi colore da solo -->
+            <div class="iv-mobile-grid">
+                <div class="iv-mobile-cell">
+                    <div class="cell-head">CAVALLI</div>
+                    <div class="cell-body" id="spec-cavalli-m"></div>
+                </div>
+                <div class="iv-mobile-cell">
+                    <div class="cell-head">NUMERO PORTE</div>
+                    <div class="cell-body" id="spec-porte-m"></div>
+                </div>
+                <div class="iv-mobile-cell">
+                    <div class="cell-head">ALIMENTAZIONE</div>
+                    <div class="cell-body" id="spec-alim-m"></div>
+                </div>
+                <div class="iv-mobile-cell">
+                    <div class="cell-head">CILINDRATA</div>
+                    <div class="cell-body" id="spec-cilindrata-m"></div>
+                </div>
+                <div class="iv-mobile-cell" style="grid-column: span 2;">
+                    <div class="cell-head">COLORE</div>
+                    <div class="cell-body" id="spec-colore-m"></div>
+                </div>
+            </div>
+        </div>
+ 
+        <!-- BLOCCO 3: Spese di mantenimento ordinario -->
+        <div class="iv-block">
+            <div class="iv-block-header">
+                INFO VEICOLO — spese di mantenimento ordinario
+                <span class="iv-aggiornamento">
+                    aggiornamento
+                    <i class="fa-solid fa-rotate-right" title="Aggiorna"></i>
+                </span>
+            </div>
+ 
+            <!-- Desktop -->
+            <table class="iv-table iv-table-maint">
+                <tbody>
+                    <tr>
+                        <td class="cell-label">BOLLO</td>
+                        <td class="cell-val">VALIDO FINO gg/mm/aa</td>
+                        <td class="cell-info">dove si rinnova? <i class="fa-solid fa-circle-info"></i></td>
+                        <td class="cell-status"><span class="status-attivo">status ATTIVO</span></td>
+                    </tr>
+                    <tr>
+                        <td class="cell-label">REVISIONE</td>
+                        <td class="cell-val">VALIDO FINO gg/mm/aa</td>
+                        <td class="cell-info">dove si rinnova? <i class="fa-solid fa-circle-info"></i></td>
+                        <td class="cell-status"><span class="status-attivo">status ATTIVO</span></td>
+                    </tr>
+                    <tr>
+                        <td class="cell-label">TAGLIANDO</td>
+                        <td class="cell-val">VALIDO FINO gg/mm/aa</td>
+                        <td class="cell-info">dove si rinnova? <i class="fa-solid fa-circle-info"></i></td>
+                        <td class="cell-status"><span class="status-attivo"> ATTIVO</span></td>
+                    </tr>
+                    <tr>
+                        <td class="cell-label">ASSICURAZIONE</td>
+                        <td class="cell-val">VALIDO FINO gg/mm/aa</td>
+                        <td class="cell-info">dove si rinnova? <i class="fa-solid fa-circle-info"></i></td>
+                        <td class="cell-status"><span class="status-scadenza"> SCADENZA</span></td>
+                    </tr>
+                </tbody>
+            </table>
+ 
+            <!-- Tablet/Mobile: righe compatte -->
+            <div class="iv-table-maint-mobile">
+                <div class="iv-maint-row">
+                    <span class="iv-maint-label">BOLLO</span>
+                    <div class="iv-maint-details">
+                        <span class="val">VALIDO FINO gg/mm/aa</span>
+                        <span class="info">dove si rinnova? <i class="fa-solid fa-circle-info"></i></span>
+                        <span class="status status-attivo"> ATTIVO</span>
+                    </div>
+                </div>
+                <div class="iv-maint-row">
+                    <span class="iv-maint-label">REVISIONE</span>
+                    <div class="iv-maint-details">
+                        <span class="val">VALIDO FINO gg/mm/aa</span>
+                        <span class="info">dove si rinnova? <i class="fa-solid fa-circle-info"></i></span>
+                        <span class="status status-attivo"> ATTIVO</span>
+                    </div>
+                </div>
+                <div class="iv-maint-row">
+                    <span class="iv-maint-label">TAGLIANDO</span>
+                    <div class="iv-maint-details">
+                        <span class="val">VALIDO FINO gg/mm/aa</span>
+                        <span class="info">dove si rinnova? <i class="fa-solid fa-circle-info"></i></span>
+                        <span class="status status-attivo"> ATTIVO</span>
+                    </div>
+                </div>
+                <div class="iv-maint-row">
+                    <span class="iv-maint-label">ASSICURAZIONE</span>
+                    <div class="iv-maint-details">
+                        <span class="val">VALIDO FINO gg/mm/aa</span>
+                        <span class="info">dove si rinnova? <i class="fa-solid fa-circle-info"></i></span>
+                        <span class="status status-scadenza"> SCADENZA</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         </div>
     </section>
+    
 
     <footer class="footer" id="footer">
         <p>© 2025 — YouDrive</p>
