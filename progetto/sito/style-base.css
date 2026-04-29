@@ -10,12 +10,15 @@ body {
     display: flex;
     flex-direction: column;
     font-family: 'Inter', sans-serif;
-    background: #1a1a2e;
-    color: #f0f0f0;
+    /*background: #1a1a2e;
+    color: #f0f0f0;*/
+    background: #f4f4f4;
+    color: #191919;
 }
 
 footer {
     margin-top: auto;
+    background:#17314c;
 }
 
  /* ----------------------------------------------------
@@ -24,7 +27,7 @@ footer {
 .footer {
     text-align: center;
     padding: 20px 0;
-    opacity: 0.6;
+    /*opacity: 0.6;*/
     color: #f97316;
 }
 

@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
-    <meta charset="UTF-8">
+       <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouDrive — Scadenze</title>
+    <title>RE|CARS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-imp_v_e_info.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
 </head>
-
 <body>
 
    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
@@ -77,64 +76,101 @@
 
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
-        <span>›</span>
-        <span>Info Veicolo</span>
+        <span></span> <span>Il mio account</span> <span></span>
+        
     </div>
 
-    <section class="page-hero">
-        <h2 class="section-title-page">Scadenze</h2>
-    </section>
+  <h6 class="sotto-title">Il mio account</h6>
+  <p class="page-sub">Di cosa hai bisogno?</p>
 
-    <section class="section">
-        <div class="section-row">
-            <div class="card">
-                <h3><i class="fa-solid fa-car"></i> Seleziona Veicolo</h3>
-                <div class="input-group">
-                    <i class="fa-solid fa-list"></i>
-                    <select>
-                        <option value="">— Nessun veicolo aggiunto —</option>
-                    </select>
-                </div>
-            </div>
+ 
+  <section class="yd-accordion">
+ 
+    <!--Canbia nickname (link diretto)-->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="window.location.href='cambia-nickname.html'">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Cambia nickname</span>
+      </button>
+    </div>
+ 
+    <!-- Modifica immagine di profilo (link diretto) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="window.location.href='immagine-profilo.png'">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Modifica immagine di profilo</span>
+      </button>
+    </div>
+ 
+    <!-- Modifica immagine di profilo (link diretto) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="window.location.href='cambia-pasword.html'">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Cambia pasword</span>
+      </button>
+    </div>
+
+    <!-- Disdici Abbonamento (con sottomenu) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Disdici abbonamento</span>
+        <i class="fa-solid fa-chevron-down yd-arrow"></i>
+      </button>
+      <div class="yd-submenu">
+        <div class="yd-submenu-row">
+          <a href="#">
+            <span class="yd-sub-dash">-</span>
+            Abbonamento Standar
+          </a>
         </div>
-    </section>
-
-    <section class="section section-no-top">
-        <div class="section-row scadenze-grid">
-
-            <div class="card scadenza-card">
-                <div class="card-icon"><i class="fa-solid fa-receipt"></i></div>
-                <h3>Bollo Auto</h3>
-                <p>Nessuna data impostata.</p>
-                <button class="btn-landing btn-landing-scadenze">
-                    <i class="fa-solid fa-pen"></i> Imposta Data
-                </button>
-            </div>
-
-            <div class="card scadenza-card">
-                <div class="card-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                <h3>Revisione</h3>
-                <p>Nessuna data impostata.</p>
-                <button class="btn-landing btn-landing-scadenze">
-                    <i class="fa-solid fa-pen"></i> Imposta Data
-                </button>
-            </div>
-
-            <div class="card scadenza-card">
-                <div class="card-icon"><i class="fa-solid fa-oil-can"></i></div>
-                <h3>Tagliando</h3>
-                <p>Nessuna data impostata.</p>
-                <button class="btn-landing btn-scadenze">
-                    <i class="fa-solid fa-pen"></i> Imposta Data
-                </button>
-            </div>
-
+        <div class="yd-submenu-row">
+          <a href="#">
+            <span class="yd-sub-dash">-</span>
+            Abbonamento Premium
+          </a>
         </div>
-    </section>
+      </div>
+    </div>
+ 
+    <!-- Cancella account (con sottomenu) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Elimina account</span>
+        <i class="fa-solid fa-chevron-down yd-arrow"></i>
+      </button>
+      <div class="yd-submenu">
+        <div class="yd-submenu-row">
+          <a href="#">
+            <span class="yd-sub-dash">-</span>
+            Sei sicuro di voler eliminare il tuo account?
+          </a>
+        </div>
+      </div>
+    </div>
+ 
+  </section>
 
-    <footer class="footer" id="footer">
+  <footer class="footer" id="footer">
         <p>© 2025 — YouDrive</p>
-    </footer>
-
+</footer>
+<script>
+ function toggleYdSubmenu(btn) {
+      const submenu = btn.nextElementSibling;
+      const isOpen = submenu.classList.contains('yd-open');
+ 
+      // chiudi tutti gli altri sottomenu aperti
+      document.querySelectorAll('.yd-submenu.yd-open').forEach(s => s.classList.remove('yd-open'));
+      document.querySelectorAll('.yd-accordion-trigger.yd-open').forEach(b => b.classList.remove('yd-open'));
+ 
+      // apri o chiudi quello cliccato
+      if (!isOpen) {
+        submenu.classList.add('yd-open');
+        btn.classList.add('yd-open');
+      }
+    }
+</script>
 </body>
+
 </html>
