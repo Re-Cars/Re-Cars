@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model citta {
+  sigla String @id @db.Char(2)
+  nome  String @unique @db.VarChar(50)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model dati_generici {
+  id            Int          @id @default(autoincrement())
+  tipo_veicolo  tipo_veicolo
+  cavalli       Int?
+  numporte      String?      @db.Char(1)
+  alimentazione String?      @db.VarChar(20)
+  cilindrata    String?      @db.VarChar(5)
+  colore        String?      @db.VarChar(7)
+  id_veicolo    Int
+  veicolo       veicolo      @relation(fields: [id_veicolo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_dati_generici_veicolo")
+
+  @@index([id], map: "idx_dati_generici_id")
+}
+
+model dati_specifici {
+  id                   Int       @id @default(autoincrement())
+  daterca              DateTime? @db.Date
+  datebollo            DateTime? @db.Date
+  dataimmatricolazione DateTime? @db.Date
+  nomeassicurazione    String?   @db.VarChar(50)
+  id_veicolo           Int
+  veicolo              veicolo   @relation(fields: [id_veicolo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_dati_specifici_veicolo")
+
+  @@index([id], map: "idx_dati_specifici_id")
+}
+
+model officina {
+  id            Int             @id @default(autoincrement())
+  nome          String          @db.VarChar(100)
+  indirizzo     String          @db.VarChar(150)
+  cap           String          @db.Char(5)
+  email         String          @db.VarChar(255)
+  telefono      String          @db.VarChar(20)
+  officina_tipo officina_tipo[]
+  prenotazione  prenotazione[]
+
+  @@index([id, email], map: "idx_officina_id_email")
+}
+
+model officina_tipo {
+  id          Int         @id @default(autoincrement())
+  descrizione descrizione
+  id_officina Int
+  officina    officina    @relation(fields: [id_officina], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model prenotazione {
+  id               Int          @id(map: "prenotazioni_pkey") @default(autoincrement())
+  dataprenotazione DateTime     @db.Timestamp(6)
+  descrizione      String?      @db.VarChar(100)
+  id_utente        Int
+  id_officina      Int
+  officina         officina     @relation(fields: [id_officina], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "prenotazioni_id_officina_fkey")
+  utente           utente       @relation(fields: [id_utente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "prenotazioni_id_utente_fkey")
+  recensione       recensione[]
+
+  @@index([id, dataprenotazione], map: "idx_prenotazione_id_dataprenotazione")
+}
+
+model recensione {
+  id              Int          @id @default(autoincrement())
+  messaggio       String       @db.VarChar(255)
+  data            DateTime     @db.Timestamp(6)
+  id_prenotazione Int
+  prenotazione    prenotazione @relation(fields: [id_prenotazione], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model utente {
+  id           Int            @id(map: "utenti_pkey") @default(autoincrement())
+  username     String         @unique(map: "utenti_username_key") @db.VarChar(20)
+  password     String         @db.VarChar(255)
+  email        String         @unique(map: "utenti_email_key") @db.VarChar(255)
+  cellulare    String?        @unique(map: "utenti_cellulare_key") @db.VarChar(20)
+  prenotazione prenotazione[]
+  veicolo      veicolo[]
+
+  @@index([id, email], map: "idx_utente_id_email")
+}
+
+model veicolo {
+  id             Int              @id(map: "veicoli_pkey") @default(autoincrement())
+  targa          String?          @db.Char(7)
+  marca          String?          @db.VarChar(10)
+  modello        String?          @db.Char(12)
+  id_utente      Int
+  dati_generici  dati_generici[]
+  dati_specifici dati_specifici[]
+  utente         utente           @relation(fields: [id_utente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "veicoli_id_utente_fkey")
+
+  @@index([id, targa], map: "idx_veicolo_id_targa")
+}
+
+enum descrizione {
+  meccanica
+  carrozzeria
+  gommista
+  elettrauto
+  multimarca
+  concessionaria
+  tagliando
+  revisione
+}
+
+enum tipo_veicolo {
+  Autovettura
+  Autocarro
+  Autobus
+  Camper
+  Moto
+  Scooter
+  Quad
+}
