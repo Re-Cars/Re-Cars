@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
-       <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RE|CARS</title>
+    <title>YouDrive — Problemi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
-    <link rel="stylesheet" href="style-imp_v_e_info.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
 </head>
+
 <body>
 
    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
@@ -76,105 +77,77 @@
 
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
-        <span></span> <span>Il mio account</span> <span></span>
-        
+        <span>›</span>
+        <span>Storico interventi</span>
     </div>
+    
+        <section class="home-intro">
+            <div class="home-intro-veicolo">
+                <div class="veicolo-dot"></div>
+                <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
+            </div>
+            <div class="veicolo-switcher" id="veicolo-switcher">
+                <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                    <span id="switcher-label">[ 1 - ... ]</span>
+                    <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+                </button>
+                <div class="switcher-dropdown" id="switcher-dropdown">
+                    <!-- popolato da JS -->
+                </div>
+            </div>
+    </section>
 
-  <h6 class="sotto-title">Il mio account</h6>
-  <p class="page-sub">Di cosa hai bisogno?</p>
+    <section class="page-hero">
+        <h2 class="section-title-page">Storico degli interventi</h2>
+    </section>
 
- 
-  <section class="yd-accordion">
- 
-    <!--Canbia nickname (link diretto)-->
-    <div class="yd-accordion-row">
-      <!--<button class="yd-accordion-trigger" onclick="window.location.href='cambia-nickname.html'"> -->
-      <button class="yd-accordion-trigger" onclick="window.location.href='#top'">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Cambia nickname</span>
-      </button>
-    </div>
- 
-    <!-- Modifica immagine di profilo (link diretto) -->
-    <div class="yd-accordion-row">
-      <!-- <button class="yd-accordion-trigger" onclick="window.location.href='immagine-profilo.png'"> -->
-      <button class="yd-accordion-trigger" onclick="window.location.href='#top'">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Modifica immagine di profilo</span>
-      </button>
-    </div>
- 
-    <!-- Modifica immagine di profilo (link diretto) -->
-    <div class="yd-accordion-row">
-      <!-- <button class="yd-accordion-trigger" onclick="window.location.href='cambia-pasword.html'">-->
-      <button class="yd-accordion-trigger" onclick="window.location.href='#top'">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Cambia password</span>
-      </button>
-    </div>
+    <section class="section">
+        <div class="section-row">
 
-    <!-- Disdici Abbonamento (con sottomenu) -->
-    <div class="yd-accordion-row">
-      <!--<button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">-->
-        <button class="yd-accordion-trigger" onclick="window.location.href='#top'">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Disdici abbonamento</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="yd-submenu-row">
-          <a href="#">
-            <span class="yd-sub-dash">-</span>
-            Abbonamento Standar
-          </a>
+            <div class="card">
+                <h3><i class="fa-solid fa-triangle-exclamation"></i> Segnala un Problema</h3>
+                <div class="input-group">
+                    <i class="fa-solid fa-car"></i>
+                    <select>
+                        <option value="">— Seleziona veicolo —</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-calendar"></i>
+                    <input type="date">
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-tag"></i>
+                    <select>
+                        <option value="">— Categoria —</option>
+                        <option>Motore</option>
+                        <option>Freni</option>
+                        <option>Elettrico</option>
+                        <option>Carrozzeria</option>
+                        <option>Gomme</option>
+                        <option>Altro</option>
+                    </select>
+                </div>
+                <div class="input-group input-group-textarea">
+                    <i class="fa-solid fa-pen"></i>
+                    <textarea placeholder="Descrivi il problema..." rows="4"></textarea>
+                </div>
+                <button class="btn-landing btn-problemi">
+                    <i class="fa-solid fa-plus"></i> Aggiungi
+                </button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-book"></i> Diario Problemi</h3>
+                <p>Nessun problema segnalato.</p>
+            </div>
+
         </div>
-        <div class="yd-submenu-row">
-          <a href="#">
-            <span class="yd-sub-dash">-</span>
-            Abbonamento Premium
-          </a>
-        </div>
-      </div>
-    </div>
- 
-    <!-- Cancella account (con sottomenu) -->
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Elimina account</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="yd-submenu-row">
-          <a href="#">
-            <span class="yd-sub-dash">-</span>
-            Sei sicuro di voler eliminare il tuo account?
-          </a>
-        </div>
-      </div>
-    </div>
- 
-  </section>
+    </section>
 
-  <footer class="footer" id="footer">
+    <footer class="footer" id="footer">
         <p>© 2025 — YouDrive</p>
-</footer>
-<script>
- function toggleYdSubmenu(btn) {
-      const submenu = btn.nextElementSibling;
-      const isOpen = submenu.classList.contains('yd-open');
- 
-      // chiudi tutti gli altri sottomenu aperti
-      document.querySelectorAll('.yd-submenu.yd-open').forEach(s => s.classList.remove('yd-open'));
-      document.querySelectorAll('.yd-accordion-trigger.yd-open').forEach(b => b.classList.remove('yd-open'));
- 
-      // apri o chiudi quello cliccato
-      if (!isOpen) {
-        submenu.classList.add('yd-open');
-        btn.classList.add('yd-open');
-      }
-    }
-</script>
-</body>
+    </footer>
 
+</body>
 </html>

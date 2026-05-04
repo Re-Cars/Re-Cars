@@ -12,7 +12,8 @@
     border-bottom: 1px solid #023350;
     position: sticky;
     top: 0;
-    z-index: 300;
+    /*z-index: 300;*/
+    z-index: 100;
     min-height: 60px;
 }
 
@@ -474,6 +475,7 @@
 .card-prenotazioni { background: #15803d;}
 .card-recensioni { background: #7c3aed;}*/
 .card-veicolo { background: #2b88b8;}
+.card-storicointeventi { background: #04567f;}
 .card-problemi { background: #d14019;}
 .card-scadenze { background: #f26f21;}
 .card-prenotazioni { background: #f39c12;}
@@ -524,6 +526,15 @@
 /                      INFO VEICOLO                    /
 -----------------------------------------------------*/
 .btn-info-veicolo {
+    padding: 11px 28px;
+    font-size: 0.9rem;
+    align-self: center;
+}
+
+ /* ----------------------------------------------------
+/                    SEGNA storico INTERVENTI                    /
+-----------------------------------------------------*/
+.btn-storicointerventi {
     padding: 11px 28px;
     font-size: 0.9rem;
     align-self: center;

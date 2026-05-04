@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="style-app.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
+
+<style>
+    
+</style>
+
 </head>
 
 <body>
@@ -26,8 +31,8 @@
       <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
       <a href="impostazioni.html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
       <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
-      <a href="infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
-      <a href="#"><i class="fa-solid fa-envelope"></i> Contatti</a>
+      <a href="imp_infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+      <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
        <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
       <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
     </nav>
@@ -75,39 +80,33 @@
         </div>
     </header>
 
-    <div class="breadcrumb">
+   <!----> <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
         <span>›</span>
         <span>Info Veicolo</span>
     </div>
+        <section class="home-intro">
+            <div class="home-intro-veicolo">
+                <div class="veicolo-dot"></div>
+                <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
+            </div>
+            <div class="veicolo-switcher" id="veicolo-switcher">
+                <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                    <span id="switcher-label">[ 1 - ... ]</span>
+                    <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+                </button>
+                <div class="switcher-dropdown" id="switcher-dropdown">
+                    <!-- popolato da JS -->
+                </div>
+            </div>
+    </section>
 
     <section class="page-hero">
         <h2 class="section-title-page">Info Veicolo</h2>
         <a>Scheda profilo del veicolo</a>
     </section>
 
-     <!--<section class="section">
-        <div class="section-row">
-
-            <div class="card">
-                <h3><i class="fa-solid fa-plus"></i> Aggiungi Veicolo</h3>
-                <p>Inserisci la targa per cercare il tuo veicolo.</p>
-                <div class="input-group">
-                    <i class="fa-solid fa-car"></i>
-                    <input type="text" placeholder="Es. AA123BB" maxlength="7">
-                </div>
-                <button class="btn-landing btn-info-veicolo">
-                    <i class="fa-solid fa-magnifying-glass"></i> Cerca
-                </button>
-            </div>
-
-        <div class="card">
-                <h3><i class="fa-solid fa-list"></i> I tuoi Veicoli Salvati</h3>
-                <p>Nessun veicolo aggiunto.</p> 
-            </div>-->
-
-        </div>
-    </section>
+   
 
     <footer class="footer" id="footer">
         <p>© 2025 — YouDrive</p>
