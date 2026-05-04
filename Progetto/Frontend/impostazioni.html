@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
-    <meta charset="UTF-8">
+       <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouDrive — Problemi</title>
+    <title>RE|CARS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-imp_v_e_info.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
 </head>
-
 <body>
 
    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="RECAR/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <img src="Img/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
         </div>
         <nav class="sidebar-nav">
-      <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+     <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
       <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
       <a href="impostazioni.html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
       <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
@@ -43,7 +42,7 @@
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="RECAR/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
+            <img src="Img/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
            <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
@@ -77,77 +76,82 @@
 
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
-        <span>›</span>
-        <span>Problemi</span>
+        <span></span> <span>Impostazioni</span> <span></span>
+
     </div>
-    
-        <section class="home-intro">
-            <div class="home-intro-veicolo">
-                <div class="veicolo-dot"></div>
-                <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
-            </div>
-            <div class="veicolo-switcher" id="veicolo-switcher">
-                <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
-                    <span id="switcher-label">[ 1 - ... ]</span>
-                    <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
-                </button>
-                <div class="switcher-dropdown" id="switcher-dropdown">
-                    <!-- popolato da JS -->
-                </div>
-            </div>
-    </section>
 
-    <section class="page-hero">
-        <h2 class="section-title-page">Diario Problemi</h2>
-    </section>
+  <h6 class="sotto-title">Impostazioni</h6>
+  <p class="page-sub">Di cosa hai bisogno?</p>
 
-    <section class="section">
-        <div class="section-row">
-
-            <div class="card">
-                <h3><i class="fa-solid fa-triangle-exclamation"></i> Segnala un Problema</h3>
-                <div class="input-group">
-                    <i class="fa-solid fa-car"></i>
-                    <select>
-                        <option value="">— Seleziona veicolo —</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-calendar"></i>
-                    <input type="date">
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-tag"></i>
-                    <select>
-                        <option value="">— Categoria —</option>
-                        <option>Motore</option>
-                        <option>Freni</option>
-                        <option>Elettrico</option>
-                        <option>Carrozzeria</option>
-                        <option>Gomme</option>
-                        <option>Altro</option>
-                    </select>
-                </div>
-                <div class="input-group input-group-textarea">
-                    <i class="fa-solid fa-pen"></i>
-                    <textarea placeholder="Descrivi il problema..." rows="4"></textarea>
-                </div>
-                <button class="btn-landing btn-problemi">
-                    <i class="fa-solid fa-plus"></i> Aggiungi
-                </button>
-            </div>
-
-            <div class="card">
-                <h3><i class="fa-solid fa-book"></i> Diario Problemi</h3>
-                <p>Nessun problema segnalato.</p>
-            </div>
-
+ 
+  <section class="yd-accordion">
+  <!-- Notifiche (con sottomenu) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Modalità di notifiche</span>
+        <i class="fa-solid fa-chevron-down yd-arrow"></i>
+      </button>
+      <div class="yd-submenu">
+        <div class="yd-submenu-row">
+          <a href="#">
+            <span class="yd-sub-dash">-</span>
+            In applicazione (piano gratuito)
+          </a>
         </div>
-    </section>
+        <div class="yd-submenu-row">
+          <a href="#">
+            <span class="yd-sub-dash">-</span>
+            Tramite sms/email (piano standard e premium)
+          </a>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Layout (con sottomenu) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Cambia sfondo</span>
+        <i class="fa-solid fa-chevron-down yd-arrow"></i>
+      </button>
+      <div class="yd-submenu">
+        <div class="yd-submenu-row">
+          <a href="#">
+            <span class="yd-sub-dash">-</span>
+            Layout nero
+          </a>
+        </div>
+        <div class="yd-submenu-row">
+          <a href="#">
+            <span class="yd-sub-dash">-</span>
+            Layout bianco
+          </a>
+        </div>
+      </div>
+    </div>
+ 
+  </section>
 
-    <footer class="footer" id="footer">
+  <footer class="footer" id="footer">
         <p>© 2025 — YouDrive</p>
-    </footer>
-
+</footer>
+<script>
+ function toggleYdSubmenu(btn) {
+      const submenu = btn.nextElementSibling;
+      const isOpen = submenu.classList.contains('yd-open');
+ 
+      // chiudi tutti gli altri sottomenu aperti
+      document.querySelectorAll('.yd-submenu.yd-open').forEach(s => s.classList.remove('yd-open'));
+      document.querySelectorAll('.yd-accordion-trigger.yd-open').forEach(b => b.classList.remove('yd-open'));
+ 
+      // apri o chiudi quello cliccato
+      if (!isOpen) {
+        submenu.classList.add('yd-open');
+        btn.classList.add('yd-open');
+      }
+    }
+</script>
 </body>
+
 </html>

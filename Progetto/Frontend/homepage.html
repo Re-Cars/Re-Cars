@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
-       <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RE|CARS</title>
+    <title>RE|CARS — Home</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
-    <link rel="stylesheet" href="style-imp_v_e_info.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
 </head>
+
 <body>
 
    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="RECAR/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <img src="Img/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
         </div>
         <nav class="sidebar-nav">
-     <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+      <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
       <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
       <a href="impostazioni.html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
       <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
@@ -42,7 +43,7 @@
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="RECAR/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
+            <img src="Img/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
            <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
@@ -74,84 +75,69 @@
         </div>
     </header>
 
-    <div class="breadcrumb">
-        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
-        <span></span> <span>Impostazioni</span> <span></span>
+    <section class="home-intro">
+            <div class="home-intro-veicolo">
+                <div class="veicolo-dot"></div>
+                <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
+            </div>
+            <div class="veicolo-switcher" id="veicolo-switcher">
+                <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                    <span id="switcher-label">[ 1 - ... ]</span>
+                    <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+                </button>
+                <div class="switcher-dropdown" id="switcher-dropdown">
+                    <!-- popolato da JS -->
+                </div>
+            </div>
+    </section>
 
+    <section class="home-cards-section">
+        <div class="home-cards-grid">
+
+            <a href="info-veicolo.html" class="home-card card-veicolo">
+                <i class="fa-solid fa-car"></i>
+                <span>INFO VEICOLO</span>
+            </a>
+
+
+            <a href="storico_intervernti.html" class="home-card card-storicointeventi">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>STORICO INTERVENTI</span>
+            </a>
+
+            <a href="problemi.html" class="home-card card-problemi">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>SEGNA PROBLEMI</span>
+            </a>
+
+  <!--       <a href="scadenze.html" class="home-card card-scadenze">
+                <i class="fa-solid fa-receipt"></i>
+                <span>SCADENZE</span>
+            </a> -->   
+
+            <a href="prenotazioni.html" class="home-card card-prenotazioni">
+                <i class="fa-solid fa-wrench"></i>
+                <span>PRENOTA APPUNTAMENTO</span>
+            </a>
+
+            <a href="recensioni.html" class="home-card card-recensioni">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>RECENSIONI</span>
+            </a>
+
+        </div>
+    </section>
+
+    <div class="btn-aggiungi-container">
+        <span class="btn-aggiungi-label">cerca e<br>aggiungi veicolo!</span>
+        <a href="cerca_aggiungi_veicolo.html" class="btn-aggiungi">
+            <i class="fa-solid fa-plus"></i>
+        </a>
     </div>
 
-  <h6 class="sotto-title">Impostazioni</h6>
-  <p class="page-sub">Di cosa hai bisogno?</p>
-
- 
-  <section class="yd-accordion">
-  <!-- Notifiche (con sottomenu) -->
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Modalità di notifiche</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="yd-submenu-row">
-          <a href="#">
-            <span class="yd-sub-dash">-</span>
-            In applicazione (piano gratuito)
-          </a>
-        </div>
-        <div class="yd-submenu-row">
-          <a href="#">
-            <span class="yd-sub-dash">-</span>
-            Tramite sms/email (piano standard e premium)
-          </a>
-        </div>
-      </div>
-    </div>
- 
-    <!-- Layout (con sottomenu) -->
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Cambia sfondo</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="yd-submenu-row">
-          <a href="#">
-            <span class="yd-sub-dash">-</span>
-            Layout nero
-          </a>
-        </div>
-        <div class="yd-submenu-row">
-          <a href="#">
-            <span class="yd-sub-dash">-</span>
-            Layout bianco
-          </a>
-        </div>
-      </div>
-    </div>
- 
-  </section>
-
-  <footer class="footer" id="footer">
+    <footer class="footer" id="footer">
         <p>© 2025 — YouDrive</p>
-</footer>
-<script>
- function toggleYdSubmenu(btn) {
-      const submenu = btn.nextElementSibling;
-      const isOpen = submenu.classList.contains('yd-open');
- 
-      // chiudi tutti gli altri sottomenu aperti
-      document.querySelectorAll('.yd-submenu.yd-open').forEach(s => s.classList.remove('yd-open'));
-      document.querySelectorAll('.yd-accordion-trigger.yd-open').forEach(b => b.classList.remove('yd-open'));
- 
-      // apri o chiudi quello cliccato
-      if (!isOpen) {
-        submenu.classList.add('yd-open');
-        btn.classList.add('yd-open');
-      }
-    }
-</script>
-</body>
+    </footer>
 
+</body>
 </html>
