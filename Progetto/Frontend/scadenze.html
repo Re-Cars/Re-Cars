@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouDrive — Problemi</title>
+    <title>YouDrive — Scadenze</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
@@ -18,7 +18,7 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="RECAR/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <img src="Img/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
         </div>
         <nav class="sidebar-nav">
@@ -43,7 +43,7 @@
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="RECAR/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
+            <img src="Img/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
            <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
@@ -78,68 +78,55 @@
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
         <span>›</span>
-        <span>Storico interventi</span>
+        <span>Info Veicolo</span>
     </div>
-    
-        <section class="home-intro">
-            <div class="home-intro-veicolo">
-                <div class="veicolo-dot"></div>
-                <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
-            </div>
-            <div class="veicolo-switcher" id="veicolo-switcher">
-                <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
-                    <span id="switcher-label">[ 1 - ... ]</span>
-                    <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
-                </button>
-                <div class="switcher-dropdown" id="switcher-dropdown">
-                    <!-- popolato da JS -->
-                </div>
-            </div>
-    </section>
 
     <section class="page-hero">
-        <h2 class="section-title-page">Storico degli interventi</h2>
+        <h2 class="section-title-page">Scadenze</h2>
     </section>
 
     <section class="section">
         <div class="section-row">
-
             <div class="card">
-                <h3><i class="fa-solid fa-triangle-exclamation"></i> Segnala un Problema</h3>
+                <h3><i class="fa-solid fa-car"></i> Seleziona Veicolo</h3>
                 <div class="input-group">
-                    <i class="fa-solid fa-car"></i>
+                    <i class="fa-solid fa-list"></i>
                     <select>
-                        <option value="">— Seleziona veicolo —</option>
+                        <option value="">— Nessun veicolo aggiunto —</option>
                     </select>
                 </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-calendar"></i>
-                    <input type="date">
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-tag"></i>
-                    <select>
-                        <option value="">— Categoria —</option>
-                        <option>Motore</option>
-                        <option>Freni</option>
-                        <option>Elettrico</option>
-                        <option>Carrozzeria</option>
-                        <option>Gomme</option>
-                        <option>Altro</option>
-                    </select>
-                </div>
-                <div class="input-group input-group-textarea">
-                    <i class="fa-solid fa-pen"></i>
-                    <textarea placeholder="Descrivi il problema..." rows="4"></textarea>
-                </div>
-                <button class="btn-landing btn-problemi">
-                    <i class="fa-solid fa-plus"></i> Aggiungi
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-no-top">
+        <div class="section-row scadenze-grid">
+
+            <div class="card scadenza-card">
+                <div class="card-icon"><i class="fa-solid fa-receipt"></i></div>
+                <h3>Bollo Auto</h3>
+                <p>Nessuna data impostata.</p>
+                <button class="btn-landing btn-landing-scadenze">
+                    <i class="fa-solid fa-pen"></i> Imposta Data
                 </button>
             </div>
 
-            <div class="card">
-                <h3><i class="fa-solid fa-book"></i> Diario Problemi</h3>
-                <p>Nessun problema segnalato.</p>
+            <div class="card scadenza-card">
+                <div class="card-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                <h3>Revisione</h3>
+                <p>Nessuna data impostata.</p>
+                <button class="btn-landing btn-landing-scadenze">
+                    <i class="fa-solid fa-pen"></i> Imposta Data
+                </button>
+            </div>
+
+            <div class="card scadenza-card">
+                <div class="card-icon"><i class="fa-solid fa-oil-can"></i></div>
+                <h3>Tagliando</h3>
+                <p>Nessuna data impostata.</p>
+                <button class="btn-landing btn-scadenze">
+                    <i class="fa-solid fa-pen"></i> Imposta Data
+                </button>
             </div>
 
         </div>

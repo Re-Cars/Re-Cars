@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouDrive — Prenotazioni</title>
+    <title>YouDrive — Problemi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
@@ -18,7 +18,7 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="RECAR/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <img src="Img/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
         </div>
         <nav class="sidebar-nav">
@@ -43,7 +43,7 @@
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="RECAR/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
+            <img src="Img/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
            <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
@@ -78,10 +78,10 @@
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
         <span>›</span>
-        <span>Prenotazioni</span>
+        <span>Storico interventi</span>
     </div>
-
-            <section class="home-intro">
+    
+        <section class="home-intro">
             <div class="home-intro-veicolo">
                 <div class="veicolo-dot"></div>
                 <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
@@ -98,61 +98,50 @@
     </section>
 
     <section class="page-hero">
-        <h2 class="section-title-page">Prenota Officina</h2>
+        <h2 class="section-title-page">Storico degli interventi</h2>
     </section>
 
     <section class="section">
         <div class="section-row">
 
             <div class="card">
-                <h3><i class="fa-solid fa-magnifying-glass"></i> Cerca Officina</h3>
-                <div class="input-group">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <input type="text" placeholder="Città o indirizzo">
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-calendar"></i>
-                    <input type="date">
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-wrench"></i>
-                    <select>
-                        <option value="">— Tipo di officina —</option>
-                        <option>Meccanica</option>
-                        <option>Carrozzeria</option>
-                        <option>Gommista</option>
-                        <option>Elettrauto</option>
-                        <option>Multimarca</option>
-                        <option>Concessionaria</option>
-                        <option>Tagliando</option>
-                        <option>Revisione</option>
-                    </select>
-                </div>
+                <h3><i class="fa-solid fa-triangle-exclamation"></i> Segnala un Problema</h3>
                 <div class="input-group">
                     <i class="fa-solid fa-car"></i>
                     <select>
                         <option value="">— Seleziona veicolo —</option>
                     </select>
                 </div>
-                <button class="btn-landing btn-prenotazioni">
-                    <i class="fa-solid fa-search"></i> Cerca
+                <div class="input-group">
+                    <i class="fa-solid fa-calendar"></i>
+                    <input type="date">
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-tag"></i>
+                    <select>
+                        <option value="">— Categoria —</option>
+                        <option>Motore</option>
+                        <option>Freni</option>
+                        <option>Elettrico</option>
+                        <option>Carrozzeria</option>
+                        <option>Gomme</option>
+                        <option>Altro</option>
+                    </select>
+                </div>
+                <div class="input-group input-group-textarea">
+                    <i class="fa-solid fa-pen"></i>
+                    <textarea placeholder="Descrivi il problema..." rows="4"></textarea>
+                </div>
+                <button class="btn-landing btn-problemi">
+                    <i class="fa-solid fa-plus"></i> Aggiungi
                 </button>
             </div>
 
             <div class="card">
-                <h3><i class="fa-solid fa-list"></i> Officine Trovate</h3>
-                <p>Inserisci luogo, data e tipo per cercare.</p>
+                <h3><i class="fa-solid fa-book"></i> Diario Problemi</h3>
+                <p>Nessun problema segnalato.</p>
             </div>
 
-        </div>
-    </section>
-
-    <section class="section section-no-top">
-        <div class="section-row">
-            <div class="card">
-                <h3><i class="fa-solid fa-clock-rotate-left"></i> Le mie Prenotazioni</h3>
-                <p>Nessuna prenotazione effettuata.</p>
-            </div>
         </div>
     </section>
 

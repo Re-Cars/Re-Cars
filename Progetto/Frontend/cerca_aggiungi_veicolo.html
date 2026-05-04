@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RE|CARS — Home</title>
+    <title>YouDrive — Visitatore</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
@@ -18,7 +18,7 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="RECAR/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <img src="Img/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
         </div>
         <nav class="sidebar-nav">
@@ -43,7 +43,7 @@
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="RECAR/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
+            <img src="Img/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
            <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
@@ -75,67 +75,42 @@
         </div>
     </header>
 
-    <section class="home-intro">
-            <div class="home-intro-veicolo">
-                <div class="veicolo-dot"></div>
-                <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
-            </div>
-            <div class="veicolo-switcher" id="veicolo-switcher">
-                <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
-                    <span id="switcher-label">[ 1 - ... ]</span>
-                    <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
-                </button>
-                <div class="switcher-dropdown" id="switcher-dropdown">
-                    <!-- popolato da JS -->
-                </div>
-            </div>
+     <div class="breadcrumb">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
+        <span>›</span>
+        <span>Cerca e Aggiungi Veicolo</span>
+    </div>
+
+
+
+<section class="page-hero">
+        <h2 class="section-title-page">Cerca e Aggiungi Veicolo</h2>
     </section>
 
-    <section class="home-cards-section">
-        <div class="home-cards-grid">
+    <section class="section">
+        <div class="section-row">
 
-            <a href="info-veicolo.html" class="home-card card-veicolo">
-                <i class="fa-solid fa-car"></i>
-                <span>INFO VEICOLO</span>
-            </a>
+            <div class="card">
+                <h3><i class="fa-solid fa-plus"></i> Aggiungi Veicolo</h3>
+                <p>Inserisci la targa per cercare il tuo veicolo.</p>
+                <div class="input-group">
+                    <i class="fa-solid fa-car"></i>
+                    <input type="text" placeholder="Es. AA123BB" maxlength="7">
+                </div>
+                <button class="btn-landing btn-info-veicolo">
+                    <i class="fa-solid fa-magnifying-glass"></i> Cerca
+                </button>
+            </div>
 
-
-            <a href="storico_intervernti.html" class="home-card card-storicointeventi">
-                <i class="fa-solid fa-calendar-check"></i>
-                <span>STORICO INTERVENTI</span>
-            </a>
-
-            <a href="problemi.html" class="home-card card-problemi">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <span>SEGNA PROBLEMI</span>
-            </a>
-
-  <!--       <a href="scadenze.html" class="home-card card-scadenze">
-                <i class="fa-solid fa-receipt"></i>
-                <span>SCADENZE</span>
-            </a> -->   
-
-            <a href="prenotazioni.html" class="home-card card-prenotazioni">
-                <i class="fa-solid fa-wrench"></i>
-                <span>PRENOTA APPUNTAMENTO</span>
-            </a>
-
-            <a href="recensioni.html" class="home-card card-recensioni">
-                <i class="fa-solid fa-calendar-check"></i>
-                <span>RECENSIONI</span>
-            </a>
+        <!-- <div class="card">
+                <h3><i class="fa-solid fa-list"></i> I tuoi Veicoli Salvati</h3>
+                <p>Nessun veicolo aggiunto.</p> 
+            </div>-->
 
         </div>
     </section>
 
-    <div class="btn-aggiungi-container">
-        <span class="btn-aggiungi-label">cerca e<br>aggiungi veicolo!</span>
-        <a href="cerca_aggiungi_veicolo.html" class="btn-aggiungi">
-            <i class="fa-solid fa-plus"></i>
-        </a>
-    </div>
-
-    <footer class="footer" id="footer">
+    <footer class="footer">
         <p>© 2025 — YouDrive</p>
     </footer>
 

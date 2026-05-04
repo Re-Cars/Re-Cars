@@ -2,23 +2,23 @@
 <html lang="it">
 
 <head>
-    <meta charset="UTF-8">
+       <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouDrive — Scadenze</title>
+    <title>RE|CARS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-imp_v_e_info.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
 </head>
-
 <body>
 
    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="RECAR/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <img src="Img/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
         </div>
         <nav class="sidebar-nav">
@@ -43,7 +43,7 @@
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="RECAR/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
+            <img src="Img/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
            <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
@@ -77,62 +77,17 @@
 
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
-        <span>›</span>
-        <span>Info Veicolo</span>
+        <span>›</span> 
+        <span href="imp_imiei_veicoli.html">I mei veicoli</span><span>›</span><span>I mei veicoli resigrati</span>
     </div>
 
+
     <section class="page-hero">
-        <h2 class="section-title-page">Scadenze</h2>
+        <h2 class="section-title-page">Elenco Veicoli Registrati</h2>
+        <p class="page-hero-sub">Visualizza in ordine i tuoi veicoli tracciati</p>
     </section>
 
-    <section class="section">
-        <div class="section-row">
-            <div class="card">
-                <h3><i class="fa-solid fa-car"></i> Seleziona Veicolo</h3>
-                <div class="input-group">
-                    <i class="fa-solid fa-list"></i>
-                    <select>
-                        <option value="">— Nessun veicolo aggiunto —</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section section-no-top">
-        <div class="section-row scadenze-grid">
-
-            <div class="card scadenza-card">
-                <div class="card-icon"><i class="fa-solid fa-receipt"></i></div>
-                <h3>Bollo Auto</h3>
-                <p>Nessuna data impostata.</p>
-                <button class="btn-landing btn-landing-scadenze">
-                    <i class="fa-solid fa-pen"></i> Imposta Data
-                </button>
-            </div>
-
-            <div class="card scadenza-card">
-                <div class="card-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                <h3>Revisione</h3>
-                <p>Nessuna data impostata.</p>
-                <button class="btn-landing btn-landing-scadenze">
-                    <i class="fa-solid fa-pen"></i> Imposta Data
-                </button>
-            </div>
-
-            <div class="card scadenza-card">
-                <div class="card-icon"><i class="fa-solid fa-oil-can"></i></div>
-                <h3>Tagliando</h3>
-                <p>Nessuna data impostata.</p>
-                <button class="btn-landing btn-scadenze">
-                    <i class="fa-solid fa-pen"></i> Imposta Data
-                </button>
-            </div>
-
-        </div>
-    </section>
-
-    <footer class="footer" id="footer">
+        <footer class="footer">
         <p>© 2025 — YouDrive</p>
     </footer>
 
