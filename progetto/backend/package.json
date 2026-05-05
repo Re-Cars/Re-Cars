@@ -74,6 +74,6 @@
     "testEnvironment": "node"
   },
   "prisma": {
-  "config": "prisma/prisma.config.ts"
-}
+    "config": "prisma/prisma.config.ts"
+  }
 }
