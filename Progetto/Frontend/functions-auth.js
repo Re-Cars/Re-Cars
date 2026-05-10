@@ -2,69 +2,49 @@
 /                   REGISTRAZIONE                      /
 -----------------------------------------------------*/
 
-function register() {
+async function register() {
     var username = document.getElementById('reg-user').value.trim();
     var email = document.getElementById('reg-email').value.trim();
     var password = document.getElementById('reg-password').value;
     var errore = document.getElementById('reg-error');
 
     if (!username || !email || !password) {
-        errore.textContent = 'Compila tutti i campi.';
+        errore.textContent = 'Compila tutti i campi';
         return;
     }
 
     if (!email.includes('@')) {
-        errore.textContent = 'Email non valida.';
+        errore.textContent = 'Email non valida';
         return;
     }
 
-    if (password.length < 6) {
-        errore.textContent = 'La password deve avere almeno 6 caratteri.';
+    if (password.length < 8) {
+        errore.textContent = 'La password deve avere almeno 8 caratteri';
         return;
     }
 
-    var utenti = getData('yd_utenti') || [];
+    try {
+        const response = await fetch('http://localhost:3000/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, email, password }),
+        });
 
-    var esiste = utenti.find(function (u) { return u.email === email; });
-    if (esiste) {
-        errore.textContent = 'Email già registrata.';
-        return;
+        const data = await response.json();
+
+        if (!response.ok) {
+            errore.textContent = data.message || 'Errore durante la registrazione';
+            return;
+        }
+
+        setData('yd_utente_loggato', { username: data.username, email: data.email });
+        window.location.href = 'homepage.html';
+
+    } catch (err) {
+        errore.textContent = 'Errore di connessione al server';
     }
-
-    utenti.push({ username: username, email: email, password: password });
-    setData('yd_utenti', utenti);
-    setData('yd_utente_loggato', { username: username, email: email });
-
-    window.location.href = 'homepage.html';
-}
-
- /* ----------------------------------------------------
-/                   LOGIN                              /
------------------------------------------------------*/
-
-function login() {
-    var email    = document.getElementById('login-email').value.trim();
-    var password = document.getElementById('login-password').value;
-    var errore   = document.getElementById('login-error');
-
-    if (!email || !password) {
-        errore.textContent = 'Compila tutti i campi.';
-        return;
-    }
-
-    var utenti = getData('yd_utenti') || [];
-
-    var utente = utenti.find(function (u) {
-        return u.email === email && u.password === password;
-    });
-
-    if (!utente) {
-        errore.textContent = 'Email o password errati.';
-        return;
-    }
-
-    setData('yd_utente_loggato', { username: utente.username, email: utente.email });
-    window.location.href = 'homepage.html';
 }
 
  /* ----------------------------------------------------
