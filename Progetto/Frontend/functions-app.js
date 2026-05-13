@@ -181,3 +181,109 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('avatar-dropdown')?.classList.remove('open');
         }
     });
+
+
+
+  /* ---------------------------------------------------
+ /             CERCA E AGGIUNGI VEICOLO                /
+ ----------------------------------------------------*/
+
+document.addEventListener("DOMContentLoaded", () => {
+    const searchBtn = document.querySelector(".btn-info-veicolo");
+    const plateInput = document.querySelector(".input-group input");
+    const resultBox = document.getElementById("vehicleResult");
+
+    if (!searchBtn || !plateInput) return;
+
+    searchBtn.addEventListener("click", async () => {
+        const plate = plateInput.value.trim().toUpperCase();
+        const utente = getData("yd_utente_loggato");
+
+        if (!utente) {
+            alert("Devi effettuare il login.");
+            return;
+        }
+
+        if (plate.length < 5) {
+            showResult(`<p style="color:red;">Inserisci una targa valida.</p>`);
+            return;
+        }
+
+        showResult(`<p>🔍 Ricerca in corso...</p>`);
+
+        try {
+            const response = await fetch("http://localhost:3000/veicolo", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    targa: plate,
+                    id_utente: utente.id
+                })
+            });
+
+
+            if (!response.ok) {
+                showResult(`<p style="color:red;">Veicolo non trovato.</p>`);
+                return;
+            }
+
+            const data = await response.json();
+
+            showResult(`
+                <div class="card" style="margin-top:20px;">
+                    <h3><i class="fa-solid fa-car"></i> Veicolo trovato</h3>
+                    <p><b>Marca:</b> ${data.marca}</p>
+                    <p><b>Modello:</b> ${data.modello}</p>
+                    <p><b>Targa:</b> ${data.targa}</p>
+
+                    <button id="addVehicleBtn" class="btn-landing" style="margin-top:10px;">
+                        <i class="fa-solid fa-plus"></i> Aggiungi al mio garage
+                    </button>
+                </div>
+            `);
+
+
+            document.getElementById("addVehicleBtn").addEventListener("click", () => addVehicle(data, utente.id));
+
+        } catch (err) {
+            showResult(`<p style="color:red;">Errore di connessione al server.</p>`);
+        }
+    });
+
+    function showResult(html) {
+        let box = document.getElementById("vehicleResult");
+        if (!box) {
+            box = document.createElement("div");
+            box.id = "vehicleResult";
+            document.querySelector(".section-row").appendChild(box);
+        }
+        box.innerHTML = html;
+    }
+});
+
+
+async function addVehicle(vehicle, userId) {
+    try {
+        const response = await fetch("http://localhost:3000/veicolo", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                targa: vehicle.targa,
+                marca: vehicle.marca,
+                modello: vehicle.modello,
+                id_utente: userId
+            })
+        });
+
+        if (!response.ok) {
+            alert("Errore durante l'aggiunta del veicolo.");
+            return;
+        }
+
+        alert("Veicolo aggiunto correttamente!");
+        window.location.href = "imp_imiei_veicoli.html";
+
+    } catch (err) {
+        alert("Errore di connessione.");
+    }
+}
