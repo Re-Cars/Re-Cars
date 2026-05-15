@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouDrive — Prenotazioni</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-app.js" defer></script>
+</head>
+
+<body>
+
+   <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="Img/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">RE<span>|</span>CARS</span>
+        </div>
+        <nav class="sidebar-nav">
+      <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+      <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
+      <a href="impostazioni.html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+      <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
+      <a href="imp_infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+      <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
+       <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+      <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </nav>
+  </div>
+
+    <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+        <span class="line line1"></span>
+        <span class="line line2"></span>
+        <span class="line line3"></span>
+        <span class="line line4"></span>
+    </div>
+
+    <header class="header">
+        <div class="header-left"></div>
+        <div class="header-center">
+            <img src="Img/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
+           <span class="header-brand">RE<span>|</span>CARS</span>
+        </div>
+        <div class="header-right">
+           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
+            <div class="header-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>   -->
+
+               <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                    <div class="header-avatar"> 
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="avatar-dropdown" id="avatar-dropdown">
+                            <div class="avatar-header">
+                                <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name">nickname</span></p>
+                            </div>                
+                            <a href="il_mio_account.html" class="avatar-item">
+                            <i class="fa-solid fa-pen"></i>
+                            <span>Modifica profilo</span>
+                        </a>
+                        <a href="landing.html" class="avatar-item avatar-item-logout">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+
+            
+        </div>
+    </header>
+
+    <div class="breadcrumb">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
+        <span>›</span>
+        <span>Prenotazioni</span>
+    </div>
+
+            <section class="home-intro">
+            <div class="home-intro-veicolo">
+                <div class="veicolo-dot"></div>
+                <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
+            </div>
+            <div class="veicolo-switcher" id="veicolo-switcher">
+                <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                    <span id="switcher-label">[ 1 - ... ]</span>
+                    <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+                </button>
+                <div class="switcher-dropdown" id="switcher-dropdown">
+                    <!-- popolato da JS -->
+                </div>
+            </div>
+    </section>
+
+    <section class="page-hero">
+        <h2 class="section-title-page">Prenota Officina</h2>
+    </section>
+
+    <section class="section">
+        <div class="section-row">
+
+            <div class="card">
+                <h3><i class="fa-solid fa-magnifying-glass"></i> Cerca Officina</h3>
+                <div class="input-group">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <input type="text" placeholder="Città o indirizzo">
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-calendar"></i>
+                    <input type="date">
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-wrench"></i>
+                    <select>
+                        <option value="">— Tipo di officina —</option>
+                        <option>Meccanica</option>
+                        <option>Carrozzeria</option>
+                        <option>Gommista</option>
+                        <option>Elettrauto</option>
+                        <option>Multimarca</option>
+                        <option>Concessionaria</option>
+                        <option>Tagliando</option>
+                        <option>Revisione</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-car"></i>
+                    <select>
+                        <option value="">— Seleziona veicolo —</option>
+                    </select>
+                </div>
+                <button class="btn-landing btn-prenotazioni">
+                    <i class="fa-solid fa-search"></i> Cerca
+                </button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-list"></i> Officine Trovate</h3>
+                <p>Inserisci luogo, data e tipo per cercare.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="section section-no-top">
+        <div class="section-row">
+            <div class="card">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> Le mie Prenotazioni</h3>
+                <p>Nessuna prenotazione effettuata.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer" id="footer">
+        <p>© 2025 — YouDrive</p>
+    </footer>
+
+</body>
+</html>

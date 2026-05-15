@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+       <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE|CARS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-imp_v_e_info.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-app.js" defer></script>
+</head>
+<body>
+
+   <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="Img/LOGO/solo logo C e O/SVG/likeAsset 1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">RE<span>|</span>CARS</span>
+        </div>
+        <nav class="sidebar-nav">
+     <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+      <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
+      <a href="impostazioni.html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+      <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
+      <a href="imp_infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+      <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
+       <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+      <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </nav>
+  </div>
+
+    <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+        <span class="line line1"></span>
+        <span class="line line2"></span>
+        <span class="line line3"></span>
+        <span class="line line4"></span>
+    </div>
+
+    <header class="header">
+        <div class="header-left"></div>
+        <div class="header-center">
+            <img src="Img/LOGO/solo logo n e b/SVG/likeAsset 6@72x.svg" alt="logo" class="header-logo-img">
+           <span class="header-brand">RE<span>|</span>CARS</span>
+        </div>
+        <div class="header-right">
+           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
+            <div class="header-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>   -->
+
+               <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                    <div class="header-avatar"> 
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="avatar-dropdown" id="avatar-dropdown">
+                            <div class="avatar-header">
+                                <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name">nickname</span></p>
+                            </div>                
+                            <a href="il_mio_account.html" class="avatar-item">
+                            <i class="fa-solid fa-pen"></i>
+                            <span>Modifica profilo</span>
+                        </a>
+                        <a href="landing.html" class="avatar-item avatar-item-logout">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+
+            
+        </div>
+    </header>
+
+    <div class="breadcrumb">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
+        <span></span> <span>Impostazioni</span> <span></span>
+
+    </div>
+
+  <h6 class="sotto-title">Impostazioni</h6>
+  <p class="page-sub">Di cosa hai bisogno?</p>
+
+ 
+  <section class="yd-accordion">
+  <!-- Notifiche (con sottomenu) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Modalità di notifiche</span>
+        <i class="fa-solid fa-chevron-down yd-arrow"></i>
+      </button>
+      <div class="yd-submenu">
+        <div class="yd-submenu-row">
+          <a href="#">
+            <span class="yd-sub-dash">-</span>
+            In applicazione (piano gratuito)
+          </a>
+        </div>
+        <div class="yd-submenu-row">
+          <a href="#">
+            <span class="yd-sub-dash">-</span>
+            Tramite sms/email (piano standard e premium)
+          </a>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Layout (con sottomenu) -->
+    <div class="yd-accordion-row">
+      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
+        <span class="yd-dash">-</span>
+        <span class="yd-label">Cambia sfondo</span>
+        <i class="fa-solid fa-chevron-down yd-arrow"></i>
+      </button>
+      <div class="yd-submenu">
+        <div class="yd-submenu-row">
+          <a href="#">
+            <span class="yd-sub-dash">-</span>
+            Layout nero
+          </a>
+        </div>
+        <div class="yd-submenu-row">
+          <a href="#">
+            <span class="yd-sub-dash">-</span>
+            Layout bianco
+          </a>
+        </div>
+      </div>
+    </div>
+ 
+  </section>
+
+  <footer class="footer" id="footer">
+        <p>© 2025 — YouDrive</p>
+</footer>
+<script>
+ function toggleYdSubmenu(btn) {
+      const submenu = btn.nextElementSibling;
+      const isOpen = submenu.classList.contains('yd-open');
+ 
+      // chiudi tutti gli altri sottomenu aperti
+      document.querySelectorAll('.yd-submenu.yd-open').forEach(s => s.classList.remove('yd-open'));
+      document.querySelectorAll('.yd-accordion-trigger.yd-open').forEach(b => b.classList.remove('yd-open'));
+ 
+      // apri o chiudi quello cliccato
+      if (!isOpen) {
+        submenu.classList.add('yd-open');
+        btn.classList.add('yd-open');
+      }
+    }
+</script>
+</body>
+
+</html>
