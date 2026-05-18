@@ -1,0 +1,180 @@
+/* ================================================
+   INFO VEICOLO — variabili
+   ================================================ */
+:root {
+    --iv-blue:       #2b88b8;
+    --iv-blue-light: #d9eaf5;
+    --iv-blue-dark:  #17314c;
+    --iv-orange:     #f97316;
+}
+
+/* ================================================
+   LAYOUT DASHBOARD
+   ================================================ */
+.iv-dashboard {
+    padding: 0 24px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ================================================
+   BARRA SEZIONE
+   ================================================ */
+.iv-section-bar {
+    background: var(--iv-blue);
+    border-radius: 8px;
+    padding: 7px 14px;
+}
+.iv-section-bar span {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.4px;
+    text-transform: capitalize;
+}
+
+/* ================================================
+   GRIGLIA INFO (4 col → 2 col tablet → 2 col mobile)
+   ================================================ */
+.iv-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+.iv-info-cell {
+    background: var(--iv-blue-light);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+.iv-cell-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--iv-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.iv-cell-value {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--iv-blue-dark);
+}
+
+/* ================================================
+   GRIGLIA MANUTENZIONE (2 col → 1 col tablet/mobile)
+   ================================================ */
+.iv-maint-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.iv-maint-cell {
+    background: #fff;
+    border: 1px solid rgba(43, 136, 184, 0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.iv-maint-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--iv-blue-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.iv-maint-date {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 3px;
+}
+.iv-maint-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ================================================
+   BADGE STATO
+   ================================================ */
+.iv-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.iv-badge-attiva      { background: #d1fae5; color: #065f46; }
+.iv-badge-scaduta     { background: #fee2e2; color: #991b1b; }
+.iv-badge-in-scadenza { background: #fef3c7; color: #92400e; }
+
+/* ================================================
+   ICONA INFO
+   ================================================ */
+.iv-info-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--iv-blue-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.iv-info-icon i { font-size: 11px; color: var(--iv-blue); }
+
+/* ================================================
+   BOTTONE AGGIORNA (fuori dalla grid, centrato)
+   ================================================ */
+.iv-aggiorna-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 4px 0 8px;
+}
+
+/* tablet e mobile: la grid diventa 1 col, il bottone resta centrato */
+@media (max-width: 768px) {
+    .iv-aggiorna-wrap { justify-content: center; }
+}
+.iv-aggiorna-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--iv-blue);
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s, transform 0.15s;
+}
+.iv-aggiorna-btn:hover  { background: var(--iv-blue-dark); transform: scale(1.03); }
+.iv-aggiorna-btn span   { font-size: 0.82rem; color: #fff; font-weight: 600; letter-spacing: 0.4px; white-space: nowrap; }
+.iv-aggiorna-btn i      { font-size: 14px; color: var(--iv-orange); }
+
+/* ================================================
+   RESPONSIVE — TABLET (≤ 768px)
+   ================================================ */
+@media (max-width: 768px) {
+    .iv-dashboard       { padding: 0 16px 24px; }
+    .iv-info-grid       { grid-template-columns: 1fr 1fr; }
+    .iv-maint-grid      { grid-template-columns: 1fr; }
+}
+
+/* ================================================
+   RESPONSIVE — MOBILE (≤ 480px)
+   ================================================ */
+@media (max-width: 480px) {
+    .iv-dashboard       { padding: 0 12px 20px; }
+    .iv-section-bar span { font-size: 0.72rem; }
+    .iv-info-cell       { padding: 9px 10px; }
+    .iv-cell-label      { font-size: 0.6rem; }
+    .iv-cell-value      { font-size: 0.82rem; }
+    .iv-maint-cell      { padding: 10px 12px; }
+    .iv-badge           { font-size: 0.6rem; padding: 2px 8px; }
+}
