@@ -7,9 +7,12 @@
     <title>YouDrive — Visitatore</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
+        <link rel="stylesheet" href="style-auth.css">
+
     <link rel="stylesheet" href="style-app.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
+        <script src="functions-auth.js" defer></script>
 </head>
 
 <body>
@@ -47,10 +50,7 @@
            <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
-           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
-            <div class="header-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>   -->
+           
 
                <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
                     <div class="header-avatar"> 
@@ -82,30 +82,26 @@
     </div>
 
 
-
-<section class="page-hero">
-        <h2 class="section-title-page">Cerca e Aggiungi Veicolo</h2>
-    </section>
-
     <section class="section">
         <div class="section-row">
 
-            <div class="card">
-                <h3><i class="fa-solid fa-plus"></i> Aggiungi Veicolo</h3>
-                <p>Inserisci la targa per cercare il tuo veicolo.</p>
-                <div class="input-group">
-                    <i class="fa-solid fa-car"></i>
-                    <input type="text" placeholder="Es. AA123BB" maxlength="7">
-                </div>
-                <button class="btn-landing btn-info-veicolo">
-                    <i class="fa-solid fa-magnifying-glass"></i> Cerca
-                </button>
-            </div>
-
-        <!-- <div class="card">
-                <h3><i class="fa-solid fa-list"></i> I tuoi Veicoli Salvati</h3>
-                <p>Nessun veicolo aggiunto.</p> 
-            </div>-->
+             <div class="landing-search-section">
+    <h3 class="landing-search-title"><i class="fa-solid fa-magnifying-glass"></i> Cerca un veicolo</h3>
+    <p class="landing-search-sub", style="color: #000000;">Inserisci una targa per visualizzare i dati del veicolo</p>
+    <div class="input-group landing-input">
+        <i class="fa-solid fa-car"></i>
+        <input type="text" id="input-targa-visitor" placeholder="Es. AA123BB" maxlength="7" >
+    </div>
+    <p id="targa-error" class="auth-error"></p>
+    <button class="btn-landing" onclick="cercaVeicoloVisitatore()">
+        <i class="fa-solid fa-search"></i> Cerca
+    </button>
+    <div class="card hidden" id="card-dati-veicolo-visitor" style="margin-top: 20px;">
+        <h3><i class="fa-solid fa-circle-check"></i> Dati Veicolo</h3>
+        <div id="dati-veicolo-visitor"></div>
+        <p class="visitor-cta">Vuoi salvare questo veicolo e gestire scadenze e prenotazioni?</p>
+        <a href="register.html" class="btn-landing">Registrata</a>
+    </div>
 
         </div>
     </section>
