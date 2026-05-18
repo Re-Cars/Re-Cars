@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
+        <link rel="stylesheet" href="style_infoveicoli.css">
+
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
 
@@ -101,10 +103,110 @@
             </div>
     </section>
 
-    <section class="page-hero">
-        <h2 class="section-title-page">Info Veicolo</h2>
-        <a>Scheda profilo del veicolo</a>
-    </section>
+    <section class="iv-dashboard">
+
+   <br>
+   <br>
+
+    <!-- INFO GENERALI -->
+    <div class="iv-section-bar"><span>carattteristiche generali</span></div>
+    <div class="iv-info-grid">
+        <div class="iv-info-cell">
+            <div class="iv-cell-label">Tipo veicolo</div>
+            <div class="iv-cell-value" id="iv-tipo">Automobile</div>
+        </div>
+        <div class="iv-info-cell">
+            <div class="iv-cell-label">Marca</div>
+            <div class="iv-cell-value" id="iv-marca">Tipo</div>
+        </div>
+        <div class="iv-info-cell">
+            <div class="iv-cell-label">Modello</div>
+            <div class="iv-cell-value" id="iv-modello">codicemodello</div>
+        </div>
+        <div class="iv-info-cell">
+            <div class="iv-cell-label">Anno</div>
+            <div class="iv-cell-value" id="iv-anno">2025</div>
+        </div>
+    </div>
+
+    <!-- CARATTERISTICHE SPECIFICHE -->
+    <div class="iv-section-bar"><span>Caratteristiche specifiche</span></div>
+    <div class="iv-info-grid">
+        <div class="iv-info-cell">
+            <div class="iv-cell-label">Alimentazione</div>
+            <div class="iv-cell-value" id="iv-alimentazione">Ibrida</div>
+        </div>
+        <div class="iv-info-cell">
+            <div class="iv-cell-label">Cilindrata</div>
+            <div class="iv-cell-value" id="iv-cilindrata">1.5 cc</div>
+        </div>
+        <div class="iv-info-cell">
+            <div class="iv-cell-label">Cavalli</div>
+            <div class="iv-cell-value" id="iv-cavalli">69 CV</div>
+        </div>
+        <div class="iv-info-cell">
+            <div class="iv-cell-label">Colore</div>
+            <div class="iv-cell-value" id="iv-colore">Bianco</div>
+        </div>
+    </div>
+
+    <!-- SPESE MANTENIMENTO -->
+    <div class="iv-section-bar"><span> spese di mantenimento ordinario</span> </div>
+    <div class="iv-maint-grid">
+
+        <div class="iv-maint-cell">
+            <div class="iv-maint-left">
+                <div class="iv-maint-title">Bollo</div>
+                <div class="iv-maint-date" id="iv-bollo-date">scade gg/mm/aa</div>
+            </div>
+            <div class="iv-maint-right">
+                <span class="iv-badge iv-badge-attiva" id="iv-bollo-stato">Attivo</span>
+                <div class="iv-info-icon" title="Dettagli bollo"><i class="fa-solid fa-circle-info"></i></div>
+            </div>
+        </div>
+
+        <div class="iv-maint-cell">
+            <div class="iv-maint-left">
+                <div class="iv-maint-title">Revisione</div>
+                <div class="iv-maint-date" id="iv-revisione-date">scade gg/mm/aa</div>
+            </div>
+            <div class="iv-maint-right">
+                <span class="iv-badge iv-badge-scaduta" id="iv-revisione-stato">Scaduta</span>
+                <div class="iv-info-icon" title="Dettagli revisione"><i class="fa-solid fa-circle-info"></i></div>
+            </div>
+        </div>
+
+        <div class="iv-maint-cell">
+            <div class="iv-maint-left">
+                <div class="iv-maint-title">Tagliando</div>
+                <div class="iv-maint-date" id="iv-tagliando-date">scade gg/mm/aa</div>
+            </div>
+            <div class="iv-maint-right">
+                <span class="iv-badge iv-badge-in-scadenza" id="iv-tagliando-stato">In scadenza</span>
+                <div class="iv-info-icon" title="Dettagli tagliando"><i class="fa-solid fa-circle-info"></i></div>
+            </div>
+        </div>
+
+        <div class="iv-maint-cell">
+            <div class="iv-maint-left">
+                <div class="iv-maint-title">Assicurazione</div>
+                <div class="iv-maint-date" id="iv-assicurazione-date">scade gg/mm/aa</div>
+            </div>
+            <div class="iv-maint-right">
+                <span class="iv-badge iv-badge-attiva" id="iv-assicurazione-stato">Attiva</span>
+                <div class="iv-info-icon" title="Dettagli assicurazione"><i class="fa-solid fa-circle-info"></i></div>
+            </div>
+        </div>
+
+        <div class="iv-aggiorna-wrap">
+                <button class="iv-aggiorna-btn" onclick="aggiornaScheda()">
+                    <span>Aggiorna sezione</span>
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+
+    </div>
+</section>
 
    
 
