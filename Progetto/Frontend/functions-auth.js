@@ -39,7 +39,7 @@ async function register() {
             return;
         }
 
-        setData('yd_utente_loggato', { username: data.username, email: data.email });
+        setData('yd_utente_loggato', { id: data.id, username: data.username, email: data.email });
         window.location.href = 'homepage.html';
 
     } catch (err) {
