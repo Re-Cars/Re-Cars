@@ -1,6 +1,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { UtenteService } from './utente.service';
 import { CreateUtenteDto } from './dto/create-utente.dto';
+import { LoginUtenteDto } from './dto/login-utente.dto';
 
 @Controller('auth')
 export class UtenteController {
@@ -12,4 +13,9 @@ export class UtenteController {
       async register(@Body() datiRicevuti: CreateUtenteDto) {
           return this.utenteService.registra(datiRicevuti);
       }
+      
+    @Post('login')
+        async login(@Body() datiRicevuti: LoginUtenteDto) {
+        return this.utenteService.login(datiRicevuti);
+  }
 }
