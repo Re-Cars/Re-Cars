@@ -55,120 +55,235 @@ function logout() {
     window.location.href = 'landing.html';
 }
 
-        // =============================================
-        //           GESTIONE MULTI-VEICOLO
-        // =============================================
+// =============================================
+//           GESTIONE MULTI-VEICOLO
+// =============================================
 
-        // In produzione questi dati vengono dal backend/localStorage
-        let veicoli = [
-            { id: 1, nome: "Fiat 500", targa: "AA123BB", tipo: "car" },
-            { id: 2, nome: "Honda CBR", targa: "ZZ987YY", tipo: "motorcycle" },
-        ];
+let veicoli = [];
+let veicoloAttivoIndex = 0;
 
-        let veicoloAttivoIndex = 0;
+async function caricaVeicoli() {
+    const utente = getData('yd_utente_loggato');
+    if (!utente) return;
 
-        function getVeicoloAttivo() {
-            return veicoli[veicoloAttivoIndex];
+    try {
+        const response = await fetch(`http://localhost:3000/veicolo/utente/${utente.id}`);
+        const data = await response.json();
+
+        veicoli = data.map(v => ({
+            id: v.id,
+            nome: `${v.marca} ${v.modello}`,
+            targa: v.targa,
+            tipo: v.dati_generici[0]?.tipo_veicolo === 'Moto' ? 'motorcycle' : 'car',
+        }));
+
+        renderVeicoloAttivo();
+        renderDropdown();
+
+    } catch (err) {
+        console.error('Errore nel caricamento veicoli', err);
+    }
+}
+
+function getVeicoloAttivo() {
+    return veicoli[veicoloAttivoIndex];
+}
+
+function renderVeicoloAttivo() {
+    const v = getVeicoloAttivo();
+    if (!v) return;
+
+    document.getElementById('nome-veicolo-attivo').textContent = v.nome;
+    document.getElementById('switcher-label').textContent =
+        `[ ${veicoloAttivoIndex + 1} - ... ]`;
+
+    localStorage.setItem('veicoloAttivo', JSON.stringify(v));
+}
+
+function renderDropdown() {
+    const dropdown = document.getElementById('switcher-dropdown');
+    dropdown.innerHTML = '';
+
+    veicoli.forEach((v, i) => {
+        const iconClass = v.tipo === 'motorcycle' ? 'fa-motorcycle' : 'fa-car';
+
+        const btn = document.createElement('button');
+        btn.className = 'switcher-item' + (i === veicoloAttivoIndex ? ' attivo' : '');
+        btn.innerHTML = `
+            <i class="fa-solid ${iconClass}"></i>
+            <span>${v.nome}</span>
+            <span class="item-targa">${v.targa}</span>
+        `;
+        btn.onclick = () => selezionaVeicolo(i);
+        dropdown.appendChild(btn);
+    });
+
+    const aggiungi = document.createElement('div');
+    aggiungi.className = 'switcher-aggiungi';
+    aggiungi.innerHTML = `
+        <button class="switcher-item" onclick="location.href='cerca_aggiungi_veicolo.html'">
+            <i class="fa-solid fa-plus"></i>
+            <span>Aggiungi veicolo</span>
+        </button>
+    `;
+    dropdown.appendChild(aggiungi);
+}
+
+function selezionaVeicolo(index) {
+    veicoloAttivoIndex = index;
+    renderVeicoloAttivo();
+    renderDropdown();
+    closeSwitcher();
+}
+
+function toggleSwitcher() {
+    const dropdown = document.getElementById('switcher-dropdown');
+    const btn = document.getElementById('switcher-btn');
+    const isOpen = dropdown.classList.contains('open');
+    if (isOpen) {
+        closeSwitcher();
+    } else {
+        dropdown.classList.add('open');
+        btn.classList.add('open');
+        renderDropdown();
+    }
+}
+
+function closeSwitcher() {
+    document.getElementById('switcher-dropdown')?.classList.remove('open');
+    document.getElementById('switcher-btn')?.classList.remove('open');
+}
+
+document.addEventListener('click', (e) => {
+    const switcher = document.getElementById('veicolo-switcher');
+    if (switcher && !switcher.contains(e.target)) {
+        closeSwitcher();
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    caricaVeicoli();
+});
+
+
+// =============================================
+//           AVATAR DROPDOWN -- functions-app
+// =============================================
+    function toggleAvatarMenu() {
+        const dropdown = document.getElementById('avatar-dropdown');
+            dropdown.classList.toggle('open');
+    }
+
+// Chiudi cliccando fuori
+    document.addEventListener('click', (e) => {
+        const wrapper = document.getElementById('avatar-wrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+            document.getElementById('avatar-dropdown')?.classList.remove('open');
+        }
+    });
+
+
+
+  /* ---------------------------------------------------
+ /             CERCA E AGGIUNGI VEICOLO                /
+ ----------------------------------------------------*/
+
+document.addEventListener("DOMContentLoaded", () => {
+    const searchBtn = document.querySelector(".btn-info-veicolo");
+    const plateInput = document.querySelector(".input-group input");
+    const resultBox = document.getElementById("vehicleResult");
+
+    if (!searchBtn || !plateInput) return;
+
+    searchBtn.addEventListener("click", async () => {
+        const plate = plateInput.value.trim().toUpperCase();
+        const utente = getData("yd_utente_loggato");
+
+        if (!utente) {
+            alert("Devi effettuare il login.");
+            return;
         }
 
-        function renderVeicoloAttivo() {
-            const v = getVeicoloAttivo();
-            if (!v) return;
-
-            // Aggiorna nome nell'intro
-            document.getElementById('nome-veicolo-attivo').textContent = v.nome;
-
-            // Aggiorna etichetta switcher [N - ...]
-            document.getElementById('switcher-label').textContent =
-                `[ ${veicoloAttivoIndex + 1} - ... ]`;
-
-            // Salva in localStorage per le altre pagine
-            localStorage.setItem('veicoloAttivo', JSON.stringify(v));
+        if (plate.length < 5) {
+            showResult(`<p style="color:red;">Inserisci una targa valida.</p>`);
+            return;
         }
 
-        function renderDropdown() {
-            const dropdown = document.getElementById('switcher-dropdown');
-            dropdown.innerHTML = '';
+        showResult(`<p>🔍 Ricerca in corso...</p>`);
 
-            veicoli.forEach((v, i) => {
-                const iconClass = v.tipo === 'motorcycle'
-                    ? 'fa-motorcycle' : 'fa-car';
-
-                const btn = document.createElement('button');
-                btn.className = 'switcher-item' + (i === veicoloAttivoIndex ? ' attivo' : '');
-                btn.innerHTML = `
-                    <i class="fa-solid ${iconClass}"></i>
-                    <span>${v.nome}</span>
-                    <span class="item-targa">${v.targa}</span>
-                `;
-                btn.onclick = () => selezionaVeicolo(i);
-                dropdown.appendChild(btn);
+        try {
+            const response = await fetch("http://localhost:3000/veicolo", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    targa: plate,
+                    id_utente: utente.id
+                })
             });
 
-            // Bottone aggiungi veicolo in fondo al dropdown
-            const aggiungi = document.createElement('div');
-            aggiungi.className = 'switcher-aggiungi';
-            aggiungi.innerHTML = `
-                <button class="switcher-item" onclick="location.href='cerca_aggiungi_veicolo.html'">
-                    <i class="fa-solid fa-plus"></i>
-                    <span>Aggiungi veicolo</span>
-                </button>
-            `;
-            dropdown.appendChild(aggiungi);
-        }
 
-        function selezionaVeicolo(index) {
-            veicoloAttivoIndex = index;
-            renderVeicoloAttivo();
-            renderDropdown();
-            closeSwitcher();
-        }
-
-        function toggleSwitcher() {
-            const dropdown = document.getElementById('switcher-dropdown');
-            const btn = document.getElementById('switcher-btn');
-            const isOpen = dropdown.classList.contains('open');
-            if (isOpen) {
-                closeSwitcher();
-            } else {
-                dropdown.classList.add('open');
-                btn.classList.add('open');
-                renderDropdown();
+            if (!response.ok) {
+                showResult(`<p style="color:red;">Veicolo non trovato.</p>`);
+                return;
             }
-        }
 
-        function closeSwitcher() {
-            document.getElementById('switcher-dropdown')?.classList.remove('open');
-            document.getElementById('switcher-btn')?.classList.remove('open');
-        }
+            const data = await response.json();
 
-        // Chiudi dropdown cliccando fuori
-        document.addEventListener('click', (e) => {
-            const switcher = document.getElementById('veicolo-switcher');
-            if (switcher && !switcher.contains(e.target)) {
-                closeSwitcher();
-            }
+            showResult(`
+                <div class="card" style="margin-top:20px;">
+                    <h3><i class="fa-solid fa-car"></i> Veicolo trovato</h3>
+                    <p><b>Marca:</b> ${data.marca}</p>
+                    <p><b>Modello:</b> ${data.modello}</p>
+                    <p><b>Targa:</b> ${data.targa}</p>
+
+                    <button id="addVehicleBtn" class="btn-landing" style="margin-top:10px;">
+                        <i class="fa-solid fa-plus"></i> Aggiungi al mio garage
+                    </button>
+                </div>
+            `);
+
+
+            document.getElementById("addVehicleBtn").addEventListener("click", () => addVehicle(data, utente.id));
+
+        } catch (err) {
+            showResult(`<p style="color:red;">Errore di connessione al server.</p>`);
+        }
+    });
+
+    function showResult(html) {
+        let box = document.getElementById("vehicleResult");
+        if (!box) {
+            box = document.createElement("div");
+            box.id = "vehicleResult";
+            document.querySelector(".section-row").appendChild(box);
+        }
+        box.innerHTML = html;
+    }
+});
+
+
+async function addVehicle(vehicle, userId) {
+    try {
+        const response = await fetch("http://localhost:3000/veicolo", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                targa: vehicle.targa,
+                marca: vehicle.marca,
+                modello: vehicle.modello,
+                id_utente: userId
+            })
         });
 
-        // Init
-        document.addEventListener('DOMContentLoaded', () => {
-            // In produzione: carica veicoli da API/localStorage
-            renderVeicoloAttivo();
-        });
-
-
-        // =============================================
-        //           AVATAR DROPDOWN -- functions-app
-        // =============================================
-        function toggleAvatarMenu() {
-            const dropdown = document.getElementById('avatar-dropdown');
-            dropdown.classList.toggle('open');
+        if (!response.ok) {
+            alert("Errore durante l'aggiunta del veicolo.");
+            return;
         }
 
-        // Chiudi cliccando fuori
-        document.addEventListener('click', (e) => {
-            const wrapper = document.getElementById('avatar-wrapper');
-            if (wrapper && !wrapper.contains(e.target)) {
-                document.getElementById('avatar-dropdown')?.classList.remove('open');
-            }
-        });
+        alert("Veicolo aggiunto correttamente!");
+        window.location.href = "imp_imiei_veicoli.html";
+
+    } catch (err) {
+        alert("Errore di connessione.");
+    }
+}
