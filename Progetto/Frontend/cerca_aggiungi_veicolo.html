@@ -95,12 +95,14 @@
                 <p>Inserisci la targa per cercare il tuo veicolo.</p>
                 <div class="input-group">
                     <i class="fa-solid fa-car"></i>
-                    <input type="text" placeholder="Es. AA123BB" maxlength="7">
+                    <input id="plateInput" type="text" placeholder="Es. AA123BB" maxlength="7">
                 </div>
-                <button class="btn-landing btn-info-veicolo">
+
+                <button id="searchVehicleBtn" class="btn-landing btn-info-veicolo">
                     <i class="fa-solid fa-magnifying-glass"></i> Cerca
                 </button>
-            </div>
+
+                <div id="vehicleResult"></div>
 
         <!-- <div class="card">
                 <h3><i class="fa-solid fa-list"></i> I tuoi Veicoli Salvati</h3>
