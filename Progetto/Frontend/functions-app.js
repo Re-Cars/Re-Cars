@@ -212,15 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showResult(`<p>🔍 Ricerca in corso...</p>`);
 
         try {
-            const response = await fetch("http://localhost:3000/veicolo", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    targa: plate,
-                    id_utente: utente.id
-                })
-            });
-
+            const response = await fetch(`http://localhost:3000/veicolo/cerca/${plate}`);
 
             if (!response.ok) {
                 showResult(`<p style="color:red;">Veicolo non trovato.</p>`);
@@ -235,15 +227,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     <p><b>Marca:</b> ${data.marca}</p>
                     <p><b>Modello:</b> ${data.modello}</p>
                     <p><b>Targa:</b> ${data.targa}</p>
-
+                    <p><b>Alimentazione:</b> ${data.alimentazione}</p>
+                    <p><b>Cavalli:</b> ${data.cavalli} CV</p>
                     <button id="addVehicleBtn" class="btn-landing" style="margin-top:10px;">
                         <i class="fa-solid fa-plus"></i> Aggiungi al mio garage
                     </button>
                 </div>
             `);
 
-
-            document.getElementById("addVehicleBtn").addEventListener("click", () => addVehicle(data, utente.id));
+            document.getElementById("addVehicleBtn").addEventListener("click", () => addVehicle(data.targa, utente.id));
 
         } catch (err) {
             showResult(`<p style="color:red;">Errore di connessione al server.</p>`);
@@ -262,28 +254,23 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-async function addVehicle(vehicle, userId) {
-    try {
-        const response = await fetch("http://localhost:3000/veicolo", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                targa: vehicle.targa,
-                marca: vehicle.marca,
-                modello: vehicle.modello,
-                id_utente: userId
-            })
-        });
+    async function addVehicle(targa, userId) {
+        try {
+            const response = await fetch("http://localhost:3000/veicolo", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ targa, id_utente: userId })
+            });
 
-        if (!response.ok) {
-            alert("Errore durante l'aggiunta del veicolo.");
-            return;
+            if (!response.ok) {
+                alert("Errore durante l'aggiunta del veicolo.");
+                return;
+            }
+
+            alert("Veicolo aggiunto correttamente!");
+            window.location.href = "imp_imiei_veicoli.html";
+
+        } catch (err) {
+            alert("Errore di connessione.");
         }
-
-        alert("Veicolo aggiunto correttamente!");
-        window.location.href = "imp_imiei_veicoli.html";
-
-    } catch (err) {
-        alert("Errore di connessione.");
     }
-}

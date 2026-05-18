@@ -7,6 +7,24 @@ import * as datiMock from '../../data/veicoli.json';
 export class VeicoloService {
     constructor(private prisma: PrismaService) {}
 
+    async cercaSoloDati(targa: string) {
+        const veicoli = (datiMock as any).data;
+        const trovato = veicoli.find(
+            (v: any) => v.LicensePlate.toUpperCase() === targa.toUpperCase()
+        );
+        if (!trovato) {
+            throw new NotFoundException(`Veicolo con targa ${targa} non trovato`);
+        }
+        return {
+            targa: trovato.LicensePlate,
+            marca: trovato.CarMake,
+            modello: trovato.CarModel,
+            alimentazione: trovato.FuelType,
+            cavalli: trovato.PowerCV,
+            tipo_veicolo: trovato.TipoVeicolo,
+        };
+    }
+
     async cercaESalva(dto: CreateVeicoloDto) {
         const veicoli = (datiMock as any).data;
         const trovato = veicoli.find(
