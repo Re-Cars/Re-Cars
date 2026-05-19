@@ -1,4 +1,4 @@
- /* ----------------------------------------------------
+/* ----------------------------------------------------
 /                   AVVIO PAGINA                       /
 -----------------------------------------------------*/
 document.addEventListener('DOMContentLoaded', function () {
@@ -65,18 +65,15 @@ let veicoloAttivoIndex = 0;
 async function caricaVeicoli() {
     const utente = getData('yd_utente_loggato');
     if (!utente) return;
-
     try {
         const response = await fetch(`http://localhost:3000/veicolo/utente/${utente.id}`);
         const data = await response.json();
-
         veicoli = data.map(v => ({
             id: v.id,
             nome: `${v.marca} ${v.modello}`,
             targa: v.targa,
             tipo: v.dati_generici[0]?.tipo_veicolo === 'Moto' ? 'motorcycle' : 'car',
         }));
-
         renderVeicoloAttivo();
         renderDropdown();
 
@@ -96,14 +93,12 @@ function renderVeicoloAttivo() {
     document.getElementById('nome-veicolo-attivo').textContent = v.nome;
     document.getElementById('switcher-label').textContent =
         `[ ${veicoloAttivoIndex + 1} - ... ]`;
-
     localStorage.setItem('veicoloAttivo', JSON.stringify(v));
 }
 
 function renderDropdown() {
     const dropdown = document.getElementById('switcher-dropdown');
     dropdown.innerHTML = '';
-
     veicoli.forEach((v, i) => {
         const iconClass = v.tipo === 'motorcycle' ? 'fa-motorcycle' : 'fa-car';
 
@@ -117,7 +112,6 @@ function renderDropdown() {
         btn.onclick = () => selezionaVeicolo(i);
         dropdown.appendChild(btn);
     });
-
     const aggiungi = document.createElement('div');
     aggiungi.className = 'switcher-aggiungi';
     aggiungi.innerHTML = `
@@ -169,20 +163,17 @@ document.addEventListener('DOMContentLoaded', () => {
 // =============================================
 //           AVATAR DROPDOWN -- functions-app
 // =============================================
-    function toggleAvatarMenu() {
-        const dropdown = document.getElementById('avatar-dropdown');
-            dropdown.classList.toggle('open');
+function toggleAvatarMenu() {
+    const dropdown = document.getElementById('avatar-dropdown');
+    dropdown.classList.toggle('open');
+}
+
+document.addEventListener('click', (e) => {
+    const wrapper = document.getElementById('avatar-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+        document.getElementById('avatar-dropdown')?.classList.remove('open');
     }
-
-// Chiudi cliccando fuori
-    document.addEventListener('click', (e) => {
-        const wrapper = document.getElementById('avatar-wrapper');
-        if (wrapper && !wrapper.contains(e.target)) {
-            document.getElementById('avatar-dropdown')?.classList.remove('open');
-        }
-    });
-
-
+});
 
   /* ---------------------------------------------------
  /             CERCA E AGGIUNGI VEICOLO                /
@@ -190,12 +181,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener("DOMContentLoaded", () => {
     const searchBtn = document.querySelector(".btn-info-veicolo");
-    const plateInput = document.querySelector(".input-group input");
-    const resultBox = document.getElementById("vehicleResult");
+    const plateInput = document.getElementById("input-targa-visitor");
 
     if (!searchBtn || !plateInput) return;
 
-    searchBtn.addEventListener("click", async () => {
+
+    searchBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+
         const plate = plateInput.value.trim().toUpperCase();
         const utente = getData("yd_utente_loggato");
 
@@ -205,48 +198,43 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (plate.length < 5) {
-            showResult(`<p style="color:red;">Inserisci una targa valida.</p>`);
+            showResult(`<p style="color:red; margin-top:10px;">Inserisci una targa valida.</p>`);
             return;
         }
 
-        showResult(`<p>🔍 Ricerca in corso...</p>`);
+        showResult(`<p style="margin-top:10px;">🔍 Ricerca in corso...</p>`);
 
         try {
-            const response = await fetch("http://localhost:3000/veicolo", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    targa: plate,
-                    id_utente: utente.id
-                })
-            });
-
-
+            const response = await fetch(`http://localhost:3000/veicolo/cerca/${plate}`);
             if (!response.ok) {
-                showResult(`<p style="color:red;">Veicolo non trovato.</p>`);
+                showResult(`<p style="color:red; margin-top:10px;">Veicolo non trovato.</p>`);
                 return;
             }
 
             const data = await response.json();
-
+            
             showResult(`
-                <div class="card" style="margin-top:20px;">
+                <div class="card" style="margin-top:20px; display:block; opacity:1;">
                     <h3><i class="fa-solid fa-car"></i> Veicolo trovato</h3>
                     <p><b>Marca:</b> ${data.marca}</p>
                     <p><b>Modello:</b> ${data.modello}</p>
                     <p><b>Targa:</b> ${data.targa}</p>
-
-                    <button id="addVehicleBtn" class="btn-landing" style="margin-top:10px;">
+                    <p><b>Alimentazione:</b> ${data.alimentazione}</p>
+                    <p><b>Cavalli:</b> ${data.cavalli} CV</p>
+                    <button id="addVehicleBtn" type="button" class="btn-landing" style="margin-top:10px;">
                         <i class="fa-solid fa-plus"></i> Aggiungi al mio garage
                     </button>
                 </div>
             `);
 
 
-            document.getElementById("addVehicleBtn").addEventListener("click", () => addVehicle(data, utente.id));
+            document.getElementById("addVehicleBtn").addEventListener("click", (evt) => {
+                evt.preventDefault();
+                addVehicle(data.targa, utente.id);
+            });
 
         } catch (err) {
-            showResult(`<p style="color:red;">Errore di connessione al server.</p>`);
+            showResult(`<p style="color:red; margin-top:10px;">Errore di connessione al server.</p>`);
         }
     });
 
@@ -255,24 +243,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!box) {
             box = document.createElement("div");
             box.id = "vehicleResult";
-            document.querySelector(".section-row").appendChild(box);
+            const container = document.querySelector(".landing-search-section");
+            if (container) {
+                container.appendChild(box);
+            }
         }
         box.innerHTML = html;
     }
 });
 
-
-async function addVehicle(vehicle, userId) {
+async function addVehicle(targa, userId) {
     try {
         const response = await fetch("http://localhost:3000/veicolo", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                targa: vehicle.targa,
-                marca: vehicle.marca,
-                modello: vehicle.modello,
-                id_utente: userId
-            })
+            body: JSON.stringify({ targa, id_utente: userId })
         });
 
         if (!response.ok) {
@@ -281,8 +266,7 @@ async function addVehicle(vehicle, userId) {
         }
 
         alert("Veicolo aggiunto correttamente!");
-        window.location.href = "imp_imiei_veicoli.html";
-
+        window.location.href = "homepage.html";
     } catch (err) {
         alert("Errore di connessione.");
     }

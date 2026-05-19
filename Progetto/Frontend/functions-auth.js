@@ -46,6 +46,54 @@ async function register() {
         errore.textContent = 'Errore di connessione al server';
     }
 }
+ /* ----------------------------------------------------
+/                   LOGIN                           /
+-----------------------------------------------------*/
+async function login(email, password) {
+    var email = document.getElementById('login-email').value.trim()
+    var password = document.getElementById('login-password').value
+    var errore = document.getElementById('login-error')
+    if ( !email || !password) {
+        errore.textContent = 'Compila tutti i campi';
+        return;
+    }
+    if (!email.includes('@')) {
+        errore.textContent = 'Email non valida';
+        return;
+    }
+    if (password.length < 8) {
+        errore.textContent = 'La password deve avere almeno 8 caratteri';
+        return;
+    }
+
+
+  try {
+    const response = await fetch('http://localhost:3000/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+       errore.textContent = data.message || "Credenziali non valide"
+       return;
+    }
+
+    console.log('Login effettuato:', data);
+    
+    //localstorage
+     setData('yd_utente_loggato', { id: data.id, username: data.username, email: data.email });
+     window.location.href = 'homepage.html';
+
+  } catch (error) {
+    console.error('Errore login:', error.message);
+  }
+}
 
  /* ----------------------------------------------------
 /                   LOGOUT                             /
