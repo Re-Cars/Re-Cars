@@ -103,26 +103,3 @@ function logout() {
     localStorage.removeItem('yd_utente_loggato');
     window.location.href = 'landing.html';
 }
- /* ----------------------------------------------------
-/                   SIMULAZIONE DATI VEICOLO           /
------------------------------------------------------*/
-
-function simulaVeicolo(targa) {
-    var marche     = ['Fiat', 'Ford', 'BMW', 'Volkswagen', 'Renault', 'Peugeot', 'Toyota', 'Opel'];
-    var modelli    = ['Panda', 'Focus', 'Serie 3', 'Golf', 'Clio', '208', 'Yaris', 'Corsa'];
-    var carburanti = ['Benzina', 'Diesel', 'GPL', 'Ibrido'];
-    var anni       = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022];
-
-    var seed = 0;
-    for (var i = 0; i < targa.length; i++) {
-        seed += targa.charCodeAt(i);
-    }
-
-    return {
-        targa:      targa,
-        marca:      marche[seed % marche.length],
-        modello:    modelli[seed % modelli.length],
-        anno:       anni[seed % anni.length],
-        carburante: carburanti[seed % carburanti.length]
-    };
-}
