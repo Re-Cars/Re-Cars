@@ -271,3 +271,33 @@ async function addVehicle(targa, userId) {
         alert("Errore di connessione.");
     }
 }
+//Stampa del nome nel menu a tendina
+async function getUsername(userId) {
+    try {
+        const response = await fetch(`http://localhost:3000/auth/utente/${userId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        if (!response.ok) {
+            alert("Errore durante il recupero dell'utente.");
+            return null;
+        }
+
+        const data = await response.json();
+        return data[0].username;
+
+    } catch (err) {
+        alert("Errore di connessione.");    
+        return null;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const utente = getData('yd_utente_loggato');
+    const username = await getUsername(utente.id);
+
+    if (username) {
+        document.getElementById("avatar-dropdown-name").textContent = username;
+    }
+});
