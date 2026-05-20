@@ -103,43 +103,6 @@ function logout() {
     localStorage.removeItem('yd_utente_loggato');
     window.location.href = 'landing.html';
 }
-
- /* ----------------------------------------------------
-/                   VISITATORE - CERCA VEICOLO         /
------------------------------------------------------*/
-window.addEventListener('scroll', () => {
-    const hint = document.querySelector('.scroll-hint');
-    if (!hint) return;
-    
-    if (window.scrollY > 320) {
-        hint.classList.add('hint-hidden');
-    } else {
-        hint.classList.remove('hint-hidden');
-    }
-});
-function cercaVeicoloVisitatore() {
-    var input  = document.getElementById('input-targa-visitor').value.trim().toUpperCase();
-    var errore = document.getElementById('targa-error');
-
-    if (!input || input.length < 5) {
-        errore.textContent = 'Inserisci una targa valida.';
-        return;
-    }
-
-    errore.textContent = '';
-
-    var veicolo = simulaVeicolo(input);
-
-    document.getElementById('dati-veicolo-visitor').innerHTML =
-        '<p><b>Targa:</b> ' + veicolo.targa + '</p>' +
-        '<p><b>Marca:</b> ' + veicolo.marca + '</p>' +
-        '<p><b>Modello:</b> ' + veicolo.modello + '</p>' +
-        '<p><b>Anno:</b> ' + veicolo.anno + '</p>' +
-        '<p><b>Carburante:</b> ' + veicolo.carburante + '</p>';
-
-    document.getElementById('card-dati-veicolo-visitor').classList.remove('hidden');
-}
-
  /* ----------------------------------------------------
 /                   SIMULAZIONE DATI VEICOLO           /
 -----------------------------------------------------*/
