@@ -175,7 +175,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-/* ---------------------------------------------------
+  /* ---------------------------------------------------
  /             CERCA E AGGIUNGI VEICOLO                /
  ----------------------------------------------------*/
 
@@ -185,9 +185,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!searchBtn || !plateInput) return;
 
-    // Aggiunto l'argomento 'e' per controllare l'evento del click
+
     searchBtn.addEventListener("click", async (e) => {
-        e.preventDefault(); // BLOCCA IL RICARICAMENTO DELLA PAGINA
+        e.preventDefault();
 
         const plate = plateInput.value.trim().toUpperCase();
         const utente = getData("yd_utente_loggato");
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `);
 
-            // Cambiato anche qui inserendo il blocco del submit preventivo
+
             document.getElementById("addVehicleBtn").addEventListener("click", (evt) => {
                 evt.preventDefault();
                 addVehicle(data.targa, utente.id);
@@ -266,7 +266,7 @@ async function addVehicle(targa, userId) {
         }
 
         alert("Veicolo aggiunto correttamente!");
-        window.location.href = "imp_imiei_veicoli.html";
+        window.location.href = "homepage.html";
     } catch (err) {
         alert("Errore di connessione.");
     }
