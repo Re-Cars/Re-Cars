@@ -74,6 +74,14 @@ async function caricaVeicoli() {
             targa: v.targa,
             tipo: v.dati_generici[0]?.tipo_veicolo === 'Moto' ? 'motorcycle' : 'car',
         }));
+
+        // AGGIORNAMENTO DINAMICO DEL CONTATORE
+        // Legge quanti veicoli ci sono nell'array e scrive il numero nel badge
+        const counterEl = document.getElementById('veicoli-counter');
+        if (counterEl) {
+            counterEl.textContent = veicoli.length;
+        }
+
         renderVeicoloAttivo();
         renderDropdown();
 
@@ -91,8 +99,6 @@ function renderVeicoloAttivo() {
     if (!v) return;
 
     document.getElementById('nome-veicolo-attivo').textContent = v.nome;
-    document.getElementById('switcher-label').textContent =
-        `[ ${veicoloAttivoIndex + 1} - ... ]`;
     localStorage.setItem('veicoloAttivo', JSON.stringify(v));
 }
 
@@ -158,6 +164,7 @@ document.addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     caricaVeicoli();
 });
+
 
 
 // =============================================
