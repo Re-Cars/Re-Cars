@@ -74,6 +74,14 @@ async function caricaVeicoli() {
             targa: v.targa,
             tipo: v.dati_generici[0]?.tipo_veicolo === 'Moto' ? 'motorcycle' : 'car',
         }));
+
+        // AGGIORNAMENTO DINAMICO DEL CONTATORE
+        // Legge quanti veicoli ci sono nell'array e scrive il numero nel badge
+        const counterEl = document.getElementById('veicoli-counter');
+        if (counterEl) {
+            counterEl.textContent = veicoli.length;
+        }
+
         renderVeicoloAttivo();
         renderDropdown();
 
@@ -91,8 +99,6 @@ function renderVeicoloAttivo() {
     if (!v) return;
 
     document.getElementById('nome-veicolo-attivo').textContent = v.nome;
-    document.getElementById('switcher-label').textContent =
-        `[ ${veicoloAttivoIndex + 1} - ... ]`;
     localStorage.setItem('veicoloAttivo', JSON.stringify(v));
 }
 
@@ -158,6 +164,7 @@ document.addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     caricaVeicoli();
 });
+
 
 
 // =============================================
@@ -271,3 +278,33 @@ async function addVehicle(targa, userId) {
         alert("Errore di connessione.");
     }
 }
+//Stampa del nome nel menu a tendina
+async function getUsername(userId) {
+    try {
+        const response = await fetch(`http://localhost:3000/auth/utente/${userId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        if (!response.ok) {
+            alert("Errore durante il recupero dell'utente.");
+            return null;
+        }
+
+        const data = await response.json();
+        return data[0].username;
+
+    } catch (err) {
+        alert("Errore di connessione.");    
+        return null;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const utente = getData('yd_utente_loggato');
+    const username = await getUsername(utente.id);
+
+    if (username) {
+        document.getElementById("avatar-dropdown-name").textContent = username;
+    }
+});
