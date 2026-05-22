@@ -166,13 +166,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
- /* ----------------------------------------------------
+/* ----------------------------------------------------
 /             CARICAMENTO INFO-VEICOLO                 /
 -----------------------------------------------------*/
 
 async function caricaInfoVeicolo() {
-    const veicoloAttivo = JSON.parse(localStorage.getItem('veicoloAttivo'));
-    if (!veicoloAttivo) return;
+    const veicoloAttivo = JSON.parse(localStorage.getItem('veicoloActive'));
 
     try {
         const response = await fetch(`http://localhost:3000/veicolo/${veicoloAttivo.id}`);
@@ -181,6 +180,15 @@ async function caricaInfoVeicolo() {
         const v = await response.json();
         const dg = v.dati_generici[0] || {};
         const ds = v.dati_specifici[0] || {};
+        
+
+        const bollo = v.dateBollo || v.datebollo || {};
+        const rca = v.dateRca || v.daterca || {};
+
+
+        const nomeVeicolo = `${v.marca || ''} ${v.modello || ''}`.trim();
+        document.getElementById('nome-veicolo-attivo').textContent = nomeVeicolo || 'Veicolo Attivo';
+
 
         document.getElementById('iv-tipo').textContent = dg.tipo_veicolo || '-';
         document.getElementById('iv-marca').textContent = v.marca || '-';
@@ -188,10 +196,42 @@ async function caricaInfoVeicolo() {
         document.getElementById('iv-anno').textContent = ds.dataimmatricolazione
             ? new Date(ds.dataimmatricolazione).getFullYear()
             : '-';
+
+
         document.getElementById('iv-alimentazione').textContent = dg.alimentazione || '-';
         document.getElementById('iv-cilindrata').textContent = dg.cilindrata ? `${dg.cilindrata} cc` : '-';
         document.getElementById('iv-cavalli').textContent = dg.cavalli ? `${dg.cavalli} CV` : '-';
         document.getElementById('iv-colore').textContent = dg.colore || '-';
+
+
+        const scadenzaBollo = bollo.scadenza || bollo.Expiry;
+        const isBolloAttivo = bollo.attivo !== undefined ? bollo.attivo : bollo.IsActive;
+
+        if (scadenzaBollo) {
+            const dataBollo = new Date(scadenzaBollo).toLocaleDateString('it-IT');
+            document.getElementById('iv-bollo-date').textContent = `scade il ${dataBollo}`;
+            
+            const badgeBollo = document.getElementById('iv-bollo-stato');
+            badgeBollo.textContent = isBolloAttivo ? 'Attivo' : 'Scaduto';
+            badgeBollo.className = `iv-badge ${isBolloAttivo ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+        } else {
+            document.getElementById('iv-bollo-date').textContent = 'Dato non disponibile';
+        }
+
+
+        const scadenzaRca = rca.scadenza || rca.Expiry;
+        const isRcaAttiva = rca.attivo !== undefined ? rca.attivo : rca.IsInsured;
+
+        if (scadenzaRca) {
+            const dataRca = new Date(scadenzaRca).toLocaleDateString('it-IT');
+            document.getElementById('iv-assicurazione-date').textContent = `scade il ${dataRca}`;
+            
+            const badgeRca = document.getElementById('iv-assicurazione-stato');
+            badgeRca.textContent = isRcaAttiva ? 'Attiva' : 'Scaduta';
+            badgeRca.className = `iv-badge ${isRcaAttiva ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+        } else {
+            document.getElementById('iv-assicurazione-date').textContent = 'Dato non disponibile';
+        }
 
     } catch (err) {
         console.error('Errore nel caricamento info veicolo', err);
