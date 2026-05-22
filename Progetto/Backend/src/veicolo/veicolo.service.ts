@@ -76,4 +76,16 @@ export class VeicoloService {
             },
         });
     }
+
+    async getVeicoloById(id: number) {
+    const veicolo = await this.prisma.veicolo.findUnique({
+        where: { id },
+        include: {
+            dati_generici: true,
+            dati_specifici: true,
+        },
+    });
+    if (!veicolo) throw new NotFoundException(`Veicolo con id ${id} non trovato`);
+    return veicolo;
+}
 }

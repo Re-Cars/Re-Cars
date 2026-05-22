@@ -1,4 +1,4 @@
-/* ----------------------------------------------------
+ /* ----------------------------------------------------
 /                   AVVIO PAGINA                       /
 -----------------------------------------------------*/
 document.addEventListener('DOMContentLoaded', function () {
@@ -55,9 +55,9 @@ function logout() {
     window.location.href = 'landing.html';
 }
 
-// =============================================
-//           GESTIONE MULTI-VEICOLO
-// =============================================
+ /* ----------------------------------------------------
+/            GESTIONE MULTI-VEICOLO                    /
+-----------------------------------------------------*/
 
 let veicoli = [];
 let veicoloAttivoIndex = 0;
@@ -75,8 +75,7 @@ async function caricaVeicoli() {
             tipo: v.dati_generici[0]?.tipo_veicolo === 'Moto' ? 'motorcycle' : 'car',
         }));
 
-        // AGGIORNAMENTO DINAMICO DEL CONTATORE
-        // Legge quanti veicoli ci sono nell'array e scrive il numero nel badge
+
         const counterEl = document.getElementById('veicoli-counter');
         if (counterEl) {
             counterEl.textContent = veicoli.length;
@@ -164,6 +163,40 @@ document.addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     caricaVeicoli();
 });
+
+
+
+ /* ----------------------------------------------------
+/             CARICAMENTO INFO-VEICOLO                 /
+-----------------------------------------------------*/
+
+async function caricaInfoVeicolo() {
+    const veicoloAttivo = JSON.parse(localStorage.getItem('veicoloAttivo'));
+    if (!veicoloAttivo) return;
+
+    try {
+        const response = await fetch(`http://localhost:3000/veicolo/${veicoloAttivo.id}`);
+        if (!response.ok) return;
+
+        const v = await response.json();
+        const dg = v.dati_generici[0] || {};
+        const ds = v.dati_specifici[0] || {};
+
+        document.getElementById('iv-tipo').textContent = dg.tipo_veicolo || '-';
+        document.getElementById('iv-marca').textContent = v.marca || '-';
+        document.getElementById('iv-modello').textContent = v.modello || '-';
+        document.getElementById('iv-anno').textContent = ds.dataimmatricolazione
+            ? new Date(ds.dataimmatricolazione).getFullYear()
+            : '-';
+        document.getElementById('iv-alimentazione').textContent = dg.alimentazione || '-';
+        document.getElementById('iv-cilindrata').textContent = dg.cilindrata ? `${dg.cilindrata} cc` : '-';
+        document.getElementById('iv-cavalli').textContent = dg.cavalli ? `${dg.cavalli} CV` : '-';
+        document.getElementById('iv-colore').textContent = dg.colore || '-';
+
+    } catch (err) {
+        console.error('Errore nel caricamento info veicolo', err);
+    }
+}
 
 
 
@@ -278,7 +311,7 @@ async function addVehicle(targa, userId) {
         alert("Errore di connessione.");
     }
 }
-//Stampa del nome nel menu a tendina
+
 async function getUsername(userId) {
     try {
         const response = await fetch(`http://localhost:3000/auth/utente/${userId}`, {

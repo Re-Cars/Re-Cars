@@ -21,8 +21,20 @@
       "PowerCV": 136,
       "PowerKW": 100,
       "PowerFiscal": 20,
+      "RCA": {
+        "Company": "GENERALI",
+        "Expiry": "2026-03-15T00:00:00",
+        "ExpiryTimestamp": 1773878400,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-04-30T00:00:00",
+        "ExpiryTimestamp": 1746057600,
+        "IsActive": true
+      },
       "Timestamp": 1665411640
     },
+
     {
       "LicensePlate": "FJ849XK",
       "TipoVeicolo": "Autovettura",
@@ -44,8 +56,20 @@
       "PowerCV": 190,
       "PowerKW": 140,
       "PowerFiscal": 23,
+      "RCA": {
+        "Company": "UNIPOL SAI",
+        "Expiry": "2026-07-01T00:00:00",
+        "ExpiryTimestamp": 1782000000,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-07-31T00:00:00",
+        "ExpiryTimestamp": 1753920000,
+        "IsActive": true
+      },
       "Timestamp": 1701388800
     },
+
     {
       "LicensePlate": "GH302PL",
       "TipoVeicolo": "Autovettura",
@@ -67,8 +91,20 @@
       "PowerCV": 130,
       "PowerKW": 96,
       "PowerFiscal": 16,
+      "RCA": {
+        "Company": "AXA ASSICURAZIONI",
+        "Expiry": "2025-09-20T00:00:00",
+        "ExpiryTimestamp": 1758326400,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-09-30T00:00:00",
+        "ExpiryTimestamp": 1759190400,
+        "IsActive": true
+      },
       "Timestamp": 1555027200
     },
+
     {
       "LicensePlate": "RC440AB",
       "TipoVeicolo": "Autovettura",
@@ -90,8 +126,20 @@
       "PowerCV": 120,
       "PowerKW": 88,
       "PowerFiscal": 15,
+      "RCA": {
+        "Company": "ALLIANZ",
+        "Expiry": "2025-06-10T00:00:00",
+        "ExpiryTimestamp": 1749513600,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-06-30T00:00:00",
+        "ExpiryTimestamp": 1751241600,
+        "IsActive": true
+      },
       "Timestamp": 1580515200
     },
+
     {
       "LicensePlate": "KM774FS",
       "TipoVeicolo": "Autovettura",
@@ -113,8 +161,20 @@
       "PowerCV": 116,
       "PowerKW": 85,
       "PowerFiscal": 14,
+      "RCA": {
+        "Company": "CATTOLICA",
+        "Expiry": "2027-01-15T00:00:00",
+        "ExpiryTimestamp": 1831766400,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2026-01-31T00:00:00",
+        "ExpiryTimestamp": 1800172800,
+        "IsActive": true
+      },
       "Timestamp": 1651363200
     },
+
     {
       "LicensePlate": "NV085GR",
       "TipoVeicolo": "Autovettura",
@@ -136,8 +196,20 @@
       "PowerCV": 170,
       "PowerKW": 125,
       "PowerFiscal": 21,
+      "RCA": {
+        "Company": "ZURICH",
+        "Expiry": "2025-11-01T00:00:00",
+        "ExpiryTimestamp": 1762041600,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-11-30T00:00:00",
+        "ExpiryTimestamp": 1764547200,
+        "IsActive": true
+      },
       "Timestamp": 1446422400
     },
+
     {
       "LicensePlate": "ZT571MN",
       "TipoVeicolo": "Moto",
@@ -159,8 +231,20 @@
       "PowerCV": 47,
       "PowerKW": 35,
       "PowerFiscal": 9,
+      "RCA": {
+        "Company": "LINEAR",
+        "Expiry": "2026-04-01T00:00:00",
+        "ExpiryTimestamp": 1775030400,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-04-30T00:00:00",
+        "ExpiryTimestamp": 1746057600,
+        "IsActive": true
+      },
       "Timestamp": 1611014400
     },
+
     {
       "LicensePlate": "YD263WE",
       "TipoVeicolo": "Moto",
@@ -182,8 +266,20 @@
       "PowerCV": 109,
       "PowerKW": 80,
       "PowerFiscal": 20,
+      "RCA": {
+        "Company": "VITTORIA ASSICURAZIONI",
+        "Expiry": "2024-05-12T00:00:00",
+        "ExpiryTimestamp": 1715472000,
+        "IsInsured": false
+      },
+      "Bollo": {
+        "Expiry": "2024-05-31T00:00:00",
+        "ExpiryTimestamp": 1717113600,
+        "IsActive": false
+      },
       "Timestamp": 1487635200
     },
+
     {
       "LicensePlate": "PQ918TJ",
       "TipoVeicolo": "Moto",
@@ -205,8 +301,20 @@
       "PowerCV": 68,
       "PowerKW": 50,
       "PowerFiscal": 13,
+      "RCA": {
+        "Company": "GENERALI",
+        "Expiry": "2027-04-01T00:00:00",
+        "ExpiryTimestamp": 1838505600,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2026-04-30T00:00:00",
+        "ExpiryTimestamp": 1809302400,
+        "IsActive": true
+      },
       "Timestamp": 1680307200
     },
+
     {
       "LicensePlate": "SW659DQ",
       "TipoVeicolo": "Moto",
@@ -228,10 +336,23 @@
       "PowerCV": 73,
       "PowerKW": 54,
       "PowerFiscal": 14,
+      "RCA": {
+        "Company": "HELVETIA",
+        "Expiry": "2026-08-15T00:00:00",
+        "ExpiryTimestamp": 1786089600,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-08-31T00:00:00",
+        "ExpiryTimestamp": 1756656000,
+        "IsActive": true
+      },
       "Timestamp": 1644451200
     },
+
     {
       "LicensePlate": "BT337HM",
+      "TipoVeicolo": "Autovettura",
       "Description": "RENAULT CLIO V",
       "RegistrationYear": "2022",
       "CarMake": "RENAULT",
@@ -250,7 +371,578 @@
       "PowerCV": 140,
       "PowerKW": 103,
       "PowerFiscal": 18,
+      "RCA": {
+        "Company": "AXA ASSICURAZIONI",
+        "Expiry": "2026-10-05T00:00:00",
+        "ExpiryTimestamp": 1791216000,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-10-31T00:00:00",
+        "ExpiryTimestamp": 1761868800,
+        "IsActive": true
+      },
       "Timestamp": 1622764800
+    },
+
+    {
+      "LicensePlate": "LM221KP",
+      "TipoVeicolo": "Autovettura",
+      "Description": "ALFA ROMEO GIULIA",
+      "RegistrationYear": "2020",
+      "CarMake": "ALFA ROMEO",
+      "CarModel": "Giulia",
+      "EngineSize": "1995",
+      "FuelType": "Benzina",
+      "MakeDescription": "ALFA ROMEO",
+      "ModelDescription": "Giulia",
+      "Immobiliser": "Si",
+      "NumberOfDoors": "4",
+      "Version": "Alfa Romeo Giulia 2.0 Turbo 200CV ( 4/2020 )",
+      "ABS": "Si",
+      "AirBag": "Si",
+      "Vin": "ZARFAEBN7L7601234",
+      "KType": "71204",
+      "PowerCV": 200,
+      "PowerKW": 147,
+      "PowerFiscal": 25,
+      "RCA": {
+        "Company": "UNIPOL SAI",
+        "Expiry": "2027-02-20T00:00:00",
+        "ExpiryTimestamp": 1834358400,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2026-02-28T00:00:00",
+        "ExpiryTimestamp": 1803168000,
+        "IsActive": true
+      },
+      "Timestamp": 1588291200
+    },
+
+    {
+      "LicensePlate": "TR882NF",
+      "TipoVeicolo": "Autovettura",
+      "Description": "FORD FOCUS IV",
+      "RegistrationYear": "2019",
+      "CarMake": "FORD",
+      "CarModel": "Focus IV",
+      "EngineSize": "1496",
+      "FuelType": "Benzina",
+      "MakeDescription": "FORD",
+      "ModelDescription": "Focus IV",
+      "Immobiliser": "Si",
+      "NumberOfDoors": "5",
+      "Version": "Ford Focus 1.5 EcoBoost 150CV ( 6/2019 )",
+      "ABS": "Si",
+      "AirBag": "Si",
+      "Vin": "WF0DXXGCHDKA12345",
+      "KType": "38901",
+      "PowerCV": 150,
+      "PowerKW": 110,
+      "PowerFiscal": 19,
+      "RCA": {
+        "Company": "ALLIANZ",
+        "Expiry": "2024-06-01T00:00:00",
+        "ExpiryTimestamp": 1717200000,
+        "IsInsured": false
+      },
+      "Bollo": {
+        "Expiry": "2024-06-30T00:00:00",
+        "ExpiryTimestamp": 1719705600,
+        "IsActive": false
+      },
+      "Timestamp": 1561939200
+    },
+
+    {
+      "LicensePlate": "QA554VC",
+      "TipoVeicolo": "Autovettura",
+      "Description": "HONDA CIVIC XI",
+      "RegistrationYear": "2022",
+      "CarMake": "HONDA",
+      "CarModel": "Civic XI",
+      "EngineSize": "1498",
+      "FuelType": "Ibrido",
+      "MakeDescription": "HONDA",
+      "ModelDescription": "Civic XI",
+      "Immobiliser": "Si",
+      "NumberOfDoors": "5",
+      "Version": "Honda Civic 1.5 e:HEV 184CV ( 9/2022 )",
+      "ABS": "Si",
+      "AirBag": "Si",
+      "Vin": "SHHFK2760NU012345",
+      "KType": "84321",
+      "PowerCV": 184,
+      "PowerKW": 135,
+      "PowerFiscal": 22,
+      "RCA": {
+        "Company": "CATTOLICA",
+        "Expiry": "2027-09-01T00:00:00",
+        "ExpiryTimestamp": 1851292800,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2026-09-30T00:00:00",
+        "ExpiryTimestamp": 1822953600,
+        "IsActive": true
+      },
+      "Timestamp": 1661990400
+    },
+
+    {
+      "LicensePlate": "DX773WA",
+      "TipoVeicolo": "Autovettura",
+      "Description": "PEUGEOT 308 III",
+      "RegistrationYear": "2021",
+      "CarMake": "PEUGEOT",
+      "CarModel": "308 III",
+      "EngineSize": "1199",
+      "FuelType": "Benzina",
+      "MakeDescription": "PEUGEOT",
+      "ModelDescription": "308 III",
+      "Immobiliser": "Si",
+      "NumberOfDoors": "5",
+      "Version": "Peugeot 308 1.2 PureTech 130CV ( 11/2021 )",
+      "ABS": "Si",
+      "AirBag": "Si",
+      "Vin": "VF3LBHNZUMS012345",
+      "KType": "92341",
+      "PowerCV": 130,
+      "PowerKW": 96,
+      "PowerFiscal": 16,
+      "RCA": {
+        "Company": "ZURICH",
+        "Expiry": "2026-11-15T00:00:00",
+        "ExpiryTimestamp": 1794700800,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-11-30T00:00:00",
+        "ExpiryTimestamp": 1764547200,
+        "IsActive": true
+      },
+      "Timestamp": 1637020800
+    },
+
+    {
+      "LicensePlate": "PH661ZB",
+      "TipoVeicolo": "Autovettura",
+      "Description": "JEEP RENEGADE II",
+      "RegistrationYear": "2020",
+      "CarMake": "JEEP",
+      "CarModel": "Renegade II",
+      "EngineSize": "1332",
+      "FuelType": "Benzina",
+      "MakeDescription": "JEEP",
+      "ModelDescription": "Renegade II",
+      "Immobiliser": "Si",
+      "NumberOfDoors": "5",
+      "Version": "Jeep Renegade 1.3 T4 150CV ( 3/2020 )",
+      "ABS": "Si",
+      "AirBag": "Si",
+      "Vin": "ZACNJABB5LPL12345",
+      "KType": "61234",
+      "PowerCV": 150,
+      "PowerKW": 110,
+      "PowerFiscal": 19,
+      "RCA": {
+        "Company": "LINEAR",
+        "Expiry": "2026-03-01T00:00:00",
+        "ExpiryTimestamp": 1772496000,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-03-31T00:00:00",
+        "ExpiryTimestamp": 1743379200,
+        "IsActive": false
+      },
+      "Timestamp": 1583020800
+    },
+
+    {
+      "LicensePlate": "VN339EQ",
+      "TipoVeicolo": "Autovettura",
+      "Description": "OPEL ASTRA L",
+      "RegistrationYear": "2023",
+      "CarMake": "OPEL",
+      "CarModel": "Astra L",
+      "EngineSize": "1199",
+      "FuelType": "Ibrido",
+      "MakeDescription": "OPEL",
+      "ModelDescription": "Astra L",
+      "Immobiliser": "Si",
+      "NumberOfDoors": "5",
+      "Version": "Opel Astra 1.2 Hybrid 130CV ( 7/2023 )",
+      "ABS": "Si",
+      "AirBag": "Si",
+      "Vin": "W0L000000P8012345",
+      "KType": "93201",
+      "PowerCV": 130,
+      "PowerKW": 96,
+      "PowerFiscal": 16,
+      "RCA": {
+        "Company": "HELVETIA",
+        "Expiry": "2027-07-10T00:00:00",
+        "ExpiryTimestamp": 1846886400,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2026-07-31T00:00:00",
+        "ExpiryTimestamp": 1817337600,
+        "IsActive": true
+      },
+      "Timestamp": 1690156800
+    },
+
+    {
+      "LicensePlate": "EG445JR",
+      "TipoVeicolo": "Autovettura",
+      "Description": "SKODA OCTAVIA IV",
+      "RegistrationYear": "2021",
+      "CarMake": "SKODA",
+      "CarModel": "Octavia IV",
+      "EngineSize": "1498",
+      "FuelType": "Diesel",
+      "MakeDescription": "SKODA",
+      "ModelDescription": "Octavia IV",
+      "Immobiliser": "Si",
+      "NumberOfDoors": "5",
+      "Version": "Skoda Octavia 2.0 TDI 150CV ( 2/2021 )",
+      "ABS": "Si",
+      "AirBag": "Si",
+      "Vin": "TMBJP7NE5M7012345",
+      "KType": "78432",
+      "PowerCV": 150,
+      "PowerKW": 110,
+      "PowerFiscal": 19,
+      "RCA": {
+        "Company": "VITTORIA ASSICURAZIONI",
+        "Expiry": "2026-02-01T00:00:00",
+        "ExpiryTimestamp": 1769817600,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-02-28T00:00:00",
+        "ExpiryTimestamp": 1740700800,
+        "IsActive": false
+      },
+      "Timestamp": 1612137600
+    },
+
+    {
+      "LicensePlate": "CF228GS",
+      "TipoVeicolo": "Autovettura",
+      "Description": "SEAT LEON IV",
+      "RegistrationYear": "2022",
+      "CarMake": "SEAT",
+      "CarModel": "Leon IV",
+      "EngineSize": "1498",
+      "FuelType": "Benzina",
+      "MakeDescription": "SEAT",
+      "ModelDescription": "Leon IV",
+      "Immobiliser": "Si",
+      "NumberOfDoors": "5",
+      "Version": "Seat Leon 1.5 TSI 150CV ( 5/2022 )",
+      "ABS": "Si",
+      "AirBag": "Si",
+      "Vin": "VSSZZZ1PZN7012345",
+      "KType": "84120",
+      "PowerCV": 150,
+      "PowerKW": 110,
+      "PowerFiscal": 19,
+      "RCA": {
+        "Company": "GENERALI",
+        "Expiry": "2027-05-01T00:00:00",
+        "ExpiryTimestamp": 1841385600,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2026-05-31T00:00:00",
+        "ExpiryTimestamp": 1811980800,
+        "IsActive": true
+      },
+      "Timestamp": 1652400000
+    },
+
+    {
+      "LicensePlate": "HB114TZ",
+      "TipoVeicolo": "Moto",
+      "Description": "SUZUKI GSX-S750",
+      "RegistrationYear": "2019",
+      "CarMake": "SUZUKI",
+      "CarModel": "GSX-S750",
+      "EngineSize": "749",
+      "FuelType": "Benzina",
+      "MakeDescription": "SUZUKI",
+      "ModelDescription": "GSX-S750",
+      "Immobiliser": "",
+      "NumberOfDoors": "",
+      "Version": "Suzuki GSX-S750 105CV ( 3/2019 )",
+      "ABS": "Si",
+      "AirBag": "",
+      "Vin": "JS1GR7MA4K2012345",
+      "KType": "",
+      "PowerCV": 105,
+      "PowerKW": 77,
+      "PowerFiscal": 19,
+      "RCA": {
+        "Company": "LINEAR",
+        "Expiry": "2026-03-10T00:00:00",
+        "ExpiryTimestamp": 1773273600,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-03-31T00:00:00",
+        "ExpiryTimestamp": 1743379200,
+        "IsActive": false
+      },
+      "Timestamp": 1552003200
+    },
+
+    {
+      "LicensePlate": "WX990BP",
+      "TipoVeicolo": "Moto",
+      "Description": "BMW F900R",
+      "RegistrationYear": "2021",
+      "CarMake": "BMW",
+      "CarModel": "F900R",
+      "EngineSize": "895",
+      "FuelType": "Benzina",
+      "MakeDescription": "BMW",
+      "ModelDescription": "F900R",
+      "Immobiliser": "",
+      "NumberOfDoors": "",
+      "Version": "BMW F900R 105CV ( 7/2021 )",
+      "ABS": "Si",
+      "AirBag": "",
+      "Vin": "WB10G1309MS012345",
+      "KType": "",
+      "PowerCV": 105,
+      "PowerKW": 77,
+      "PowerFiscal": 19,
+      "RCA": {
+        "Company": "ALLIANZ",
+        "Expiry": "2027-07-01T00:00:00",
+        "ExpiryTimestamp": 1846281600,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2026-07-31T00:00:00",
+        "ExpiryTimestamp": 1817337600,
+        "IsActive": true
+      },
+      "Timestamp": 1625097600
+    },
+
+    {
+      "LicensePlate": "KT667RM",
+      "TipoVeicolo": "Moto",
+      "Description": "TRIUMPH STREET TRIPLE",
+      "RegistrationYear": "2020",
+      "CarMake": "TRIUMPH",
+      "CarModel": "Street Triple",
+      "EngineSize": "765",
+      "FuelType": "Benzina",
+      "MakeDescription": "TRIUMPH",
+      "ModelDescription": "Street Triple",
+      "Immobiliser": "",
+      "NumberOfDoors": "",
+      "Version": "Triumph Street Triple R 118CV ( 1/2020 )",
+      "ABS": "Si",
+      "AirBag": "",
+      "Vin": "SMTE01RN0LJ012345",
+      "KType": "",
+      "PowerCV": 118,
+      "PowerKW": 87,
+      "PowerFiscal": 21,
+      "RCA": {
+        "Company": "CATTOLICA",
+        "Expiry": "2024-01-15T00:00:00",
+        "ExpiryTimestamp": 1705276800,
+        "IsInsured": false
+      },
+      "Bollo": {
+        "Expiry": "2024-01-31T00:00:00",
+        "ExpiryTimestamp": 1706659200,
+        "IsActive": false
+      },
+      "Timestamp": 1579824000
+    },
+
+    {
+      "LicensePlate": "FD442YL",
+      "TipoVeicolo": "Moto",
+      "Description": "KTM DUKE 790",
+      "RegistrationYear": "2022",
+      "CarMake": "KTM",
+      "CarModel": "Duke 790",
+      "EngineSize": "799",
+      "FuelType": "Benzina",
+      "MakeDescription": "KTM",
+      "ModelDescription": "Duke 790",
+      "Immobiliser": "",
+      "NumberOfDoors": "",
+      "Version": "KTM 790 Duke 95CV ( 4/2022 )",
+      "ABS": "Si",
+      "AirBag": "",
+      "Vin": "VBKV39409NM012345",
+      "KType": "",
+      "PowerCV": 95,
+      "PowerKW": 70,
+      "PowerFiscal": 18,
+      "RCA": {
+        "Company": "HELVETIA",
+        "Expiry": "2027-04-15T00:00:00",
+        "ExpiryTimestamp": 1839628800,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2026-04-30T00:00:00",
+        "ExpiryTimestamp": 1809302400,
+        "IsActive": true
+      },
+      "Timestamp": 1649721600
+    },
+
+    {
+      "LicensePlate": "MJ773HA",
+      "TipoVeicolo": "Moto",
+      "Description": "APRILIA RS 660",
+      "RegistrationYear": "2021",
+      "CarMake": "APRILIA",
+      "CarModel": "RS 660",
+      "EngineSize": "659",
+      "FuelType": "Benzina",
+      "MakeDescription": "APRILIA",
+      "ModelDescription": "RS 660",
+      "Immobiliser": "",
+      "NumberOfDoors": "",
+      "Version": "Aprilia RS 660 100CV ( 6/2021 )",
+      "ABS": "Si",
+      "AirBag": "",
+      "Vin": "ZD4KK000XMS012345",
+      "KType": "",
+      "PowerCV": 100,
+      "PowerKW": 73,
+      "PowerFiscal": 19,
+      "RCA": {
+        "Company": "UNIPOL SAI",
+        "Expiry": "2027-06-01T00:00:00",
+        "ExpiryTimestamp": 1843516800,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2026-06-30T00:00:00",
+        "ExpiryTimestamp": 1814313600,
+        "IsActive": true
+      },
+      "Timestamp": 1622505600
+    },
+
+    {
+      "LicensePlate": "BE558NX",
+      "TipoVeicolo": "Moto",
+      "Description": "HONDA HORNET CB750",
+      "RegistrationYear": "2023",
+      "CarMake": "HONDA",
+      "CarModel": "Hornet CB750",
+      "EngineSize": "755",
+      "FuelType": "Benzina",
+      "MakeDescription": "HONDA",
+      "ModelDescription": "Hornet CB750",
+      "Immobiliser": "",
+      "NumberOfDoors": "",
+      "Version": "Honda CB750 Hornet 92CV ( 3/2023 )",
+      "ABS": "Si",
+      "AirBag": "",
+      "Vin": "JH2RC720XPS012345",
+      "KType": "",
+      "PowerCV": 92,
+      "PowerKW": 68,
+      "PowerFiscal": 17,
+      "RCA": {
+        "Company": "VITTORIA ASSICURAZIONI",
+        "Expiry": "2027-03-01T00:00:00",
+        "ExpiryTimestamp": 1835136000,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2026-03-31T00:00:00",
+        "ExpiryTimestamp": 1806710400,
+        "IsActive": true
+      },
+      "Timestamp": 1677628800
+    },
+
+    {
+      "LicensePlate": "AX339MD",
+      "TipoVeicolo": "Autovettura",
+      "Description": "HYUNDAI TUCSON IV",
+      "RegistrationYear": "2021",
+      "CarMake": "HYUNDAI",
+      "CarModel": "Tucson IV",
+      "EngineSize": "1598",
+      "FuelType": "Ibrido",
+      "MakeDescription": "HYUNDAI",
+      "ModelDescription": "Tucson IV",
+      "Immobiliser": "Si",
+      "NumberOfDoors": "5",
+      "Version": "Hyundai Tucson 1.6 T-GDi Hybrid 230CV ( 9/2021 )",
+      "ABS": "Si",
+      "AirBag": "Si",
+      "Vin": "TMAH381CBMA012345",
+      "KType": "89023",
+      "PowerCV": 230,
+      "PowerKW": 169,
+      "PowerFiscal": 28,
+      "RCA": {
+        "Company": "ZURICH",
+        "Expiry": "2026-09-10T00:00:00",
+        "ExpiryTimestamp": 1789257600,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-09-30T00:00:00",
+        "ExpiryTimestamp": 1759190400,
+        "IsActive": true
+      },
+      "Timestamp": 1631232000
+    },
+    
+    {
+      "LicensePlate": "ZP007LD",
+      "TipoVeicolo": "Autovettura",
+      "Description": "VOLVO XC40",
+      "RegistrationYear": "2020",
+      "CarMake": "VOLVO",
+      "CarModel": "XC40",
+      "EngineSize": "1969",
+      "FuelType": "Diesel",
+      "MakeDescription": "VOLVO",
+      "ModelDescription": "XC40",
+      "Immobiliser": "Si",
+      "NumberOfDoors": "5",
+      "Version": "Volvo XC40 D3 150CV ( 11/2020 )",
+      "ABS": "Si",
+      "AirBag": "Si",
+      "Vin": "YV1XZABCXLJ012345",
+      "KType": "74321",
+      "PowerCV": 150,
+      "PowerKW": 110,
+      "PowerFiscal": 19,
+      "RCA": {
+        "Company": "GENERALI",
+        "Expiry": "2026-11-20T00:00:00",
+        "ExpiryTimestamp": 1795219200,
+        "IsInsured": true
+      },
+      "Bollo": {
+        "Expiry": "2025-11-30T00:00:00",
+        "ExpiryTimestamp": 1764547200,
+        "IsActive": true
+      },
+      "Timestamp": 1604966400
     }
   ],
   "success": true,
