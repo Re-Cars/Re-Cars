@@ -656,119 +656,143 @@
     }
 }
 
-    /* ----------------------------------------------------
-        /      VEICOLO SWITCHER - agg ad style app        /
-        -----------------------------------------------------*/
-            .home-intro {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 20px 30px 0;
-                position: relative;  
-            }
 
-            .veicolo-switcher {
-                position: relative;
-            }
+ /* ----------------------------------------------------
+/      VEICOLO SWITCHER - agg ad style app             /
+-----------------------------------------------------*/
+.home-intro {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 30px 0;
+    position: relative;  
+}
 
-            .switcher-btn {
-                background: rgba(249, 115, 22, 0.15);
-                border: 1px solid rgba(249, 115, 22, 0.4);
-                color: #f97316;
-                padding: 6px 14px;
-                border-radius: 20px;
-                font-size: 0.85rem;
-                font-weight: 700;
-                font-family: inherit;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                transition: 0.3s;
-            }
+.veicolo-switcher {
+    position: relative;
+}
 
-            .switcher-btn:hover {
-                background: rgba(249, 115, 22, 0.25);
-            }
+.switcher-btn {
+    background: rgba(249, 115, 22, 0.15);
+    border: 1px solid rgba(249, 115, 22, 0.4);
+    color: #f97316;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
 
-            .switcher-btn i {
-                transition: transform 0.3s;
-            }
+.switcher-btn:hover {
+    background: rgba(249, 115, 22, 0.25);
+}
 
-            .switcher-btn.open i {
-                transform: rotate(180deg);
-            }
+.switcher-btn .fa-warehouse {
+    font-size: 0.95rem;
+    color: #f97316;
+}
 
-            .switcher-dropdown {
-                display: none;
-                position: absolute;
-                top: calc(100% + 8px);
-                right: 0;
-                background: #ebebec;
-                border: 1px solid rgba(249, 115, 22, 0.3);
-                border-radius: 14px;
-                padding: 8px;
-                min-width: 220px;
-                z-index: 100;
-                box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-                flex-direction: column;
-                gap: 4px;
-            }
+.switcher-btn i {
+    transition: transform 0.3s;
+}
 
-            .switcher-dropdown.open {
-                display: flex;
-            }
+.switcher-btn.open #switcher-icon {
+    transform: rotate(180deg);
+}
 
-            .switcher-item {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 10px 14px;
-                border-radius: 10px;
-                cursor: pointer;
-                transition: 0.2s;
-                color: rgba(239, 129, 12, 0.7);
-                font-size: 0.9rem;
-                border: none;
-                background: none;
-                width: 100%;
-                text-align: left;
-                font-family: inherit;
-            }
+#veicoli-counter {
+    background: rgba(249, 115, 22, 0.2);
+    color: #f97316;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 4px;
+    display: inline-block;
+    vertical-align: middle;
+}
 
-            .switcher-item:hover {
-                background: rgba(249, 115, 22, 0.1);
-                color: #0f0e0e;
-            }
+#veicoli-counter:empty {
+    display: none;
+}
 
-            .switcher-item.attivo {
-                background: rgba(249, 115, 22, 0.15);
-                color: #f97316;
-                font-weight: 700;
-            }
 
-            .switcher-item i {
-                color: #f97316;
-                width: 16px;
-            }
+.switcher-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #ebebec;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    border-radius: 14px;
+    padding: 8px;
+    min-width: 220px;
+    z-index: 100;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    flex-direction: column;
+    gap: 4px;
+}
 
-            .switcher-item .item-targa {
-                margin-left: auto;
-                background: rgba(249, 115, 22, 0.2);
-                border: 1px solid #f97316;
-                color: #f97316;
-                padding: 1px 8px;
-                border-radius: 5px;
-                font-size: 0.75rem;
-                font-weight: 700;
-                letter-spacing: 1px;
-            }
+.switcher-dropdown.open {
+    display: flex;
+}
 
-            .switcher-aggiungi {
-                border-top: 1px solid rgba(249, 115, 22, 0.15);
-                margin-top: 4px;
-                padding-top: 4px;
-            }
+.switcher-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: rgba(239, 129, 12, 0.7);
+    font-size: 0.9rem;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+}
+
+.switcher-item:hover {
+    background: rgba(249, 115, 22, 0.1);
+    color: #0f0e0e;
+}
+
+.switcher-item.attivo {
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+    font-weight: 700;
+}
+
+.switcher-item i {
+    color: #f97316;
+    width: 16px;
+}
+
+.switcher-item .item-targa {
+    margin-left: auto;
+    background: rgba(249, 115, 22, 0.2);
+    border: 1px solid #f97316;
+    color: #f97316;
+    padding: 1px 8px;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.switcher-aggiungi {
+    border-top: 1px solid rgba(249, 115, 22, 0.15);
+    margin-top: 4px;
+    padding-top: 4px;
+}
+
 
             /* ----------------------------------------------------
             /                   AVATAR DROPDOWN                  /

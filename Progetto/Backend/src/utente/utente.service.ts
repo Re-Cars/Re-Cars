@@ -41,4 +41,9 @@ export class UtenteService {
     const { password, ...risultato } = utente;
     return risultato;
   }
-}
+    async getUtentebyID(id : number)  {
+        return this.prisma.utente.findMany({
+            where: { id }
+            }
+        )};
+    }
