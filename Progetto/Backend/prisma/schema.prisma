@@ -7,8 +7,9 @@ datasource db {
 }
 
 model citta {
-  sigla String @id @db.Char(2)
-  nome  String @unique @db.VarChar(50)
+  sigla    String     @id @db.Char(2)
+  nome     String     @unique @db.VarChar(50)
+  officina officina[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -32,6 +33,10 @@ model dati_specifici {
   datebollo            DateTime? @db.Date
   dataimmatricolazione DateTime? @db.Date
   nomeassicurazione    String?   @db.VarChar(50)
+  datascadenzarca      DateTime? @db.Date
+  isinsured            Boolean?
+  datascadenzabollo    DateTime? @db.Date
+  isbolloattivo        Boolean?
   id_veicolo           Int
   veicolo              veicolo   @relation(fields: [id_veicolo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_dati_specifici_veicolo")
 
@@ -42,9 +47,11 @@ model officina {
   id            Int             @id @default(autoincrement())
   nome          String          @db.VarChar(100)
   indirizzo     String          @db.VarChar(150)
-  cap           String          @db.Char(5)
   email         String          @db.VarChar(255)
   telefono      String          @db.VarChar(20)
+  sigla_citta   String          @db.Char(2)
+  partita_iva   String?         @db.Char(11)
+  citta         citta           @relation(fields: [sigla_citta], references: [sigla], onDelete: NoAction, onUpdate: NoAction, map: "fk_citta")
   officina_tipo officina_tipo[]
   prenotazione  prenotazione[]
 
@@ -80,28 +87,52 @@ model recensione {
 }
 
 model utente {
-  id           Int            @id(map: "utenti_pkey") @default(autoincrement())
-  username     String         @unique(map: "utenti_username_key") @db.VarChar(20)
-  password     String         @db.VarChar(255)
-  email        String         @unique(map: "utenti_email_key") @db.VarChar(255)
-  cellulare    String?        @unique(map: "utenti_cellulare_key") @db.VarChar(20)
-  prenotazione prenotazione[]
-  veicolo      veicolo[]
+  id                 Int                  @id(map: "utenti_pkey") @default(autoincrement())
+  username           String               @unique(map: "utenti_username_key") @db.VarChar(20)
+  password           String               @db.VarChar(255)
+  email              String               @unique(map: "utenti_email_key") @db.VarChar(255)
+  cellulare          String?              @unique(map: "utenti_cellulare_key") @db.VarChar(20)
+  prenotazione       prenotazione[]
+  storico_intervento storico_intervento[]
+  veicolo            veicolo[]
 
   @@index([id, email], map: "idx_utente_id_email")
 }
 
 model veicolo {
-  id             Int              @id(map: "veicoli_pkey") @default(autoincrement())
-  targa          String?          @db.Char(7)
-  marca          String?          @db.VarChar(10)
-  modello        String?          @db.Char(12)
-  id_utente      Int
-  dati_generici  dati_generici[]
-  dati_specifici dati_specifici[]
-  utente         utente           @relation(fields: [id_utente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "veicoli_id_utente_fkey")
+  id                 Int                  @id(map: "veicoli_pkey") @default(autoincrement())
+  targa              String?              @db.Char(7)
+  marca              String?              @db.VarChar(10)
+  modello            String?              @db.Char(12)
+  id_utente          Int
+  dati_generici      dati_generici[]
+  dati_specifici     dati_specifici[]
+  storico_intervento storico_intervento[]
+  utente             utente               @relation(fields: [id_utente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "veicoli_id_utente_fkey")
 
   @@index([id, targa], map: "idx_veicolo_id_targa")
+}
+
+model storico_intervento {
+  id                 Int              @id @default(autoincrement())
+  id_veicolo         Int
+  id_utente          Int
+  id_tipo_intervento Int?
+  data               DateTime         @db.Date
+  descrizione        String?          @db.VarChar(255)
+  mediante           String?          @db.VarChar(100)
+  costo              Decimal?         @db.Decimal(10, 2)
+  tipo_intervento    tipo_intervento? @relation(fields: [id_tipo_intervento], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  utente             utente           @relation(fields: [id_utente], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veicolo            veicolo          @relation(fields: [id_veicolo], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model tipo_intervento {
+  id                 Int                  @id @default(autoincrement())
+  categoria          String               @db.VarChar(20)
+  nome               String               @db.VarChar(100)
+  storico_intervento storico_intervento[]
 }
 
 enum descrizione {
