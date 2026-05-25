@@ -58,8 +58,17 @@ export class VeicoloService {
     await this.prisma.dati_specifici.create({
         data: {
             dataimmatricolazione: trovato.RegistrationYear
-            ? new Date(`${trovato.RegistrationYear}-01-01`)
-            : null,
+                ? new Date(`${trovato.RegistrationYear}-01-01`)
+                : null,
+            nomeassicurazione: trovato.RCA?.Company || null,
+            datascadenzarca: trovato.RCA?.Expiry
+                ? new Date(trovato.RCA.Expiry)
+                : null,
+            isinsured: trovato.RCA?.IsInsured ?? null,
+            datascadenzabollo: trovato.Bollo?.Expiry
+                ? new Date(trovato.Bollo.Expiry)
+                : null,
+            isbolloattivo: trovato.Bollo?.IsActive ?? null,
             id_veicolo: veicolo.id,
         },
     });

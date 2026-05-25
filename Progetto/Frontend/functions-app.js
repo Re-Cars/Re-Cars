@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
 -----------------------------------------------------*/
 
 async function caricaInfoVeicolo() {
-    const veicoloAttivo = JSON.parse(localStorage.getItem('veicoloActive'));
+    const veicoloAttivo = JSON.parse(localStorage.getItem('veicoloAttivo'));
 
     try {
         const response = await fetch(`http://localhost:3000/veicolo/${veicoloAttivo.id}`);
