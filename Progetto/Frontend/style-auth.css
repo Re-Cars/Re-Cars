@@ -3,7 +3,7 @@
 -----------------------------------------------------*/
 .landing-body,
 .auth-body {
-    background-image: url('img/garage.jpg');
+    background-image: url('Img/garage.jpg.jpg');
     background-size: cover;
     background-position: center;
     justify-content: center;
@@ -14,7 +14,7 @@
 .landing-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.2);
     z-index: 0;
 }
 
@@ -56,8 +56,21 @@
     font-weight: 800;
     margin: 0;
     letter-spacing: 2px;
-    /*background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);*/
+    /*background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);*/ /*vecchia animazione*/
      background: linear-gradient(90deg, #fff, #ffffff, #fff);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: anim-colore 8s linear infinite;
+}
+
+.landing-title2 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 2px;
+    /*background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);*/
+     background: #2b88b8;
     background-size: 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -69,7 +82,7 @@
     font-style: italic;
     margin: 0 0 100px 0;
 /*background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);*/
-     background: linear-gradient(90deg, #fff, #ffffff, #fff);    background-size: 300%;
+    background: linear-gradient(90deg, #fff, #ffffff, #fff);    background-size: 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: anim-colore 8s linear infinite;
@@ -209,7 +222,8 @@ body.landing-body {
     max-width: 420px;
     padding: 40px 32px;
     /*background: rgba(10, 14, 40, 0.9);*/
-    background: #2b88b8;
+    /*background: #1f386cd0;*/ /*colore blu card;*/
+    background:#f6f6f7;
     border-radius: 18px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
@@ -218,7 +232,8 @@ body.landing-body {
 }
 
 .auth-back {
-    color: rgba(255, 255, 255, 0.6);
+    /*color: rgba(255, 255, 255, 0.6);*/ /*font torna indietro/registrat*/
+    color:#184f8a;
     text-decoration: none;
     font-size: 0.9rem;
     display: inline-flex;
@@ -258,7 +273,8 @@ body.landing-body {
 
 .auth-switch {
     text-align: center;
-    color: rgba(255, 255, 255, 0.5);
+    /*color: rgba(255, 255, 255, 0.5);*/ /*Non hai un account;*/
+    color:#565555;
     font-size: 0.9rem;
     margin: 0;
 }
@@ -352,7 +368,8 @@ body.landing-body {
     align-items: center;
     gap: 12px;
     background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    /*border: 1px solid rgba(255, 255, 255, 0.15);*//* cornice_barre;*/
+    border: 1px solid rgba(205, 92, 12, 0.271);
     border-radius: 10px;
     padding: 10px 14px;
     transition: 0.3s;
@@ -374,13 +391,15 @@ body.landing-body {
     background: none;
     border: none;
     outline: none;
-    color: #f0f0f0;
+    /*color: #f0f0f0; *//*scrittura testo;*/
+    color: #565555;
     font-size: 0.95rem;
     font-family: inherit;
 }
 
 .input-group input::placeholder {
-    color: rgba(255, 255, 255, 0.3);
+    /*color: rgba(255, 255, 255, 0.979);*/
+    color: rgba(161, 160, 160, 0.815);
 }
 
 .input-group select option {
