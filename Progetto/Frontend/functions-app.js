@@ -160,8 +160,12 @@ document.addEventListener('click', (e) => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    caricaVeicoli();
+document.addEventListener('DOMContentLoaded', async () => {
+    await caricaVeicoli();
+    
+    if (document.getElementById('iv-tipo')) {
+        caricaInfoVeicolo();
+    }
 });
 
 
@@ -182,9 +186,6 @@ async function caricaInfoVeicolo() {
         const ds = v.dati_specifici[0] || {};
         
 
-        const bollo = v.dateBollo || v.datebollo || {};
-        const rca = v.dateRca || v.daterca || {};
-
 
         const nomeVeicolo = `${v.marca || ''} ${v.modello || ''}`.trim();
         document.getElementById('nome-veicolo-attivo').textContent = nomeVeicolo || 'Veicolo Attivo';
@@ -204,31 +205,23 @@ async function caricaInfoVeicolo() {
         document.getElementById('iv-colore').textContent = dg.colore || '-';
 
 
-        const scadenzaBollo = bollo.scadenza || bollo.Expiry;
-        const isBolloAttivo = bollo.attivo !== undefined ? bollo.attivo : bollo.IsActive;
-
-        if (scadenzaBollo) {
-            const dataBollo = new Date(scadenzaBollo).toLocaleDateString('it-IT');
+        if (ds.datascadenzabollo) {
+            const dataBollo = new Date(ds.datascadenzabollo).toLocaleDateString('it-IT');
             document.getElementById('iv-bollo-date').textContent = `scade il ${dataBollo}`;
-            
             const badgeBollo = document.getElementById('iv-bollo-stato');
-            badgeBollo.textContent = isBolloAttivo ? 'Attivo' : 'Scaduto';
-            badgeBollo.className = `iv-badge ${isBolloAttivo ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+            badgeBollo.textContent = ds.isbolloattivo ? 'Attivo' : 'Scaduto';
+            badgeBollo.className = `iv-badge ${ds.isbolloattivo ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
         } else {
             document.getElementById('iv-bollo-date').textContent = 'Dato non disponibile';
         }
 
 
-        const scadenzaRca = rca.scadenza || rca.Expiry;
-        const isRcaAttiva = rca.attivo !== undefined ? rca.attivo : rca.IsInsured;
-
-        if (scadenzaRca) {
-            const dataRca = new Date(scadenzaRca).toLocaleDateString('it-IT');
+        if (ds.datascadenzarca) {
+            const dataRca = new Date(ds.datascadenzarca).toLocaleDateString('it-IT');
             document.getElementById('iv-assicurazione-date').textContent = `scade il ${dataRca}`;
-            
             const badgeRca = document.getElementById('iv-assicurazione-stato');
-            badgeRca.textContent = isRcaAttiva ? 'Attiva' : 'Scaduta';
-            badgeRca.className = `iv-badge ${isRcaAttiva ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+            badgeRca.textContent = ds.isinsured ? 'Attiva' : 'Scaduta';
+            badgeRca.className = `iv-badge ${ds.isinsured ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
         } else {
             document.getElementById('iv-assicurazione-date').textContent = 'Dato non disponibile';
         }
