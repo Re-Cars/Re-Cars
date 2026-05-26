@@ -87,8 +87,9 @@ async function login(email, password) {
     console.log('Login effettuato:', data);
     
     //localstorage
-     setData('yd_utente_loggato', { id: data.id, username: data.username, email: data.email });
-     window.location.href = 'homepage.html';
+    localStorage.setItem('access_token', data.access_token);
+    setData('yd_utente_loggato', { id: data.id, username: data.username, email: data.email });
+    window.location.href = 'homepage.html';
 
   } catch (error) {
     console.error('Errore login:', error.message);
@@ -100,6 +101,7 @@ async function login(email, password) {
 -----------------------------------------------------*/
 
 function logout() {
+    localStorage.removeItem('access_token');
     localStorage.removeItem('yd_utente_loggato');
     window.location.href = 'landing.html';
 }

@@ -1,12 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { JwtService } from '@nestjs/jwt'; 
 import { CreateUtenteDto } from '../utente/dto/create-utente.dto';
 import { LoginUtenteDto } from './dto/login-utente.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UtenteService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private jwtService: JwtService,) {}
 
   async registra(data: CreateUtenteDto) {
 
@@ -37,12 +38,17 @@ export class UtenteService {
       throw new UnauthorizedException('Credenziali non valide');
     }
 
-    // Restituisce i dati utente senza la password
     const { password, ...risultato } = utente;
-    return risultato;
+
+    // 👇 genera e restituisce il token insieme ai dati utente
+    const payload = { sub: utente.id, email: utente.email };
+    return {
+      access_token: this.jwtService.sign(payload),
+      utente: risultato,
+    };
   }
     async getUtentebyID(id : number)  {
-        return this.prisma.utente.findMany({
+        return this.prisma.utente.findUnique({
             where: { id }
             }
         )};

@@ -52,6 +52,7 @@ function closeMenu() {
 
 function logout() {
     localStorage.removeItem('yd_utente_loggato');
+    localStorage.removeItem('access_token');
     window.location.href = 'landing.html';
 }
 
@@ -66,7 +67,13 @@ async function caricaVeicoli() {
     const utente = getData('yd_utente_loggato');
     if (!utente) return;
     try {
-        const response = await fetch(`http://localhost:3000/veicolo/utente/${utente.id}`);
+        const token = localStorage.getItem('access_token');
+        const response = await fetch(`http://localhost:3000/veicolo/utente/${utente.id}`, {
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,  
+        }
+    });
         const data = await response.json();
         veicoli = data.map(v => ({
             id: v.id,
@@ -260,17 +267,25 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function addVehicle(targa, userId) {
+    const token = localStorage.getItem('access_token');
     try {
         const response = await fetch("http://localhost:3000/veicolo", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" ,  'Authorization': `Bearer ${token}`  },
             body: JSON.stringify({ targa, id_utente: userId })
         });
+
+        if (response.status === 401) {
+            alert('Sessione scaduta, effettua di nuovo il login');
+            logout();
+            return;
+        }
 
         if (!response.ok) {
             alert("Errore durante l'aggiunta del veicolo.");
             return;
         }
+
 
         alert("Veicolo aggiunto correttamente!");
         window.location.href = "homepage.html";
@@ -280,13 +295,20 @@ async function addVehicle(targa, userId) {
 }
 //Stampa del nome nel menu a tendina
 async function getUsername(userId) {
+    const token = localStorage.getItem('access_token');
     try {
         const response = await fetch(`http://localhost:3000/auth/utente/${userId}`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` }
         });
 
-        if (!response.ok) {
+        if (response.status === 401) {       
+            alert('Sessione scaduta, effettua di nuovo il login');
+            logout();
+            return null;
+        }
+
+        if (!response.ok) {                  
             alert("Errore durante il recupero dell'utente.");
             return null;
         }
@@ -295,7 +317,7 @@ async function getUsername(userId) {
         return data[0].username;
 
     } catch (err) {
-        alert("Errore di connessione.");    
+        alert("Errore di connessione.");
         return null;
     }
 }
