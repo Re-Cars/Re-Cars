@@ -81,21 +81,23 @@
         <span>Prenotazioni</span>
     </div>
 
-            <section class="home-intro">
-            <div class="home-intro-veicolo">
-                <div class="veicolo-dot"></div>
-                <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
-            </div>
-            <div class="veicolo-switcher" id="veicolo-switcher">
-                <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
-                    <span id="switcher-label">[ 1 - ... ]</span>
-                    <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
-                </button>
-                <div class="switcher-dropdown" id="switcher-dropdown">
-                    <!-- popolato da JS -->
-                </div>
-            </div>
+    <section class="home-intro">
+        <div class="home-intro-veicolo">
+            <div class="veicolo-dot"></div>
+            <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
+        </div>
+        <div class="veicolo-switcher" id="veicolo-switcher">
+            <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                <span id="switcher-label">
+                    <i class="fa-solid fa-warehouse"></i>
+                    <span id="veicoli-counter"></span>
+                </span>
+                <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+            </button>
+            <div class="switcher-dropdown" id="switcher-dropdown"></div>
+        </div>
     </section>
+
 
     <section class="page-hero">
         <h2 class="section-title-page">Prenota Officina</h2>
