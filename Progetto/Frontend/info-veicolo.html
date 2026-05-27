@@ -50,7 +50,7 @@
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="logo" class="header-logo-img">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
            <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
@@ -95,16 +95,15 @@
             <div class="veicolo-switcher" id="veicolo-switcher">
                 <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
                     <span id="switcher-label">
-                    <i class="fa-solid fa-warehouse"></i>
-                    <span id="veicoli-counter"></span>
-                </span>
+                        <i class="fa-solid fa-warehouse"></i>
+                        <span id="veicoli-counter"></span>
+                    </span>
                     <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
                 </button>
-                <div class="switcher-dropdown" id="switcher-dropdown">
-                    <!-- popolato da JS -->
-                </div>
+                <div class="switcher-dropdown" id="switcher-dropdown"></div>
             </div>
-    </section>
+        </section>
+
 
     <section class="iv-dashboard">
 
@@ -148,8 +147,8 @@
             <div class="iv-cell-value" id="iv-cavalli">69 CV</div>
         </div>
         <div class="iv-info-cell">
-            <div class="iv-cell-label">Colore</div>
-            <div class="iv-cell-value" id="iv-colore">Bianco</div>
+            <div class="iv-cell-label">Targa</div>
+            <div class="iv-cell-value" id="iv-targa">-</div>
         </div>
     </div>
 
@@ -170,29 +169,8 @@
 
         <div class="iv-maint-cell">
             <div class="iv-maint-left">
-                <div class="iv-maint-title">Revisione</div>
-                <div class="iv-maint-date" id="iv-revisione-date">scade gg/mm/aa</div>
-            </div>
-            <div class="iv-maint-right">
-                <span class="iv-badge iv-badge-scaduta" id="iv-revisione-stato">Scaduta</span>
-                <div class="iv-info-icon" title="Dettagli revisione"><i class="fa-solid fa-circle-info"></i></div>
-            </div>
-        </div>
-
-        <div class="iv-maint-cell">
-            <div class="iv-maint-left">
-                <div class="iv-maint-title">Tagliando</div>
-                <div class="iv-maint-date" id="iv-tagliando-date">scade gg/mm/aa</div>
-            </div>
-            <div class="iv-maint-right">
-                <span class="iv-badge iv-badge-in-scadenza" id="iv-tagliando-stato">In scadenza</span>
-                <div class="iv-info-icon" title="Dettagli tagliando"><i class="fa-solid fa-circle-info"></i></div>
-            </div>
-        </div>
-
-        <div class="iv-maint-cell">
-            <div class="iv-maint-left">
                 <div class="iv-maint-title">Assicurazione</div>
+                <div class="iv-maint-compagnia" id="iv-assicurazione-compagnia">-</div>
                 <div class="iv-maint-date" id="iv-assicurazione-date">scade gg/mm/aa</div>
             </div>
             <div class="iv-maint-right">
@@ -202,11 +180,11 @@
         </div>
 
         <div class="iv-aggiorna-wrap">
-                <button class="iv-aggiorna-btn" onclick="aggiornaScheda()">
-                    <span>Aggiorna sezione</span>
-                    <i class="fa-solid fa-rotate-right"></i>
-                </button>
-            </div>
+            <button class="iv-aggiorna-btn" onclick="aggiornaScheda()">
+                <span>Aggiorna sezione</span>
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </div>
 
     </div>
 </section>
