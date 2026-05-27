@@ -21,4 +21,9 @@ export class VeicoloController {
     async getVeicoliUtente(@Param('id') id: string) {
         return this.veicoloService.getVeicoliByUtente(+id);
     }
+
+    @Get(':id')
+    async getVeicolo(@Param('id') id: string) {
+        return this.veicoloService.getVeicoloById(+id);
+    }
 }
