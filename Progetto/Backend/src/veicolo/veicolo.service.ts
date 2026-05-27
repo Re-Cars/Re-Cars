@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateVeicoloDto } from './dto/create-veicolo.dto';
 import * as datiMock from '../../data/veicoli.json';
@@ -31,11 +31,21 @@ export class VeicoloService {
             (v: any) => v.LicensePlate.toUpperCase() === dto.targa.toUpperCase()
         );
 
-    if (!trovato) {
-        throw new NotFoundException(`Veicolo con targa ${dto.targa} non trovato`);
-    }
+        if (!trovato) {
+            throw new NotFoundException(`Veicolo con targa ${dto.targa} non trovato`);
+        }
 
-    const veicolo = await this.prisma.veicolo.create({
+        const esistente = await this.prisma.veicolo.findFirst({
+            where: {
+                targa: dto.targa.toUpperCase(),
+            },
+        });
+
+        if (esistente) {
+            throw new ConflictException(`Hai già aggiunto il veicolo con targa ${dto.targa}`);
+        }
+
+        const veicolo = await this.prisma.veicolo.create({
         data: {
             targa: trovato.LicensePlate,
             marca: trovato.CarMake.substring(0, 10),
@@ -58,8 +68,17 @@ export class VeicoloService {
     await this.prisma.dati_specifici.create({
         data: {
             dataimmatricolazione: trovato.RegistrationYear
-            ? new Date(`${trovato.RegistrationYear}-01-01`)
-            : null,
+                ? new Date(`${trovato.RegistrationYear}-01-01`)
+                : null,
+            nomeassicurazione: trovato.RCA?.Company || null,
+            datascadenzarca: trovato.RCA?.Expiry
+                ? new Date(trovato.RCA.Expiry)
+                : null,
+            isinsured: trovato.RCA?.IsInsured ?? null,
+            datascadenzabollo: trovato.Bollo?.Expiry
+                ? new Date(trovato.Bollo.Expiry)
+                : null,
+            isbolloattivo: trovato.Bollo?.IsActive ?? null,
             id_veicolo: veicolo.id,
         },
     });
@@ -76,4 +95,16 @@ export class VeicoloService {
             },
         });
     }
+
+    async getVeicoloById(id: number) {
+    const veicolo = await this.prisma.veicolo.findUnique({
+        where: { id },
+        include: {
+            dati_generici: true,
+            dati_specifici: true,
+        },
+    });
+    if (!veicolo) throw new NotFoundException(`Veicolo con id ${id} non trovato`);
+    return veicolo;
+}
 }

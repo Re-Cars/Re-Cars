@@ -45,3 +45,25 @@ footer {
     flex: 1;
     overflow-y: auto;
 }
+
+
+ /* ----------------------------------------------------
+/                      DARK/LIGHT MODE                 /
+-----------------------------------------------------*/
+
+:root {
+    --bg: #ffffff;
+    --text: #000000;
+    --surface: #f1f1f1;
+}
+
+[data-theme="dark"] {
+    --bg: #1a1a2e;
+    --text: #ffffff;
+    --surface: #16213e;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+}

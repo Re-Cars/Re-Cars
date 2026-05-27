@@ -90,6 +90,14 @@
     color: #888;
     margin-top: 3px;
 }
+
+.iv-maint-compagnia {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--iv-blue-dark);
+    margin-top: 3px;
+}
+
 .iv-maint-right {
     display: flex;
     align-items: center;

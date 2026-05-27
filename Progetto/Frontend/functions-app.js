@@ -1,4 +1,4 @@
-/* ----------------------------------------------------
+ /* ----------------------------------------------------
 /                   AVVIO PAGINA                       /
 -----------------------------------------------------*/
 document.addEventListener('DOMContentLoaded', function () {
@@ -55,9 +55,9 @@ function logout() {
     window.location.href = 'landing.html';
 }
 
-// =============================================
-//           GESTIONE MULTI-VEICOLO
-// =============================================
+ /* ----------------------------------------------------
+/            GESTIONE MULTI-VEICOLO                    /
+-----------------------------------------------------*/
 
 let veicoli = [];
 let veicoloAttivoIndex = 0;
@@ -75,8 +75,7 @@ async function caricaVeicoli() {
             tipo: v.dati_generici[0]?.tipo_veicolo === 'Moto' ? 'motorcycle' : 'car',
         }));
 
-        // AGGIORNAMENTO DINAMICO DEL CONTATORE
-        // Legge quanti veicoli ci sono nell'array e scrive il numero nel badge
+
         const counterEl = document.getElementById('veicoli-counter');
         if (counterEl) {
             counterEl.textContent = veicoli.length;
@@ -134,6 +133,10 @@ function selezionaVeicolo(index) {
     renderVeicoloAttivo();
     renderDropdown();
     closeSwitcher();
+
+    if (document.getElementById('iv-tipo')) {
+        caricaInfoVeicolo();
+    }
 }
 
 function toggleSwitcher() {
@@ -161,9 +164,77 @@ document.addEventListener('click', (e) => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    caricaVeicoli();
+document.addEventListener('DOMContentLoaded', async () => {
+    await caricaVeicoli();
+    
+    if (document.getElementById('iv-tipo')) {
+        caricaInfoVeicolo();
+    }
 });
+
+
+
+/* ----------------------------------------------------
+/             CARICAMENTO INFO-VEICOLO                 /
+-----------------------------------------------------*/
+
+async function caricaInfoVeicolo() {
+    const veicoloAttivo = JSON.parse(localStorage.getItem('veicoloAttivo'));
+
+    try {
+        const response = await fetch(`http://localhost:3000/veicolo/${veicoloAttivo.id}`);
+        if (!response.ok) return;
+
+        const v = await response.json();
+        const dg = v.dati_generici[0] || {};
+        const ds = v.dati_specifici[0] || {};
+        
+
+
+        const nomeVeicolo = `${v.marca || ''} ${v.modello || ''}`.trim();
+        document.getElementById('nome-veicolo-attivo').textContent = nomeVeicolo || 'Veicolo Attivo';
+
+
+        document.getElementById('iv-tipo').textContent = dg.tipo_veicolo || '-';
+        document.getElementById('iv-marca').textContent = v.marca || '-';
+        document.getElementById('iv-modello').textContent = v.modello || '-';
+        document.getElementById('iv-anno').textContent = ds.dataimmatricolazione
+            ? new Date(ds.dataimmatricolazione).getFullYear()
+            : '-';
+
+
+        document.getElementById('iv-alimentazione').textContent = dg.alimentazione || '-';
+        document.getElementById('iv-cilindrata').textContent = dg.cilindrata ? `${dg.cilindrata} cc` : '-';
+        document.getElementById('iv-cavalli').textContent = dg.cavalli ? `${dg.cavalli} CV` : '-';
+        document.getElementById('iv-targa').textContent = v.targa || '-';
+
+
+        if (ds.datascadenzabollo) {
+            const dataBollo = new Date(ds.datascadenzabollo).toLocaleDateString('it-IT');
+            document.getElementById('iv-bollo-date').textContent = `scade il ${dataBollo}`;
+            const badgeBollo = document.getElementById('iv-bollo-stato');
+            badgeBollo.textContent = ds.isbolloattivo ? 'Attivo' : 'Scaduto';
+            badgeBollo.className = `iv-badge ${ds.isbolloattivo ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+        } else {
+            document.getElementById('iv-bollo-date').textContent = 'Dato non disponibile';
+        }
+
+
+        if (ds.datascadenzarca) {
+            const dataRca = new Date(ds.datascadenzarca).toLocaleDateString('it-IT');
+            document.getElementById('iv-assicurazione-date').textContent = `scade il ${dataRca}`;
+            document.getElementById('iv-assicurazione-compagnia').textContent = ds.nomeassicurazione || '-';
+            const badgeRca = document.getElementById('iv-assicurazione-stato');
+            badgeRca.textContent = ds.isinsured ? 'Attiva' : 'Scaduta';
+            badgeRca.className = `iv-badge ${ds.isinsured ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+        } else {
+            document.getElementById('iv-assicurazione-date').textContent = 'Dato non disponibile';
+        }
+
+    } catch (err) {
+        console.error('Errore nel caricamento info veicolo', err);
+    }
+}
 
 
 
@@ -267,6 +338,11 @@ async function addVehicle(targa, userId) {
             body: JSON.stringify({ targa, id_utente: userId })
         });
 
+        if (response.status === 409) {
+            alert("Veicolo già esistente nel db!");
+            return;
+        }
+
         if (!response.ok) {
             alert("Errore durante l'aggiunta del veicolo.");
             return;
@@ -278,7 +354,7 @@ async function addVehicle(targa, userId) {
         alert("Errore di connessione.");
     }
 }
-//Stampa del nome nel menu a tendina
+
 async function getUsername(userId) {
     try {
         const response = await fetch(`http://localhost:3000/auth/utente/${userId}`, {
