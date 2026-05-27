@@ -1,154 +1,623 @@
 <!DOCTYPE html>
 <html lang="it">
-
+ 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RE|CARS-Storico inteventi</title>
+    <title>RE|CARS — Storico Interventi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style_infoveicoli.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
+ 
+<style>
+ 
+  :root {
+    --ordinario: #3b82f6;
+    --ordinario-bg: #eff6ff;
+    --ordinario-border: #bfdbfe;
+    --straordinario: #ef4444;
+    --straordinario-bg: #fef2f2;
+    --straordinario-border: #fecaca;
+    --gestione: #37a961;
+    --gestione-bg: #f0fdf4;
+    --gestione-border: #bbf7d0;
+  }
+ 
+  /* FILTERS */
+  .filters {
+    background: white;
+    border: 1px solid var(--border); border-top: none; border-radius: 10px;
+    padding: 12px 18px; display: flex; align-items: center;
+    gap: 8px; flex-wrap: wrap;
+  }
+  .filter-label {
+    font-size: 12px; color: var(--text-muted); font-weight: 500;
+    margin-right: 4px;
+  }
+  .filter-btn {
+    padding: 5px 14px;
+    border-radius: 20px; border: 1.5px solid var(--border);
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted); transition: all 0.18s ease;
+    display: flex; align-items: center;
+    gap: 6px;
+  }
+  .filter-btn .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .filter-btn.active-all          { background: #3b83f628; color: rgb(0,0,0); }
+  .filter-btn.active-ordinario    { background: var(--ordinario-bg); color: var(--ordinario); }
+  .filter-btn.active-straordinario{ background: var(--straordinario-bg); color: var(--straordinario); }
+  .filter-btn.active-gestione     { background: var(--gestione-bg); color: var(--gestione); }
+ 
+  /* TABLE */
+  .table-wrap {
+    background: white;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+  }
+  .table-head {
+    display: grid;
+    grid-template-columns: 120px 130px 1fr 150px 90px 60px;
+    padding: 8px 18px;
+    background: #f9f8f5;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    gap: 8px;
+    align-items: center;
+  }
+  .table-body { }
+  .table-row {
+    display: grid;
+    grid-template-columns: 120px 130px 1fr 150px 90px 60px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+    align-items: center;
+    font-size: 13px;
+    transition: background 0.15s ease;
+    cursor: default;
+    animation: fadeIn 0.3s ease forwards;
+  }
+  .table-row:last-child { border-bottom: none; }
+  .table-row:hover { background: #fafaf8; }
+ 
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+ 
+  /* PALLINO COLORATO */
+  .cat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+  .cat-dot.ordinario     { background: var(--ordinario); }
+  .cat-dot.straordinario { background: var(--straordinario); }
+  .cat-dot.gestione      { background: var(--gestione); }
+ 
+  /* DATA + PALLINO */
+  .date-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+ 
+  /* CATEGORIA BADGE */
+  .cat-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .cat-badge.ordinario {
+    background: var(--ordinario-bg);
+    color: var(--ordinario);
+    border: 1px solid var(--ordinario-border);
+  }
+  .cat-badge.straordinario {
+    background: var(--straordinario-bg);
+    color: var(--straordinario);
+    border: 1px solid var(--straordinario-border);
+  }
+  .cat-badge.gestione {
+    background: var(--gestione-bg);
+    color: var(--gestione);
+    border: 1px solid var(--gestione-border);
+  }
+ 
+  .desc-cell { color: var(--text); font-weight: 400; }
+  .desc-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+ 
+  .mediante-cell { color: var(--text-muted); font-size: 12px; }
+  .costo-cell {
+    font-family: 'DM Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .costo-cell.vuoto { color: var(--text-muted); font-weight: 400; font-size: 12px; }
+ 
+  .actions { display: flex; gap: 6px; justify-content: flex-end; }
+  .action-btn {
+    width: 28px; height: 28px;
+    border-radius: 6px; border: none;
+    cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 12px; transition: all 0.15s;
+  }
+  .edit-btn { background: #eff6ff; color: #3b82f6; }
+  .edit-btn:hover { background: #3b82f6; color: white; }
+  .del-btn  { background: #fef2f2; color: #ef4444; }
+  .del-btn:hover  { background: #ef4444; color: white; }
+ 
+  /* EMPTY STATE */
+  .empty-state {
+    padding: 40px; text-align: center;
+    color: var(--text-muted); font-size: 13px;
+    display: none;
+  }
+  .empty-state.visible { display: block; }
+ 
+  /* ADD BTN */
+  .add-section {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center; margin-top: 14px;
+    gap: 10px; padding: 0 4px 20px;
+  }
+  .btn-aggiungi-label {
+    color: #434343;
+    font-size: 0.85rem; text-align: right; font-style: italic;
+  }
+  .btn-intervento {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: #0068a5;
+    color: #fff;
+    display: flex;
+    align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    border: none; outline: none;
+    cursor: pointer; transition: 0.3s;
+  }
+  .btn-intervento:hover {
+    background: #044164;
+    transform: scale(1.08);
+  }
+ 
+  /* COUNT BADGE */
+  .count-badge {
+    background: rgba(255,255,255,0.25);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+ 
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(50,49,49,0.35);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: white;
+    border-radius: 14px;
+    padding: 28px;
+    width: 480px;
+    max-width: 95vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    transform: translateY(10px);
+    transition: transform 0.2s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-title {
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .form-row { margin-bottom: 14px; }
+  .form-row label {
+    display: block;
+    font-size: 11px; font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    margin-bottom: 6px;
+  }
+  .form-row input,
+  .form-row select,
+  .form-row textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text);
+    background: white;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-row input:focus,
+  .form-row select:focus,
+  .form-row textarea:focus { border-color: #3b82f6; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-actions {
+    display: flex; gap: 10px; justify-content: flex-end;
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-cancel {
+    padding: 9px 20px; border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: white; cursor: pointer;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .btn-cancel:hover { border-color: #504b4b; color: #ef4444; background: #fef2f2; }
+  .btn-save {
+    padding: 9px 24px; border-radius: 8px;
+    border: none; background: #f59e0b;
+    cursor: pointer;
+    font-size: 13px; font-weight: 600;
+    color: white; transition: all 0.15s;
+  }
+  .btn-save:hover { background: #d97706; }
+ 
+</style>
 </head>
-
+ 
 <body>
-
-   <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
-
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="logo" class="sidebar-logo-img">
-            <span class="sidebar-brand">RE<span>|</span>CARS</span>
-        </div>
-        <nav class="sidebar-nav">
+ 
+  <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+ 
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="logo" class="sidebar-logo-img">
+      <span class="sidebar-brand">RE<span>|</span>CARS</span>
+    </div>
+    <nav class="sidebar-nav">
       <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
       <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
       <a href="impostazioni.html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
-      <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
+      <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti</a>
       <a href="imp_infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
       <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
-       <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+      <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
       <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
     </nav>
   </div>
-
-    <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
-        <span class="line line1"></span>
-        <span class="line line2"></span>
-        <span class="line line3"></span>
-        <span class="line line4"></span>
+ 
+  <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+    <span class="line line1"></span>
+    <span class="line line2"></span>
+    <span class="line line3"></span>
+    <span class="line line4"></span>
+  </div>
+ 
+  <header class="header">
+    <div class="header-left"></div>
+    <div class="header-center">
+      <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+      <span class="header-brand">RE<span>|</span>CARS</span>
     </div>
-
-    <header class="header">
-        <div class="header-left"></div>
-        <div class="header-center">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
-           <span class="header-brand">RE<span>|</span>CARS</span>
+    <div class="header-right">
+      <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+        <div class="header-avatar">
+          <i class="fa-solid fa-user"></i>
         </div>
-        <div class="header-right">
-           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
-            <div class="header-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>   -->
-
-               <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
-                    <div class="header-avatar"> 
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <div class="avatar-dropdown" id="avatar-dropdown">
-                            <div class="avatar-header">
-                                <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
-                            </div>                
-                            <a href="il_mio_account.html" class="avatar-item">
-                            <i class="fa-solid fa-pen"></i>
-                            <span>Modifica profilo</span>
-                        </a>
-                        <a href="landing.html" class="avatar-item avatar-item-logout">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>Logout</span>
-                        </a>
-                    </div>
-                </div>
-
-            
+        <div class="avatar-dropdown" id="avatar-dropdown">
+          <div class="avatar-header">
+            <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+          </div>
+          <a href="il_mio_account.html" class="avatar-item">
+            <i class="fa-solid fa-pen"></i>
+            <span>Modifica profilo</span>
+          </a>
+          <a href="landing.html" class="avatar-item avatar-item-logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+          </a>
         </div>
-    </header>
-
-    <div class="breadcrumb">
-        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
-        <span>›</span>
-        <span>Storico interventi</span>
+      </div>
     </div>
-    
-            <section class="home-intro">
-        <div class="home-intro-veicolo">
-            <div class="veicolo-dot"></div>
-            <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
+  </header>
+ 
+  <div class="breadcrumb">
+    <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
+    <span>›</span>
+    <span>Storico Interventi</span>
+  </div>
+ 
+  <section class="home-intro">
+    <div class="home-intro-veicolo">
+      <div class="veicolo-dot"></div>
+      <span id="nome-veicolo-attivo" style="color:rgb(14,13,13);">Caricamento...</span>
+    </div>
+    <div class="veicolo-switcher" id="veicolo-switcher">
+      <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+        <span id="switcher-label">
+          <i class="fa-solid fa-warehouse"></i>
+          <span id="veicoli-counter"></span>
+        </span>
+        <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+      </button>
+      <div class="switcher-dropdown" id="switcher-dropdown"></div>
+    </div>
+  </section>
+ 
+  <section class="iv-dashboard">
+ 
+    <br><br>
+ 
+    <!-- BARRA STORICO INTERVENTI -->
+    <div class="iv-section-bar">
+      <span class="section-title">STORICO INTERVENTI</span>
+      <span class="count-badge" id="countBadge">0 interventi</span>
+    </div>
+ 
+    <!-- FILTRI -->
+    <div class="filters">
+      <span class="filter-label"><b>Filtra:</b></span>
+      <button class="filter-btn active-all" data-filter="all" onclick="setFilter('all', this)">
+        Tutti
+      </button>
+      <button class="filter-btn" data-filter="ordinario" onclick="setFilter('ordinario', this)">
+        <span class="dot" style="background:#3b82f6"></span> Ordinario
+      </button>
+      <button class="filter-btn" data-filter="straordinario" onclick="setFilter('straordinario', this)">
+        <span class="dot" style="background:#ef4444"></span> Straordinario
+      </button>
+      <button class="filter-btn" data-filter="gestione" onclick="setFilter('gestione', this)">
+        <span class="dot" style="background:#22c55e"></span> Spese di gestione
+      </button>
+    </div>
+ 
+    <!-- TABELLA -->
+    <div class="table-wrap">
+      <div class="table-head">
+        <div>Data</div>
+        <div>Categoria</div>
+        <div>Descrizione</div>
+        <div>Mediante</div>
+        <div>Costo</div>
+        <div></div>
+      </div>
+      <div class="table-body" id="tableBody"></div>
+      <div class="empty-state" id="emptyState">Nessun intervento trovato per questa categoria.</div>
+    </div>
+ 
+    <!-- BOTTONE AGGIUNGI -->
+    <div class="add-section">
+      <span class="btn-aggiungi-label">aggiungi<br>intervento!</span>
+      <button class="btn-intervento" onclick="openModal()">+</button>
+    </div>
+ 
+  </section>
+ 
+  <!-- MODAL NUOVO INTERVENTO -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-title">
+        <i class="fa-solid fa-plus" style="color:#f26f21"></i> Nuovo intervento
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Data</label>
+          <input type="date" id="inputData">
         </div>
-        <div class="veicolo-switcher" id="veicolo-switcher">
-            <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
-                <span id="switcher-label">
-                    <i class="fa-solid fa-warehouse"></i>
-                    <span id="veicoli-counter"></span>
-                </span>
-                <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
-            </button>
-            <div class="switcher-dropdown" id="switcher-dropdown"></div>
+        <div class="form-row">
+          <label>Categoria</label>
+          <select id="inputCategoria" onchange="updateNomi()">
+            <option value="">Seleziona...</option>
+            <option value="ordinario">Ordinario</option>
+            <option value="straordinario">Straordinario</option>
+            <option value="gestione">Spese di gestione</option>
+          </select>
         </div>
-    </section>
-
-    <section class="page-hero">
-        <h2 class="section-title-page">Storico degli interventi</h2>
-    </section>
-
-    <section class="section">
-        <div class="section-row">
-
-            <div class="card">
-                <h3><i class="fa-solid fa-triangle-exclamation"></i> Segnala un Problema</h3>
-                <div class="input-group">
-                    <i class="fa-solid fa-car"></i>
-                    <select>
-                        <option value="">— Seleziona veicolo —</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-calendar"></i>
-                    <input type="date">
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-tag"></i>
-                    <select>
-                        <option value="">— Categoria —</option>
-                        <option>Motore</option>
-                        <option>Freni</option>
-                        <option>Elettrico</option>
-                        <option>Carrozzeria</option>
-                        <option>Gomme</option>
-                        <option>Altro</option>
-                    </select>
-                </div>
-                <div class="input-group input-group-textarea">
-                    <i class="fa-solid fa-pen"></i>
-                    <textarea placeholder="Descrivi il problema..." rows="4"></textarea>
-                </div>
-                <button class="btn-landing btn-problemi">
-                    <i class="fa-solid fa-plus"></i> Aggiungi
-                </button>
-            </div>
-
-            <div class="card">
-                <h3><i class="fa-solid fa-book"></i> Diario Problemi</h3>
-                <p>Nessun problema segnalato.</p>
-            </div>
-
+      </div>
+      <div class="form-row">
+        <label>Tipo intervento</label>
+        <select id="inputNome">
+          <option value="">Prima seleziona categoria...</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Descrizione (opzionale)</label>
+        <input type="text" id="inputDescrizione" placeholder="es. cambio olio motore 5W30">
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Mediante (opzionale)</label>
+          <input type="text" id="inputMediante" placeholder="es. Officina Rossi">
         </div>
-    </section>
-
-    <footer class="footer" id="footer">
-        <p>© 2025 — YouDrive</p>
-    </footer>
-
+        <div class="form-row">
+          <label>Costo (opzionale)</label>
+          <input type="number" id="inputCosto" placeholder="€ 0.00" step="0.01">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancella</button>
+        <button class="btn-save" onclick="saveIntervento()">Salva</button>
+      </div>
+    </div>
+  </div>
+ 
+  <footer class="footer" id="footer">
+    <p>© 2025 — YouDrive</p>
+  </footer>
+ 
+<script>
+const tipiIntervento = {
+  ordinario:     ['Cambio olio','Cambio tergicristalli','Gomme','Batteria','Controllo livelli','Pastiglie freni','Tagliando','Altro'],
+  straordinario: ['Cinghia distribuzione','Carrozzeria','Riparazioni','Impianto elettrico','Luci','Frizione','Ammortizzatori','Altro'],
+  gestione:      ['Assicurazione','Bollo','Revisione','Multa','Pedaggi','Parcheggio']
+};
+ 
+let interventi = [
+  { id:1, data:'2026-01-15', categoria:'ordinario',     nome:'Cambio olio',           descrizione:'cambio olio motore',         mediante:'Officina Rossi',      costo:60  },
+  { id:2, data:'2026-02-20', categoria:'ordinario',     nome:'Cambio tergicristalli',  descrizione:'sostituzione tergicristalli', mediante:null,                  costo:25  },
+  { id:3, data:'2026-03-10', categoria:'straordinario', nome:'Cinghia distribuzione',  descrizione:'rottura cinghia',            mediante:'Autofficina Bianchi', costo:350 },
+  { id:4, data:'2026-04-01', categoria:'gestione',      nome:'Assicurazione',          descrizione:'rinnovo assicurazione',      mediante:null,                  costo:600 },
+  { id:5, data:'2026-04-22', categoria:'ordinario',     nome:'Gomme',                  descrizione:'cambio gomme stagionali',    mediante:'Gommista Ferrari',    costo:200 },
+];
+ 
+let currentFilter = 'all';
+let nextId = 6;
+ 
+function catLabel(cat) {
+  if (cat === 'gestione') return 'Spese di gestione';
+  return cat.charAt(0).toUpperCase() + cat.slice(1);
+}
+ 
+function renderRows() {
+  const body  = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  const filtered = currentFilter === 'all'
+    ? interventi
+    : interventi.filter(i => i.categoria === currentFilter);
+ 
+  document.getElementById('countBadge').textContent = filtered.length + ' interventi';
+ 
+  if (filtered.length === 0) {
+    body.innerHTML = '';
+    empty.classList.add('visible');
+    return;
+  }
+  empty.classList.remove('visible');
+ 
+  body.innerHTML = filtered.map((item, idx) => `
+    <div class="table-row" style="animation-delay:${idx * 0.05}s">
+ 
+      <!-- DATA + PALLINO -->
+      <div class="date-cell">
+        <span class="cat-dot ${item.categoria}"></span>
+        ${item.data}
+      </div>
+ 
+      <!-- CATEGORIA BADGE -->
+      <div>
+        <span class="cat-badge ${item.categoria}">${catLabel(item.categoria)}</span>
+      </div>
+ 
+      <!-- DESCRIZIONE -->
+      <div class="desc-cell">
+        <div>${item.nome}</div>
+        ${item.descrizione ? `<div class="desc-sub">${item.descrizione}</div>` : ''}
+      </div>
+ 
+      <!-- MEDIANTE -->
+      <div class="mediante-cell">${item.mediante || '—'}</div>
+ 
+      <!-- COSTO -->
+      <div class="costo-cell ${item.costo ? '' : 'vuoto'}">
+        ${item.costo ? item.costo.toFixed(2) + ' €' : '—'}
+      </div>
+ 
+      <!-- AZIONI -->
+      <div class="actions">
+        <button class="action-btn edit-btn" title="Modifica">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        <button class="action-btn del-btn" title="Elimina" onclick="deleteRow(${item.id})">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+ 
+    </div>
+  `).join('');
+}
+ 
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn');
+  if      (f === 'all')           btn.classList.add('active-all');
+  else if (f === 'ordinario')     btn.classList.add('active-ordinario');
+  else if (f === 'straordinario') btn.classList.add('active-straordinario');
+  else                            btn.classList.add('active-gestione');
+  renderRows();
+}
+ 
+function deleteRow(id) {
+  if (!confirm('Eliminare questo intervento?')) return;
+  interventi = interventi.filter(i => i.id !== id);
+  renderRows();
+}
+ 
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('inputData').value = new Date().toISOString().split('T')[0];
+}
+ 
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.getElementById('inputCategoria').value = '';
+  document.getElementById('inputNome').innerHTML = '<option value="">Prima seleziona categoria...</option>';
+  document.getElementById('inputDescrizione').value = '';
+  document.getElementById('inputMediante').value = '';
+  document.getElementById('inputCosto').value = '';
+}
+ 
+function updateNomi() {
+  const cat = document.getElementById('inputCategoria').value;
+  const sel = document.getElementById('inputNome');
+  if (!cat) {
+    sel.innerHTML = '<option value="">Prima seleziona categoria...</option>';
+    return;
+  }
+  const nomi = tipiIntervento[cat] || [];
+  sel.innerHTML = nomi.map(n => `<option value="${n}">${n}</option>`).join('');
+}
+ 
+function saveIntervento() {
+  const data = document.getElementById('inputData').value;
+  const cat  = document.getElementById('inputCategoria').value;
+  const nome = document.getElementById('inputNome').value;
+  if (!data || !cat || !nome) {
+    alert('Data, categoria e tipo intervento sono obbligatori.');
+    return;
+  }
+  interventi.unshift({
+    id:          nextId++,
+    data,
+    categoria:   cat,
+    nome,
+    descrizione: document.getElementById('inputDescrizione').value || null,
+    mediante:    document.getElementById('inputMediante').value    || null,
+    costo:       parseFloat(document.getElementById('inputCosto').value) || null,
+  });
+  closeModal();
+  renderRows();
+}
+ 
+// Chiudi modal cliccando fuori
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+ 
+renderRows();
+</script>
+ 
 </body>
 </html>
