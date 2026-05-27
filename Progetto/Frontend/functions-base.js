@@ -14,6 +14,12 @@ function getUtente() {
     return getData('yd_utente_loggato');
 }
 
+function getUserIdFromToken(accessToken) {
+  const base64 = accessToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+  const payload = JSON.parse(atob(base64));
+  return payload.sub ?? payload.id ?? payload.userId ?? payload.user_id;;
+}
+
  /* ----------------------------------------------------
 /                      DARK/LIGHT MODE                 /
 -----------------------------------------------------*/
@@ -39,4 +45,5 @@ document.addEventListener('DOMContentLoaded', () => {
 /        FOOTER CHE SI AGGIORNA AUTOMATICAMENTE        /
 -----------------------------------------------------*/
 const year = new Date().getFullYear();
-document.getElementById('footer').innerHTML = `© ${year} — YouDrive`;
+const footer = document.getElementById('footer') ;
+    if (footer) footer.innerHTML = `© ${year} — YouDrive`;

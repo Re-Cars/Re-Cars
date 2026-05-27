@@ -39,8 +39,8 @@ async function register() {
             return;
         }
 
-        setData('yd_utente_loggato', { id: data.id, username: data.username, email: data.email });
-        window.location.href = 'homepage.html';
+        
+        window.location.href = 'login.html';
 
     } catch (err) {
         errore.textContent = 'Errore di connessione al server';
@@ -87,8 +87,8 @@ async function login(email, password) {
     console.log('Login effettuato:', data);
     
     //localstorage
-     setData('yd_utente_loggato', { id: data.id, username: data.username, email: data.email });
-     window.location.href = 'homepage.html';
+    setData('access_token', data.access_token);
+    window.location.href = 'homepage.html';
 
   } catch (error) {
     console.error('Errore login:', error.message);
@@ -100,6 +100,7 @@ async function login(email, password) {
 -----------------------------------------------------*/
 
 function logout() {
+    localStorage.removeItem('access_token');
     localStorage.removeItem('yd_utente_loggato');
     window.location.href = 'landing.html';
 }

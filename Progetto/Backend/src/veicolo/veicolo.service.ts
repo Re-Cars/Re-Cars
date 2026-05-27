@@ -2,10 +2,11 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { PrismaService } from '../prisma.service';
 import { CreateVeicoloDto } from './dto/create-veicolo.dto';
 import * as datiMock from '../../data/veicoli.json';
+import { JwtService } from '@nestjs/jwt'; 
 
 @Injectable()
 export class VeicoloService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService, private jwtService: JwtService,) {}
 
     async cercaSoloDati(targa: string) {
         const veicoli = (datiMock as any).data;
