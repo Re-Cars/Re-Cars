@@ -133,6 +133,10 @@ function selezionaVeicolo(index) {
     renderVeicoloAttivo();
     renderDropdown();
     closeSwitcher();
+
+    if (document.getElementById('iv-tipo')) {
+        caricaInfoVeicolo();
+    }
 }
 
 function toggleSwitcher() {
@@ -202,7 +206,7 @@ async function caricaInfoVeicolo() {
         document.getElementById('iv-alimentazione').textContent = dg.alimentazione || '-';
         document.getElementById('iv-cilindrata').textContent = dg.cilindrata ? `${dg.cilindrata} cc` : '-';
         document.getElementById('iv-cavalli').textContent = dg.cavalli ? `${dg.cavalli} CV` : '-';
-        document.getElementById('iv-colore').textContent = dg.colore || '-';
+        document.getElementById('iv-targa').textContent = v.targa || '-';
 
 
         if (ds.datascadenzabollo) {
@@ -219,6 +223,7 @@ async function caricaInfoVeicolo() {
         if (ds.datascadenzarca) {
             const dataRca = new Date(ds.datascadenzarca).toLocaleDateString('it-IT');
             document.getElementById('iv-assicurazione-date').textContent = `scade il ${dataRca}`;
+            document.getElementById('iv-assicurazione-compagnia').textContent = ds.nomeassicurazione || '-';
             const badgeRca = document.getElementById('iv-assicurazione-stato');
             badgeRca.textContent = ds.isinsured ? 'Attiva' : 'Scaduta';
             badgeRca.className = `iv-badge ${ds.isinsured ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
@@ -332,6 +337,11 @@ async function addVehicle(targa, userId) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ targa, id_utente: userId })
         });
+
+        if (response.status === 409) {
+            alert("Veicolo già esistente nel db!");
+            return;
+        }
 
         if (!response.ok) {
             alert("Errore durante l'aggiunta del veicolo.");
