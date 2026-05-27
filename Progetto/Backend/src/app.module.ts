@@ -8,15 +8,21 @@ import { VeicoloController } from './veicolo/veicolo.controller';
 import { VeicoloService } from './veicolo/veicolo.service';
 import { JwtModule } from '@nestjs/jwt';          
 import { PassportModule } from '@nestjs/passport'; 
-import { JwtStrategy } from './utente/jwt.strategy'; 
+import { JwtStrategy } from './jwt.strategy'; 
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     PassportModule,                               
-    JwtModule.register({                           
+    JwtModule.registerAsync({
+      imports:[ConfigModule],
+      useFactory:( config: ConfigService)  =>({                          
       secret: process.env.JWT_SECRET, // generato con  node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
       signOptions: { expiresIn: '1h' },
     }),
+    inject: [ConfigService],
+  }),
   ],
   controllers: [AppController, UtenteController, VeicoloController],
   providers: [

@@ -40,7 +40,7 @@ export class UtenteService {
 
     const { password, ...risultato } = utente;
 
-    // 👇 genera e restituisce il token insieme ai dati utente
+    //  genera e restituisce il token insieme ai dati utente
     const payload = { sub: utente.id, email: utente.email };
     return {
       access_token: this.jwtService.sign(payload),
@@ -48,8 +48,14 @@ export class UtenteService {
     };
   }
     async getUtentebyID(id : number)  {
-        return this.prisma.utente.findUnique({
-            where: { id }
+        return this.prisma.utente.findMany({
+            where: { id },
+            select: {
+            id: true,
+            username: true,
+            email: true,
+            cellulare: true,
+            }
             }
         )};
     }

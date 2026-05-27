@@ -1,8 +1,8 @@
-import { Controller, Post, Body, Get, Param , UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param , UseGuards } from '@nestjs/common';
 import { UtenteService } from './utente.service';
 import { CreateUtenteDto } from './dto/create-utente.dto';
 import { LoginUtenteDto } from './dto/login-utente.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from '../jwt-auth.guard';
 
 @Controller('auth')
 export class UtenteController {
