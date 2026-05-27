@@ -436,11 +436,22 @@
     padding: 170px 30px 30px 30px;
 }
 
-.home-cards-grid {
+/* HOME CARD MOD VECCHIO*/
+/*.home-cards-grid {
     display: flex;
     justify-content: center;
     gap: 16px;
     flex-wrap: nowrap;
+}*/
+
+/* HOME CARD MOD PER TABLET E MOBILE*/
+.home-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
 .home-card {
@@ -637,6 +648,14 @@
     }
 }
 
+ @media (max-width: 900px){ 
+   .home-cards-grid {
+        justify-content: center;
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+
 @media (max-width: 768px) {
     .section-row {
         flex-direction: column;
@@ -648,11 +667,25 @@
 
     .home-cards-grid {
         justify-content: center;
+        grid-template-columns: repeat(3, 1fr); /*aggiunto per tablet*/
+
     }
 
     .home-card {
         width: 140px;
         height: 140px;
+    }
+}
+
+@media (max-width: 576px){
+    .header-brand{
+        display: none;
+    }
+
+    .home-cards-grid {
+        justify-content: center;
+        grid-template-columns: repeat(2, 1fr);
+
     }
 }
 
