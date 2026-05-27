@@ -52,6 +52,7 @@ function closeMenu() {
 
 function logout() {
     localStorage.removeItem('yd_utente_loggato');
+    localStorage.removeItem('access_token');
     window.location.href = 'landing.html';
 }
 
@@ -63,10 +64,16 @@ let veicoli = [];
 let veicoloAttivoIndex = 0;
 
 async function caricaVeicoli() {
-    const utente = getData('yd_utente_loggato');
-    if (!utente) return;
+    const token = getData('access_token');
+    if (!token) return;
+    const Idtoken = getUserIdFromToken(token);
     try {
-        const response = await fetch(`http://localhost:3000/veicolo/utente/${utente.id}`);
+        const response = await fetch(`http://localhost:3000/veicolo/utente/${Idtoken}`, {
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,  
+        }
+    });
         const data = await response.json();
         veicoli = data.map(v => ({
             id: v.id,
@@ -97,12 +104,16 @@ function renderVeicoloAttivo() {
     const v = getVeicoloAttivo();
     if (!v) return;
 
-    document.getElementById('nome-veicolo-attivo').textContent = v.nome;
+    const el = document.getElementById('nome-veicolo-attivo');
+    if (el) el.textContent = v.nome;
+
+    
     localStorage.setItem('veicoloAttivo', JSON.stringify(v));
 }
 
 function renderDropdown() {
     const dropdown = document.getElementById('switcher-dropdown');
+    if (!dropdown) return;
     dropdown.innerHTML = '';
     veicoli.forEach((v, i) => {
         const iconClass = v.tipo === 'motorcycle' ? 'fa-motorcycle' : 'fa-car';
@@ -268,12 +279,14 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         const plate = plateInput.value.trim().toUpperCase();
-        const utente = getData("yd_utente_loggato");
-
-        if (!utente) {
+        const token = getData('access_token');
+        
+        if (!token) {
             alert("Devi effettuare il login.");
             return;
         }
+
+        const Idtoken = getUserIdFromToken(token);
 
         if (plate.length < 5) {
             showResult(`<p style="color:red; margin-top:10px;">Inserisci una targa valida.</p>`);
@@ -283,7 +296,12 @@ document.addEventListener("DOMContentLoaded", () => {
         showResult(`<p style="margin-top:10px;">🔍 Ricerca in corso...</p>`);
 
         try {
-            const response = await fetch(`http://localhost:3000/veicolo/cerca/${plate}`);
+            const response = await fetch(`http://localhost:3000/veicolo/cerca/${plate}`,  {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
             if (!response.ok) {
                 showResult(`<p style="color:red; margin-top:10px;">Veicolo non trovato.</p>`);
                 return;
@@ -308,7 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             document.getElementById("addVehicleBtn").addEventListener("click", (evt) => {
                 evt.preventDefault();
-                addVehicle(data.targa, utente.id);
+                addVehicle(data.targa, Idtoken);
             });
 
         } catch (err) {
@@ -330,14 +348,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-async function addVehicle(targa, userId) {
+async function addVehicle(targa, Idtoken) {
+    const token = getData('access_token');
+    
     try {
         const response = await fetch("http://localhost:3000/veicolo", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ targa, id_utente: userId })
+            headers: { "Content-Type": "application/json" ,  'Authorization': `Bearer ${token}`  },
+            body: JSON.stringify({ targa, id_utente: Idtoken })
         });
 
+        if (response.status === 401) {
+            alert('Sessione scaduta, effettua di nuovo il login');
+            logout();
         if (response.status === 409) {
             alert("Veicolo già esistente nel db!");
             return;
@@ -348,21 +371,30 @@ async function addVehicle(targa, userId) {
             return;
         }
 
+
         alert("Veicolo aggiunto correttamente!");
         window.location.href = "homepage.html";
     } catch (err) {
         alert("Errore di connessione.");
     }
 }
-
-async function getUsername(userId) {
+//Stampa del nome nel menu a tendina
+async function getUsername() {
+    const token = getData('access_token');
+    const Idtoken = getUserIdFromToken(token);
     try {
-        const response = await fetch(`http://localhost:3000/auth/utente/${userId}`, {
+        const response = await fetch(`http://localhost:3000/auth/utente/${Idtoken}`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` }
         });
 
-        if (!response.ok) {
+        if (response.status === 401) {       
+            alert('Sessione scaduta, effettua di nuovo il login');
+            logout();
+            return null;
+        }
+
+        if (!response.ok) {                  
             alert("Errore durante il recupero dell'utente.");
             return null;
         }
@@ -371,14 +403,13 @@ async function getUsername(userId) {
         return data[0].username;
 
     } catch (err) {
-        alert("Errore di connessione.");    
+        alert("Errore di connessione.");
         return null;
     }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const utente = getData('yd_utente_loggato');
-    const username = await getUsername(utente.id);
+    const username = await getUsername();
 
     if (username) {
         document.getElementById("avatar-dropdown-name").textContent = username;
