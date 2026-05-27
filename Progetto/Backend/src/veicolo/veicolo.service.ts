@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateVeicoloDto } from './dto/create-veicolo.dto';
 import * as datiMock from '../../data/veicoli.json';
@@ -31,11 +31,21 @@ export class VeicoloService {
             (v: any) => v.LicensePlate.toUpperCase() === dto.targa.toUpperCase()
         );
 
-    if (!trovato) {
-        throw new NotFoundException(`Veicolo con targa ${dto.targa} non trovato`);
-    }
+        if (!trovato) {
+            throw new NotFoundException(`Veicolo con targa ${dto.targa} non trovato`);
+        }
 
-    const veicolo = await this.prisma.veicolo.create({
+        const esistente = await this.prisma.veicolo.findFirst({
+            where: {
+                targa: dto.targa.toUpperCase(),
+            },
+        });
+
+        if (esistente) {
+            throw new ConflictException(`Hai già aggiunto il veicolo con targa ${dto.targa}`);
+        }
+
+        const veicolo = await this.prisma.veicolo.create({
         data: {
             targa: trovato.LicensePlate,
             marca: trovato.CarMake.substring(0, 10),
