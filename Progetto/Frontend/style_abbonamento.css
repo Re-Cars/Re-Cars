@@ -154,3 +154,75 @@ input.error{border-color:var(--error)!important}
   .plan-name{font-size:.92rem}
   .sotto-title{font-size:1rem}
 }
+
+[data-theme="dark"] .plan-card {
+    background: #1a1d2e;
+    border-color: rgba(249, 115, 22, 0.2);
+}
+
+[data-theme="dark"] .plan-name {
+    color: #e8e8e8;
+}
+
+[data-theme="dark"] .plan-section-label {
+    color: #5ab0d8;
+    border-color: rgba(255,255,255,0.1);
+}
+
+[data-theme="dark"] .plan-features li {
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .payment-card {
+    background: #1a1d2e;
+    border-color: rgba(249, 115, 22, 0.2);
+}
+
+[data-theme="dark"] .billing-panel,
+[data-theme="dark"] .summary-panel {
+    background: #1a1d2e;
+}
+
+[data-theme="dark"] .panel-title,
+[data-theme="dark"] .plan-summary-title {
+    color: #e8e8e8;
+    border-color: rgba(255,255,255,0.1);
+}
+
+[data-theme="dark"] .form-group label {
+    color: #a0a8b8;
+}
+
+[data-theme="dark"] .form-group input {
+    background: #22253a;
+    border-color: rgba(255,255,255,0.1);
+    color: #e8e8e8;
+}
+
+[data-theme="dark"] .summary-row .lbl {
+    color: #a0a8b8;
+}
+
+[data-theme="dark"] .summary-row .val {
+    color: #e8e8e8;
+}
+
+[data-theme="dark"] .summary-total .lbl {
+    color: #e8e8e8;
+}
+
+[data-theme="dark"] .terms-note {
+    color: #a0a8b8;
+}
+
+[data-theme="dark"] .success-modal {
+    background: #1a1d2e;
+}
+
+[data-theme="dark"] .success-modal h2 {
+    color: #e8e8e8;
+}
+
+[data-theme="dark"] .success-modal p {
+    color: #a0a8b8;
+}
