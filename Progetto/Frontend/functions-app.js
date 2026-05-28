@@ -361,6 +361,8 @@ async function addVehicle(targa, Idtoken) {
         if (response.status === 401) {
             alert('Sessione scaduta, effettua di nuovo il login');
             logout();
+        }
+        
         if (response.status === 409) {
             alert("Veicolo già esistente nel db!");
             return;
