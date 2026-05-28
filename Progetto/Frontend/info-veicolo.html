@@ -54,10 +54,10 @@
            <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
-           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
-            <div class="header-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>   -->
+
+            <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
 
                <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
                     <div class="header-avatar"> 
@@ -90,7 +90,7 @@
         <section class="home-intro">
             <div class="home-intro-veicolo">
                 <div class="veicolo-dot"></div>
-                <span id="nome-veicolo-attivo" style="color:rgb(14, 13, 13);">Caricamento...</span>
+                <span id="nome-veicolo-attivo">Caricamento...</span>
             </div>
             <div class="veicolo-switcher" id="veicolo-switcher">
                 <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
@@ -188,12 +188,6 @@
 
     </div>
 </section>
-
-   
-
-    <footer class="footer" id="footer">
-        <p>© 2025 — YouDrive</p>
-    </footer>
 
 </body>
 </html>

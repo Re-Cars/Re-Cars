@@ -25,25 +25,30 @@ function getUserIdFromToken(accessToken) {
 -----------------------------------------------------*/
 function toggleTheme() {
     const isDark = document.body.getAttribute('data-theme') === 'dark';
-    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.getElementById('theme-icon').className = isDark 
-        ? 'fa-solid fa-sun' 
+    const newTheme = isDark ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', newTheme);
+    document.getElementById('theme-icon').className = newTheme === 'dark'
+        ? 'fa-solid fa-sun'
         : 'fa-solid fa-moon';
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('theme', newTheme);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.body.setAttribute('data-theme', savedTheme);
     const icon = document.getElementById('theme-icon');
-    if (icon) icon.className = savedTheme === 'dark' 
-        ? 'fa-solid fa-moon' 
-        : 'fa-solid fa-sun';
+    if (icon) {
+        icon.className = savedTheme === 'dark'
+            ? 'fa-solid fa-sun'
+            : 'fa-solid fa-moon';
+    }
 });
 
  /* -----------------------------------------------------
 /        FOOTER CHE SI AGGIORNA AUTOMATICAMENTE        /
 -----------------------------------------------------*/
+/*
 const year = new Date().getFullYear();
 const footer = document.getElementById('footer') ;
     if (footer) footer.innerHTML = `© ${year} — YouDrive`;
+*/

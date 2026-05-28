@@ -15,22 +15,22 @@ body {
     background: #f4f4f4;
     color: #191919;
 }
-
+/*
 footer {
     margin-top: auto;
-    background:#17314c;
+    background:#090917;
 }
-
+*/
  /* ----------------------------------------------------
 /                      FOOTER                          /
 -----------------------------------------------------*/
+/*
 .footer {
     text-align: center;
     padding: 20px 0;
-    /*opacity: 0.6;*/
     color: #f97316;
 }
-
+*/
  /* ----------------------------------------------------
 /                      UTILITY                         /
 -----------------------------------------------------*/
@@ -50,17 +50,32 @@ footer {
  /* ----------------------------------------------------
 /                      DARK/LIGHT MODE                 /
 -----------------------------------------------------*/
-
 :root {
-    --bg: #ffffff;
-    --text: #000000;
-    --surface: #f1f1f1;
+    --bg: #f4f4f4;
+    --text: #191919;
+    --surface: #ffffff;
+    --surface-2: #ededed;
+    --border: rgba(249, 115, 22, 0.2);
+    --text-muted: #434343;
+    --input-bg: #d3d3d3;
+    --card-bg: #f0f0f2;
+    --sidebar-bg: #ededed;
+    --dropdown-bg: #ebebec;
+    --avatar-dropdown-bg: #ebeaea;
 }
 
 [data-theme="dark"] {
-    --bg: #1a1a2e;
-    --text: #ffffff;
-    --surface: #16213e;
+    --bg: #0b0b1d;
+    --text: #e8e8e8;
+    --surface: #1a1d2e;
+    --surface-2: #22253a;
+    --border: rgba(249, 115, 22, 0.25);
+    --text-muted: #a0a8b8;
+    --input-bg: #2a2d3e;
+    --card-bg: #1a1d2e;
+    --sidebar-bg: #13151f;
+    --dropdown-bg: #1e2130;
+    --avatar-dropdown-bg: #1e2130;
 }
 
 body {
