@@ -16,26 +16,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
- /* ----------------------------------------------------
-/                   SIDEBAR E HAMB                     /
------------------------------------------------------*/
-function toggleMenu() {
+ function toggleMenu() {
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('hamburger-overlay');
     var hamburger = document.getElementById('hamburger9');
+    var header = document.querySelector('.header');
 
     if (sidebar.classList.contains('open')) {
         sidebar.classList.remove('open');
         overlay.classList.remove('open');
         hamburger.classList.remove('open');
-        hamburger.style.left = '20px';
-        hamburger.style.top = '30px';
+        header.classList.remove('sidebar-is-open');
     } else {
         sidebar.classList.add('open');
         overlay.classList.add('open');
         hamburger.classList.add('open');
-        hamburger.style.left = '225px';
-        hamburger.style.top = '18px';
+        header.classList.add('sidebar-is-open');
     }
 }
 
@@ -43,9 +39,9 @@ function closeMenu() {
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('hamburger-overlay').classList.remove('open');
     document.getElementById('hamburger9').classList.remove('open');
-    document.getElementById('hamburger9').style.left = '20px';
-    document.getElementById('hamburger9').style.top = '30px';
+    document.querySelector('.header').classList.remove('sidebar-is-open');
 }
+
  /* ----------------------------------------------------
 /                   LOGOUT                             /
 -----------------------------------------------------*/

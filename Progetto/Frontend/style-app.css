@@ -3,11 +3,11 @@
 -----------------------------------------------------*/
 .header {
     padding: 16px 24px;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
-    background:#303fa1;
-    border-bottom: 1px solid #023350;
+    background: #010130;
+    border-bottom: 1px solid #f97316;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -17,7 +17,7 @@
 .header-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: flex-start;
 }
 
 .header-title {
@@ -30,8 +30,7 @@
     font-weight: 800;
     font-size: 2.5rem;
     letter-spacing: 1px;
-    /*background: linear-gradient(90deg, #f97316, #ffffff, #ea580c, #ffffff, #f97316);*/
-    background:#ffffff;
+    background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);
     background-size: 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -39,16 +38,18 @@
 }
 
 .header-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 10px;
 }
 
 .header-center a {
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 @keyframes anim-colore {
@@ -59,7 +60,16 @@
 .header-right {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 12px;
+}
+
+.header.sidebar-is-open .hamburger9 {
+    position: fixed;
+    top: 16px;
+    left: 232px;
+    z-index: 500;
+    transform: none;
 }
 
 .header-nickname {
@@ -85,52 +95,46 @@
  /* ----------------------------------------------------
 /                      HAMBURGER                       /
 -----------------------------------------------------*/
-#hamburger9 {
-    position: fixed;
-    top: 30px;
-    left: 20px;
-    z-index: 500;
-}
-
-.hamburger-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 200;
-}
-
-.hamburger-overlay.open {
-    display: block;
-}
-
 .hamburger9 {
-    position: relative;
+    position: absolute;
     width: 30px;
     height: 30px;
     cursor: pointer;
+    z-index: 500;
+    left: 304px; 
+    top: 30px; 
+    transition: left 0.3s ease, transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.sidebar.open .hamburger9 {
+    left: 234px; 
+    top: 20px; 
 }
 
 .hamburger9 .line {
     position: absolute;
+    left: 0;
     display: block;
     width: 30px;
-    height: 3px;
+    height: 4px;
     border-radius: 5px;
-    /*background-color: #f97316;*/
-    background-color: #f97316;
-    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    background-color: #ff6b2b;
+    pointer-events: none; 
+    transform-origin: center; 
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s ease, top 0.3s ease;
 }
 
-.hamburger9 .line1 { top: 0; }
-.hamburger9 .line2,
-.hamburger9 .line3 { top: 13.5px; }
-.hamburger9 .line4 { bottom: 0; }
 
-.hamburger9.open .line1 { transform: translateX(40px) scale(0); }
-.hamburger9.open .line2 { transform: rotate(45deg) scale(1.2); }
-.hamburger9.open .line3 { transform: rotate(-45deg) scale(1.2); }
-.hamburger9.open .line4 { transform: translateX(-40px) scale(0); }
+.hamburger9 .line1 { top: 3px; }
+.hamburger9 .line2,
+.hamburger9 .line3 { top: 13px; }
+.hamburger9 .line4 { top: 23px; }
+
+
+.hamburger9.open .line1 { top: 13px; transform: scale(0); opacity: 0; }
+.hamburger9.open .line2 { top: 13px; transform: rotate(45deg); }
+.hamburger9.open .line3 { top: 13px; transform: rotate(-45deg); }
+.hamburger9.open .line4 { top: 13px; transform: scale(0); opacity: 0; }
 
  /* ----------------------------------------------------
 /                      SIDEBAR                         /
@@ -156,9 +160,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px;
-    /*border-bottom: 1px solid rgba(249, 115, 22, 0.2);*/
+    padding: 16px;
+    background: #010130;
     border-bottom: 1px solid rgb(240, 106, 10);
+    min-height: 62px;
+    box-sizing: border-box;
 }
 
 .sidebar-logo-img {
@@ -193,9 +199,7 @@
 
 .sidebar-logout {
     margin-top: auto;
-    /*color: #ff6b6b !important;*/
     color: #eb2020 !important;
-
 }
 
 .sidebar-brand {
@@ -203,7 +207,6 @@
     font-size: 1.8rem;
     flex: 1;
     margin-left: 8px;
-    /*background: linear-gradient(90deg, #f97316, #ffffff, #ea580c);*/
     background: #2b88b8;
     background-size: 300%;
     -webkit-background-clip: text;
@@ -430,14 +433,6 @@
     padding: 170px 30px 30px 30px;
 }
 
-/* HOME CARD MOD VECCHIO*/
-/*.home-cards-grid {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    flex-wrap: nowrap;
-}*/
-
 /* HOME CARD MOD PER TABLET E MOBILE*/
 .home-cards-grid {
     display: grid;
@@ -463,28 +458,30 @@
     font-size: 0.85rem;
     text-align: center;
     padding: 16px;
-    transition: 0.3s;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
 }
 
 .home-card:hover {
-    transform: scale(1.05);
+    transform: perspective(400px) rotateX(8deg) rotateY(-4deg) translateY(-8px) scale(1.03);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+}
+
+.home-card:active {
+    transform: perspective(400px) rotateX(2deg) scale(0.97);
 }
 
 .home-card i {
     font-size: 1.8rem;
 }
 
-/*.card-veicolo { background: #1d4ed8;}
-.card-problemi { background: #b91c1c;}
-.card-scadenze { background: #c2410c;}
-.card-prenotazioni { background: #15803d;}
-.card-recensioni { background: #7c3aed;}*/
-.card-veicolo { background: #2b88b8;}
-.card-storicointeventi { background: #04567f;}
-.card-problemi { background: #d14019;}
-.card-scadenze { background: #f26f21;}
-.card-prenotazioni { background: #f39c12;}
-.card-recensioni { background: #8e44ad;}
+.card-veicolo { background: #2563eb;}
+.card-storicointeventi { background: #0f766e;}
+.card-problemi { background: #dc2626;}
+.card-scadenze { background: #ff6b2b;}
+.card-prenotazioni { background: #ff6b2b;}
+.card-recensioni { background: #7c3aed;}
 
  /* ----------------------------------------------------
 /                      BTN AGGIUNGI                    /

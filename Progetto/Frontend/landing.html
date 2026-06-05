@@ -10,24 +10,94 @@
     <link rel="stylesheet" href="style-auth.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-auth.js" defer></script>
-
 </head>
 
-<body class="landing-body">
+<body class="auth-body">
 
     <div class="landing-overlay"></div>
 
-    <div class="landing-content">
+    <div class="auth-container">
+        
+        <div class="auth-nav">
+            <a href="#" class="auth-back" onclick="closeGarage(event)">
+                <i class="fa-solid fa-arrow-left"></i> Torna alla Landing
+            </a>
 
-        <div class="landing-logo">  
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="Logo YouDrive" id="logo-img">
+            <a href="#" class="auth-back" id="auth-toggle-nav" onclick="switchForm()">
+                <span>Registrati</span> <i class="fa-solid fa-arrow-right" id="nav-arrow-icon"></i>
+            </a>
         </div>
 
-        <h1 class="landing-title">RE|CARS</h1>
-        <p class="landing-subtitle"><i>Tu guida al resto pensiamo noi</i></p>
-
-        <div class="landing-buttons">
-            <a href="login.html" class="btn-landing">ACCEDI</a>
+        <div class="auth-logo">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="Logo RE|CARS" class="auth-logo-img">
+            <h1 class="landing-title2">RE|CARS</h1>
         </div>
+
+        <div class="auth-form-wrapper active" id="wrapper-login">
+            <div class="auth-form">
+                <div class="input-group">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="login-email" placeholder="Email">
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="login-password" placeholder="Password">
+                </div>
+                <p id="login-error" class="auth-error"></p>
+                <button class="btn-landing btn-login" onclick="login()">ACCEDI</button>
+            </div>
+            <p class="auth-switch">Non hai un account? <a href="#" onclick="switchForm(event)">Registrati</a></p>
+        </div>
+
+        <div class="auth-form-wrapper" id="wrapper-register">
+            <div class="auth-form">
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="reg-user" placeholder="Username">
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="reg-email" placeholder="Email">
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="reg-password" placeholder="Password">
+                </div>
+                <p id="reg-error" class="auth-error"></p>
+                <button class="btn-landing btn-register" onclick="register()">REGISTRATI</button>
+            </div>
+            <p class="auth-switch">Hai già un account? <a href="#" onclick="switchForm(event)">Accedi</a></p>
+        </div>
+
+    </div>
+
+    <div class="shutter-gate" id="shutter-gate">
+        <div class="landing-overlay"></div>
+        <div class="landing-content">
+            <div class="brand-group">
+                <div class="landing-logo">  
+                    <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="Logo YouDrive" id="logo-img">
+                </div>
+                <h1 class="landing-title">RE|CARS</h1>
+                <p class="landing-subtitle"><i>Tu guida al resto pensiamo noi</i></p>
+            </div>
+
+            <div class="action-group">
+                <div class="scroll-hint">
+                    <span>Scorri</span>
+                    <div class="scroll-arrows">
+                        <i class="fa-solid fa-chevron-up"></i>
+                        <i class="fa-solid fa-chevron-up"></i>
+                        <i class="fa-solid fa-chevron-up"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="landing-buttons">
+                <button type="button" class="btn-landing" onclick="openGarage()">ACCEDI</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
