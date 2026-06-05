@@ -20,35 +20,43 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
-        </div>
-        <nav class="sidebar-nav">
-          <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
-          <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
-          <a href="impostazioni.html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
-          <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
-          <a href="imp_infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
-          <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
-          <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
-          <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-        </nav>
-    </div>
 
-    <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
-        <span class="line line1"></span>
-        <span class="line line2"></span>
-        <span class="line line3"></span>
-        <span class="line line4"></span>
+            <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+                <span class="line line4"></span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+            <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
+            <a href="impostazioni.html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+            <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
+            <a href="imp_infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+            <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
+            <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+            <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
     </div>
 
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
-           <span class="header-brand">RE<span>|</span>CARS</span>
+            <a href="homepage.html">
+                <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+                <span class="header-brand">RE<span>|</span>CARS</span>
+            </a>
         </div>
         <div class="header-right">
+
+            <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+
             <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
                 <div class="header-avatar"> 
                     <i class="fa-solid fa-user"></i>
@@ -76,31 +84,75 @@
         <span>Cerca e Aggiungi Veicolo</span>
     </div>
 
-    <section class="section">
-        <div class="section-row">
-
-            <div class="landing-search-section">
-                <h3 class="landing-search-title"><i class="fa-solid fa-magnifying-glass"></i> Cerca un veicolo</h3>
-                <p class="landing-search-sub">Inserisci una targa per visualizzare i dati del veicolo</p>
-                <div class="input-group landing-input">
-                    <i class="fa-solid fa-car"></i>
-                    <input type="text" id="input-targa-visitor" placeholder="Es. AA123BB" maxlength="7">
-                </div>
-                <p id="targa-error" class="auth-error"></p>
-                
-                <button type="button" class="btn-landing btn-info-veicolo">
-                    <i class="fa-solid fa-search"></i> Cerca
-                </button>
-                
-                <div id="vehicleResult"></div>
-            </div>
-
+    <section class="home-intro">
+        <div class="home-intro-veicolo">
+            <div class="veicolo-dot"></div>
+            <span id="nome-veicolo-attivo">Caricamento...</span>
+        </div>
+        <div class="veicolo-switcher" id="veicolo-switcher">
+            <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                <span id="switcher-label">
+                    <i class="fa-solid fa-warehouse"></i>
+                    <span id="veicoli-counter"></span>
+                </span>
+                <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+            </button>
+            <div class="switcher-dropdown" id="switcher-dropdown"></div>
         </div>
     </section>
 
-    <footer class="footer" id="footer">
-        <p>© 2025 — YouDrive</p>
-    </footer>
+    <section class="section">
+        <div class="cerca-hero">
+            <div class="cerca-hero-title">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Cerca il tuo veicolo
+            </div>
+            <p class="cerca-hero-sub">Inserisci la targa per visualizzare i dati e aggiungere il veicolo al tuo garage</p>
+
+            <div class="cerca-features">
+                <div class="cerca-feat">
+                    <div class="cerca-feat-icon blu"><i class="fa-solid fa-car"></i></div>
+                    <span class="cerca-feat-label">Marca e modello</span>
+                </div>
+                <div class="cerca-feat">
+                    <div class="cerca-feat-icon ora"><i class="fa-solid fa-gas-pump"></i></div>
+                    <span class="cerca-feat-label">Alimentazione e cavalli</span>
+                </div>
+                <div class="cerca-feat">
+                    <div class="cerca-feat-icon ver"><i class="fa-solid fa-calendar-check"></i></div>
+                    <span class="cerca-feat-label">Bollo e assicurazione</span>
+                </div>
+            </div>
+
+            <div class="cerca-input-row">
+                <div class="cerca-targa-wrap">
+                    <i class="fa-solid fa-car"></i>
+                    <input type="text" id="input-targa-visitor" placeholder="Es. AA123BB" maxlength="7" oninput="validaTarga(this)">
+                    <i class="fa-solid fa-circle-check cerca-valid-icon ok" id="targa-icon-ok"></i>
+                    <i class="fa-solid fa-circle-xmark cerca-valid-icon ko" id="targa-icon-ko"></i>
+                </div>
+                <button type="button" class="btn-info-veicolo">
+                    <i class="fa-solid fa-search"></i> Cerca
+                </button>
+            </div>
+
+            <div class="cerca-loading" id="cerca-loading">
+                <div class="cerca-dots">
+                    <div class="cerca-dot"></div>
+                    <div class="cerca-dot"></div>
+                    <div class="cerca-dot"></div>
+                </div>
+                <div class="cerca-loading-text">Ricerca in corso...</div>
+            </div>
+
+            <div id="vehicleResult"></div>
+
+            <div class="cerca-storico" id="cerca-storico" style="display:none">
+                <div class="cerca-storico-label">Cercate di recente</div>
+                <div class="cerca-storico-tags" id="cerca-storico-tags"></div>
+            </div>
+        </div>
+    </section>
 
 </body>
 </html>

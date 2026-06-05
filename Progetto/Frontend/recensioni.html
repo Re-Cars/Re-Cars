@@ -18,7 +18,7 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
 
             <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
@@ -83,6 +83,23 @@
         <span>›</span>
         <span>Recensioni</span>
     </div>
+
+    <section class="home-intro">
+        <div class="home-intro-veicolo">
+            <div class="veicolo-dot"></div>
+            <span id="nome-veicolo-attivo">Caricamento...</span>
+        </div>
+        <div class="veicolo-switcher" id="veicolo-switcher">
+            <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                <span id="switcher-label">
+                    <i class="fa-solid fa-warehouse"></i>
+                    <span id="veicoli-counter"></span>
+                </span>
+                <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+            </button>
+            <div class="switcher-dropdown" id="switcher-dropdown"></div>
+        </div>
+    </section>
 
     <section class="page-hero">
         <h2 class="section-title-page">Recensioni</h2>
