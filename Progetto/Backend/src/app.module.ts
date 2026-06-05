@@ -10,6 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport'; 
 import { JwtStrategy } from './jwt.strategy'; 
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { OfficinaModule } from './officina/officina.module';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       signOptions: { expiresIn: '1h' },
     }),
     inject: [ConfigService],
-  }),
+  }), OfficinaModule,
   ],
   controllers: [AppController, UtenteController, VeicoloController],
   providers: [
