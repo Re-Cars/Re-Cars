@@ -260,23 +260,83 @@ document.addEventListener('click', (e) => {
     }
 });
 
-  /* ---------------------------------------------------
- /             CERCA E AGGIUNGI VEICOLO                /
- ----------------------------------------------------*/
+ /* ---------------------------------------------------
+/             CERCA E AGGIUNGI VEICOLO                /
+----------------------------------------------------*/
+
+function validaTarga(input) {
+    const val = input.value.toUpperCase();
+    input.value = val;
+    const ok = document.getElementById('targa-icon-ok');
+    const ko = document.getElementById('targa-icon-ko');
+    const regex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/;
+
+    if (val.length === 0) {
+        input.classList.remove('valid', 'invalid');
+        ok.classList.remove('show');
+        ko.classList.remove('show');
+    } else if (val.length === 7 && regex.test(val)) {
+        input.classList.add('valid');
+        input.classList.remove('invalid');
+        ok.classList.add('show');
+        ko.classList.remove('show');
+    } else if (val.length === 7) {
+        input.classList.add('invalid');
+        input.classList.remove('valid');
+        ko.classList.add('show');
+        ok.classList.remove('show');
+    } else {
+        input.classList.remove('valid', 'invalid');
+        ok.classList.remove('show');
+        ko.classList.remove('show');
+    }
+}
+
+function salvaStorico(targa) {
+    let storico = JSON.parse(localStorage.getItem('storico_targhe') || '[]');
+    storico = storico.filter(t => t !== targa);
+    storico.unshift(targa);
+    storico = storico.slice(0, 5);
+    localStorage.setItem('storico_targhe', JSON.stringify(storico));
+}
+
+function renderStorico() {
+    const storico = JSON.parse(localStorage.getItem('storico_targhe') || '[]');
+    const container = document.getElementById('cerca-storico');
+    const tags = document.getElementById('cerca-storico-tags');
+    if (!container || !tags) return;
+    if (storico.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+    container.style.display = 'block';
+    tags.innerHTML = storico.map(t => `
+        <span class="cerca-storico-tag" onclick="usaStorico('${t}')">${t}</span>
+    `).join('');
+}
+
+function usaStorico(targa) {
+    const input = document.getElementById('input-targa-visitor');
+    if (input) {
+        input.value = targa;
+        validaTarga(input);
+    }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
+    renderStorico();
+
     const searchBtn = document.querySelector(".btn-info-veicolo");
     const plateInput = document.getElementById("input-targa-visitor");
 
     if (!searchBtn || !plateInput) return;
-
 
     searchBtn.addEventListener("click", async (e) => {
         e.preventDefault();
 
         const plate = plateInput.value.trim().toUpperCase();
         const token = getData('access_token');
-        
+
         if (!token) {
             alert("Devi effettuare il login.");
             return;
@@ -285,40 +345,52 @@ document.addEventListener("DOMContentLoaded", () => {
         const Idtoken = getUserIdFromToken(token);
 
         if (plate.length < 5) {
-            showResult(`<p style="color:red; margin-top:10px;">Inserisci una targa valida.</p>`);
+            showResult(`<p style="color:#f87171; margin-top:10px;">Inserisci una targa valida.</p>`);
             return;
         }
 
-        showResult(`<p style="margin-top:10px;">🔍 Ricerca in corso...</p>`);
+        document.getElementById('cerca-loading').classList.add('show');
+        document.getElementById('vehicleResult').innerHTML = '';
 
         try {
-            const response = await fetch(`http://localhost:3000/veicolo/cerca/${plate}`,  {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            const response = await fetch(`http://localhost:3000/veicolo/cerca/${plate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
+            document.getElementById('cerca-loading').classList.remove('show');
+
             if (!response.ok) {
-                showResult(`<p style="color:red; margin-top:10px;">Veicolo non trovato.</p>`);
+                showResult(`<p style="color:#f87171; margin-top:10px;">Veicolo non trovato.</p>`);
                 return;
             }
 
             const data = await response.json();
-            
+            salvaStorico(plate);
+            renderStorico();
+
             showResult(`
-                <div class="card" style="margin-top:20px; display:block; opacity:1;">
-                    <h3><i class="fa-solid fa-car"></i> Veicolo trovato</h3>
-                    <p><b>Marca:</b> ${data.marca}</p>
-                    <p><b>Modello:</b> ${data.modello}</p>
-                    <p><b>Targa:</b> ${data.targa}</p>
-                    <p><b>Alimentazione:</b> ${data.alimentazione}</p>
-                    <p><b>Cavalli:</b> ${data.cavalli} CV</p>
-                    <button id="addVehicleBtn" type="button" class="btn-landing" style="margin-top:10px;">
-                        <i class="fa-solid fa-plus"></i> Aggiungi al mio garage
-                    </button>
+                <div class="vehicle-result-card">
+                    <div class="vehicle-result-header">
+                        <div class="vehicle-result-targa">${data.targa}</div>
+                        <div class="vehicle-result-nome">${data.marca} ${data.modello}</div>
+                    </div>
+                    <div class="vehicle-result-body">
+                        <div class="vehicle-result-field">
+                            <span class="vehicle-result-label">Alimentazione</span>
+                            <span class="vehicle-result-value">${data.alimentazione || '-'}</span>
+                        </div>
+                        <div class="vehicle-result-field">
+                            <span class="vehicle-result-label">Cavalli</span>
+                            <span class="vehicle-result-value">${data.cavalli ? data.cavalli + ' CV' : '-'}</span>
+                        </div>
+                    </div>
+                    <div class="vehicle-result-footer">
+                        <button id="addVehicleBtn" type="button" class="btn-aggiungi-garage">
+                            <i class="fa-solid fa-plus"></i> Aggiungi al mio garage
+                        </button>
+                    </div>
                 </div>
             `);
-
 
             document.getElementById("addVehicleBtn").addEventListener("click", (evt) => {
                 evt.preventDefault();
@@ -326,21 +398,13 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
         } catch (err) {
-            showResult(`<p style="color:red; margin-top:10px;">Errore di connessione al server.</p>`);
+            document.getElementById('cerca-loading').classList.remove('show');
+            showResult(`<p style="color:#f87171; margin-top:10px;">Errore di connessione al server.</p>`);
         }
     });
 
     function showResult(html) {
-        let box = document.getElementById("vehicleResult");
-        if (!box) {
-            box = document.createElement("div");
-            box.id = "vehicleResult";
-            const container = document.querySelector(".landing-search-section");
-            if (container) {
-                container.appendChild(box);
-            }
-        }
-        box.innerHTML = html;
+        document.getElementById('vehicleResult').innerHTML = html;
     }
 });
 
