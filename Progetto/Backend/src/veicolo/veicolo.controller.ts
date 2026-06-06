@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, UseGuards, } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, Param, UseGuards, } from '@nestjs/common';
 import { VeicoloService } from './veicolo.service';
 import { CreateVeicoloDto } from './dto/create-veicolo.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
@@ -25,5 +25,11 @@ export class VeicoloController {
     @Get(':id')
     async getVeicolo(@Param('id') id: string) {
         return this.veicoloService.getVeicoloById(+id);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Delete(':id')
+    async elimina(@Param('id') id: string) {
+        return this.veicoloService.eliminaVeicolo(+id);
     }
 }
