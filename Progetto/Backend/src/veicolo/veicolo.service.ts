@@ -9,22 +9,24 @@ export class VeicoloService {
     constructor(private prisma: PrismaService, private jwtService: JwtService,) {}
 
     async cercaSoloDati(targa: string) {
-        const veicoli = (datiMock as any).data;
-        const trovato = veicoli.find(
-            (v: any) => v.LicensePlate.toUpperCase() === targa.toUpperCase()
-        );
-        if (!trovato) {
-            throw new NotFoundException(`Veicolo con targa ${targa} non trovato`);
-        }
-        return {
-            targa: trovato.LicensePlate,
-            marca: trovato.CarMake,
-            modello: trovato.CarModel,
-            alimentazione: trovato.FuelType,
-            cavalli: trovato.PowerCV,
-            tipo_veicolo: trovato.TipoVeicolo,
-        };
+    const veicoli = (datiMock as any).data;
+    const trovato = veicoli.find(
+        (v: any) => v.LicensePlate.toUpperCase() === targa.toUpperCase()
+    );
+    if (!trovato) {
+        throw new NotFoundException(`Veicolo con targa ${targa} non trovato`);
     }
+    return {
+        targa: trovato.LicensePlate,
+        marca: trovato.CarMake,
+        modello: trovato.CarModel,
+        alimentazione: trovato.FuelType,
+        cavalli: trovato.PowerCV,
+        tipo_veicolo: trovato.TipoVeicolo,
+        isbolloattivo: trovato.Bollo?.IsActive ?? null,
+        isinsured: trovato.RCA?.IsInsured ?? null,
+    };
+}
 
     async cercaESalva(dto: CreateVeicoloDto) {
         const veicoli = (datiMock as any).data;
@@ -98,14 +100,25 @@ export class VeicoloService {
     }
 
     async getVeicoloById(id: number) {
-    const veicolo = await this.prisma.veicolo.findUnique({
-        where: { id },
-        include: {
-            dati_generici: true,
-            dati_specifici: true,
-        },
-    });
-    if (!veicolo) throw new NotFoundException(`Veicolo con id ${id} non trovato`);
-    return veicolo;
-}
+        const veicolo = await this.prisma.veicolo.findUnique({
+            where: { id },
+            include: {
+                dati_generici: true,
+                dati_specifici: true,
+            },
+        });
+        if (!veicolo) throw new NotFoundException(`Veicolo con id ${id} non trovato`);
+        return veicolo;
+    }
+
+    async eliminaVeicolo(id: number) {
+        const veicolo = await this.prisma.veicolo.findUnique({ where: { id } });
+        if (!veicolo) throw new NotFoundException(`Veicolo con id ${id} non trovato`);
+
+        await this.prisma.dati_generici.deleteMany({ where: { id_veicolo: id } });
+        await this.prisma.dati_specifici.deleteMany({ where: { id_veicolo: id } });
+        await this.prisma.veicolo.delete({ where: { id } });
+
+        return { message: `Veicolo ${id} eliminato correttamente` };
+    }
 }
