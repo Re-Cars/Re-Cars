@@ -82,20 +82,20 @@ function switchForm(event) {
     const loginWrapper = document.getElementById('wrapper-login');
     const registerWrapper = document.getElementById('wrapper-register');
     const toggleNav = document.getElementById('auth-toggle-nav');
-    const arrowIcon = document.getElementById('nav-arrow-icon');
+    const toggleLeft = document.getElementById('auth-toggle-left');
 
     if (!loginWrapper || !registerWrapper) return;
 
     if (loginWrapper.classList.contains('active')) {
         loginWrapper.classList.remove('active');
         registerWrapper.classList.add('active');
-        if (toggleNav) toggleNav.querySelector('span').innerText = 'Login';
-        if (arrowIcon) arrowIcon.className = 'fa-solid fa-arrow-left';
+        if (toggleNav) toggleNav.style.visibility = 'hidden';
+        if (toggleLeft) toggleLeft.style.visibility = 'visible';
     } else {
         registerWrapper.classList.remove('active');
         loginWrapper.classList.add('active');
-        if (toggleNav) toggleNav.querySelector('span').innerText = 'Registrati';
-        if (arrowIcon) arrowIcon.className = 'fa-solid fa-arrow-right';
+        if (toggleNav) toggleNav.style.visibility = 'visible';
+        if (toggleLeft) toggleLeft.style.visibility = 'hidden';
     }
 }
 

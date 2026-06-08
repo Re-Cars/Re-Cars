@@ -841,6 +841,20 @@
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249,115,22,0); background: rgba(249,115,22,0.15); }
 }
 
+.switcher-btn.garage-delete {
+    animation: garage-delete 0.6s ease forwards;
+}
+
+@keyframes garage-delete {
+    0%,100%  { transform: skewX(0) skewY(0); }
+    15%      { transform: skewX(-8deg) skewY(-8deg); }
+    30%      { transform: skewX(6deg) skewY(6deg); }
+    45%      { transform: skewX(-4deg) skewY(-4deg); }
+    60%      { transform: skewX(3deg) skewY(3deg); }
+    75%      { transform: skewX(-2deg) skewY(-2deg); }
+    90%      { transform: skewX(1deg) skewY(1deg); }
+}
+
  /* ----------------------------------------------------
 /                 CERCA HERO                           /
 -----------------------------------------------------*/

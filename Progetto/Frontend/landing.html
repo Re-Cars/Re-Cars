@@ -19,17 +19,24 @@
     <div class="auth-container">
         
         <div class="auth-nav">
-            <a href="#" class="auth-back" onclick="closeGarage(event)">
-                <i class="fa-solid fa-arrow-left"></i> Torna alla Landing
+            <a href="#" class="auth-toggle-left" id="auth-toggle-left" onclick="switchForm(event)">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span>Accedi</span>
             </a>
 
-            <a href="#" class="auth-back" id="auth-toggle-nav" onclick="switchForm()">
-                <span>Registrati</span> <i class="fa-solid fa-arrow-right" id="nav-arrow-icon"></i>
+            <a href="#" class="auth-back" onclick="closeGarage(event)">
+                <i class="fa-solid fa-house"></i>
+                Torna alla Landing
+            </a>
+
+            <a href="#" id="auth-toggle-nav" onclick="switchForm(event)">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Registrati</span>
             </a>
         </div>
 
         <div class="auth-logo">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="Logo RE|CARS" class="auth-logo-img">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="Logo RE|CARS" class="auth-logo-img">
             <h1 class="landing-title2">RE|CARS</h1>
         </div>
 
@@ -44,7 +51,9 @@
                     <input type="password" id="login-password" placeholder="Password">
                 </div>
                 <p id="login-error" class="auth-error"></p>
-                <button class="btn-landing btn-login" onclick="login()">ACCEDI</button>
+                <button class="btn-landing btn-login" onclick="login()">
+                    <i class="fa-solid fa-right-to-bracket"></i> ACCEDI
+                </button>
             </div>
             <p class="auth-switch">Non hai un account? <a href="#" onclick="switchForm(event)">Registrati</a></p>
         </div>
@@ -64,7 +73,9 @@
                     <input type="password" id="reg-password" placeholder="Password">
                 </div>
                 <p id="reg-error" class="auth-error"></p>
-                <button class="btn-landing btn-register" onclick="register()">REGISTRATI</button>
+                <button class="btn-landing btn-register" onclick="register()">
+                    <i class="fa-solid fa-user-plus"></i> REGISTRATI
+                </button>
             </div>
             <p class="auth-switch">Hai già un account? <a href="#" onclick="switchForm(event)">Accedi</a></p>
         </div>

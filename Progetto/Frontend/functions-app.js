@@ -163,6 +163,13 @@ async function eliminaVeicolo(id) {
         }
         await caricaVeicoli();
         closeSwitcher();
+
+        const btn = document.getElementById('switcher-btn');
+        if (btn) {
+            btn.classList.add('garage-delete');
+            setTimeout(() => btn.classList.remove('garage-delete'), 600);
+        }
+
     } catch (err) {
         alert('Errore di connessione.');
     }
