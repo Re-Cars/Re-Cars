@@ -1,29 +1,13 @@
 /* ================================================
    INFO VEICOLO — variabili
    ================================================ */
-:root {
-    --iv-blue:       #2b88b8;
-    --iv-blue-light: #d9eaf5;
-    --iv-blue-dark:  #17314c;
-    --iv-orange:     #f97316;
 
-    /*storico*/
-    --ordinario: #2b88b8;
-    --ordinario-bg: #eff6ff;
-    --ordinario-border: #bfdbfe;
-    --straordinario: #ef4444;
-    --straordinario-bg: #fef2f2;
-    --straordinario-border: #fecaca;
-    --gestione: #37a961;
-    --gestione-bg: #f0fdf4;
-    --gestione-border: #bbf7d0;
-}
 
 /* ================================================
    LAYOUT DASHBOARD
    ================================================ */
 .iv-dashboard {
-    padding: 0 24px 30px;
+    padding: 0 40px 40px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -34,8 +18,9 @@
    ================================================ */
 .iv-section-bar {
     background: var(--iv-blue);
-    border-radius: 8px;
+    border-radius: 8px 8px 8px 8px;  /* arrotondato solo in alto */
     padding: 7px 14px;
+    margin: 0;  /* nessun margine extra */
 }
 .iv-section-bar span {
     font-size: 0.8rem;
@@ -194,7 +179,7 @@
     .iv-info-cell       { padding: 9px 10px; }
     .iv-cell-label      { font-size: 0.6rem; }
     .iv-cell-value      { font-size: 0.82rem; }
-    .iv-maint-cell      { padding: 10px 12px; }
+    .iv-maint-cell      { padding: 10px 12px; background: var(--surface);}
     .iv-badge           { font-size: 0.6rem; padding: 2px 8px; }
 }
 
@@ -207,13 +192,13 @@ STORICO INTERVENTI
  
   /* FILTERS */
   .filters {
-    background: white;
-    border: 1px solid var(--border); border-top: none; border-radius: 10px;
-    padding: 12px 18px; display: flex; align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border); border-top: none; border-radius: 8px 8px 8px 8px;
+    margin: 0; padding: 12px 18px; display: flex; align-items: center;
     gap: 8px; flex-wrap: wrap;
   }
   .filter-label {
-    font-size: 12px; color: var(--text-muted); font-weight: 500;
+    font-size: var(--font-base); color: var(--text-muted); font-weight: 500;
     margin-right: 4px;
   }
   .filter-btn {
@@ -221,13 +206,13 @@ STORICO INTERVENTI
     border-radius: 20px; border: 1.5px solid var(--border);
     background: white;
     cursor: pointer;
-    font-size: 12px;
+    font-size: var(--font-xs);
     font-weight: 500;
     color: var(--text-muted); transition: all 0.18s ease;
     display: flex; align-items: center;
     gap: 6px;
   }
-  .filter-btn .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .filter-btn .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
   .filter-btn.active-all          { background: #3b83f628; color: rgb(0,0,0); }
   .filter-btn.active-ordinario    { background: var(--ordinario-bg); color: var(--ordinario); }
   .filter-btn.active-straordinario{ background: var(--straordinario-bg); color: var(--straordinario); }
@@ -235,7 +220,10 @@ STORICO INTERVENTI
  
   /* TABLE */
   .table-wrap {
-    background: white;
+    margin: 0;
+    background: var(--surface);
+    border-radius: 8px 8px 8px 8px;  /* arrotondato solo in alto */
+
     border: 1px solid var(--border);
     border-top: none;
     border-radius: 0 0 8px 8px;
@@ -245,9 +233,11 @@ STORICO INTERVENTI
     display: grid;
     grid-template-columns: 120px 130px 1fr 150px 90px 60px;
     padding: 8px 18px;
-    background: #f9f8f5;
+    border-radius: 8px 8px 8px 8px;  /* arrotondato solo in alto */
+
+    background: var(--surface-2);
     border-bottom: 1px solid var(--border);
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;
@@ -259,17 +249,19 @@ STORICO INTERVENTI
   .table-row {
     display: grid;
     grid-template-columns: 120px 130px 1fr 150px 90px 60px;
+    border-radius: 8px 8px 8px 8px;  /* arrotondato solo in alto */
     padding: 12px 18px;
     border-bottom: 1px solid var(--border);
     gap: 8px;
     align-items: center;
-    font-size: 13px;
+    font-size: var(--font-base);
     transition: background 0.15s ease;
     cursor: default;
     animation: fadeIn 0.3s ease forwards;
   }
   .table-row:last-child { border-bottom: none; }
-  .table-row:hover { background: #fafaf8; }
+  .table-row:hover {background: var(--surface-2);
+ }
  
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(4px); }
@@ -280,6 +272,7 @@ STORICO INTERVENTI
   .cat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
   .cat-dot.ordinario     { background: var(--ordinario); }
   .cat-dot.straordinario { background: var(--straordinario); }
+  .cat-dot.annotazioni   { background: var(--annotazioni); }
   .cat-dot.gestione      { background: var(--gestione); }
  
   /* DATA + PALLINO */
@@ -287,8 +280,7 @@ STORICO INTERVENTI
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
+    font-size: var(--font-xs);
     color: var(--text-muted);
   }
  
@@ -296,9 +288,9 @@ STORICO INTERVENTI
   .cat-badge {
     display: inline-flex;
     align-items: center;
-    padding: 3px 10px;
+    padding: 4px 12px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: var(--font-xs);
     font-weight: 600;
     white-space: nowrap;
   }
@@ -312,6 +304,12 @@ STORICO INTERVENTI
     color: var(--straordinario);
     border: 1px solid var(--straordinario-border);
   }
+
+  .cat-badge.annotazioni {
+    background: var(--annotazioni-bg);
+    color: var(--annotazioni);
+    border: 1px solid var(--annotazioni-border);
+  }
   .cat-badge.gestione {
     background: var(--gestione-bg);
     color: var(--gestione);
@@ -319,13 +317,12 @@ STORICO INTERVENTI
   }
  
   .desc-cell { color: var(--text); font-weight: 400; }
-  .desc-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .desc-sub  { font-size: var(--font-xs); color: var(--text-muted); margin-top: 2px; }
  
   .mediante-cell { color: var(--text-muted); font-size: 12px; }
   .costo-cell {
-    font-family: 'DM Mono', monospace;
     font-weight: 600;
-    font-size: 13px;
+    font-size: var(--font-base);
     color: var(--text);
   }
   .costo-cell.vuoto { color: var(--text-muted); font-weight: 400; font-size: 12px; }
@@ -359,7 +356,7 @@ STORICO INTERVENTI
     gap: 10px; padding: 0 4px 20px;
   }
   .btn-aggiungi-label {
-    color: #434343;
+    color: var(--text);
     font-size: 0.85rem; text-align: right; font-style: italic;
   }
   .btn-intervento {
@@ -399,14 +396,15 @@ STORICO INTERVENTI
   }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
   .modal {
-    background: white;
+    background: var(--surface);
     border-radius: 14px;
-    padding: 28px;
+    padding: 28px 32px;  /* aumenta padding laterale — era 28px */
     width: 480px;
     max-width: 95vw;
     box-shadow: 0 20px 60px rgba(0,0,0,0.15);
     transform: translateY(10px);
     transition: transform 0.2s;
+    box-sizing: border-box;  /* aggiunge questo */
   }
   .modal-overlay.open .modal { transform: translateY(0); }
   .modal-title {
@@ -416,7 +414,8 @@ STORICO INTERVENTI
     border-bottom: 1px solid var(--border);
     display: flex; align-items: center; gap: 8px;
   }
-  .form-row { margin-bottom: 14px; }
+  .form-row { margin-bottom: 14px; width: 100%;
+    box-sizing: border-box;}
   .form-row label {
     display: block;
     font-size: 11px; font-weight: 600;
@@ -427,20 +426,22 @@ STORICO INTERVENTI
   .form-row input,
   .form-row select,
   .form-row textarea {
-    width: 100%;
+   width: 100%;
     padding: 9px 12px;
     border: 1.5px solid var(--border);
     border-radius: 8px;
     font-size: 13px;
     color: var(--text);
-    background: white;
+    background: var(--input-bg);
     outline: none;
+    box-sizing: border-box;  /* aggiunge questo — fondamentale! */
     transition: border-color 0.15s;
   }
   .form-row input:focus,
   .form-row select:focus,
   .form-row textarea:focus { border-color: #2b88b8; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px;  /* era 12px */  width: 100%; box-sizing: border-box;}
   .modal-actions {
     display: flex; gap: 10px; justify-content: flex-end;
     margin-top: 20px; padding-top: 16px;
@@ -449,7 +450,9 @@ STORICO INTERVENTI
   .btn-cancel {
     padding: 9px 20px; border-radius: 8px;
     border: 1.5px solid var(--border);
-    background: white; cursor: pointer;
+    background: var(--surface);
+    color: var(--text-muted); 
+    cursor: pointer;
     font-size: 13px; font-weight: 500;
     color: var(--text-muted);
     transition: all 0.15s;

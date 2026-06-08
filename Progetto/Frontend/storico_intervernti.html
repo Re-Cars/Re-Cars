@@ -121,6 +121,9 @@
       <button class="filter-btn" data-filter="straordinario" onclick="setFilter('straordinario', this)">
         <span class="dot" style="background:#ef4444"></span> Straordinario
       </button>
+      <button class="filter-btn" data-filter="annotazioni" onclick="setFilter('annotazioni', this)">
+        <span class="dot" style="background:#f8782f"></span> Annotazione problemi
+      </button>
       <button class="filter-btn" data-filter="gestione" onclick="setFilter('gestione', this)">
         <span class="dot" style="background:#22c55e"></span> Spese di gestione
       </button>
@@ -167,6 +170,7 @@
             <option value="ordinario">Ordinario</option>
             <option value="straordinario">Straordinario</option>
             <option value="gestione">Spese di gestione</option>
+            <option value="annotazioni">Annotazioni</option>
           </select>
         </div>
       </div>
@@ -183,7 +187,7 @@
       <div class="form-grid">
         <div class="form-row">
           <label>Mediante (opzionale)</label>
-          <input type="text" id="inputMediante" placeholder="es. Officina Rossi">
+          <input type="text" id="inputMediante" placeholder="es. offician/benzinaio/negozio">
         </div>
         <div class="form-row">
           <label>Costo (opzionale)</label>
