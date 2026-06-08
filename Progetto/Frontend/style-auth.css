@@ -2,7 +2,11 @@
 /                      SFONDO                          /
 -----------------------------------------------------*/
 .auth-body {
-    background-color: #00021a;
+    background-image:  linear-gradient(rgba(2, 2, 39, 0.418), rgba(14, 14, 14, 0.5)),
+    url('Img/garageout.jpg');
+    background-size: cover;
+    background-position: center;
+    background-color: #0e0e0e;
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -11,11 +15,11 @@
     align-items: center;
     overflow: hidden;
 }
-
+ 
 .shutter-gate {
     position: fixed;
     inset: 0;
-    background-image: url('Img/garage.jpg.jpg');
+    background-image: url('Img/garage2.jpg');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -26,11 +30,11 @@
     transform: translateY(0);
     transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
 }
-
+ 
 .shutter-gate.lift-up {
     transform: translateY(-100vh);
 }
-
+ 
 .landing-overlay {
     position: absolute;
     inset: 0;
@@ -38,7 +42,7 @@
     z-index: 1;
     pointer-events: none;
 }
-
+ 
  /* ----------------------------------------------------
 /                      LANDING                         /
 -----------------------------------------------------*/
@@ -53,26 +57,59 @@
     justify-content: center;
     min-height: 80vh;
 }
-
+ 
 .brand-group {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 16px; 
 }
-
+ 
 .landing-logo {
     width: 90px;
     height: 90px;
     margin-bottom: 8px;
 }
-
-.landing-logo img {
+ 
+/*.landing-logo img {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}*/
+ 
+/*logo animazione --------*/
+.landing-logo {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 8px;
 }
+ 
+.landing-logo svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+ 
+.logo-svg2 {
+    width: 35%;
+    height: 35%;
+    overflow: visible;
+}
+ 
 
+@keyframes traccia {
+    from { stroke-dashoffset: 230; }
+    to   { stroke-dashoffset: 0; }
+}
+ 
+@keyframes glow {
+    from { filter: drop-shadow(0 0 0px rgba(255,255,255,0)); }
+    to   { filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+}
+ 
+/*fine logo logo animazione --------*/
+ 
+ 
 .landing-title {
     font-size: 3.5rem;
     font-weight: 800;
@@ -85,19 +122,19 @@
     -webkit-text-fill-color: transparent;
     animation: anim-colore 8s linear infinite;
 }
-
+ 
 .landing-title2 {
     font-size: 3rem;
     font-weight: 800;
     margin: 0;
     letter-spacing: 2px;
-    background: #2b88b8;
+    background: #010130;
     background-size: 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: anim-colore 8s linear infinite;
 }
-
+ 
 .landing-subtitle {
     font-size: 1.1rem;
     font-style: italic;
@@ -108,7 +145,7 @@
     -webkit-text-fill-color: transparent;
     animation: anim-colore 8s linear infinite;
 }
-
+ 
 .action-group {
     margin-top: 60px;
     display: flex;
@@ -116,7 +153,7 @@
     align-items: center;
     gap: 32px;
 }
-
+ 
 .scroll-hint {
     position: relative !important;
     bottom: auto !important;
@@ -131,49 +168,49 @@
     letter-spacing: 1px;
     text-transform: uppercase;
 }
-
+ 
 .scroll-hint.hint-hidden {
     opacity: 0;
     pointer-events: none;
     transform: translateY(10px) !important;
 }
-
+ 
 .scroll-arrows {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1px;
 }
-
+ 
 .scroll-arrows i {
     display: block;
     color: #f97316;
     font-size: 0.95rem;
     line-height: 0.8;
 }
-
+ 
 .scroll-arrows i:nth-child(3) { animation: fade-up-gate 1.5s infinite 0s; }
 .scroll-arrows i:nth-child(2) { animation: fade-up-gate 1.5s infinite 0.2s; }
 .scroll-arrows i:nth-child(1) { animation: fade-up-gate 1.5s infinite 0.4s; }
-
+ 
 @keyframes fade-up-gate {
     0%   { opacity: 0.1; transform: translateY(4px); }
     50%  { opacity: 1;   transform: translateY(0); }
     100% { opacity: 0.1; transform: translateY(-4px); }
 }
-
+ 
 .landing-buttons {
     display: flex;
     gap: 24px;
     flex-wrap: wrap;
     justify-content: center;
 }
-
+ 
 @keyframes anim-colore {
     0%   { background-position: 0%; }
     100% { background-position: 300%; }
 }
-
+ 
 .landing-search-section {
     position: relative;
     margin-top: 60px;
@@ -184,36 +221,36 @@
     z-index: 1;
     margin-bottom: 80px;
 }
-
+ 
 .landing-search-title {
     font-size: 1.3rem;
     color: #f97316;
     margin-bottom: 8px;
 }
-
+ 
 .landing-search-sub {
     color: rgba(255, 255, 255, 0.6);
     font-size: 0.9rem;
     margin-bottom: 20px;
 }
-
+ 
 .landing-input {
     margin-bottom: 16px;
 }
-
+ 
 body.landing-body {
     overflow-y: auto;
     height: auto;
     min-height: 100vh;
     padding-bottom: 80px
 }
-
-
+ 
+ 
 .landing-overlay {
     pointer-events: none;
 }
-
-
+ 
+ 
 .landing-search-section {
     margin-top: 120px;
     padding: 40px 20px 60px;
@@ -240,7 +277,7 @@ body.landing-body {
     pointer-events: none;
     transform: translateX(-50%) translateY(10px);
 }
-
+ 
 .scroll-arrows {
     display: flex;
     flex-direction: column;
@@ -255,7 +292,7 @@ body.landing-body {
 .scroll-arrows i:nth-child(1) { animation: fade-up 1.5s infinite 0s; }
 .scroll-arrows i:nth-child(2) { animation: fade-up 1.5s infinite 0.2s; }
 .scroll-arrows i:nth-child(3) { animation: fade-up 1.5s infinite 0.4s; }
-
+ 
 @keyframes fade-up {
     0%   { opacity: 0.1; transform: translateY(6px); }
     50%  { opacity: 1;   transform: translateY(0); }
@@ -281,12 +318,12 @@ body.landing-body {
     gap: 8px;
     transition: 0.3s;
 }
-
+ 
 .btn-landing:hover {
     background: linear-gradient(135deg, #ea580c, #c2410c);
     transform: scale(1.05);
 }
-
+ 
  /* ----------------------------------------------------
 /                      LOGIN / REGISTER                /
 -----------------------------------------------------*/
@@ -304,16 +341,16 @@ body.landing-body {
     flex-direction: column;
     gap: 24px;
 }
-
+ 
 .auth-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
+ 
 .auth-back {
     /*color: rgba(255, 255, 255, 0.6);*/ /*font torna indietro/registrat*/
-    color:#184f8a;
+    color:/*#184f8a*/ #f97316 ;
     text-decoration: none;
     font-size: 0.9rem;
     display: inline-flex;
@@ -321,47 +358,47 @@ body.landing-body {
     gap: 8px;
     transition: 0.3s;
 }
-
+ 
 .auth-back:hover {
     color: #ea580c;
 }
-
+ 
 .auth-logo {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
 }
-
+ 
 .auth-logo-img {
     width: 80px;
     height: 80px;
     object-fit: contain;
 }
-
+ 
 .auth-form {
     display: flex;
     flex-direction: column;
     gap: 14px;
 }
-
+ 
 .auth-form-wrapper {
     display: none;
     opacity: 0;
     transition: opacity 0.3s ease;
 }
-
+ 
 .auth-form-wrapper.active {
     display: block;
     opacity: 1;
 }
-
+ 
 .auth-error {
     color: #ff6b6b;
     font-size: 0.85rem;
     margin: 0;
 }
-
+ 
 .auth-switch {
     text-align: center;
     /*color: rgba(255, 255, 255, 0.5);*/ /*Non hai un account;*/
@@ -369,32 +406,32 @@ body.landing-body {
     font-size: 0.9rem;
     margin: 0;
 }
-
+ 
 .auth-switch a {
     color: #f97316;
     text-decoration: none;
     font-weight: 600;
 }
-
+ 
 .btn-login,
 .btn-register {
     padding: 11px 28px;
     font-size: 0.9rem;
     align-self: center;
 }
-
+ 
 .btn-login:hover,
 .btn-register:hover {
     background: #ea580c;
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(249, 115, 22, 0.3);
 }
-
+ 
 .btn-login:active,
 .btn-register:active {
     transform: translateY(0);
 }
-
+ 
  /* ----------------------------------------------------
 /                      INPUT                           /
 -----------------------------------------------------*/
@@ -404,7 +441,7 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
     transition: background-color 600000s ease-in-out 0s, color 600000s ease-in-out 0s;
 }
-
+ 
 .input-group {
     display: flex;
     align-items: center;
@@ -415,19 +452,19 @@ input:-webkit-autofill:active {
     padding: 12px 16px;
     transition: all 0.25s ease;
 }
-
+ 
 .input-group:focus-within {
     border-color: #f97316;
     background: #ffffff;
     box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
 }
-
+ 
 .input-group i {
     color: #f97316;
     width: 16px;
     flex-shrink: 0;
 }
-
+ 
 .input-group input,
 .input-group select {
     flex: 1;
@@ -439,17 +476,17 @@ input:-webkit-autofill:active {
     font-size: 0.95rem;
     font-family: inherit;
 }
-
+ 
 .input-group input::placeholder {
     /*color: rgba(255, 255, 255, 0.979);*/
     color: rgba(161, 160, 160, 0.815);
 }
-
+ 
 .input-group select option {
     /*background: #1a1a2e;*/
     background:#b82bac;
 }
-
+ 
  /* ----------------------------------------------------
 /                      CARD                            /
 -----------------------------------------------------*/
@@ -464,19 +501,19 @@ input:-webkit-autofill:active {
     flex-direction: column;
     gap: 14px;
 }
-
+ 
 .card h3 {
     margin: 0;
     font-size: 1.1rem;
     color: #ffffff;
 }
-
+ 
 .card p {
     margin: 0;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.6);
 }
-
+ 
  /* ----------------------------------------------------
 /                      RESPONSIVE                      /
 -----------------------------------------------------*/
@@ -485,26 +522,100 @@ input:-webkit-autofill:active {
         flex-direction: column;
         align-items: center;
     }
-
+ 
     .btn-landing {
         width: 240px;
         justify-content: center;
     }
-
+ 
     .auth-container {
         margin: 20px;
         padding: 28px 20px;
     }
-
+ 
     .landing-title {
         font-size: 2.2rem;
     }
-
+ 
     .section-row {
         flex-direction: column;
     }
-
+ 
     .section {
         padding: 20px 16px;
     }
 }
+
+
+
+/* ----------------------------------------------------
+/              SEQUENZA ANIMAZIONE LANDING             /
+-----------------------------------------------------*/
+ 
+/* STEP 1 – sfondo: parte invisibile */
+.shutter-gate {
+    opacity: 0;
+    /* aggiunge opacity alla transition già esistente */
+    transition: opacity 1s ease,
+                transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+}
+.shutter-gate.show-bg  { opacity: 1; }
+/* lift-up resta invariato */
+.shutter-gate.lift-up  { transform: translateY(-100vh); }
+ 
+/* STEP 2 – logo: invisibile, poi appare + si traccia */
+.landing-logo {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+.landing-logo.show-logo { opacity: 1; }
+ 
+/* path: animazione pausa finché JS non aggiunge .animate-logo */
+.logo-path {
+    fill: none;
+    stroke: #ffffff;
+    stroke-linecap: square;
+    stroke-miterlimit: 10;
+    stroke-width: 3.561px;
+    stroke-dasharray: 9999;   /* JS sovrascrive con getTotalLength() */
+    stroke-dashoffset: 9999;
+    animation: traccia-logo 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-play-state: paused;
+}
+.landing-logo.animate-logo .logo-path { animation-play-state: running; }
+
+@keyframes traccia-logo {
+    from { stroke-dashoffset: var(--path-len, 9999); }
+    to   { stroke-dashoffset: 0; }
+}
+ 
+/* STEP 3 – titolo */
+#landing-title {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+#landing-title.show-title { opacity: 1; transform: translateY(0); }
+ 
+/* STEP 3b – slogan */
+#landing-subtitle {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+#landing-subtitle.show-subtitle { opacity: 1; transform: translateY(0); }
+ 
+/* STEP 4 – action-group (scroll hint) */
+#action-group {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+#action-group.show-hint { opacity: 1; }
+ 
+/* STEP 4b – bottone ACCEDI */
+#landing-buttons {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+#landing-buttons.show-btn { opacity: 1; transform: translateY(0); }

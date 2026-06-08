@@ -20,7 +20,7 @@
         
         <div class="auth-nav">
             <a href="#" class="auth-back" onclick="closeGarage(event)">
-                <i class="fa-solid fa-arrow-left"></i> Torna alla Landing
+                <i class="fa-solid fa-arrow-left"></i> Torna al forum 
             </a>
 
             <a href="#" class="auth-back" id="auth-toggle-nav" onclick="switchForm()">
@@ -29,8 +29,8 @@
         </div>
 
         <div class="auth-logo">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="Logo RE|CARS" class="auth-logo-img">
-            <h1 class="landing-title2">RE|CARS</h1>
+    <img src="Img/LOGO/solo-logo-C-e-O/SVG/Logo.car.lineaN.svg" alt="Logo RE|CARS" class="logo-svg2">
+        <h1 class="landing-title2">RE<span class="divisore">|</span>CARS</h1>
         </div>
 
         <div class="auth-form-wrapper active" id="wrapper-login">
@@ -46,6 +46,7 @@
                 <p id="login-error" class="auth-error"></p>
                 <button class="btn-landing btn-login" onclick="login()">ACCEDI</button>
             </div>
+            <br>
             <p class="auth-switch">Non hai un account? <a href="#" onclick="switchForm(event)">Registrati</a></p>
         </div>
 
@@ -66,24 +67,29 @@
                 <p id="reg-error" class="auth-error"></p>
                 <button class="btn-landing btn-register" onclick="register()">REGISTRATI</button>
             </div>
+            <br>
             <p class="auth-switch">Hai già un account? <a href="#" onclick="switchForm(event)">Accedi</a></p>
         </div>
 
     </div>
 
-    <div class="shutter-gate" id="shutter-gate">
+     <div class="shutter-gate" id="shutter-gate">
         <div class="landing-overlay"></div>
         <div class="landing-content">
             <div class="brand-group">
-                <div class="landing-logo">  
-                    <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="Logo YouDrive" id="logo-img">
+                <div class="landing-logo" id="landing-logo">
+                    <svg id="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50.54 35.951">
+                        <path class="logo-path" id="logo-path"
+                            d="M44.234,35.083c0,3.957,2.775,5.643,5.032,6.6a7.812,7.812,0,0,0,7.165-.454,7.39,7.39,0,0,0,3.412-6.444v-.035a4.361,4.361,0,0,0-4.361-4.511H17.873a4.347,4.347,0,0,0-4.344,4.511v.035a7.39,7.39,0,0,0,3.412,6.444,7.812,7.812,0,0,0,7.165.454c2.257-.958,5.033-2.941,5.033-6.9,0-6.835-7.881-9.074-7.881-9.074l-3.605-.259a4.046,4.046,0,0,1-4.124-4.017V14.157a4.206,4.206,0,0,1,4.206-4.206H35.569c12.053,1.061,22.167,9.687,23.882,11.023A2.694,2.694,0,0,1,60.5,23.093h0a2.658,2.658,0,0,1-2.657,2.657h-12.8a7.578,7.578,0,0,1-7.578-7.577V15.71"
+                            transform="translate(-11.745 -8.17)"/>
+                    </svg>
                 </div>
-                <h1 class="landing-title">RE|CARS</h1>
-                <p class="landing-subtitle"><i>Tu guida al resto pensiamo noi</i></p>
+                <h1 class="landing-title" id="landing-title">RE|CARS</h1>
+                <p class="landing-subtitle" id="landing-subtitle"><i>Tu guida al resto pensiamo noi</i></p>
             </div>
-
-            <div class="action-group">
-                <div class="scroll-hint">
+ 
+            <div class="action-group" id="action-group">
+                <div class="scroll-hint" id="scroll-hint">
                     <span>Scorri</span>
                     <div class="scroll-arrows">
                         <i class="fa-solid fa-chevron-up"></i>
@@ -92,8 +98,8 @@
                     </div>
                 </div>
             </div>
-
-            <div class="landing-buttons">
+ 
+            <div class="landing-buttons" id="landing-buttons">
                 <button type="button" class="btn-landing" onclick="openGarage()">ACCEDI</button>
             </div>
         </div>

@@ -213,3 +213,82 @@ function logout() {
     localStorage.removeItem('yd_utente_loggato');
     window.location.href = 'landing.html';
 }
+
+
+
+function logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('yd_utente_loggato');
+    window.location.href = 'landing.html';
+}
+ 
+ 
+ 
+ /* ----------------------------------------------------
+/          SEQUENZA ANIMAZIONE LANDING                 /
+/   1. Sfondo garage  (fade-in)                        /
+/   2. Logo SVG       (stroke-dashoffset)              /
+/   3. Titolo RE|CARS (slide-up)                       /
+/   4. Slogan         (slide-up)                       /
+/   5. Scroll hint + bottone ACCEDI                    /
+-----------------------------------------------------*/
+document.addEventListener('DOMContentLoaded', () => {
+ 
+    const gate        = document.getElementById('shutter-gate');
+    const logoWrap    = document.getElementById('landing-logo');
+    const logoPath    = document.getElementById('logo-path');
+    const title       = document.getElementById('landing-title');
+    const subtitle    = document.getElementById('landing-subtitle');
+    const buttons     = document.getElementById('landing-buttons');
+    const actionGroup = document.getElementById('action-group');
+ 
+    // Se non siamo sulla landing, esci senza errori
+    if (!gate || !logoPath) return;
+ 
+    // Durate (ms)
+    const T = {
+        bgFade:    800,
+        bgPause:   400,
+        logoDraw: 2200,
+        logoGlow:  500,
+        titleWait: 300,
+        titleFade: 700,
+        sloganWait:250,
+        btnWait:   500,
+    };
+ 
+    // Misura lunghezza reale del path SVG
+    const pathLen = logoPath.getTotalLength();
+    logoPath.style.strokeDasharray  = pathLen;
+    logoPath.style.strokeDashoffset = pathLen;
+    logoPath.style.setProperty('--path-len', pathLen);
+ 
+    let t = 0;
+ 
+    // STEP 1 – sfondo
+    setTimeout(() => gate.classList.add('show-bg'), t);
+    t += T.bgFade + T.bgPause;
+ 
+    // STEP 2 – logo appare e si traccia
+    setTimeout(() => {
+        logoWrap.classList.add('show-logo');
+        setTimeout(() => logoWrap.classList.add('animate-logo'), 80);
+    }, t);
+    t += T.logoDraw;
+ 
+ 
+    // STEP 2 – titolo
+    setTimeout(() => title.classList.add('show-title'), t);
+    t += T.titleFade + T.sloganWait;
+ 
+    // STEP 2b – slogan
+    setTimeout(() => subtitle.classList.add('show-subtitle'), t);
+    t += 400;
+ 
+    // STEP 3 – scroll hint + bottone
+    setTimeout(() => {
+        buttons.classList.add('show-btn');
+        actionGroup.classList.add('show-hint');
+    }, t + T.btnWait);
+ 
+});
