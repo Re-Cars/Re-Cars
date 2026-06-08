@@ -130,18 +130,18 @@ function renderDropdown() {
 }
 
 function mostraConfermaElimina(id, nome) {
-    const esistente = document.getElementById('confirma-elimina-overlay');
+    const esistente = document.getElementById('conferma-elimina-overlay');
     if (esistente) esistente.remove();
 
     const overlay = document.createElement('div');
-    overlay.id = 'confirma-elimina-overlay';
+    overlay.id = 'conferma-elimina-overlay';
     overlay.innerHTML = `
         <div class="conferma-elimina-box">
             <div class="conferma-elimina-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
             <p class="conferma-elimina-title">Elimina veicolo</p>
             <p class="conferma-elimina-sub">Vuoi rimuovere <strong>${nome}</strong> dal tuo garage?</p>
             <div class="conferma-elimina-btns">
-                <button class="conferma-btn-annulla" onclick="document.getElementById('confirma-elimina-overlay').remove()">Annulla</button>
+                <button class="conferma-btn-annulla" onclick="document.getElementById('conferma-elimina-overlay').remove()">Annulla</button>
                 <button class="conferma-btn-elimina" onclick="eliminaVeicolo(${id})">Elimina</button>
             </div>
         </div>
@@ -151,7 +151,7 @@ function mostraConfermaElimina(id, nome) {
 
 async function eliminaVeicolo(id) {
     const token = getData('access_token');
-    document.getElementById('confirma-elimina-overlay')?.remove();
+    document.getElementById('conferma-elimina-overlay')?.remove();
     try {
         const response = await fetch(`http://localhost:3000/veicolo/${id}`, {
             method: 'DELETE',
@@ -487,46 +487,48 @@ document.addEventListener("DOMContentLoaded", async () => {
 /            LAYOUT CIRCOLARE HOMEPAGE                 /
 -----------------------------------------------------*/
 document.addEventListener('DOMContentLoaded', () => {
-    const scene = document.querySelector('.cards-scene');
-    if (!scene) return;
-    const cards = [
-        { id: 'hc1', angle: -90 },
-        { id: 'hc2', angle: -18 },
-        { id: 'hc3', angle: 54 },
-        { id: 'hc4', angle: 126 },
-        { id: 'hc5', angle: 198 },
-    ];
-    const r = 240;
-    const cx = scene.offsetWidth / 2;
-    const cy = scene.offsetHeight / 2;
-    cards.forEach((c, i) => {
-        const el = document.getElementById(c.id);
-        if (!el) return;
-        const rad = (c.angle * Math.PI) / 180;
-        const x = cx + Math.cos(rad) * r;
-        const y = cy + Math.sin(rad) * r;
-        el.style.left = x + 'px';
-        el.style.top = y + 'px';
-        setTimeout(() => {
-            el.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, box-shadow 0.25s ease, border-color 0.2s';
-            el.style.transform = 'translate(-50%, -50%)';
-            el.style.opacity = '1';
-            el.addEventListener('mouseenter', () => {
-                el.style.transform = 'translate(-50%, -50%) perspective(400px) rotateX(8deg) rotateY(-4deg) scale(1.1)';
-                el.style.boxShadow = '0 20px 40px rgba(0,0,0,0.6)';
-                el.style.borderColor = 'rgba(255,255,255,0.2)';
-            });
-            el.addEventListener('mouseleave', () => {
+    setTimeout(() => {
+        const scene = document.querySelector('.cards-scene');
+        if (!scene) return;
+        const cards = [
+            { id: 'hc1', angle: -90 },
+            { id: 'hc2', angle: -18 },
+            { id: 'hc3', angle: 54 },
+            { id: 'hc4', angle: 126 },
+            { id: 'hc5', angle: 198 },
+        ];
+        const r = 240;
+        const cx = scene.offsetWidth / 2;
+        const cy = scene.offsetHeight / 2;
+        cards.forEach((c, i) => {
+            const el = document.getElementById(c.id);
+            if (!el) return;
+            const rad = (c.angle * Math.PI) / 180;
+            const x = cx + Math.cos(rad) * r;
+            const y = cy + Math.sin(rad) * r;
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            setTimeout(() => {
+                el.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, box-shadow 0.25s ease, border-color 0.2s';
                 el.style.transform = 'translate(-50%, -50%)';
-                el.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
-                el.style.borderColor = 'rgba(255,255,255,0.08)';
-            });
-            el.addEventListener('mousedown', () => {
-                el.style.transform = 'translate(-50%, -50%) scale(0.96)';
-            });
-            el.addEventListener('mouseup', () => {
-                el.style.transform = 'translate(-50%, -50%)';
-            });
-        }, 100 + i * 80);
-    });
+                el.style.opacity = '1';
+                el.addEventListener('mouseenter', () => {
+                    el.style.transform = 'translate(-50%, -50%) perspective(400px) rotateX(8deg) rotateY(-4deg) scale(1.1)';
+                    el.style.boxShadow = '0 20px 40px rgba(0,0,0,0.6)';
+                    el.style.borderColor = 'rgba(255,255,255,0.2)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = 'translate(-50%, -50%)';
+                    el.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
+                    el.style.borderColor = 'rgba(255,255,255,0.08)';
+                });
+                el.addEventListener('mousedown', () => {
+                    el.style.transform = 'translate(-50%, -50%) scale(0.96)';
+                });
+                el.addEventListener('mouseup', () => {
+                    el.style.transform = 'translate(-50%, -50%)';
+                });
+            }, 100 + i * 80);
+        });
+    }, 50);
 });

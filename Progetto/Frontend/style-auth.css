@@ -3,7 +3,7 @@
 -----------------------------------------------------*/
 .auth-body {
     background-color: #00021a;
-    background-image: url('Img/garage-open.jpg');
+    background-image: url('Img/garageout.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -19,7 +19,7 @@
 .shutter-gate {
     position: fixed;
     inset: 0;
-    background-image: url('Img/garage.jpg.jpg');
+    background-image: url('Img/garage2.jpg');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -300,7 +300,7 @@ body.landing-body {
     width: 100%;
     max-width: 400px;
     padding: 40px 36px;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius: 24px;
