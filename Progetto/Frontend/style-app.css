@@ -415,21 +415,41 @@
 }
 
 .home-intro-veicolo {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    background: rgba(249, 115, 22, 0.12);
+    border: 1px solid rgba(249, 115, 22, 0.35);
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor: default;
+}
+
+.home-intro-veicolo i {
     font-size: 1rem;
+    color: #f97316;
 }
 
-.home-intro-veicolo span {
+.home-intro-veicolo .veicolo-nome {
     color: var(--text);
+    font-weight: 500;
+    font-size: 0.88rem;
 }
 
-.veicolo-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #f97316;
+.home-intro-veicolo .veicolo-sep {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.home-intro-veicolo .veicolo-targa {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #f97316;
+    letter-spacing: 1px;
+    background: rgba(249, 115, 22, 0.15);
+    border: 0.5px solid rgba(249, 115, 22, 0.3);
+    padding: 2px 7px;
+    border-radius: 5px;
 }
 
 .home-cards-section {
@@ -866,7 +886,7 @@
     max-width: 560px;
     width: 100%;
     margin: 40px auto;
-    background: #010130;
+    background: #141445;
     border-radius: 20px;
     padding: 40px 32px;
     text-align: center;
@@ -1386,6 +1406,44 @@
     border-top: 1px solid rgba(249, 115, 22, 0.15);
     margin-top: 4px;
     padding-top: 4px;
+}
+
+.switcher-aggiungi-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 1.5px solid rgba(249, 115, 22, 0.4);
+    border-radius: 20px;
+    padding: 6px 20px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: rgba(249, 115, 22, 0.8);
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.switcher-aggiungi-btn:hover {
+    border-color: #f97316;
+    color: #f97316;
+    background: rgba(249, 115, 22, 0.08);
+}
+
+.switcher-plus-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.switcher-plus-circle i {
+    font-size: 0.62rem;
+    color: #fff;
 }
 
 .switcher-delete-btn {

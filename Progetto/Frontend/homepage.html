@@ -77,9 +77,11 @@
     </header>
 
     <section class="home-intro">
-        <div class="home-intro-veicolo">
-            <div class="veicolo-dot"></div>
-            <span id="nome-veicolo-attivo">Caricamento...</span>
+        <div class="home-intro-veicolo" id="home-intro-veicolo">
+            <i class="fa-solid fa-car" id="veicolo-tipo-icon"></i>
+            <span class="veicolo-nome" id="nome-veicolo-attivo">Caricamento...</span>
+            <span class="veicolo-sep">·</span>
+            <span class="veicolo-targa" id="targa-veicolo-attivo"></span>
         </div>
         <div class="veicolo-switcher" id="veicolo-switcher">
             <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">

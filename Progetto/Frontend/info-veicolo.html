@@ -80,15 +80,17 @@
         </div>
     </header>
 
-   <!----> <div class="breadcrumb">
+    <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
         <span>›</span>
         <span>Info Veicolo</span>
     </div>
         <section class="home-intro">
-            <div class="home-intro-veicolo">
-                <div class="veicolo-dot"></div>
-                <span id="nome-veicolo-attivo">Caricamento...</span>
+            <div class="home-intro-veicolo" id="home-intro-veicolo">
+                <i class="fa-solid fa-car" id="veicolo-tipo-icon"></i>
+                <span class="veicolo-nome" id="nome-veicolo-attivo">Caricamento...</span>
+                <span class="veicolo-sep">·</span>
+                <span class="veicolo-targa" id="targa-veicolo-attivo"></span>
             </div>
             <div class="veicolo-switcher" id="veicolo-switcher">
                 <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
@@ -105,87 +107,104 @@
 
     <section class="iv-dashboard">
 
-   <br>
-   <br>
-
-    <!-- INFO GENERALI -->
-    <div class="iv-section-bar"><span>carattteristiche generali</span></div>
-    <div class="iv-info-grid">
-        <div class="iv-info-cell">
-            <div class="iv-cell-label">Tipo veicolo</div>
-            <div class="iv-cell-value" id="iv-tipo">Automobile</div>
-        </div>
-        <div class="iv-info-cell">
-            <div class="iv-cell-label">Marca</div>
-            <div class="iv-cell-value" id="iv-marca">Tipo</div>
-        </div>
-        <div class="iv-info-cell">
-            <div class="iv-cell-label">Modello</div>
-            <div class="iv-cell-value" id="iv-modello">codicemodello</div>
-        </div>
-        <div class="iv-info-cell">
-            <div class="iv-cell-label">Anno</div>
-            <div class="iv-cell-value" id="iv-anno">2025</div>
-        </div>
-    </div>
-
-    <!-- CARATTERISTICHE SPECIFICHE -->
-    <div class="iv-section-bar"><span>Caratteristiche specifiche</span></div>
-    <div class="iv-info-grid">
-        <div class="iv-info-cell">
-            <div class="iv-cell-label">Alimentazione</div>
-            <div class="iv-cell-value" id="iv-alimentazione">Ibrida</div>
-        </div>
-        <div class="iv-info-cell">
-            <div class="iv-cell-label">Cilindrata</div>
-            <div class="iv-cell-value" id="iv-cilindrata">1.5 cc</div>
-        </div>
-        <div class="iv-info-cell">
-            <div class="iv-cell-label">Cavalli</div>
-            <div class="iv-cell-value" id="iv-cavalli">69 CV</div>
-        </div>
-        <div class="iv-info-cell">
-            <div class="iv-cell-label">Targa</div>
-            <div class="iv-cell-value" id="iv-targa">-</div>
-        </div>
-    </div>
-
-    <!-- SPESE MANTENIMENTO -->
-    <div class="iv-section-bar"><span> spese di mantenimento ordinario</span> </div>
-    <div class="iv-maint-grid">
-
-        <div class="iv-maint-cell">
-            <div class="iv-maint-left">
-                <div class="iv-maint-title">Bollo</div>
-                <div class="iv-maint-date" id="iv-bollo-date">scade gg/mm/aa</div>
+        <div class="iv-section-card">
+            <div class="iv-section-bar">
+                <i class="fa-solid fa-car" id="iv-section-icon"></i>
+                <span>Veicolo</span>
             </div>
-            <div class="iv-maint-right">
-                <span class="iv-badge iv-badge-attiva" id="iv-bollo-stato">Attivo</span>
-                <div class="iv-info-icon" title="Dettagli bollo"><i class="fa-solid fa-circle-info"></i></div>
+            <div class="iv-hero-body">
+                <div class="iv-hero-icon">
+                    <i class="fa-solid fa-car" id="iv-hero-icon"></i>
+                </div>
+                <div>
+                    <div class="iv-hero-name" id="iv-hero-name">-</div>
+                    <div class="iv-hero-sub">
+                        <span class="iv-targa-pill">
+                            <i class="fa-solid fa-id-card"></i>
+                            <span id="iv-targa">-</span>
+                        </span>
+                        <span class="iv-mini-pill">
+                            <i class="fa-solid fa-car" id="iv-mini-tipo-icon"></i>
+                            <span>Tipo</span>
+                            <strong id="iv-tipo">-</strong>
+                        </span>
+                        <span class="iv-mini-pill">
+                            <i class="fa-solid fa-calendar"></i>
+                            <span>Anno</span>
+                            <strong id="iv-anno">-</strong>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="iv-maint-cell">
-            <div class="iv-maint-left">
-                <div class="iv-maint-title">Assicurazione</div>
-                <div class="iv-maint-compagnia" id="iv-assicurazione-compagnia">-</div>
-                <div class="iv-maint-date" id="iv-assicurazione-date">scade gg/mm/aa</div>
+        <div class="iv-section-card">
+            <div class="iv-section-bar">
+                <i class="fa-solid fa-gears"></i>
+                <span>Caratteristiche tecniche</span>
             </div>
-            <div class="iv-maint-right">
-                <span class="iv-badge iv-badge-attiva" id="iv-assicurazione-stato">Attiva</span>
-                <div class="iv-info-icon" title="Dettagli assicurazione"><i class="fa-solid fa-circle-info"></i></div>
+            <div class="iv-pills-body">
+                <div class="iv-pill">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span class="iv-pill-lbl">Alimentazione</span>
+                    <span class="iv-pill-sep">·</span>
+                    <span class="iv-pill-val" id="iv-alimentazione">-</span>
+                </div>
+                <div class="iv-pill">
+                    <i class="fa-solid fa-oil-can"></i>
+                    <span class="iv-pill-lbl">Cilindrata</span>
+                    <span class="iv-pill-sep">·</span>
+                    <span class="iv-pill-val" id="iv-cilindrata">-</span>
+                </div>
+                <div class="iv-pill">
+                    <i class="fa-solid fa-horse-head"></i>
+                    <span class="iv-pill-lbl">Cavalli</span>
+                    <span class="iv-pill-sep">·</span>
+                    <span class="iv-pill-val" id="iv-cavalli">-</span>
+                </div>
+                <div class="iv-pill">
+                    <i class="fa-solid fa-car-side"></i>
+                    <span class="iv-pill-lbl">Marca</span>
+                    <span class="iv-pill-sep">·</span>
+                    <span class="iv-pill-val" id="iv-marca">-</span>
+                </div>
             </div>
         </div>
 
-        <div class="iv-aggiorna-wrap">
-            <button class="iv-aggiorna-btn" onclick="aggiornaScheda()">
-                <span>Aggiorna sezione</span>
-                <i class="fa-solid fa-rotate-right"></i>
-            </button>
+        <div class="iv-section-card">
+            <div class="iv-section-bar">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>Mantenimento</span>
+            </div>
+            <div class="iv-maint-body">
+                <div class="iv-maint-pill">
+                    <div class="iv-maint-left">
+                        <i class="fa-solid fa-receipt iv-maint-pill-icon"></i>
+                        <div class="iv-maint-info">
+                            <span class="iv-maint-title">Bollo</span>
+                            <span class="iv-maint-date" id="iv-bollo-date">-</span>
+                        </div>
+                    </div>
+                    <div class="iv-maint-right">
+                        <span class="iv-badge iv-badge-attiva" id="iv-bollo-stato">Attivo</span>
+                    </div>
+                </div>
+                <div class="iv-maint-pill">
+                    <div class="iv-maint-left">
+                        <i class="fa-solid fa-shield-halved iv-maint-pill-icon"></i>
+                        <div class="iv-maint-info">
+                            <span class="iv-maint-title">Assicurazione · <span id="iv-assicurazione-compagnia">-</span></span>
+                            <span class="iv-maint-date" id="iv-assicurazione-date">-</span>
+                        </div>
+                    </div>
+                    <div class="iv-maint-right">
+                        <span class="iv-badge iv-badge-attiva" id="iv-assicurazione-stato">Attiva</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-    </div>
-</section>
+    </section>
 
 </body>
 </html>
