@@ -119,7 +119,6 @@ function renderDropdown() {
                 <i class="fa-solid fa-trash"></i>
             </button>
         `;
-        btn.querySelector('.switcher-item span:first-of-type, i.fa-solid:first-child')?.addEventListener('click', () => selezionaVeicolo(i));
         btn.addEventListener('click', (e) => {
             if (!e.target.closest('.switcher-delete-btn')) selezionaVeicolo(i);
         });
@@ -457,9 +456,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                     <div class="vehicle-result-footer">
                         <button id="addVehicleBtn" type="button" class="btn-aggiungi-garage">
-                            <i class="fa-solid fa-warehouse" aria-hidden="true"></i>
-                            Aggiungi al mio garage
-                            <i class="fa-solid fa-arrow-right btn-arrow" aria-hidden="true"></i>
+                            <div class="btn-icon-circle"><i class="fa-solid fa-warehouse"></i></div>
+                            Aggiungi al garage
                         </button>
                     </div>
                 </div>

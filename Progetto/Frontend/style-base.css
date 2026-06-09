@@ -31,7 +31,7 @@ body {
 }
 
  /*-------------------------------------------------
-/                               wrapper
+/                      WRAPPER
 --------------------------------------------------*/
 .page-wrapper {
     flex: 1;
@@ -39,7 +39,7 @@ body {
 }
 
  /* ----------------------------------------------------
-/                      DARK/LIGHT MODE                 /
+/                      LIGHT MODE
 -----------------------------------------------------*/
 :root {
     --bg: #f4f4f4;
@@ -47,107 +47,51 @@ body {
     --surface: #ffffff;
     --surface-2: #ededed;
     --border: rgba(249, 115, 22, 0.2);
+    --border-table: #d0daea;
     --text-muted: #6b7280;
+    --muted: #7a8394;
     --input-bg: #e8e8e8;
     --card-bg: #141445;
     --header-bg: #141445;
     --sidebar-bg: #f5f5f7;
     --dropdown-bg: #ffffff;
     --avatar-dropdown-bg: #ffffff;
+    --success: #37a961;
+    --error: #e53935;
+    --white: #fff;
+
+    --font-xs:   0.72rem;
+    --font-sm:   0.8rem;
+    --font-base: 0.95rem;
+    --font-md:   1rem;
+    --font-lg:   1.1rem;
+    --font-xl:   1.4rem;
 }
 
+ /* ----------------------------------------------------
+/                      DARK MODE
+-----------------------------------------------------*/
 [data-theme="dark"] {
     --bg: #010130;
     --text: #e8e8e8;
     --surface: #0b132b;
     --surface-2: #22253a;
     --border: rgba(249, 115, 22, 0.25);
+    --border-table: #1e4d72;
     --text-muted: #a0a8b8;
+    --muted: #a0a8b8;
     --input-bg: #2a2d3e;
     --card-bg: #141445;
     --header-bg: #141445;
     --sidebar-bg: #141445;
     --dropdown-bg: #141445;
     --avatar-dropdown-bg: #141445;
+    --success: #37a961;
+    --error: #e53935;
+    --white: #fff;
 }
 
 [data-theme="dark"] body {
     background-image: radial-gradient(rgba(249, 115, 22, 0.04) 1px, transparent 1px);
     background-size: 28px 28px;
-    --card-bg: #1a1d2e;
-    --sidebar-bg: #1e2130;
-    --dropdown-bg: #1e2130;
-    --avatar-dropdown-bg: #1e2130;
-}
-
-/* Sostituisci il blocco :root con i colori storico con questo: */
-
-:root {
-    --iv-blue:       #2b88b8;
-    --iv-blue-light: #d9eaf5;
-    --iv-blue-dark:  #17314c;
-    --iv-orange:     #f97316;
-
-    --ordinario:           #2b88b8;
-    --ordinario-bg:        #eff6ff;
-    --ordinario-border:    #bfdbfe;
-    --straordinario:       #ef4444;
-    --straordinario-bg:    #fef2f2;
-    --straordinario-border:#fecaca;
-    --annotazioni:         #f97316;
-    --annotazioni-bg:      #fff1e7;
-    --annotazioni-border:  #fcd0b1;
-    --gestione:            #37a961;
-    --gestione-bg:         #f0fdf4;
-    --gestione-border:     #bbf7d0;
-
-    --border:   #d0daea;
-    --muted:    #7a8394;
-    --text:     #2c2c2c;
-    --bg:       #f2f4f7;
-    --white:    #fff;
-    --success:  #37a961;
-    --error:    #e53935;
-}
-
-/* Dark mode badge storico — versioni scure */
-[data-theme="dark"] {
-     --ordinario:           #2b88b8;
-    --ordinario-bg:        #0d2236;
-    --ordinario-border:    #bfdbfe;
-    --straordinario:       #ef4444;
-    --straordinario-bg:    #0d2236;
-    --straordinario-border:#fecaca;
-    --annotazioni:         #f97316;
-    --annotazioni-bg:      #fff1e7;
-    --annotazioni-border:  #fcd0b1;
-    --gestione:            #37a961;
-    --gestione-bg:         #0aa037;
-    --gestione-border:     #bbf7d0;
-
-
-    --ordinario-bg:        #0d2236;
-    --ordinario-border:    #1e4d72;
-    --straordinario-bg:    #2d0f0f;
-    --straordinario-border:#6b1c1c;
-    --annotazioni-bg:      #2d1800;
-    --annotazioni-border:  #7a3500;
-    --gestione-bg:         #0a2116;
-    --gestione-border:     #1a5c35;
-}
-
-
-:root {
-    /* Tipografia */
-    --font-xs:   0.72rem;   /* ~11px — label uppercase, badge piccoli */
-    --font-sm:   0.8rem;    /* ~13px — testo secondario, date, muted */
-    --font-base: 0.95rem;   /* ~15px — testo normale */
-    --font-md:   1rem;      /* ~16px — testo leggermente più grande */
-    --font-lg:   1.1rem;    /* ~18px — titoli card */
-    --font-xl:   1.4rem;    /* ~22px — titoli sezione */
-}
-
-body {
-    background-color: var(--bg);
-    color: var(--text);
 }
