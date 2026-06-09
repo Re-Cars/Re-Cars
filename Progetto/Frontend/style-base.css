@@ -54,6 +54,15 @@ body {
     --sidebar-bg: #f5f5f7;
     --dropdown-bg: #ffffff;
     --avatar-dropdown-bg: #ffffff;
+
+    
+    /* Tipografia */
+    --font-xs:   0.72rem;   /* ~11px — label uppercase, badge piccoli */
+    --font-sm:   0.8rem;    /* ~13px — testo secondario, date, muted */
+    --font-base: 0.95rem;   /* ~15px — testo normale */
+    --font-md:   1rem;      /* ~16px — testo leggermente più grande */
+    --font-lg:   1.1rem;    /* ~18px — titoli card */
+    --font-xl:   1.4rem;    /* ~22px — titoli sezione */
 }
 
 [data-theme="dark"] {
@@ -134,17 +143,6 @@ body {
     --annotazioni-border:  #7a3500;
     --gestione-bg:         #0a2116;
     --gestione-border:     #1a5c35;
-}
-
-
-:root {
-    /* Tipografia */
-    --font-xs:   0.72rem;   /* ~11px — label uppercase, badge piccoli */
-    --font-sm:   0.8rem;    /* ~13px — testo secondario, date, muted */
-    --font-base: 0.95rem;   /* ~15px — testo normale */
-    --font-md:   1rem;      /* ~16px — testo leggermente più grande */
-    --font-lg:   1.1rem;    /* ~18px — titoli card */
-    --font-xl:   1.4rem;    /* ~22px — titoli sezione */
 }
 
 body {
