@@ -1,7 +1,8 @@
 const tipiIntervento = {
-  ordinario:     ['Cambio olio','Cambio tergicristalli','Gomme','Batteria','Controllo livelli','Pastiglie freni','Tagliando','Altro'],
-  straordinario: ['Cinghia distribuzione','Carrozzeria','Riparazioni','Impianto elettrico','Luci','Frizione','Ammortizzatori','Altro'],
-  gestione:      ['Assicurazione','Bollo','Revisione','Multa','Pedaggi','Parcheggio']
+  ordinario:     ['Cambio olio','Cambio tergicristalli','Gomme','Batteria','Controllo livelli','Pastiglie freni','Liquido freni','Liquido raffreddamento','Filtri motore', 'Pulizia iniettori','Tagliando','Altro'],
+  straordinario: ['Cinghia distribuzione','Carrozzeria','Riparazioni','Impianto elettrico','Luci','Frizione','Ammortizzatori','Radiatore','Sensori','Compressore clima','Marmitta','Altro'],
+  gestione:      ['Assicurazione','Bollo','Revisione','Multa','Pedaggi','Parcheggio'],
+  annotazioni:   ['Problemi', 'luci', 'motore', 'elettrico', 'rumori', 'altro']
 };
  
 let interventi = [
@@ -84,6 +85,7 @@ function setFilter(f, btn) {
   if      (f === 'all')           btn.classList.add('active-all');
   else if (f === 'ordinario')     btn.classList.add('active-ordinario');
   else if (f === 'straordinario') btn.classList.add('active-straordinario');
+  else if (f === 'annotazioni')   btn.classList.add('active-annotazioni')
   else                            btn.classList.add('active-gestione');
   renderRows();
 }

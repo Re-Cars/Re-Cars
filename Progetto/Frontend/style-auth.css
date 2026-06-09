@@ -2,11 +2,11 @@
 /                      SFONDO                          /
 -----------------------------------------------------*/
 .auth-body {
-    background-color: #00021a;
-    background-image: url('Img/garageout.jpg');
+    background-image:  linear-gradient(rgba(2, 2, 39, 0.418), rgba(14, 14, 14, 0.5)),
+    url('Img/garageout.jpg');
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
+    background-color: #0e0e0e;
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -64,19 +64,46 @@
     align-items: center;
     gap: 16px; 
 }
-
+ 
+/*.landing-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}*/
+ 
+/*logo animazione --------*/
 .landing-logo {
     width: 90px;
     height: 90px;
     margin-bottom: 8px;
 }
-
-.landing-logo img {
+ 
+.landing-logo svg {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    overflow: visible;
 }
+ 
+.logo-svg2 {
+    width: 35%;
+    height: 35%;
+    overflow: visible;
+}
+ 
 
+@keyframes traccia {
+    from { stroke-dashoffset: 230; }
+    to   { stroke-dashoffset: 0; }
+}
+ 
+@keyframes glow {
+    from { filter: drop-shadow(0 0 0px rgba(255,255,255,0)); }
+    to   { filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+}
+ 
+/*fine logo logo animazione --------*/
+ 
+ 
 .landing-title {
     font-size: 3.5rem;
     font-weight: 800;
@@ -592,16 +619,90 @@ input:-webkit-autofill:active {
         margin: 20px;
         padding: 28px 20px;
     }
-
+ 
     .landing-title {
         font-size: 2.2rem;
     }
-
+ 
     .section-row {
         flex-direction: column;
     }
-
+ 
     .section {
         padding: 20px 16px;
     }
 }
+
+
+
+/* ----------------------------------------------------
+/              SEQUENZA ANIMAZIONE LANDING             /
+-----------------------------------------------------*/
+ 
+/* STEP 1 – sfondo: parte invisibile */
+.shutter-gate {
+    opacity: 0;
+    /* aggiunge opacity alla transition già esistente */
+    transition: opacity 1s ease,
+                transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+}
+.shutter-gate.show-bg  { opacity: 1; }
+/* lift-up resta invariato */
+.shutter-gate.lift-up  { transform: translateY(-100vh); }
+ 
+/* STEP 2 – logo: invisibile, poi appare + si traccia */
+.landing-logo {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+.landing-logo.show-logo { opacity: 1; }
+ 
+/* path: animazione pausa finché JS non aggiunge .animate-logo */
+.logo-path {
+    fill: none;
+    stroke: #ffffff;
+    stroke-linecap: square;
+    stroke-miterlimit: 10;
+    stroke-width: 3.561px;
+    stroke-dasharray: 9999;   /* JS sovrascrive con getTotalLength() */
+    stroke-dashoffset: 9999;
+    animation: traccia-logo 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-play-state: paused;
+}
+.landing-logo.animate-logo .logo-path { animation-play-state: running; }
+
+@keyframes traccia-logo {
+    from { stroke-dashoffset: var(--path-len, 9999); }
+    to   { stroke-dashoffset: 0; }
+}
+ 
+/* STEP 3 – titolo */
+#landing-title {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+#landing-title.show-title { opacity: 1; transform: translateY(0); }
+ 
+/* STEP 3b – slogan */
+#landing-subtitle {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+#landing-subtitle.show-subtitle { opacity: 1; transform: translateY(0); }
+ 
+/* STEP 4 – action-group (scroll hint) */
+#action-group {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+#action-group.show-hint { opacity: 1; }
+ 
+/* STEP 4b – bottone ACCEDI */
+#landing-buttons {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+#landing-buttons.show-btn { opacity: 1; transform: translateY(0); }
