@@ -6,7 +6,7 @@
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    background: #010130;
+    background: var(--header-bg);
     border-bottom: 1px solid #f97316;
     position: sticky;
     top: 0;
@@ -161,7 +161,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px;
-    background: #010130;
+    background: var(--header-bg);
     border-bottom: 1px solid rgb(240, 106, 10);
     min-height: 62px;
     box-sizing: border-box;
@@ -415,21 +415,41 @@
 }
 
 .home-intro-veicolo {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    background: rgba(249, 115, 22, 0.12);
+    border: 1px solid rgba(249, 115, 22, 0.35);
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor: default;
+}
+
+.home-intro-veicolo i {
     font-size: 1rem;
+    color: #f97316;
 }
 
-.home-intro-veicolo span {
+.home-intro-veicolo .veicolo-nome {
     color: var(--text);
+    font-weight: 500;
+    font-size: 0.88rem;
 }
 
-.veicolo-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #f97316;
+.home-intro-veicolo .veicolo-sep {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.home-intro-veicolo .veicolo-targa {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #f97316;
+    letter-spacing: 1px;
+    background: rgba(249, 115, 22, 0.15);
+    border: 0.5px solid rgba(249, 115, 22, 0.3);
+    padding: 2px 7px;
+    border-radius: 5px;
 }
 
 .home-cards-section {
@@ -471,17 +491,21 @@
     width: 88px;
     height: 88px;
     border-radius: 50%;
-    border: 2px solid rgba(249, 115, 22, 0.35);
+    border: 2px solid rgba(249, 115, 22, 0.5);
     transform: translate(-50%, -50%);
     animation: cards-pulse 2s ease-out infinite;
     pointer-events: none;
 }
 
-.cards-pulse2 { animation-delay: 1s; }
+.cards-pulse  { animation: cards-pulse 6s ease-out infinite; animation-delay: 1.6s; }
+.cards-pulse2 { animation: cards-pulse 6s ease-out infinite; animation-delay: 1.2s; }
+.cards-pulse3 { animation: cards-pulse 6s ease-out infinite; animation-delay: 0.8s; }
+.cards-pulse4 { animation: cards-pulse 6s ease-out infinite; animation-delay: 0.4s; }
+.cards-pulse5 { animation: cards-pulse 6s ease-out infinite; animation-delay: 0s; }
 
 @keyframes cards-pulse {
-    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
-    100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+    0%   { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+    100% { transform: translate(-50%, -50%) scale(3.2); opacity: 0; }
 }
 
 .home-card {
@@ -502,7 +526,7 @@
     cursor: pointer;
     position: absolute;
     overflow: hidden;
-    background: #010130;
+    background: var(--card-bg);
     border: 1.5px solid rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.45);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
@@ -841,6 +865,20 @@
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249,115,22,0); background: rgba(249,115,22,0.15); }
 }
 
+.switcher-btn.garage-delete {
+    animation: garage-delete 0.6s ease forwards;
+}
+
+@keyframes garage-delete {
+    0%,100%  { transform: skewX(0) skewY(0); }
+    15%      { transform: skewX(-8deg) skewY(-8deg); }
+    30%      { transform: skewX(6deg) skewY(6deg); }
+    45%      { transform: skewX(-4deg) skewY(-4deg); }
+    60%      { transform: skewX(3deg) skewY(3deg); }
+    75%      { transform: skewX(-2deg) skewY(-2deg); }
+    90%      { transform: skewX(1deg) skewY(1deg); }
+}
+
  /* ----------------------------------------------------
 /                 CERCA HERO                           /
 -----------------------------------------------------*/
@@ -848,7 +886,7 @@
     max-width: 560px;
     width: 100%;
     margin: 40px auto;
-    background: #010130;
+    background: #141445;
     border-radius: 20px;
     padding: 40px 32px;
     text-align: center;
@@ -1368,6 +1406,44 @@
     border-top: 1px solid rgba(249, 115, 22, 0.15);
     margin-top: 4px;
     padding-top: 4px;
+}
+
+.switcher-aggiungi-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 1.5px solid rgba(249, 115, 22, 0.4);
+    border-radius: 20px;
+    padding: 6px 20px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: rgba(249, 115, 22, 0.8);
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.switcher-aggiungi-btn:hover {
+    border-color: #f97316;
+    color: #f97316;
+    background: rgba(249, 115, 22, 0.08);
+}
+
+.switcher-plus-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.switcher-plus-circle i {
+    font-size: 0.62rem;
+    color: #fff;
 }
 
 .switcher-delete-btn {

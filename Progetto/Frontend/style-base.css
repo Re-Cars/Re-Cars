@@ -10,17 +10,10 @@ body {
     display: flex;
     flex-direction: column;
     font-family: 'Inter', sans-serif;
-    /*background: #1a1a2e;
-    color: #f0f0f0;*/
-    background: #f4f4f4;
-    color: #191919;
+    background-color: var(--bg);
+    color: var(--text);
 }
-/*
-footer {
-    margin-top: auto;
-    background:#090917;
-}
-*/
+
  /* ----------------------------------------------------
 /                      FOOTER                          /
 -----------------------------------------------------*/
@@ -37,14 +30,13 @@ footer {
     display: none !important;
 }
 
-/*-------------------------------------------------
+ /*-------------------------------------------------
 /                               wrapper
 --------------------------------------------------*/
 .page-wrapper {
     flex: 1;
     overflow-y: auto;
 }
-
 
  /* ----------------------------------------------------
 /                      DARK/LIGHT MODE                 /
@@ -55,22 +47,33 @@ footer {
     --surface: #ffffff;
     --surface-2: #ededed;
     --border: rgba(249, 115, 22, 0.2);
-    --text-muted: #434343;
-    --input-bg: #d3d3d3;
-    --card-bg: #f0f0f2;
+    --text-muted: #6b7280;
+    --input-bg: #e8e8e8;
+    --card-bg: #141445;
+    --header-bg: #141445;
     --sidebar-bg: #f5f5f7;
-    --dropdown-bg: #ebebec;
-    --avatar-dropdown-bg: #ebeaea;
+    --dropdown-bg: #ffffff;
+    --avatar-dropdown-bg: #ffffff;
 }
 
 [data-theme="dark"] {
-    --bg: #000111;
+    --bg: #010130;
     --text: #e8e8e8;
     --surface: #0b132b;
     --surface-2: #22253a;
     --border: rgba(249, 115, 22, 0.25);
     --text-muted: #a0a8b8;
     --input-bg: #2a2d3e;
+    --card-bg: #141445;
+    --header-bg: #141445;
+    --sidebar-bg: #141445;
+    --dropdown-bg: #141445;
+    --avatar-dropdown-bg: #141445;
+}
+
+[data-theme="dark"] body {
+    background-image: radial-gradient(rgba(249, 115, 22, 0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
     --card-bg: #1a1d2e;
     --sidebar-bg: #1e2130;
     --dropdown-bg: #1e2130;

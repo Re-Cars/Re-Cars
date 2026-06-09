@@ -87,8 +87,19 @@ function getVeicoloAttivo() {
 function renderVeicoloAttivo() {
     const v = getVeicoloAttivo();
     if (!v) return;
-    const el = document.getElementById('nome-veicolo-attivo');
-    if (el) el.textContent = v.nome;
+
+    const nomeEl = document.getElementById('nome-veicolo-attivo');
+    const targaEl = document.getElementById('targa-veicolo-attivo');
+    const iconEl = document.getElementById('veicolo-tipo-icon');
+
+    if (nomeEl) nomeEl.textContent = v.nome;
+    if (targaEl) targaEl.textContent = v.targa;
+    if (iconEl) {
+        iconEl.className = v.tipo === 'motorcycle'
+            ? 'fa-solid fa-motorcycle'
+            : 'fa-solid fa-car';
+    }
+
     localStorage.setItem('veicoloAttivo', JSON.stringify(v));
 }
 
@@ -118,30 +129,33 @@ function renderDropdown() {
         });
         dropdown.appendChild(btn);
     });
+
     const aggiungi = document.createElement('div');
     aggiungi.className = 'switcher-aggiungi';
     aggiungi.innerHTML = `
-        <button class="switcher-item" onclick="location.href='cerca_aggiungi_veicolo.html'">
-            <i class="fa-solid fa-plus"></i>
-            <span>Aggiungi veicolo</span>
-        </button>
+        <div style="display:flex;justify-content:center;padding:2px 0">
+            <button class="switcher-aggiungi-btn" onclick="location.href='cerca_aggiungi_veicolo.html'">
+                <div class="switcher-plus-circle"><i class="fa-solid fa-plus"></i></div>
+                Aggiungi veicolo
+            </button>
+        </div>
     `;
     dropdown.appendChild(aggiungi);
 }
 
 function mostraConfermaElimina(id, nome) {
-    const esistente = document.getElementById('confirma-elimina-overlay');
+    const esistente = document.getElementById('conferma-elimina-overlay');
     if (esistente) esistente.remove();
 
     const overlay = document.createElement('div');
-    overlay.id = 'confirma-elimina-overlay';
+    overlay.id = 'conferma-elimina-overlay';
     overlay.innerHTML = `
         <div class="conferma-elimina-box">
             <div class="conferma-elimina-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
             <p class="conferma-elimina-title">Elimina veicolo</p>
             <p class="conferma-elimina-sub">Vuoi rimuovere <strong>${nome}</strong> dal tuo garage?</p>
             <div class="conferma-elimina-btns">
-                <button class="conferma-btn-annulla" onclick="document.getElementById('confirma-elimina-overlay').remove()">Annulla</button>
+                <button class="conferma-btn-annulla" onclick="document.getElementById('conferma-elimina-overlay').remove()">Annulla</button>
                 <button class="conferma-btn-elimina" onclick="eliminaVeicolo(${id})">Elimina</button>
             </div>
         </div>
@@ -151,7 +165,7 @@ function mostraConfermaElimina(id, nome) {
 
 async function eliminaVeicolo(id) {
     const token = getData('access_token');
-    document.getElementById('confirma-elimina-overlay')?.remove();
+    document.getElementById('conferma-elimina-overlay')?.remove();
     try {
         const response = await fetch(`http://localhost:3000/veicolo/${id}`, {
             method: 'DELETE',
@@ -163,6 +177,13 @@ async function eliminaVeicolo(id) {
         }
         await caricaVeicoli();
         closeSwitcher();
+
+        const btn = document.getElementById('switcher-btn');
+        if (btn) {
+            btn.classList.add('garage-delete');
+            setTimeout(() => btn.classList.remove('garage-delete'), 600);
+        }
+
     } catch (err) {
         alert('Errore di connessione.');
     }
@@ -210,42 +231,99 @@ document.addEventListener('DOMContentLoaded', async () => {
 -----------------------------------------------------*/
 async function caricaInfoVeicolo() {
     const veicoloAttivo = JSON.parse(localStorage.getItem('veicoloAttivo'));
+    if (!veicoloAttivo) {
+        console.warn('Nessun veicoloAttivo in localStorage');
+        return;
+    }
+
+    const token = getData('access_token');
+
     try {
-        const response = await fetch(`http://localhost:3000/veicolo/${veicoloAttivo.id}`);
-        if (!response.ok) return;
+        const response = await fetch(`http://localhost:3000/veicolo/${veicoloAttivo.id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        console.log('Status risposta:', response.status);
+
+        if (!response.ok) {
+            console.error('Risposta non ok:', response.status);
+            return;
+        }
+
         const v = await response.json();
+        console.log('Veicolo ricevuto:', v);
+
         const dg = v.dati_generici[0] || {};
         const ds = v.dati_specifici[0] || {};
+
         const nomeVeicolo = `${v.marca || ''} ${v.modello || ''}`.trim();
-        document.getElementById('nome-veicolo-attivo').textContent = nomeVeicolo || 'Veicolo Attivo';
-        document.getElementById('iv-tipo').textContent = dg.tipo_veicolo || '-';
-        document.getElementById('iv-marca').textContent = v.marca || '-';
-        document.getElementById('iv-modello').textContent = v.modello || '-';
-        document.getElementById('iv-anno').textContent = ds.dataimmatricolazione
+        const isMoto = (dg.tipo_veicolo || '').toLowerCase() === 'moto';
+        const iconClass = isMoto ? 'fa-solid fa-motorcycle' : 'fa-solid fa-car';
+
+        const heroIcon = document.getElementById('iv-hero-icon');
+        const sectionIcon = document.getElementById('iv-section-icon');
+        const miniTipoIcon = document.getElementById('iv-mini-tipo-icon');
+        const heroName = document.getElementById('iv-hero-name');
+
+        if (heroIcon) heroIcon.className = iconClass;
+        if (sectionIcon) sectionIcon.className = iconClass;
+        if (miniTipoIcon) miniTipoIcon.className = iconClass;
+        if (heroName) heroName.textContent = nomeVeicolo || 'Veicolo Attivo';
+
+        const nomeVeicoloEl = document.getElementById('nome-veicolo-attivo');
+        if (nomeVeicoloEl) nomeVeicoloEl.textContent = nomeVeicolo || 'Veicolo Attivo';
+
+        const tipoEl = document.getElementById('iv-tipo');
+        const marcaEl = document.getElementById('iv-marca');
+        const modelloEl = document.getElementById('iv-modello');
+        const annoEl = document.getElementById('iv-anno');
+        const alimentazioneEl = document.getElementById('iv-alimentazione');
+        const cilindEl = document.getElementById('iv-cilindrata');
+        const cavalliEl = document.getElementById('iv-cavalli');
+        const targaEl = document.getElementById('iv-targa');
+
+        if (tipoEl) tipoEl.textContent = dg.tipo_veicolo || '-';
+        if (marcaEl) marcaEl.textContent = v.marca || '-';
+        if (modelloEl) modelloEl.textContent = v.modello || '-';
+        if (annoEl) annoEl.textContent = ds.dataimmatricolazione
             ? new Date(ds.dataimmatricolazione).getFullYear() : '-';
-        document.getElementById('iv-alimentazione').textContent = dg.alimentazione || '-';
-        document.getElementById('iv-cilindrata').textContent = dg.cilindrata ? `${dg.cilindrata} cc` : '-';
-        document.getElementById('iv-cavalli').textContent = dg.cavalli ? `${dg.cavalli} CV` : '-';
-        document.getElementById('iv-targa').textContent = v.targa || '-';
-        if (ds.datascadenzabollo) {
-            const dataBollo = new Date(ds.datascadenzabollo).toLocaleDateString('it-IT');
-            document.getElementById('iv-bollo-date').textContent = `scade il ${dataBollo}`;
-            const badgeBollo = document.getElementById('iv-bollo-stato');
-            badgeBollo.textContent = ds.isbolloattivo ? 'Attivo' : 'Scaduto';
-            badgeBollo.className = `iv-badge ${ds.isbolloattivo ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+        if (alimentazioneEl) alimentazioneEl.textContent = dg.alimentazione || '-';
+        if (cilindEl) cilindEl.textContent = dg.cilindrata ? `${dg.cilindrata} cc` : '-';
+        if (cavalliEl) cavalliEl.textContent = dg.cavalli ? `${dg.cavalli} CV` : '-';
+        if (targaEl) targaEl.textContent = v.targa || '-';
+
+        const bollDateEl = document.getElementById('iv-bollo-date');
+        const bolloBadge = document.getElementById('iv-bollo-stato');
+        if (ds.datebollo) {
+            const dataBollo = new Date(ds.datebollo).toLocaleDateString('it-IT');
+            if (bollDateEl) bollDateEl.textContent = `scade il ${dataBollo}`;
+            if (bolloBadge) {
+                bolloBadge.textContent = ds.isbolloattivo ? 'Attivo' : 'Scaduto';
+                bolloBadge.className = `iv-badge ${ds.isbolloattivo ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+            }
         } else {
-            document.getElementById('iv-bollo-date').textContent = 'Dato non disponibile';
+            if (bollDateEl) bollDateEl.textContent = 'Dato non disponibile';
         }
-        if (ds.datascadenzarca) {
-            const dataRca = new Date(ds.datascadenzarca).toLocaleDateString('it-IT');
-            document.getElementById('iv-assicurazione-date').textContent = `scade il ${dataRca}`;
-            document.getElementById('iv-assicurazione-compagnia').textContent = ds.nomeassicurazione || '-';
-            const badgeRca = document.getElementById('iv-assicurazione-stato');
-            badgeRca.textContent = ds.isinsured ? 'Attiva' : 'Scaduta';
-            badgeRca.className = `iv-badge ${ds.isinsured ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+
+        const rcaDateEl = document.getElementById('iv-assicurazione-date');
+        const rcaBadge = document.getElementById('iv-assicurazione-stato');
+        const compagniaEl = document.getElementById('iv-assicurazione-compagnia');
+        if (ds.daterca) {
+            const dataRca = new Date(ds.daterca).toLocaleDateString('it-IT');
+            if (rcaDateEl) rcaDateEl.textContent = `scade il ${dataRca}`;
+            if (compagniaEl) compagniaEl.textContent = ds.nomeassicurazione || '-';
+            if (rcaBadge) {
+                rcaBadge.textContent = ds.isinsured ? 'Attiva' : 'Scaduta';
+                rcaBadge.className = `iv-badge ${ds.isinsured ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+            }
         } else {
-            document.getElementById('iv-assicurazione-date').textContent = 'Dato non disponibile';
+            if (rcaDateEl) rcaDateEl.textContent = 'Dato non disponibile';
+            if (compagniaEl) compagniaEl.textContent = ds.nomeassicurazione || '-';
         }
+
     } catch (err) {
         console.error('Errore nel caricamento info veicolo', err);
     }
@@ -480,46 +558,48 @@ document.addEventListener("DOMContentLoaded", async () => {
 /            LAYOUT CIRCOLARE HOMEPAGE                 /
 -----------------------------------------------------*/
 document.addEventListener('DOMContentLoaded', () => {
-    const scene = document.querySelector('.cards-scene');
-    if (!scene) return;
-    const cards = [
-        { id: 'hc1', angle: -90 },
-        { id: 'hc2', angle: -18 },
-        { id: 'hc3', angle: 54 },
-        { id: 'hc4', angle: 126 },
-        { id: 'hc5', angle: 198 },
-    ];
-    const r = 240;
-    const cx = scene.offsetWidth / 2;
-    const cy = scene.offsetHeight / 2;
-    cards.forEach((c, i) => {
-        const el = document.getElementById(c.id);
-        if (!el) return;
-        const rad = (c.angle * Math.PI) / 180;
-        const x = cx + Math.cos(rad) * r;
-        const y = cy + Math.sin(rad) * r;
-        el.style.left = x + 'px';
-        el.style.top = y + 'px';
-        setTimeout(() => {
-            el.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, box-shadow 0.25s ease, border-color 0.2s';
-            el.style.transform = 'translate(-50%, -50%)';
-            el.style.opacity = '1';
-            el.addEventListener('mouseenter', () => {
-                el.style.transform = 'translate(-50%, -50%) perspective(400px) rotateX(8deg) rotateY(-4deg) scale(1.1)';
-                el.style.boxShadow = '0 20px 40px rgba(0,0,0,0.6)';
-                el.style.borderColor = 'rgba(255,255,255,0.2)';
-            });
-            el.addEventListener('mouseleave', () => {
+    setTimeout(() => {
+        const scene = document.querySelector('.cards-scene');
+        if (!scene) return;
+        const cards = [
+            { id: 'hc1', angle: -90 },
+            { id: 'hc2', angle: -18 },
+            { id: 'hc3', angle: 54 },
+            { id: 'hc4', angle: 126 },
+            { id: 'hc5', angle: 198 },
+        ];
+        const r = 240;
+        const cx = scene.offsetWidth / 2;
+        const cy = scene.offsetHeight / 2;
+        cards.forEach((c, i) => {
+            const el = document.getElementById(c.id);
+            if (!el) return;
+            const rad = (c.angle * Math.PI) / 180;
+            const x = cx + Math.cos(rad) * r;
+            const y = cy + Math.sin(rad) * r;
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            setTimeout(() => {
+                el.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, box-shadow 0.25s ease, border-color 0.2s';
                 el.style.transform = 'translate(-50%, -50%)';
-                el.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
-                el.style.borderColor = 'rgba(255,255,255,0.08)';
-            });
-            el.addEventListener('mousedown', () => {
-                el.style.transform = 'translate(-50%, -50%) scale(0.96)';
-            });
-            el.addEventListener('mouseup', () => {
-                el.style.transform = 'translate(-50%, -50%)';
-            });
-        }, 100 + i * 80);
-    });
+                el.style.opacity = '1';
+                el.addEventListener('mouseenter', () => {
+                    el.style.transform = 'translate(-50%, -50%) perspective(400px) rotateX(8deg) rotateY(-4deg) scale(1.1)';
+                    el.style.boxShadow = '0 20px 40px rgba(0,0,0,0.6)';
+                    el.style.borderColor = 'rgba(255,255,255,0.2)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = 'translate(-50%, -50%)';
+                    el.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
+                    el.style.borderColor = 'rgba(255,255,255,0.08)';
+                });
+                el.addEventListener('mousedown', () => {
+                    el.style.transform = 'translate(-50%, -50%) scale(0.96)';
+                });
+                el.addEventListener('mouseup', () => {
+                    el.style.transform = 'translate(-50%, -50%)';
+                });
+            }, 100 + i * 80);
+        });
+    }, 50);
 });
