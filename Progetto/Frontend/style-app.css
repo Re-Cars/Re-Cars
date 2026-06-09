@@ -457,13 +457,14 @@
     align-items: center;
     justify-content: center;
     padding: 0;
-    min-height: calc(100vh - 120px);
+    height: calc(100vh - 160px);
+    overflow: hidden;
 }
 
 .cards-scene {
     position: relative;
-    width: 650px;
-    height: 650px;
+    width: min(650px, 90vw);
+    height: min(650px, calc(100vh - 200px));
     margin: 0 auto;
 }
 
@@ -678,26 +679,42 @@
 }
 
 .btn-info-veicolo {
-    padding: 13px 20px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #f97316, #ea580c);
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 700;
-    font-family: inherit;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
+    background: rgba(249, 115, 22, 0.18);
+    border: 1px solid #f97316;
+    border-radius: 20px;
+    padding: 9px 16px;
+    cursor: pointer;
+    color: #f97316;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: inherit;
     transition: 0.2s;
     white-space: nowrap;
 }
 
 .btn-info-veicolo:hover {
-    background: linear-gradient(135deg, #ea580c, #c2410c);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
+    background: rgba(249, 115, 22, 0.28);
+    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.25);
+    transform: none;
+}
+
+.btn-info-veicolo .btn-icon-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.btn-info-veicolo .btn-icon-circle i {
+    font-size: 0.6rem;
+    color: #fff;
 }
 
 .btn-info-veicolo:active {
@@ -802,37 +819,33 @@
 }
 
 .btn-aggiungi-garage {
-    width: 100%;
-    padding: 14px 16px;
-    background: linear-gradient(135deg, #f97316, #ea580c);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 700;
-    font-family: inherit;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-aggiungi-garage::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-    opacity: 0;
-    transition: opacity 0.2s;
+    gap: 8px;
+    background: rgba(249, 115, 22, 0.18);
+    border: 1px solid #f97316;
+    border-radius: 20px;
+    padding: 11px 28px;
+    cursor: pointer;
+    color: #f97316;
+    font-size: 0.88rem;
+    font-weight: 700;
+    font-family: inherit;
+    transition: 0.2s;
+    width: auto;
+    position: static;
+    overflow: visible;
 }
 
 .btn-aggiungi-garage:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4);
+    background: rgba(249, 115, 22, 0.28);
+    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.25);
+    transform: none;
+}
+
+.btn-aggiungi-garage::before {
+    display: none;
 }
 
 .btn-aggiungi-garage:hover::before {
@@ -849,6 +862,28 @@
 
 .btn-aggiungi-garage:hover .btn-arrow {
     transform: translateX(4px);
+}
+
+.btn-aggiungi-garage .btn-icon-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.btn-aggiungi-garage .btn-icon-circle i {
+    font-size: 0.6rem;
+    color: #fff;
+}
+
+.vehicle-result-footer {
+    padding: 4px 16px 16px;
+    display: flex;
+    justify-content: center;
 }
 
 .switcher-btn.garage-pop {
@@ -1115,7 +1150,7 @@
 }
 
  /* ----------------------------------------------------
-/                    SEGNA storico INTERVENTI                    /
+/                    SEGNA storico INTERVENTI          /
 -----------------------------------------------------*/
 .btn-storicointerventi {
     padding: 11px 28px;
@@ -1209,58 +1244,6 @@
 .stella.attiva {
     color: #f97316;
 }
-
- /* ----------------------------------------------------
-/                      RESPONSIVE                      /
------------------------------------------------------*/
-@media (scripting: none) {
-    .card {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
- @media (max-width: 900px){ 
-   .home-cards-grid {
-        justify-content: center;
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-
-@media (max-width: 768px) {
-    .section-row {
-        flex-direction: column;
-    }
-
-    .section {
-        padding: 20px 16px;
-    }
-
-    .home-cards-grid {
-        justify-content: center;
-        grid-template-columns: repeat(3, 1fr); /*aggiunto per tablet*/
-
-    }
-
-    .home-card {
-        width: 140px;
-        height: 140px;
-    }
-}
-
-@media (max-width: 576px){
-    .header-brand{
-        display: none;
-    }
-
-    .home-cards-grid {
-        justify-content: center;
-        grid-template-columns: repeat(2, 1fr);
-
-    }
-}
-
 
  /* ----------------------------------------------------
 /      VEICOLO SWITCHER - agg ad style app             /
@@ -1464,7 +1447,7 @@
     color: #ff6b6b;
 }
 
-#confirma-elimina-overlay {
+#conferma-elimina-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
@@ -1639,4 +1622,131 @@
 .avatar-header-name span {
     color: #f97316;
     font-weight: 700;
+}
+
+/* ----------------------------------------------------
+/                      RESPONSIVE                      /
+-----------------------------------------------------*/
+@media (scripting: none) {
+    .card {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 1024px) {
+    .cards-scene {
+        width: min(560px, 90vw);
+        height: min(560px, calc(100vh - 200px));
+    }
+
+    .home-card {
+        width: 130px;
+        height: 130px;
+    }
+}
+
+/* MOBILE (≤480px) */
+@media (max-width: 480px) {
+    .header-brand {
+        display: none;
+    }
+
+    .home-cards-section {
+        height: calc(100vh - 220px);
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+
+    .cards-scene {
+        width: min(320px, 92vw);
+        height: min(320px, calc(100vh - 260px));
+    }
+
+    .home-card {
+        width: 76px;
+        height: 76px;
+        border-radius: 12px;
+        gap: 4px;
+    }
+
+    .home-card-icon {
+        width: 26px;
+        height: 26px;
+        font-size: 0.85rem;
+    }
+
+    .home-card span {
+        font-size: 0.48rem;
+        padding: 0 2px;
+    }
+
+    .cards-center-btn {
+        width: 58px;
+        height: 58px;
+    }
+
+    .cards-center-btn i {
+        font-size: 0.85rem;
+    }
+
+    .cards-center-btn span {
+        font-size: 0.4rem;
+    }
+
+    .home-intro {
+        padding: 12px 16px 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .veicolo-switcher {
+        align-self: flex-end;
+    }
+}
+
+/* TABLET PORTRAIT (≤768px) */
+@media (max-width: 768px) {
+    .home-cards-section {
+        height: calc(100vh - 180px);
+    }
+
+    .cards-scene {
+        width: min(400px, 90vw);
+        height: min(400px, calc(100vh - 220px));
+    }
+
+    .home-card {
+        width: 95px;
+        height: 95px;
+        border-radius: 14px;
+    }
+
+    .home-card-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    .home-card span {
+        font-size: 0.52rem;
+    }
+
+    .cards-center-btn {
+        width: 68px;
+        height: 68px;
+    }
+}
+
+@media (max-width: 360px) {
+    .cards-scene {
+        width: min(300px, 96vw);
+        height: min(300px, calc(100vh - 180px));
+    }
+
+    .home-card {
+        width: 70px;
+        height: 70px;
+    }
 }
