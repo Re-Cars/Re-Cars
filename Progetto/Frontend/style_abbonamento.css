@@ -1,4 +1,4 @@
- 
+
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
 .app{background:var(--bg);min-height:600px;border-radius:var(--border-radius-lg);overflow:hidden;position:relative}
 .hdr{background:#0068a5;padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;
