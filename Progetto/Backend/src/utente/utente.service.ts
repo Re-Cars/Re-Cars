@@ -42,13 +42,14 @@ export class UtenteService {
 
     //  genera e restituisce il token insieme ai dati utente
     const payload = { sub: utente.id, email: utente.email };
+    const token = this.jwtService.sign(payload);
     return {
-      access_token: this.jwtService.sign(payload),
+      token, // Lo passeremo al controller che lo imposterà nel cookie
       utente: risultato,
     };
   }
     async getUtentebyID(id : number)  {
-        return this.prisma.utente.findMany({
+        return this.prisma.utente.findUnique({
             where: { id },
             select: {
             id: true,

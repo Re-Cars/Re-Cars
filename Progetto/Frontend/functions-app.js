@@ -41,10 +41,21 @@ function closeMenu() {
  /* ----------------------------------------------------
 /                   LOGOUT                             /
 -----------------------------------------------------*/
-function logout() {
-    localStorage.removeItem('yd_utente_loggato');
-    localStorage.removeItem('access_token');
-    window.location.href = 'landing.html';
+
+async function logout() {
+    try {
+        await fetch('http://localhost:3000/auth/logout', {
+            method: 'POST',
+            credentials: 'include' // Invia il cookie HttpOnly da cancellare
+        });
+    } catch (err) {
+        console.error('Errore durante il logout sul server:', err);
+    } finally {
+        // In ogni caso, puliamo il client e reindirizziamo
+        localStorage.removeItem('yd_utente_loggato');
+        localStorage.removeItem('veicoloAttivo'); // Consigliato pulire anche questo
+        window.location.href = 'landing.html';
+    }
 }
 
  /* ----------------------------------------------------
@@ -54,16 +65,21 @@ let veicoli = [];
 let veicoloAttivoIndex = 0;
 
 async function caricaVeicoli() {
-    const token = getData('access_token');
-    if (!token) return;
-    const Idtoken = getUserIdFromToken(token);
+    const utenteString = localStorage.getItem('yd_utente_loggato');
+    if (!utenteString) return;
+    const utente = JSON.parse(utenteString);
+    const idUtente = utente.id;
     try {
-        const response = await fetch(`http://localhost:3000/veicolo/utente/${Idtoken}`, {
+        const response = await fetch(`http://localhost:3000/veicolo/utente/${idUtente}`, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-            }
+            },
+            credentials: 'include',
         });
+        if (response.status === 401) {
+            logout();
+            return;
+        }
         const data = await response.json();
         veicoli = data.map(v => ({
             id: v.id,
@@ -163,13 +179,18 @@ function mostraConfermaElimina(id, nome) {
 }
 
 async function eliminaVeicolo(id) {
-    const token = getData('access_token');
+    
     document.getElementById('conferma-elimina-overlay')?.remove();
     try {
         const response = await fetch(`http://localhost:3000/veicolo/${id}`, {
             method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials:'include'
         });
+        if (response.status === 401) {
+            alert('Sessione scaduta, effettua di nuovo il login');
+            logout(); 
+            return;
+        }
         if (!response.ok) {
             alert('Errore durante l\'eliminazione del veicolo.');
             return;
@@ -235,17 +256,22 @@ async function caricaInfoVeicolo() {
         return;
     }
 
-    const token = getData('access_token');
 
     try {
         const response = await fetch(`http://localhost:3000/veicolo/${veicoloAttivo.id}`, {
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
-            }
+            },
+            credentials : 'include'
         });
 
         console.log('Status risposta:', response.status);
+
+        if (response.status === 401) {
+            alert('Sessione scaduta, effettua di nuovo il login');
+            logout(); 
+            return;
+        }
 
         if (!response.ok) {
             console.error('Risposta non ok:', response.status);
@@ -402,9 +428,10 @@ document.addEventListener("DOMContentLoaded", () => {
     searchBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         const plate = plateInput.value.trim().toUpperCase();
-        const token = getData('access_token');
-        if (!token) { alert("Devi effettuare il login."); return; }
-        const Idtoken = getUserIdFromToken(token);
+        const utenteString = localStorage.getItem('yd_utente_loggato');
+        if (!utenteString) { alert("Devi effettuare il login."); return; }
+        const utente = JSON.parse(utenteString);
+        const idUtente = utente.id;
         if (plate.length < 5) {
             showResult(`<p style="color:#f87171; margin-top:10px;">Inserisci una targa valida.</p>`);
             return;
@@ -413,7 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('vehicleResult').innerHTML = '';
         try {
             const response = await fetch(`http://localhost:3000/veicolo/cerca/${plate}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials:'include'
             });
             document.getElementById('cerca-loading').classList.remove('show');
             if (!response.ok) {
@@ -467,7 +494,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 addBtn.addEventListener("click", (evt) => {
                     evt.preventDefault();
                     evt.stopPropagation();
-                    addVehicle(data.targa, Idtoken);
+                    addVehicle(data.targa, idUtente);
                 }, { once: true });
             }
         } catch (err) {
@@ -481,13 +508,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-async function addVehicle(targa, Idtoken) {
-    const token = getData('access_token');
+async function addVehicle(targa, idUtente) {
     try {
         const response = await fetch(`http://localhost:3000/veicolo`, {
             method: "POST",
-            headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ targa, id_utente: Idtoken })
+            headers: { "Content-Type": "application/json"},
+            credentials:'include',
+            body: JSON.stringify({ targa, id_utente: idUtente })
         });
         if (response.status === 401) {
             alert('Sessione scaduta, effettua di nuovo il login');
@@ -521,12 +548,15 @@ function checkGarageAnimation() {
 }
 
 async function getUsername() {
-    const token = getData('access_token');
-    const Idtoken = getUserIdFromToken(token);
+    const utenteString = localStorage.getItem('yd_utente_loggato');
+    if (!utenteString) return;
+    const utente = JSON.parse(utenteString);
+    const idUtente = utente.id;
     try {
-        const response = await fetch(`http://localhost:3000/auth/utente/${Idtoken}`, {
+        const response = await fetch(`http://localhost:3000/auth/utente/${idUtente}`, {
             method: "GET",
-            headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` }
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include'
         });
         if (response.status === 401) {
             alert('Sessione scaduta, effettua di nuovo il login');
@@ -538,7 +568,7 @@ async function getUsername() {
             return null;
         }
         const data = await response.json();
-        return data[0].username;
+        return data.username;
     } catch (err) {
         alert("Errore di connessione.");
         return null;
