@@ -198,6 +198,7 @@ async function login() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ email, password }),
+            credentials: 'include' // <--- FONDAMENTALE: permette al browser di accettare e salvare il cookie HttpOnly
         });
 
         const data = await response.json();
@@ -209,7 +210,9 @@ async function login() {
 
         console.log('Login effettuato:', data);
         
-        setData('access_token', data.access_token);
+        
+        // Salviamo l'oggetto utente o il suo ID nel localStorage solo per scopi legati alla UI del frontend
+        localStorage.setItem('yd_utente_loggato', JSON.stringify(data.utente));
         window.location.href = 'homepage.html';
 
     } catch (error) {
@@ -231,25 +234,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
- /* ----------------------------------------------------
-/                   LOGOUT                             /
------------------------------------------------------*/
-function logout() {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('yd_utente_loggato');
-    window.location.href = 'landing.html';
-}
 
-
-
-function logout() {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('yd_utente_loggato');
-    window.location.href = 'landing.html';
-}
- 
- 
- 
  /* ----------------------------------------------------
 /          SEQUENZA ANIMAZIONE LANDING                 /
 /   1. Sfondo garage  (fade-in)                        /

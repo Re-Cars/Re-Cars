@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RE|CARS-Prenotazioni</title>
+    <title>RE|CARS — Cerca Officina</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
@@ -14,7 +14,7 @@
 
 <body>
 
-<div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -44,124 +44,229 @@
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <a href="homepage.html">
-                <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
-                <span class="header-brand">RE<span>|</span>CARS</span>
-            </a>
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+            <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
-
             <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
                 <i class="fa-solid fa-moon" id="theme-icon"></i>
             </button>
 
-               <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
-                    <div class="header-avatar"> 
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <div class="avatar-dropdown" id="avatar-dropdown">
-                            <div class="avatar-header">
-                                <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
-                            </div>                
-                            <a href="il_mio_account.html" class="avatar-item">
-                            <i class="fa-solid fa-pen"></i>
-                            <span>Modifica profilo</span>
-                        </a>
-                        <a href="landing.html" class="avatar-item avatar-item-logout">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>Logout</span>
-                        </a>
-                    </div>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar"> 
+                    <i class="fa-solid fa-user"></i>
                 </div>
-
-            
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                    </div>                
+                    <a href="il_mio_account.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica profilo</span>
+                    </a>
+                    <a href="landing.html" class="avatar-item avatar-item-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </header>
 
     <div class="breadcrumb">
-        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
-        <span>›</span>
-        <span>Prenotazioni</span>
+        <a href="homepage.html">Home</a>
+        <i class="fa-solid fa-chevron-right" style="font-size:0.7rem;"></i>
+        <span>Cerca Officine</span>
     </div>
 
-    <section class="home-intro">
-        <div class="home-intro-veicolo" id="home-intro-veicolo">
-            <i class="fa-solid fa-car" id="veicolo-tipo-icon"></i>
-            <span class="veicolo-nome" id="nome-veicolo-attivo">Caricamento...</span>
-            <span class="veicolo-sep">·</span>
-            <span class="veicolo-targa" id="targa-veicolo-attivo"></span>
+    <main class="section section-no-top">
+        
+        <div class="page-hero">
+            <h1 class="section-title-page"><i class="fa-solid fa-magnifying-glass"></i> Cerca Officina</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">Trova la migliore officina vicino a te</p>
         </div>
-        <div class="veicolo-switcher" id="veicolo-switcher">
-            <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
-                <span id="switcher-label">
-                    <i class="fa-solid fa-warehouse"></i>
-                    <span id="veicoli-counter"></span>
-                </span>
-                <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
-            </button>
-            <div class="switcher-dropdown" id="switcher-dropdown"></div>
-        </div>
-    </section>
 
-
-    <section class="page-hero">
-        <h2 class="section-title-page">Prenota Officina</h2>
-    </section>
-
-    <section class="section">
-        <div class="section-row">
-
-            <div class="card">
-                <h3><i class="fa-solid fa-magnifying-glass"></i> Cerca Officina</h3>
-                <div class="input-group">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <input type="text" placeholder="Città o indirizzo">
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-calendar"></i>
-                    <input type="date">
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-wrench"></i>
-                    <select>
-                        <option value="">— Tipo di officina —</option>
-                        <option>Meccanica</option>
-                        <option>Carrozzeria</option>
-                        <option>Gommista</option>
-                        <option>Elettrauto</option>
-                        <option>Multimarca</option>
-                        <option>Concessionaria</option>
-                        <option>Tagliando</option>
-                        <option>Revisione</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-car"></i>
-                    <select>
-                        <option value="">— Seleziona veicolo —</option>
-                    </select>
-                </div>
-                <button class="btn-landing btn-prenotazioni">
-                    <i class="fa-solid fa-search"></i> Cerca
+        <div style="max-width: 1200px; margin: 0 auto 30px auto;">
+            <div class="input-group" style="padding: 12px 18px; background: var(--input-bg); border: 1px solid var(--border);">
+                <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
+                <input type="text" placeholder="Tipo di servizio, nome officina..." style="font-size: 1rem; color: var(--text); background: transparent;">
+                <button class="btn-info-veicolo" style="padding: 8px 16px; font-size: 0.85rem; border-radius: 8px;">
+                    <i class="fa-solid fa-location-crosshairs"></i> GPS
                 </button>
             </div>
 
-            <div class="card">
-                <h3><i class="fa-solid fa-list"></i> Officine Trovate</h3>
-                <p>Inserisci luogo, data e tipo per cercare.</p>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px;">
+                <span class="cerca-storico-tag"><i class="fa-solid fa-screwdriver-wrench"></i> Meccanica</span>
+                <span class="cerca-storico-tag"><i class="fa-solid fa-car-burst"></i> Carrozzeria</span>
+                <span class="cerca-storico-tag"><i class="fa-solid fa-bolt"></i> Elettrico</span>
+                <span class="cerca-storico-tag"><i class="fa-solid fa-microchip"></i> Diagnostica</span>
+                <span class="cerca-storico-tag"><i class="fa-solid fa-circle-dot"></i> Pneumatici</span>
+                <span class="cerca-storico-tag"><i class="fa-solid fa-clipboard-check"></i> Revisione</span>
+            </div>
+        </div>
+
+        <div style="max-width: 1200px; margin: auto; display: grid; grid-template-columns: 350px 1fr; gap: 24px; align-items: flex-start;">
+            
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-muted);">
+                    <span>4 risultati</span>
+                    <span style="color: #f97316; cursor: pointer;">Più vicine <i class="fa-solid fa-chevron-down"></i></span>
+                </div>
+
+                <div class="vehicle-result-card" style="margin-top: 0; background: rgba(249, 115, 22, 0.08); border-color: rgba(249, 115, 22, 0.4); cursor: pointer;">
+                    <div style="padding: 16px; display: flex; gap: 14px;">
+                        <div style="width: 45px; height: 45px; background: #f97316; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.2rem; flex-shrink: 0;">B</div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 4px;">
+                                <h3 style="margin: 0; font-size: 0.95rem; color: var(--text); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Autofficina Bianchi</h3>
+                                <span style="background: rgba(74, 222, 128, 0.15); color: #22c55e; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;">• Aperta</span>
+                            </div>
+                            <p style="margin: 2px 0 6px 0; font-size: 0.75rem; color: var(--text-muted);">Meccanica Generale</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;">
+                                <span style="color: #fbbf24;"><i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <strong style="color: var(--text); margin-left:2px;">4.9</strong> <span style="color: var(--text-muted);">(312)</span></span>
+                                <span style="color: var(--text-muted); font-weight: 600;">0.8 km</span>
+                            </div>
+                            <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px;">
+                                <span style="font-size: 0.65rem; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text);">Tagliando</span>
+                                <span style="font-size: 0.65rem; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text);">Freni</span>
+                                <span style="font-size: 0.65rem; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text);">Pneumatici</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vehicle-result-card" style="margin-top: 0; background: var(--surface); border: 1px solid var(--border); cursor: pointer;">
+                    <div style="padding: 16px; display: flex; gap: 14px;">
+                        <div style="width: 45px; height: 45px; background: #ea580c; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.2rem; flex-shrink: 0;">R</div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 4px;">
+                                <h3 style="margin: 0; font-size: 0.95rem; color: var(--text); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Garage Rossi & Figli</h3>
+                                <span style="background: rgba(74, 222, 128, 0.15); color: #22c55e; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;">• Aperta</span>
+                            </div>
+                            <p style="margin: 2px 0 6px 0; font-size: 0.75rem; color: var(--text-muted);">Carrozzeria & Verniciatura</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;">
+                                <span style="color: #fbbf24;"><i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star-half-stroke"></i> <strong style="color: var(--text); margin-left:2px;">4.7</strong> <span style="color: var(--text-muted);">(198)</span></span>
+                                <span style="color: var(--text-muted); font-weight: 600;">1.4 km</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vehicle-result-card" style="margin-top: 0; background: var(--surface); border: 1px solid var(--border); cursor: pointer;">
+                    <div style="padding: 16px; display: flex; gap: 14px;">
+                        <div style="width: 45px; height: 45px; background: #1e3a8a; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.2rem; flex-shrink: 0;">F</div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 4px;">
+                                <h3 style="margin: 0; font-size: 0.95rem; color: var(--text); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">AutoService Ferrari</h3>
+                                <span style="background: rgba(248, 113, 113, 0.15); color: #f87171; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;">• Chiusa</span>
+                            </div>
+                            <p style="margin: 2px 0 6px 0; font-size: 0.75rem; color: var(--text-muted);">Elettronica Auto</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;">
+                                <span style="color: #fbbf24;"><i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star-half-stroke"></i> <strong style="color: var(--text); margin-left:2px;">4.6</strong> <span style="color: var(--text-muted);">(87)</span></span>
+                                <span style="color: var(--text-muted); font-weight: 600;">2.1 km</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vehicle-result-card" style="margin-top: 0; background: var(--surface); border: 1px solid var(--border); cursor: pointer;">
+                    <div style="padding: 16px; display: flex; gap: 14px;">
+                        <div style="width: 45px; height: 45px; background: #d97706; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.2rem; flex-shrink: 0;">M</div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 4px;">
+                                <h3 style="margin: 0; font-size: 0.95rem; color: var(--text); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Officina Marini</h3>
+                                <span style="background: rgba(74, 222, 128, 0.15); color: #22c55e; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;">• Aperta</span>
+                            </div>
+                            <p style="margin: 2px 0 6px 0; font-size: 0.75rem; color: var(--text-muted);">Pneumatici & Assetti</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;">
+                                <span style="color: #fbbf24;"><i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <strong style="color: var(--text); margin-left:2px;">4.8</strong> <span style="color: var(--text-muted);">(431)</span></span>
+                                <span style="color: var(--text-muted); font-weight: 600;">3.0 km</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <div style="height: 240px; background: var(--bg); border-radius: 18px; border: 1px solid var(--border); position: relative; overflow: hidden; background-image: radial-gradient(rgba(249, 115, 22, 0.05) 1.5px, transparent 1.5px); background-size: 20px 20px;">
+                    <div style="position: absolute; inset:0; border-collapse: collapse; opacity: 0.05; background-image: linear-gradient(to right, var(--text) 1px, transparent 1px), linear-gradient(to bottom, var(--text) 1px, transparent 1px); background-size: 40px 40px;"></div>
+                    
+                    <button class="btn-info-veicolo" style="position: absolute; top: 16px; right: 16px; padding: 6px 12px; font-size: 0.75rem; border-radius: 6px; border: 1px solid rgba(249,115,22,0.4);">
+                        <i class="fa-solid fa-map"></i> Apri Mappa
+                    </button>
+
+                    <div style="position: absolute; top: 40%; left: 60%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center;">
+                        <div style="width: 36px; height: 36px; background: #f97316; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1rem; box-shadow: 0 0 20px #f97316; border: 2px solid #fff;">B</div>
+                        <div style="margin-top: 6px; background: var(--surface); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(249, 115, 22, 0.4); white-space: nowrap; font-size: 0.75rem; font-weight: 600; color: var(--text);">
+                            <i class="fa-solid fa-location-dot" style="color: #f97316; margin-right: 4px;"></i> Via Roma 14, Milano
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card show" style="opacity: 1; transform: none; padding: 24px; gap: 20px; background: var(--surface); border: 1px solid var(--border);">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h2 style="margin: 0; font-size: 1.4rem; color: var(--text); font-weight: 800;">Autofficina Bianchi</h2>
+                            <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Meccanica Generale</p>
+                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.85rem; color: #fbbf24;">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                <strong style="color: var(--text); margin-left: 2px;">4.9</strong>
+                                <span style="color: var(--text-muted); font-weight: 400;">· 312 recensioni</span>
+                            </div>
+                        </div>
+                        <span style="background: rgba(74, 222, 128, 0.12); color: #22c55e; border: 1px solid rgba(74, 222, 128, 0.2); font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 700;">Aperta ora</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                        
+                        <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center;">
+                            <i class="fa-regular fa-clock" style="color: #f97316; font-size: 1.1rem; margin-bottom: 6px;"></i>
+                            <span style="display: block; font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Orario</span>
+                            <span style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text); margin-top: 2px;">Lun–Sat 8:00–19:00</span>
+                        </div>
+
+                        <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center;">
+                            <i class="fa-solid fa-location-dot" style="color: #f97316; font-size: 1.1rem; margin-bottom: 6px;"></i>
+                            <span style="display: block; font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Distanza</span>
+                            <span style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text); margin-top: 2px;">0.8 km</span>
+                        </div>
+
+                        <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center;">
+                            <i class="fa-solid fa-hourglass-half" style="color: #f97316; font-size: 1.1rem; margin-bottom: 6px;"></i>
+                            <span style="display: block; font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Disponibilità</span>
+                            <span style="display: block; font-size: 0.8rem; font-weight: 600; color: #22c55e; margin-top: 2px;">Disponibile oggi</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style="margin: 0 0 10px 0; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; font-weight: 700;">Servizi Offerti</h4>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <span style="font-size: 0.75rem; background: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.2); padding: 4px 10px; border-radius: 6px; color: var(--text);"><i class="fa-solid fa-check" style="color:#f97316; margin-right:4px;"></i> Tagliando</span>
+                            <span style="font-size: 0.75rem; background: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.2); padding: 4px 10px; border-radius: 6px; color: var(--text);"><i class="fa-solid fa-check" style="color:#f97316; margin-right:4px;"></i> Freni</span>
+                            <span style="font-size: 0.75rem; background: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.2); padding: 4px 10px; border-radius: 6px; color: var(--text);"><i class="fa-solid fa-check" style="color:#f97316; margin-right:4px;"></i> Pneumatici</span>
+                            <span style="font-size: 0.75rem; background: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.2); padding: 4px 10px; border-radius: 6px; color: var(--text);"><i class="fa-solid fa-check" style="color:#f97316; margin-right:4px;"></i> Diagnostica</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <button class="btn-aggiungi-garage" style="flex: 1; padding: 14px;">
+                            <i class="fa-solid fa-calendar-check"></i> Prenota Appuntamento
+                        </button>
+                        <button class="btn-landing" style="background: var(--surface-2); border: 1px solid var(--border); width: 48px; height: 48px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                            <i class="fa-solid fa-phone" style="color: #f97316;"></i>
+                        </button>
+                        <button class="btn-landing" style="background: var(--surface-2); border: 1px solid var(--border); width: 48px; height: 48px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                            <i class="fa-solid fa-bookmark" style="color: #f97316;"></i>
+                        </button>
+                    </div>
+
+                </div>
             </div>
 
         </div>
-    </section>
-
-    <section class="section section-no-top">
-        <div class="section-row">
-            <div class="card">
-                <h3><i class="fa-solid fa-clock-rotate-left"></i> Le mie Prenotazioni</h3>
-                <p>Nessuna prenotazione effettuata.</p>
-            </div>
-        </div>
-    </section>
+    </main>
 
 </body>
 </html>
