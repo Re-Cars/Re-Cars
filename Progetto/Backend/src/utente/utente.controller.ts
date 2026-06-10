@@ -20,20 +20,28 @@ export class UtenteController {
         @Body() datiRicevuti: LoginUtenteDto,
         @Res({ passthrough: true }) response: Response 
     ) {
-        const { token, utente } = await this.utenteService.login(datiRicevuti);
+        const { access_token, utente } = await this.utenteService.login(datiRicevuti);
         
         // Impostiamo il cookie HttpOnly nel browser
-        response.cookie('access_token', token, {
+        response.cookie('access_token',access_token , {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // true solo in HTTPS (produzione)
-            sameSite: 'lax',
+            secure: true, // true solo in HTTPS (produzione)
+            sameSite: 'none',
             maxAge: 3600000, 
         });
 
         
         return { utente };
     }
-
+@Post('logout')
+async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('access_token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+    });
+    return { message: 'Logout effettuato con successo' };
+}
    @UseGuards(JwtAuthGuard)
     @Get('utente/:id')
         async getUtentebyID(@Param('id') id: string) {

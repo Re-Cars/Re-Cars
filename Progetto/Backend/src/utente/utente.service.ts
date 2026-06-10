@@ -42,9 +42,8 @@ export class UtenteService {
 
     //  genera e restituisce il token insieme ai dati utente
     const payload = { sub: utente.id, email: utente.email };
-    const token = this.jwtService.sign(payload);
     return {
-      token, // Lo passeremo al controller che lo imposterà nel cookie
+      access_token: this.jwtService.sign(payload), // Lo passeremo al controller che lo imposterà nel cookie
       utente: risultato,
     };
   }

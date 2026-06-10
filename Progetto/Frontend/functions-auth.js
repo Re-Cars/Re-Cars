@@ -200,7 +200,6 @@ async function login() {
         
         // Salviamo l'oggetto utente o il suo ID nel localStorage solo per scopi legati alla UI del frontend
         localStorage.setItem('yd_utente_loggato', JSON.stringify(data.utente));
-        
         window.location.href = 'homepage.html';
 
     } catch (error) {
