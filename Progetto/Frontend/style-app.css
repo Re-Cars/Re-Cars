@@ -410,8 +410,22 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 30px 0;
+    padding: 12px 30px 0;
     position: relative;
+}
+
+.home-intro--floating {
+    position: absolute;
+    top: 105px;
+    left: 30px;
+    right: 30px;
+    padding: 0;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.home-intro--floating > * {
+    pointer-events: auto;
 }
 
 .home-intro-veicolo {
@@ -1249,22 +1263,6 @@
  /* ----------------------------------------------------
 /      VEICOLO SWITCHER - agg ad style app             /
 -----------------------------------------------------*/
-.home-intro {
-    position: absolute;
-    top: 90px;
-    left: 5px;
-    right: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 50;
-    pointer-events: none;
-}
-
-.home-intro > * {
-    pointer-events: auto;
-}
-
 .veicolo-switcher {
     position: relative;
 }
@@ -1464,7 +1462,7 @@
     font-family: inherit;
     color: rgba(249, 115, 22, 0.85);
     transition: color 0.2s;
-    pointer-events: none;
+    pointer-events: auto;
 }
 
 .switcher-aggiungi-btn-wrap:hover .switcher-aggiungi-btn {

@@ -44,7 +44,7 @@
 /                   LAYOUT DASHBOARD                   /
 -----------------------------------------------------*/
 .iv-dashboard {
-    padding: 16px 24px 30px;
+    padding: 60px 24px 30px;
     display: flex;
     flex-direction: column;
     gap: 12px;
