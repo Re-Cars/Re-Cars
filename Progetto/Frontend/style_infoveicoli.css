@@ -3,6 +3,9 @@
 -----------------------------------------------------*/
 :root {
     --iv-orange: #f97316;
+    --iv-orange2: #faeade;
+    --iv-orange3: #f7b585dd;
+    --tutti: #526169;
     --ordinario: #2b88b8;
     --ordinario-bg: #eff6ff;
     --ordinario-border: #bfdbfe;
@@ -98,6 +101,30 @@
 }
 
 .iv-section-bar span {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #a0a8b8;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.iv-section-bar2 {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(249, 115, 22, 0.1);
+    background: #141445;
+    border-radius: 10px;
+
+}
+
+.iv-section-bar2 i {
+    font-size: 0.9rem;
+    color: #f97316;
+}
+
+.iv-section-bar2 span {
     font-size: 0.72rem;
     font-weight: 600;
     color: #a0a8b8;
@@ -441,8 +468,8 @@
 }
 
 .filter-btn.active-all {
-    background: rgba(59, 131, 246, 0.15);
-    color: var(--text);
+    background: var(--ordinario-bg);
+    color: var(--tutti);
 }
 
 .filter-btn.active-ordinario {
@@ -460,23 +487,30 @@
     color: var(--gestione);
 }
 
+.filter-btn.active-annotazioni {
+    background: var(--iv-orange2);
+    color: var( --iv-orange);
+}
+
 .table-wrap {
     background: var(--surface);
     border: 1px solid var(--border);
     border-top: none;
     border-radius: 0 0 8px 8px;
     overflow: hidden;
+    border-radius: 10px;
+
 }
 
 .table-head {
     display: grid;
     grid-template-columns: 120px 130px 1fr 150px 90px 60px;
-    padding: 8px 18px;
-    background: var(--surface-2);
+    padding: 10px 18px;
+    background: #141445;
     border-bottom: 1px solid var(--border);
     font-size: 11px;
     font-weight: 600;
-    color: var(--text-muted);
+    color: #a0a8b8;
     text-transform: uppercase;
     letter-spacing: 0.6px;
     gap: 8px;
@@ -520,6 +554,10 @@
     background: var(--straordinario);
 }
 
+.cat-dot.annotazioni {
+    background: var(--iv-orange);
+}
+
 .cat-dot.gestione {
     background: var(--gestione);
 }
@@ -552,6 +590,12 @@
     background: var(--straordinario-bg);
     color: var(--straordinario);
     border: 1px solid var(--straordinario-border);
+}
+
+.cat-badge.annotazioni {
+    background: var(--iv-orange2);
+    color: var(--iv-orange);
+    border: 1px solid var(--iv-orange3);
 }
 
 .cat-badge.gestione {
@@ -809,3 +853,7 @@
     transform: scale(1.03);
     box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
+
+ /* ----------------------------------------------------
+/                   FINE STORICO INTERVENTI            /
+-----------------------------------------------------*/

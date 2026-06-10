@@ -14,7 +14,7 @@
 
 <body>
 
-<div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+   <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -39,7 +39,7 @@
             <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
             <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
-    </div>
+  </div>
 
     <header class="header">
         <div class="header-left"></div>
@@ -49,11 +49,12 @@
                 <span class="header-brand">RE<span>|</span>CARS</span>
             </a>
         </div>
+        
         <div class="header-right">
-           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
-            <div class="header-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>   -->
+
+            <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
 
                <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
                     <div class="header-avatar"> 
@@ -77,16 +78,14 @@
             
         </div>
     </header>
-<div class="page-wrapper">
+
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
         <span>›</span>
         <span>Abbonamenti</span>
     </div>
 
-    <!-- <section class="page-hero">
-       <h2 class="section-title-page">Abbonamenti</h2>
-    </section>-->
+
 
   <h6 class="sotto-title">Scegli il tuo piano</h6>
   <p class="page-sub">Gestisci i tuoi veicoli con il piano più adatto alle tue esigenze.</p>
