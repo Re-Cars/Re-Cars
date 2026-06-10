@@ -133,10 +133,12 @@ function renderDropdown() {
     aggiungi.className = 'switcher-aggiungi';
     aggiungi.innerHTML = `
         <div style="display:flex;justify-content:center;padding:2px 0">
-            <button class="switcher-aggiungi-btn" onclick="location.href='cerca_aggiungi_veicolo.html'">
-                <div class="switcher-plus-circle"><i class="fa-solid fa-plus"></i></div>
-                Aggiungi veicolo
-            </button>
+            <div class="switcher-aggiungi-btn-wrap">
+                <button class="switcher-aggiungi-btn" onclick="location.href='cerca_aggiungi_veicolo.html'">
+                    <div class="switcher-plus-circle"><i class="fa-solid fa-plus"></i></div>
+                    Aggiungi veicolo
+                </button>
+            </div>
         </div>
     `;
     dropdown.appendChild(aggiungi);
@@ -566,9 +568,9 @@ document.addEventListener('DOMContentLoaded', () => {
             { id: 'hc4', angle: 126 },
             { id: 'hc5', angle: 198 },
         ];
-        const r = 240;
         const cx = scene.offsetWidth / 2;
         const cy = scene.offsetHeight / 2;
+        const r = Math.min(cx, cy) * 0.80;
         cards.forEach((c, i) => {
             const el = document.getElementById(c.id);
             if (!el) return;
