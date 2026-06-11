@@ -412,8 +412,18 @@ function renderStorico() {
     if (storico.length === 0) { container.style.display = 'none'; return; }
     container.style.display = 'block';
     tags.innerHTML = storico.map(t => `
-        <span class="cerca-storico-tag" onclick="usaStorico('${t}')">${t}</span>
+        <span class="cerca-storico-tag">
+            <span onclick="usaStorico('${t}')">${t}</span>
+            <div class="x-circle" onclick="rimuoviStorico('${t}')"><i class="fa-solid fa-xmark"></i></div>
+        </span>
     `).join('');
+}
+
+function rimuoviStorico(targa) {
+    let storico = JSON.parse(localStorage.getItem('storico_targhe') || '[]');
+    storico = storico.filter(t => t !== targa);
+    localStorage.setItem('storico_targhe', JSON.stringify(storico));
+    renderStorico();
 }
 
 function usaStorico(targa) {
@@ -434,10 +444,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!utenteString) { alert("Devi effettuare il login."); return; }
         const utente = JSON.parse(utenteString);
         const idUtente = utente.id;
-        if (plate.length < 5) {
-            showResult(`<p style="color:#f87171; margin-top:10px;">Inserisci una targa valida.</p>`);
-            return;
-        }
+
         document.getElementById('cerca-loading').classList.add('show');
         document.getElementById('vehicleResult').innerHTML = '';
         try {
@@ -445,11 +452,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 credentials:'include'
             });
             document.getElementById('cerca-loading').classList.remove('show');
+            const data = await response.json();
             if (!response.ok) {
-                showResult(`<p style="color:#f87171; margin-top:10px;">Veicolo non trovato.</p>`);
+                const msg = Array.isArray(data.message) ? data.message[0] : data.message;
+                showResult(`<p style="color:#f87171; margin-top:10px;">${msg || 'Veicolo non trovato.'}</p>`);
                 return;
             }
-            const data = await response.json();
+            
             salvaStorico(plate);
             renderStorico();
             showResult(`

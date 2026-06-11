@@ -1143,20 +1143,60 @@
 }
 
 .cerca-storico-tag {
-    padding: 4px 10px;
-    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
     background: rgba(249, 115, 22, 0.1);
-    border: 0.5px solid rgba(249, 115, 22, 0.25);
-    color: #f97316;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 1px;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    border-radius: 6px;
+    padding: 4px 10px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s;
 }
 
 .cerca-storico-tag:hover {
-    background: rgba(249, 115, 22, 0.2);
+    border-color: rgba(249, 115, 22, 0.6);
+    background: rgba(249, 115, 22, 0.15);
+    padding-right: 6px;
+    gap: 7px;
+}
+
+.cerca-storico-tag span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #f97316;
+    letter-spacing: 1px;
+}
+
+.cerca-storico-tag .x-circle {
+    width: 0;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: width 0.2s;
+}
+
+.cerca-storico-tag:hover .x-circle {
+    width: 16px;
+}
+
+.cerca-storico-tag .x-circle i {
+    font-size: 0.5rem;
+    color: rgba(255, 255, 255, 0.4);
+    transition: color 0.2s;
+}
+
+.cerca-storico-tag .x-circle:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
+
+.cerca-storico-tag .x-circle:hover i {
+    color: #ef4444;
 }
 
 #vehicleResult {
