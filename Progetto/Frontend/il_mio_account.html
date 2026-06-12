@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-       <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RE|CARS - Il mio account</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
-    <link rel="stylesheet" href="style-imp_v_e_info.css">
+    <link rel="stylesheet" href="style-account.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
+    <script src="functions-account.js" defer></script>
 </head>
 <body>
 
@@ -49,133 +50,180 @@
             </a>
         </div>
         <div class="header-right">
-           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
-            <div class="header-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>   -->
+            <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
 
-               <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
-                    <div class="header-avatar"> 
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <div class="avatar-dropdown" id="avatar-dropdown">
-                            <div class="avatar-header">
-                                <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
-                            </div>                
-                            <a href="il_mio_account.html" class="avatar-item">
-                            <i class="fa-solid fa-pen"></i>
-                            <span>Modifica profilo</span>
-                        </a>
-                        <a href="landing.html" class="avatar-item avatar-item-logout">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>Logout</span>
-                        </a>
-                    </div>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar">
+                    <i class="fa-solid fa-user"></i>
                 </div>
-
-            
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                    </div>
+                    <a href="il_mio_account.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica profilo</span>
+                    </a>
+                    <a href="landing.html" class="avatar-item avatar-item-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </header>
 
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
-        <span></span> <span>Il mio account</span> <span></span>
-        
+        <span>›</span>
+        <span>Il mio account</span>
     </div>
 
-  <h6 class="sotto-title">Il mio account</h6>
-  <p class="page-sub">Di cosa hai bisogno?</p>
+    <section class="acc-dashboard">
 
- 
-  <section class="yd-accordion">
- 
-    <!--Canbia nickname (link diretto)-->
-    <div class="yd-accordion-row">
-      <!--<button class="yd-accordion-trigger" onclick="window.location.href='cambia-nickname.html'"> -->
-      <button class="yd-accordion-trigger" onclick="window.location.href='#top'">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Cambia nickname</span>
-      </button>
-    </div>
- 
-    <!-- Modifica immagine di profilo (link diretto) -->
-    <div class="yd-accordion-row">
-      <!-- <button class="yd-accordion-trigger" onclick="window.location.href='immagine-profilo.png'"> -->
-      <button class="yd-accordion-trigger" onclick="window.location.href='#top'">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Modifica immagine di profilo</span>
-      </button>
-    </div>
- 
-    <!-- Modifica immagine di profilo (link diretto) -->
-    <div class="yd-accordion-row">
-      <!-- <button class="yd-accordion-trigger" onclick="window.location.href='cambia-pasword.html'">-->
-      <button class="yd-accordion-trigger" onclick="window.location.href='#top'">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Cambia password</span>
-      </button>
-    </div>
-
-    <!-- Disdici Abbonamento (con sottomenu) -->
-    <div class="yd-accordion-row">
-      <!--<button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">-->
-        <button class="yd-accordion-trigger" onclick="window.location.href='#top'">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Disdici abbonamento</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="yd-submenu-row">
-          <a href="#">
-            <span class="yd-sub-dash">-</span>
-            Abbonamento Standar
-          </a>
+        <div class="acc-section-card">
+            <div class="acc-section-bar">
+                <i class="fa-solid fa-user"></i>
+                <span>Profilo</span>
+            </div>
+            <div class="acc-section-body">
+                <div class="acc-avatar-row">
+                    <div class="acc-avatar-big">
+                        <i class="fa-solid fa-user" id="acc-avatar-icon"></i>
+                          <button class="acc-avatar-edit" id="acc-avatar-edit-btn" title="Cambia immagine">
+                              <i class="fa-solid fa-camera"></i>
+                              <div class="acc-avatar-plus-badge"><i class="fa-solid fa-plus"></i></div>
+                          </button>
+                        <input type="file" id="acc-avatar-input" accept="image/*" style="display:none">
+                    </div>
+                    <div class="acc-avatar-info">
+                        <p class="acc-avatar-name" id="acc-username-display">-</p>
+                        <p class="acc-avatar-sub" id="acc-member-since">-</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="yd-submenu-row">
-          <a href="#">
-            <span class="yd-sub-dash">-</span>
-            Abbonamento Premium
-          </a>
-        </div>
-      </div>
-    </div>
- 
-    <!-- Cancella account (con sottomenu) -->
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Elimina account</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="yd-submenu-row">
-          <a href="#">
-            <span class="yd-sub-dash">-</span>
-            Sei sicuro di voler eliminare il tuo account?
-          </a>
-        </div>
-      </div>
-    </div>
- 
-  </section>
 
+        <div class="acc-section-card">
+            <div class="acc-section-bar">
+                <i class="fa-solid fa-id-card"></i>
+                <span>Dati account</span>
+            </div>
+            <div class="acc-section-body">
 
-<script>
- function toggleYdSubmenu(btn) {
-      const submenu = btn.nextElementSibling;
-      const isOpen = submenu.classList.contains('yd-open');
- 
-      // chiudi tutti gli altri sottomenu aperti
-      document.querySelectorAll('.yd-submenu.yd-open').forEach(s => s.classList.remove('yd-open'));
-      document.querySelectorAll('.yd-accordion-trigger.yd-open').forEach(b => b.classList.remove('yd-open'));
- 
-      // apri o chiudi quello cliccato
-      if (!isOpen) {
-        submenu.classList.add('yd-open');
-        btn.classList.add('yd-open');
-      }
-    }
-</script>
+                <div class="acc-field-row" id="row-username">
+                    <div class="acc-field-lbl">
+                        <span>Username</span>
+                        <span id="val-username">-</span>
+                    </div>
+                    <button class="acc-btn-pill" onclick="apriModifica('username')">
+                        <div class="acc-icon-circle"><i class="fa-solid fa-pen"></i></div>
+                        Modifica
+                    </button>
+                </div>
+
+                <div class="acc-field-row" id="row-email">
+                    <div class="acc-field-lbl">
+                        <span>Email</span>
+                        <span id="val-email">-</span>
+                    </div>
+                    <button class="acc-btn-pill" onclick="apriModifica('email')">
+                        <div class="acc-icon-circle"><i class="fa-solid fa-pen"></i></div>
+                        Modifica
+                    </button>
+                </div>
+
+                <div class="acc-field-row" id="row-cellulare">
+                    <div class="acc-field-lbl">
+                        <span>Telefono</span>
+                        <span id="val-cellulare">Non impostato</span>
+                    </div>
+                    <button class="acc-btn-pill" onclick="apriModifica('cellulare')">
+                        <div class="acc-icon-circle"><i class="fa-solid fa-plus"></i></div>
+                        <span id="btn-cellulare-label">Aggiungi</span>
+                    </button>
+                </div>
+
+                <div class="acc-field-row" id="row-password">
+                    <div class="acc-field-lbl">
+                        <span>Password</span>
+                        <span>••••••••</span>
+                    </div>
+                    <button class="acc-btn-pill" onclick="apriModifica('password')">
+                        <div class="acc-icon-circle"><i class="fa-solid fa-key"></i></div>
+                        Cambia
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="acc-section-card">
+            <div class="acc-section-bar">
+                <i class="fa-solid fa-credit-card"></i>
+                <span>Abbonamento</span>
+            </div>
+            <div class="acc-section-body">
+
+                <div class="acc-plan-row">
+                    <div class="acc-plan-info">
+                        <span id="acc-plan-nome">Piano Base</span>
+                        <span id="acc-plan-sub">Nessun rinnovo programmato</span>
+                    </div>
+                    <div class="acc-plan-badge-wrap" id="acc-plan-badge"></div>
+                </div>
+
+                <div class="acc-plan-options" id="acc-plan-options">
+                    <div class="acc-plan-opt" data-plan="base">
+                        <div class="acc-plan-opt-name">Base</div>
+                        <div class="acc-plan-opt-price">Gratis</div>
+                    </div>
+                    <div class="acc-plan-opt" data-plan="premium">
+                        <div class="acc-plan-opt-name">Premium</div>
+                        <div class="acc-plan-opt-price">4,99€/mese</div>
+                    </div>
+                    <div class="acc-plan-opt" data-plan="pro">
+                        <div class="acc-plan-opt-name">Pro</div>
+                        <div class="acc-plan-opt-price">9,99€/mese</div>
+                    </div>
+                </div>
+
+                <div class="acc-actions-row">
+                    <button class="acc-btn-pill" onclick="cambiaPiano()">
+                        <div class="acc-icon-circle"><i class="fa-solid fa-arrows-rotate"></i></div>
+                        Cambia piano
+                    </button>
+                    <button class="acc-btn-pill-danger" id="acc-btn-disdici" onclick="mostraConfermaAccount('disdici')">
+                        <div class="acc-icon-circle-danger"><i class="fa-solid fa-ban"></i></div>
+                        Disdici
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="acc-section-card acc-danger-card">
+            <div class="acc-section-bar acc-danger-bar">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Zona pericolosa</span>
+            </div>
+            <div class="acc-section-body">
+                <div class="acc-danger-row">
+                    <div class="acc-danger-text">
+                        <p>Elimina account</p>
+                        <p>Questa azione è irreversibile. Tutti i tuoi dati verranno eliminati permanentemente.</p>
+                    </div>
+                    <button class="acc-btn-pill-danger" onclick="mostraConfermaAccount('elimina')">
+                        <div class="acc-icon-circle-danger"><i class="fa-solid fa-trash"></i></div>
+                        Elimina
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
 </body>
-
 </html>

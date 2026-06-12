@@ -53,7 +53,8 @@ async function logout() {
     } finally {
         // In ogni caso, puliamo il client e reindirizziamo
         localStorage.removeItem('yd_utente_loggato');
-        localStorage.removeItem('veicoloAttivo'); // Consigliato pulire anche questo
+        localStorage.removeItem('veicoloAttivo');
+        localStorage.removeItem('veicoloAttivoId');
         window.location.href = 'landing.html';
     }
 }
@@ -87,6 +88,15 @@ async function caricaVeicoli() {
             targa: v.targa,
             tipo: v.dati_generici[0]?.tipo_veicolo === 'Moto' ? 'motorcycle' : 'car',
         }));
+
+        const idSalvato = localStorage.getItem('veicoloAttivoId');
+        if (idSalvato) {
+            const idx = veicoli.findIndex(v => v.id === parseInt(idSalvato));
+            veicoloAttivoIndex = idx !== -1 ? idx : 0;
+        } else {
+            veicoloAttivoIndex = 0;
+        }
+
         const counterEl = document.getElementById('veicoli-counter');
         if (counterEl) counterEl.textContent = veicoli.length;
         renderVeicoloAttivo();
@@ -117,6 +127,7 @@ function renderVeicoloAttivo() {
     }
 
     localStorage.setItem('veicoloAttivo', JSON.stringify(v));
+    localStorage.setItem('veicoloAttivoId', v.id);
 }
 
 function renderDropdown() {
@@ -181,7 +192,7 @@ function mostraConfermaElimina(id, nome) {
 }
 
 async function eliminaVeicolo(id) {
-    
+
     document.getElementById('conferma-elimina-overlay')?.remove();
     try {
         const response = await fetch(`http://localhost:3000/veicolo/${id}`, {
@@ -197,6 +208,14 @@ async function eliminaVeicolo(id) {
             alert('Errore durante l\'eliminazione del veicolo.');
             return;
         }
+
+        const veicoloEliminato = veicoli.find(v => v.id === id);
+        const idAttivoSalvato = localStorage.getItem('veicoloAttivoId');
+        if (idAttivoSalvato && parseInt(idAttivoSalvato) === id) {
+            localStorage.removeItem('veicoloAttivoId');
+            localStorage.removeItem('veicoloAttivo');
+        }
+
         await caricaVeicoli();
         closeSwitcher();
 
@@ -204,6 +223,10 @@ async function eliminaVeicolo(id) {
         if (btn) {
             btn.classList.add('garage-delete');
             setTimeout(() => btn.classList.remove('garage-delete'), 600);
+        }
+
+        if (document.getElementById('vl-lista-veicoli') && typeof renderListaVeicoli === 'function') {
+            renderListaVeicoli();
         }
 
     } catch (err) {
@@ -324,8 +347,8 @@ async function caricaInfoVeicolo() {
 
         const bollDateEl = document.getElementById('iv-bollo-date');
         const bolloBadge = document.getElementById('iv-bollo-stato');
-        if (ds.datebollo) {
-            const dataBollo = new Date(ds.datebollo).toLocaleDateString('it-IT');
+        if (ds.datascadenzabollo) {
+            const dataBollo = new Date(ds.datascadenzabollo).toLocaleDateString('it-IT');
             if (bollDateEl) bollDateEl.textContent = `scade il ${dataBollo}`;
             if (bolloBadge) {
                 bolloBadge.textContent = ds.isbolloattivo ? 'Attivo' : 'Scaduto';
@@ -333,13 +356,17 @@ async function caricaInfoVeicolo() {
             }
         } else {
             if (bollDateEl) bollDateEl.textContent = 'Dato non disponibile';
+            if (bolloBadge) {
+                bolloBadge.textContent = 'Scaduto';
+                bolloBadge.className = 'iv-badge iv-badge-scaduta';
+            }
         }
 
         const rcaDateEl = document.getElementById('iv-assicurazione-date');
         const rcaBadge = document.getElementById('iv-assicurazione-stato');
         const compagniaEl = document.getElementById('iv-assicurazione-compagnia');
-        if (ds.daterca) {
-            const dataRca = new Date(ds.daterca).toLocaleDateString('it-IT');
+        if (ds.datascadenzarca) {
+            const dataRca = new Date(ds.datascadenzarca).toLocaleDateString('it-IT');
             if (rcaDateEl) rcaDateEl.textContent = `scade il ${dataRca}`;
             if (compagniaEl) compagniaEl.textContent = ds.nomeassicurazione || '-';
             if (rcaBadge) {
@@ -349,6 +376,10 @@ async function caricaInfoVeicolo() {
         } else {
             if (rcaDateEl) rcaDateEl.textContent = 'Dato non disponibile';
             if (compagniaEl) compagniaEl.textContent = ds.nomeassicurazione || '-';
+            if (rcaBadge) {
+                rcaBadge.textContent = 'Scaduta';
+                rcaBadge.className = 'iv-badge iv-badge-scaduta';
+            }
         }
 
     } catch (err) {
@@ -356,9 +387,9 @@ async function caricaInfoVeicolo() {
     }
 }
 
-/* =============================================
-/           AVATAR DROPDOWN
-/ ============================================*/
+ /* ---------------------------------------------------
+/                  AVATAR DROPDOWN                    /
+----------------------------------------------------*/
 function toggleAvatarMenu() {
     const dropdown = document.getElementById('avatar-dropdown');
     dropdown.classList.toggle('open');
