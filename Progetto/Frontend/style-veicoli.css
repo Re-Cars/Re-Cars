@@ -52,7 +52,7 @@
 .vl-section-bar span {
     font-size: 0.72rem;
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--muted);
     letter-spacing: 0.8px;
     text-transform: uppercase;
 }
@@ -114,7 +114,7 @@
 .vl-nome {
     font-size: 0.9rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--white);
 }
 
 .vl-meta {
@@ -137,7 +137,7 @@
 
 .vl-tipo {
     font-size: 0.7rem;
-    color: var(--text-muted);
+    color: var(--muted);
 }
 
 .vl-stato {
@@ -221,7 +221,7 @@
 .vl-empty {
     text-align: center;
     padding: 30px 16px;
-    color: var(--text-muted);
+    color: var(--muted);
     font-size: 0.85rem;
 }
 

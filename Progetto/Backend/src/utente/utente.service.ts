@@ -1,8 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt'; 
-import { CreateUtenteDto } from '../utente/dto/create-utente.dto';
+import { CreateUtenteDto } from './dto/create-utente.dto';
 import { LoginUtenteDto } from './dto/login-utente.dto';
+import { UpdateUtenteDto } from './dto/update-utente.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -58,4 +59,27 @@ export class UtenteService {
             }
             }
         )};
+
+
+    async aggiornaUtente(id: number, data: UpdateUtenteDto) {
+    const campiDaAggiornare: any = {};
+
+    if (data.username) campiDaAggiornare.username = data.username;
+    if (data.email) campiDaAggiornare.email = data.email;
+    if (data.cellulare) campiDaAggiornare.cellulare = data.cellulare;
+    if (data.password) {
+      campiDaAggiornare.password = await bcrypt.hash(data.password, 10);
     }
+
+    return this.prisma.utente.update({
+      where: { id },
+      data: campiDaAggiornare,
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        cellulare: true,
+      },
+    });
+  }
+} 

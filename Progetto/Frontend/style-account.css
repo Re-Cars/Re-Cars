@@ -52,7 +52,7 @@
 .acc-section-bar span {
     font-size: 0.72rem;
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--muted);
     letter-spacing: 0.8px;
     text-transform: uppercase;
 }
@@ -141,13 +141,13 @@
 }
 
 .acc-avatar-name {
-    color: var(--text);
+    color: var(--white);
     font-size: 1rem;
     font-weight: 700;
 }
 
 .acc-avatar-sub {
-    color: var(--text-muted);
+    color: var(--muted);
     font-size: 0.8rem;
     margin-top: 2px;
 }
@@ -176,14 +176,14 @@
 
 .acc-field-lbl span:first-child {
     font-size: 0.65rem;
-    color: var(--text-muted);
+    color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.6px;
 }
 
 .acc-field-lbl span:last-child {
     font-size: 0.85rem;
-    color: var(--text);
+    color: var(--white);
     font-weight: 600;
 }
 
@@ -279,13 +279,13 @@
 .acc-plan-info span:first-child {
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--white);
     display: block;
 }
 
 .acc-plan-info span:last-child {
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: var(--muted);
 }
 
 .acc-plan-badge-wrap {
@@ -302,7 +302,7 @@
     padding: 5.5px 13.5px;
     font-size: 0.7rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--white);
     background: rgba(249, 115, 22, 0.1);
     border: 1px solid rgba(249, 115, 22, 0.25);
 }
@@ -384,13 +384,13 @@
 .acc-plan-opt-name {
     font-size: 0.8rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--white);
     margin-bottom: 4px;
 }
 
 .acc-plan-opt-price {
     font-size: 0.7rem;
-    color: var(--text-muted);
+    color: var(--muted);
 }
 
 .acc-plan-opt.attivo .acc-plan-opt-name {
@@ -435,13 +435,13 @@
 .acc-danger-text p:first-child {
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--whte);
     margin: 0;
 }
 
 .acc-danger-text p:last-child {
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: var(--muted);
     margin: 4px 0 0;
 }
 
@@ -490,13 +490,13 @@
 .conferma-account-title {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--white);
     margin: 0 0 6px;
 }
 
 .conferma-account-sub {
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--muted);
     margin: 0 0 16px;
 }
 
@@ -512,7 +512,7 @@
     border: 1px solid rgba(249, 115, 22, 0.3);
     border-radius: 20px;
     padding: 8px 18px;
-    color: var(--text-muted);
+    color: var(--muted);
     font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
@@ -523,7 +523,7 @@
 .conferma-account-btns .btn-annulla:hover,
 .modifica-campo-btns .btn-annulla:hover {
     border-color: rgba(249, 115, 22, 0.6);
-    color: var(--text);
+    color: var(--white);
 }
 
  /* ----------------------------------------------------
@@ -552,7 +552,7 @@
 .modifica-campo-title {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--white);
     margin: 0 0 14px;
     display: flex;
     align-items: center;
@@ -569,7 +569,7 @@
     border: 1.5px solid var(--border);
     border-radius: 10px;
     background: var(--input-bg);
-    color: var(--text);
+    color: var(--white);
     font-size: 0.85rem;
     font-family: inherit;
     outline: none;
