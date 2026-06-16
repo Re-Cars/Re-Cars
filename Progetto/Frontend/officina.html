@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE|CARS — Dashboard Officina</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-officina.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-app.js" defer></script>
+    <script src="functions-officina.js" defer></script>
+</head>
+
+<body>
+
+    <div class="oc-detail-overlay" id="oc-detail-overlay">
+        <div class="oc-detail-modal">
+            <div class="oc-detail-title">
+                <i class="fa-solid fa-car" style="color:#f97316"></i>
+                Dettaglio prenotazione
+            </div>
+            <div id="oc-detail-content"></div>
+            <div class="oc-detail-actions" id="oc-detail-azioni"></div>
+        </div>
+    </div>
+
+    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">RE<span>|</span>CARS</span>
+            <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+                <span class="line line4"></span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="officina.html" class="sidebar-item active">
+                <i class="fa-solid fa-gauge"></i> Dashboard
+            </a>
+            <a href="prenotazioni-officina.html" class="sidebar-item">
+                <i class="fa-solid fa-calendar-check"></i> Prenotazioni
+            </a>
+            <a href="profilo-officina.html" class="sidebar-item">
+                <i class="fa-solid fa-building-user"></i> Profilo Officina
+            </a>
+            <a href="impostazioni-officina.html" class="sidebar-item">
+                <i class="fa-solid fa-gear"></i> Impostazioni
+            </a>
+            <a href="#" class="sidebar-item sidebar-logout" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+        </nav>
+    </div>
+
+    <header class="header">
+        <div class="header-left"></div>
+        <div class="header-center">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+            <span class="header-brand">RE<span>|</span>CARS</span>
+        </div>
+        <div class="header-right">
+            <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar">
+                    <i class="fa-solid fa-building-user"></i>
+                </div>
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                    </div>
+                    <a href="profilo-officina.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica profilo</span>
+                    </a>
+                    <a href="#" class="avatar-item avatar-item-logout" onclick="logout()">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="breadcrumb">
+        <span><i class="fa-solid fa-gauge"></i> Dashboard</span>
+    </div>
+
+    <div class="oc-intro">
+        <div class="oc-intro-left">
+            <div class="oc-office-avatar">
+                <i class="fa-solid fa-building-user"></i>
+            </div>
+            <div>
+                <div class="oc-office-name" id="nome-officina">Caricamento...</div>
+                <div class="oc-office-sub">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span id="citta-officina"></span>
+                    <span class="oc-abbonamento-badge" id="abbonamento-badge">
+                        <i class="fa-solid fa-crown"></i>
+                        <span id="abbonamento-piano">—</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="veicolo-switcher" id="veicolo-switcher">
+            <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                <span id="switcher-label">
+                    <i class="fa-solid fa-car"></i>
+                    <span id="veicoli-counter">0 veicoli oggi</span>
+                </span>
+                <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+            </button>
+            <div class="switcher-dropdown" id="switcher-dropdown"></div>
+        </div>
+    </div>
+
+    <div class="oc-stats-grid">
+        <div class="oc-stat-card">
+            <div class="oc-stat-accent oc-accent-orange"></div>
+            <div class="oc-stat-label">Prenotazioni oggi</div>
+            <div class="oc-stat-value" id="stat-oggi">—</div>
+            <div class="oc-stat-sub" id="stat-oggi-sub"></div>
+        </div>
+        <div class="oc-stat-card">
+            <div class="oc-stat-accent oc-accent-blue"></div>
+            <div class="oc-stat-label">Questa settimana</div>
+            <div class="oc-stat-value" id="stat-settimana">—</div>
+            <div class="oc-stat-sub" id="stat-settimana-sub"></div>
+        </div>
+        <div class="oc-stat-card">
+            <div class="oc-stat-accent oc-accent-muted"></div>
+            <div class="oc-stat-label">Ponti disponibili</div>
+            <div class="oc-stat-value" id="stat-ponti">—</div>
+            <div class="oc-stat-sub" id="stat-ponti-sub"></div>
+        </div>
+    </div>
+
+    <div class="oc-section-header">
+        <span class="oc-section-title">Veicoli in officina oggi</span>
+        <span class="oc-count-pill" id="veicoli-oggi-count">0 veicoli</span>
+    </div>
+
+    <div class="oc-prenotazioni-list" id="prenotazioni-oggi">
+        <div class="oc-empty-state" id="empty-state">
+            <i class="fa-solid fa-calendar-xmark"></i>
+            <span>Nessun veicolo in officina oggi</span>
+        </div>
+    </div>
+
+</body>
+</html>

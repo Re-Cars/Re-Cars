@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUtenteDto } from './dto/create-utente.dto';
 import { LoginUtenteDto } from './dto/login-utente.dto';
 import { UpdateUtenteDto } from './dto/update-utente.dto';
+import { LoginAziendaDto } from './dto/login-azienda.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -48,6 +49,28 @@ export class UtenteService {
       utente: risultato,
     };
   }
+
+    async loginAzienda(data: LoginAziendaDto) {
+      const utente = await this.prisma.utente.findUnique({
+        where: { partita_iva: data.partita_iva },
+      });
+
+      if (!utente || utente.tipo !== 'azienda') {
+        throw new UnauthorizedException('Credenziali non valide');
+      }
+
+      const passwordValida = await bcrypt.compare(data.password, utente.password);
+      if (!passwordValida) throw new UnauthorizedException('Credenziali non valide');
+
+      const { password, ...risultato } = utente;
+
+      const payload = { sub: utente.id, partita_iva: utente.partita_iva, tipo: utente.tipo };
+      return {
+        access_token: this.jwtService.sign(payload),
+        utente: risultato,
+      };
+    }
+
     async getUtentebyID(id : number)  {
         return this.prisma.utente.findUnique({
             where: { id },

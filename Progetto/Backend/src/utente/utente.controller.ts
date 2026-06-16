@@ -3,6 +3,7 @@ import { UtenteService } from './utente.service';
 import { CreateUtenteDto } from './dto/create-utente.dto';
 import { LoginUtenteDto } from './dto/login-utente.dto';
 import { UpdateUtenteDto } from './dto/update-utente.dto';
+import { LoginAziendaDto } from './dto/login-azienda.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
 import type { Request, Response } from 'express';
 @Controller('auth')
@@ -34,6 +35,21 @@ export class UtenteController {
             
             return { utente };
         }
+
+    @Post('login/azienda')
+        async loginAzienda(
+            @Body() datiRicevuti: LoginAziendaDto,
+            @Res({ passthrough: true }) response: Response,
+            ) {
+            const { access_token, utente } = await this.utenteService.loginAzienda(datiRicevuti);
+            response.cookie('access_token', access_token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 3600000,
+            });
+            return { utente };
+            }
 
     @Post('logout')
         async logout(@Res({ passthrough: true }) response: Response) {
