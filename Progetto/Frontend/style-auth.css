@@ -706,3 +706,123 @@ input:-webkit-autofill:active {
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 #landing-buttons.show-btn { opacity: 1; transform: translateY(0); }
+
+ /* ----------------------------------------------------
+/              SELEZIONE TIPO + STEP                   /
+-----------------------------------------------------*/
+.auth-step-label {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0 0 14px 0;
+}
+
+.auth-tipo-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.auth-tipo-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.auth-tipo-btn i {
+    font-size: 1.2rem;
+    color: #f97316;
+}
+
+.auth-tipo-btn:hover {
+    border-color: #f97316;
+    background: rgba(249, 115, 22, 0.1);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.auth-tipo-btn.selected {
+    border-color: #f97316;
+    background: rgba(249, 115, 22, 0.15);
+    color: #fff;
+}
+
+.auth-back-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 14px;
+    transition: color 0.2s;
+}
+
+.auth-back-step:hover {
+    color: #f97316;
+}
+
+.auth-back-step i {
+    font-size: 0.75rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* dropdown città */
+.citta-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: rgba(20, 20, 60, 0.97);
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    border-radius: 10px;
+    z-index: 100;
+    max-height: 180px;
+    overflow-y: auto;
+    display: none;
+}
+
+.citta-dropdown.open {
+    display: block;
+}
+
+.citta-option {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.citta-option:hover {
+    background: rgba(249, 115, 22, 0.15);
+    color: #fff;
+}
+
+.citta-option span {
+    color: #f97316;
+    font-weight: 600;
+    margin-right: 6px;
+}
