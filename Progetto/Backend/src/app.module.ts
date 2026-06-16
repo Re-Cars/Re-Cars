@@ -18,10 +18,10 @@ import { OfficinaModule } from './officina/officina.module';
     PassportModule,                               
     JwtModule.registerAsync({
       imports:[ConfigModule],
-      useFactory:( config: ConfigService)  =>({                          
-      secret: process.env.JWT_SECRET, // generato con  node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-      signOptions: { expiresIn: '1h' },
-    }),
+      useFactory: (config: ConfigService) => ({
+          secret: config.get<string>('JWT_SECRET'),
+          signOptions: { expiresIn: '1h' },
+      }),
     inject: [ConfigService],
   }), OfficinaModule,
   ],

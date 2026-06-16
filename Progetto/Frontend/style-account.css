@@ -1,0 +1,649 @@
+ /* ----------------------------------------------------
+/                   IL MIO ACCOUNT                     /
+-----------------------------------------------------*/
+
+@keyframes acc-fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.acc-dashboard {
+    padding: 16px 24px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+ /* ----------------------------------------------------
+/                 CARD SECTION                         /
+-----------------------------------------------------*/
+.acc-section-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    border-radius: 14px;
+    overflow: hidden;
+    opacity: 0;
+    animation: acc-fadeUp 0.5s ease forwards;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.acc-section-card:nth-child(1) { animation-delay: 0.05s; }
+.acc-section-card:nth-child(2) { animation-delay: 0.12s; }
+.acc-section-card:nth-child(3) { animation-delay: 0.19s; }
+.acc-section-card:nth-child(4) { animation-delay: 0.26s; }
+
+.acc-section-bar {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(249, 115, 22, 0.1);
+    background: rgba(249, 115, 22, 0.06);
+}
+
+.acc-section-bar i {
+    font-size: 0.9rem;
+    color: #f97316;
+}
+
+.acc-section-bar span {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.acc-section-body {
+    padding: 16px 18px;
+}
+
+ /* ----------------------------------------------------
+/                 PROFILO/AVATAR                       /
+-----------------------------------------------------*/
+.acc-avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.acc-avatar-big {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(249, 115, 22, 0.12);
+    border: 2px solid rgba(249, 115, 22, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: #f97316;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.acc-avatar-big img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.acc-avatar-edit {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--card-bg);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.acc-avatar-edit:hover {
+    transform: scale(1.1);
+}
+
+.acc-avatar-edit i {
+    font-size: 0.65rem;
+    color: #fff;
+}
+
+.acc-avatar-plus-badge {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #f97316;
+}
+
+.acc-avatar-plus-badge i {
+    font-size: 0.4rem;
+    color: #f97316;
+}
+
+.acc-avatar-info p {
+    margin: 0;
+}
+
+.acc-avatar-name {
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.acc-avatar-sub {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 2px;
+}
+
+ /* ----------------------------------------------------
+/                     FIELD-ROWS                       /
+-----------------------------------------------------*/
+.acc-field-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid rgba(249, 115, 22, 0.1);
+}
+
+.acc-field-row:last-child {
+    border-bottom: none;
+}
+
+.acc-field-lbl {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.acc-field-lbl span:first-child {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.acc-field-lbl span:last-child {
+    font-size: 0.85rem;
+    color: var(--white);
+    font-weight: 600;
+}
+
+ /* ----------------------------------------------------
+/                 BOTTONI-PILL                         /
+-----------------------------------------------------*/
+.acc-btn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(249, 115, 22, 0.18);
+    border: 1px solid #f97316;
+    border-radius: 20px;
+    padding: 7px 16px;
+    color: #f97316;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.acc-btn-pill:hover {
+    background: rgba(249, 115, 22, 0.28);
+    box-shadow: 0 4px 14px rgba(249, 115, 22, 0.25);
+}
+
+.acc-icon-circle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.acc-icon-circle i {
+    font-size: 0.55rem;
+    color: #fff;
+}
+
+.acc-btn-pill-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid #ef4444;
+    border-radius: 20px;
+    padding: 7px 16px;
+    color: #ef4444;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.acc-btn-pill-danger:hover {
+    background: rgba(239, 68, 68, 0.2);
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.2);
+}
+
+.acc-icon-circle-danger {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.acc-icon-circle-danger i {
+    font-size: 0.55rem;
+    color: #fff;
+}
+
+ /* ----------------------------------------------------
+/                 ABBONAMENTO                          /
+-----------------------------------------------------*/
+.acc-plan-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.acc-plan-info span:first-child {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--white);
+    display: block;
+}
+
+.acc-plan-info span:last-child {
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.acc-plan-badge-wrap {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.acc-plan-pill-static {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 20px;
+    padding: 5.5px 13.5px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--white);
+    background: rgba(249, 115, 22, 0.1);
+    border: 1px solid rgba(249, 115, 22, 0.25);
+}
+
+.acc-plan-pill-static .fa-circle {
+    font-size: 0.5rem;
+    color: #f97316;
+    animation: plan-pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes plan-pulse-dot {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+
+@property --plan-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes plan-trace {
+    to { --plan-angle: 360deg; }
+}
+
+@keyframes plan-pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.15); }
+    50%       { box-shadow: 0 0 10px 2px rgba(249, 115, 22, 0.2); }
+}
+
+.acc-plan-pill-animated {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 20px;
+    padding: 5.5px 13.5px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #f97316;
+    background:
+        linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+        conic-gradient(from var(--plan-angle), rgba(249,115,22,0.5) 0%, #f97316 25%, #ffb366 30%, #f97316 35%, rgba(249,115,22,0.5) 60%, rgba(249,115,22,0.5) 100%) border-box;
+    border: 1.5px solid transparent;
+    animation: plan-trace 5s linear infinite, plan-pulse-glow 2.5s ease-in-out infinite;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s;
+}
+
+.acc-plan-pill-animated:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.5));
+    animation: plan-trace 2s linear infinite, plan-pulse-glow 1.2s ease-in-out infinite;
+}
+
+.acc-plan-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.acc-plan-opt {
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.acc-plan-opt:hover {
+    border-color: rgba(249, 115, 22, 0.5);
+}
+
+.acc-plan-opt.attivo {
+    border-color: #f97316;
+    background: rgba(249, 115, 22, 0.08);
+}
+
+.acc-plan-opt-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+}
+
+.acc-plan-opt-price {
+    font-size: 0.7rem;
+    color: var(--muted);
+}
+
+.acc-plan-opt.attivo .acc-plan-opt-name {
+    color: #f97316;
+}
+
+.acc-actions-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+ /* ----------------------------------------------------
+/                 DANGER ZONE                          /
+-----------------------------------------------------*/
+.acc-danger-card {
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+.acc-danger-bar {
+    background: rgba(239, 68, 68, 0.08);
+    border-bottom: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.acc-danger-bar i {
+    color: #ef4444;
+}
+
+.acc-danger-bar span {
+    color: #f87171;
+}
+
+.acc-danger-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.acc-danger-text p:first-child {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--whte);
+    margin: 0;
+}
+
+.acc-danger-text p:last-child {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin: 4px 0 0;
+}
+
+ /* ----------------------------------------------------
+/                 OVERLAY CONFERMA                     /
+-----------------------------------------------------*/
+#conferma-account-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: acc-fadeIn 0.2s ease;
+}
+
+@keyframes acc-fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.conferma-account-box {
+    background: var(--card-bg);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    max-width: 340px;
+    width: 90%;
+}
+
+.conferma-account-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 1.3rem;
+    color: #ef4444;
+}
+
+.conferma-account-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white);
+    margin: 0 0 6px;
+}
+
+.conferma-account-sub {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin: 0 0 16px;
+}
+
+.conferma-account-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.conferma-account-btns .btn-annulla,
+.modifica-campo-btns .btn-annulla {
+    background: none;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    border-radius: 20px;
+    padding: 8px 18px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: 0.2s;
+}
+
+.conferma-account-btns .btn-annulla:hover,
+.modifica-campo-btns .btn-annulla:hover {
+    border-color: rgba(249, 115, 22, 0.6);
+    color: var(--white);
+}
+
+ /* ----------------------------------------------------
+/                 MODIFICA CAMPO                       /
+-----------------------------------------------------*/
+#modifica-campo-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: acc-fadeIn 0.2s ease;
+}
+
+.modifica-campo-box {
+    background: var(--card-bg);
+    border: 1px solid rgba(249, 115, 22, 0.25);
+    border-radius: 14px;
+    padding: 24px;
+    max-width: 360px;
+    width: 90%;
+}
+
+.modifica-campo-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white);
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modifica-campo-title i {
+    color: #f97316;
+}
+
+.modifica-campo-box input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--input-bg);
+    color: var(--white);
+    font-size: 0.85rem;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+    margin-bottom: 12px;
+}
+
+.modifica-campo-box input:focus {
+    border-color: #f97316;
+}
+
+.modifica-campo-error {
+    color: #f87171;
+    font-size: 0.78rem;
+    margin: -4px 0 12px;
+    min-height: 1em;
+}
+
+.modifica-campo-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+ /* ----------------------------------------------------
+/                 RESPONSIVE                           /
+-----------------------------------------------------*/
+@media (max-width: 768px) {
+    .acc-dashboard {
+        padding: 12px 16px 24px;
+    }
+
+    .acc-plan-options {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+    }
+
+    .acc-plan-opt {
+        padding: 8px 4px;
+    }
+
+    .acc-plan-opt-name {
+        font-size: 0.72rem;
+    }
+
+    .acc-plan-opt-price {
+        font-size: 0.62rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .acc-dashboard {
+        padding: 8px 12px 20px;
+    }
+
+    .acc-field-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .acc-btn-pill,
+    .acc-btn-pill-danger {
+        align-self: stretch;
+        justify-content: center;
+    }
+
+    .acc-danger-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .acc-danger-row .acc-btn-pill-danger {
+        justify-content: center;
+    }
+}

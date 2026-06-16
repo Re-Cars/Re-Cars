@@ -108,21 +108,6 @@ async function register() {
     var password = document.getElementById('reg-password').value;
     var errore = document.getElementById('reg-error');
 
-    if (!username || !email || !password) {
-        errore.textContent = 'Compila tutti i campi';
-        return;
-    }
-
-    if (!email.includes('@')) {
-        errore.textContent = 'Email non valida';
-        return;
-    }
-
-    if (password.length < 8) {
-        errore.textContent = 'La password deve avere almeno 8 caratteri';
-        return;
-    }
-
     try {
         const response = await fetch('http://localhost:3000/auth/register', {
             method: 'POST',
@@ -135,7 +120,8 @@ async function register() {
         const data = await response.json();
 
         if (!response.ok) {
-            errore.textContent = data.message || 'Errore durante la registrazione';
+            const msg = Array.isArray(data.message) ? data.message[0] : data.message;
+            errore.textContent = msg || 'Errore durante la registrazione';
             return;
         }
 
@@ -144,7 +130,6 @@ async function register() {
 
         setTimeout(() => {
             switchForm();
-            
             document.getElementById('reg-user').value = '';
             document.getElementById('reg-email').value = '';
             document.getElementById('reg-password').value = '';
@@ -157,19 +142,6 @@ async function register() {
     }
 }
 
-document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter') return;
-
-    const loginWrapper = document.getElementById('wrapper-login');
-    const registerWrapper = document.getElementById('wrapper-register');
-
-    if (loginWrapper && loginWrapper.classList.contains('active')) {
-        login();
-    } else if (registerWrapper && registerWrapper.classList.contains('active')) {
-        register();
-    }
-});
-
  /* ----------------------------------------------------
 /                      LOGIN                           /
 -----------------------------------------------------*/
@@ -177,19 +149,6 @@ async function login() {
     var email = document.getElementById('login-email').value.trim();
     var password = document.getElementById('login-password').value;
     var errore = document.getElementById('login-error');
-    
-    if (!email || !password) {
-        errore.textContent = 'Compila tutti i campi';
-        return;
-    }
-    if (!email.includes('@')) {
-        errore.textContent = 'Email non valida';
-        return;
-    }
-    if (password.length < 8) {
-        errore.textContent = 'La password deve avere almeno 8 caratteri';
-        return;
-    }
 
     try {
         const response = await fetch('http://localhost:3000/auth/login', {
@@ -198,20 +157,18 @@ async function login() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ email, password }),
-            credentials: 'include' // <--- FONDAMENTALE: permette al browser di accettare e salvare il cookie HttpOnly
+            credentials: 'include'
         });
 
         const data = await response.json();
-        
+
         if (!response.ok) {
-           errore.textContent = data.message || "Credenziali non valide";
-           return;
+            const msg = Array.isArray(data.message) ? data.message[0] : data.message;
+            errore.textContent = msg || 'Credenziali non valide';
+            return;
         }
 
         console.log('Login effettuato:', data);
-        
-        
-        // Salviamo l'oggetto utente o il suo ID nel localStorage solo per scopi legati alla UI del frontend
         localStorage.setItem('yd_utente_loggato', JSON.stringify(data.utente));
         window.location.href = 'homepage.html';
 
@@ -223,10 +180,8 @@ async function login() {
 
 document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
-
     const loginWrapper = document.getElementById('wrapper-login');
     const registerWrapper = document.getElementById('wrapper-register');
-
     if (loginWrapper && loginWrapper.classList.contains('active')) {
         login();
     } else if (registerWrapper && registerWrapper.classList.contains('active')) {
