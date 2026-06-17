@@ -1,4 +1,5 @@
-import { IsString, IsEmail, IsOptional, MinLength, IsNotEmpty, Matches } from 'class-validator';
+import { IsString, IsEmail, IsOptional, MinLength, IsNotEmpty, IsEnum } from 'class-validator';
+import { tipo_utente } from '@prisma/client';
 
 export class CreateUtenteDto {
 
@@ -11,11 +12,27 @@ export class CreateUtenteDto {
   @IsString()
   password!: string;
 
-  @IsNotEmpty({ message: 'L\'email è obbligatoria' })
+  @IsNotEmpty({ message: "L'email è obbligatoria" })
   @IsEmail({}, { message: 'Email non valida' })
   email!: string;
 
   @IsOptional()
   @IsString()
   cellulare?: string;
+
+  @IsOptional()
+  @IsEnum(tipo_utente)
+  tipo?: tipo_utente;
+
+  @IsOptional()
+  @IsString()
+  ragione_sociale?: string;
+
+  @IsOptional()
+  @IsString()
+  partita_iva?: string;
+
+  @IsOptional()
+  @IsString()
+  codice_sdi?: string;
 }

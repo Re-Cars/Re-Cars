@@ -12,9 +12,7 @@ export class UtenteService {
   constructor(private prisma: PrismaService, private jwtService: JwtService,) {}
 
   async registra(data: CreateUtenteDto) {
-
     const hashedPassword = await bcrypt.hash(data.password, 10);
-
 
     return this.prisma.utente.create({
       data: {
@@ -22,6 +20,10 @@ export class UtenteService {
         email: data.email,
         password: hashedPassword,
         cellulare: data.cellulare || null,
+        tipo: data.tipo || 'privato',
+        ragione_sociale: data.ragione_sociale || null,
+        partita_iva: data.partita_iva || null,
+        codice_sdi: data.codice_sdi || null,
       },
     });
   }
@@ -43,7 +45,7 @@ export class UtenteService {
     const { password, ...risultato } = utente;
 
     //  genera e restituisce il token insieme ai dati utente
-    const payload = { sub: utente.id, email: utente.email };
+    const payload = { sub: utente.id, email: utente.email, tipo: utente.tipo };
     return {
       access_token: this.jwtService.sign(payload), // Lo passeremo al controller che lo imposterà nel cookie
       utente: risultato,

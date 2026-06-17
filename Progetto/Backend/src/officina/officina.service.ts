@@ -196,4 +196,159 @@ export class OfficinaService {
       orderBy: { dataprenotazione: 'desc' },
     });
   }
+
+  async statistiche(officinaId: number) {
+    const [totale, mese, completate, officina] = await Promise.all([
+
+      this.prisma.prenotazione.count({
+        where: { id_officina: officinaId },
+      }),
+
+      this.prisma.prenotazione.count({
+        where: {
+          id_officina: officinaId,
+          dataprenotazione: {
+            gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+          },
+        },
+      }),
+
+      this.prisma.prenotazione.count({
+        where: { id_officina: officinaId, stato: 'completata' },
+      }),
+
+      this.prisma.officina.findUnique({
+        where: { id: officinaId },
+        select: {
+          id: true,
+          nome: true,
+          ragione_sociale: true,
+          partita_iva: true,
+          codice_sdi: true,
+          email: true,
+          telefono: true,
+          indirizzo: true,
+          sigla_citta: true,
+          latitudine: true,
+          longitudine: true,
+          ponti_disponibili: true,
+          orari_apertura: true,
+          tipi: true,
+          stripe_customer_id: true,
+          abbonamento: {
+            where: { stato: 'attivo' },
+            orderBy: { data_inizio: 'desc' },
+            take: 1,
+          },
+        },
+      }),
+
+    ]);
+
+    const tassoCompletamento = totale > 0 ? Math.round((completate / totale) * 100) : 0;
+
+    const mesePrecedente = await this.prisma.prenotazione.count({
+      where: {
+        id_officina: officinaId,
+        dataprenotazione: {
+          gte: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
+          lt: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+        },
+      },
+    });
+
+    return {
+      officina,
+      stats: {
+        totale,
+        mese,
+        mesePrecedente,
+        completate,
+        tassoCompletamento,
+      },
+    };
+  }
+
+  async aggiornaProfilo(officinaId: number, data: any) {
+    const campi: any = {};
+
+    if (data.nome !== undefined) campi.nome = data.nome;
+    if (data.ragione_sociale !== undefined) campi.ragione_sociale = data.ragione_sociale;
+    if (data.partita_iva !== undefined) campi.partita_iva = data.partita_iva;
+    if (data.codice_sdi !== undefined) campi.codice_sdi = data.codice_sdi;
+    if (data.email !== undefined) campi.email = data.email;
+    if (data.telefono !== undefined) campi.telefono = data.telefono;
+    if (data.indirizzo !== undefined) campi.indirizzo = data.indirizzo;
+    if (data.ponti_disponibili !== undefined) campi.ponti_disponibili = Number(data.ponti_disponibili);
+    if (data.tipi !== undefined) campi.tipi = data.tipi;
+    if (data.password !== undefined) campi.password = await bcrypt.hash(data.password, 10);
+
+    return this.prisma.officina.update({
+      where: { id: officinaId },
+      data: campi,
+      select: {
+        id: true,
+        nome: true,
+        ragione_sociale: true,
+        partita_iva: true,
+        codice_sdi: true,
+        email: true,
+        telefono: true,
+        indirizzo: true,
+        sigla_citta: true,
+        ponti_disponibili: true,
+        tipi: true,
+      },
+    });
+  }
+
+  async cambiaAbbonamento(officinaId: number, piano: string) {
+    const abbonamentoAttivo = await this.prisma.abbonamento.findFirst({
+      where: { id_officina: officinaId, stato: 'attivo' },
+    });
+
+    if (abbonamentoAttivo) {
+      await this.prisma.abbonamento.update({
+        where: { id: abbonamentoAttivo.id },
+        data: { stato: 'annullato' },
+      });
+    }
+
+    return this.prisma.abbonamento.create({
+      data: {
+        tipo: 'officina',
+        piano: piano as any,
+        stato: 'attivo',
+        data_inizio: new Date(),
+        id_officina: officinaId,
+      },
+    });
+  }
+
+  async disdiciAbbonamento(officinaId: number) {
+    const abbonamentoAttivo = await this.prisma.abbonamento.findFirst({
+      where: { id_officina: officinaId, stato: 'attivo' },
+    });
+
+    if (!abbonamentoAttivo) throw new NotFoundException('Nessun abbonamento attivo');
+
+    return this.prisma.abbonamento.update({
+      where: { id: abbonamentoAttivo.id },
+      data: { stato: 'annullato' },
+    });
+  }
+
+  async eliminaAccount(officinaId: number) {
+    await this.prisma.abbonamento.deleteMany({
+      where: { id_officina: officinaId },
+    });
+
+    await this.prisma.prenotazione.deleteMany({
+      where: { id_officina: officinaId },
+    });
+
+    return this.prisma.officina.delete({
+      where: { id: officinaId },
+    });
+  }
 }
