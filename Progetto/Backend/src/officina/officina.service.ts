@@ -91,15 +91,15 @@ export class OfficinaService {
   }
 
   async dashboard(officinaId: number) {
-  const oggi = new Date();
-  oggi.setHours(0, 0, 0, 0);
-  const domani = new Date(oggi);
-  domani.setDate(domani.getDate() + 1);
+    const oggi = new Date();
+    oggi.setHours(0, 0, 0, 0);
+    const domani = new Date(oggi);
+    domani.setDate(domani.getDate() + 1);
 
-  const inizioSettimana = new Date(oggi);
-  inizioSettimana.setDate(oggi.getDate() - oggi.getDay() + 1);
+    const inizioSettimana = new Date(oggi);
+    inizioSettimana.setDate(oggi.getDate() - oggi.getDay() + 1);
 
-  const [prenotazioniOggi, settimanaStats, abbonamento, officina] = await Promise.all([
+    const [prenotazioniOggi, settimanaStats, abbonamento, officina] = await Promise.all([
 
     this.prisma.prenotazione.findMany({
       where: {
@@ -113,7 +113,13 @@ export class OfficinaService {
             username: true,
             email: true,
             veicolo: {
-              include: { dati_generici: true },
+              include: {
+                dati_generici: true,
+                storico_intervento: {
+                  orderBy: { data: 'desc' },
+                  take: 5,
+                },
+              },
             },
           },
         },
@@ -121,41 +127,41 @@ export class OfficinaService {
       orderBy: { dataprenotazione: 'asc' },
     }),
 
-    this.prisma.prenotazione.findMany({
-      where: {
-        id_officina: officinaId,
-        dataprenotazione: { gte: inizioSettimana },
-      },
-      select: { stato: true },
-    }),
+      this.prisma.prenotazione.findMany({
+        where: {
+          id_officina: officinaId,
+          dataprenotazione: { gte: inizioSettimana },
+        },
+        select: { stato: true },
+      }),
 
-    this.prisma.abbonamento.findFirst({
-      where: { id_officina: officinaId, stato: 'attivo' },
-      orderBy: { data_inizio: 'desc' },
-    }),
+      this.prisma.abbonamento.findFirst({
+        where: { id_officina: officinaId, stato: 'attivo' },
+        orderBy: { data_inizio: 'desc' },
+      }),
 
-    this.prisma.officina.findUnique({
-      where: { id: officinaId },
-      select: { ponti_disponibili: true },
-    }),
+      this.prisma.officina.findUnique({
+        where: { id: officinaId },
+        select: { ponti_disponibili: true },
+      }),
 
-  ]);
+    ]);
 
-  const oggiConfermate = prenotazioniOggi.filter(p => p.stato === 'confermata').length;
-  const pontiOccupati = prenotazioniOggi.filter(p => p.stato === 'confermata').length;
-  const settimanaAttesa = settimanaStats.filter(p => p.stato === 'in_attesa').length;
+    const oggiConfermate = prenotazioniOggi.filter(p => p.stato === 'confermata').length;
+    const pontiOccupati = prenotazioniOggi.filter(p => p.stato === 'confermata').length;
+    const settimanaAttesa = settimanaStats.filter(p => p.stato === 'in_attesa').length;
 
-  return {
-    prenotazioniOggi,
-    oggiTotale: prenotazioniOggi.length,
-    oggiConfermate,
-    settimanaT: settimanaStats.length,
-    settimanaAttesa,
-    pontiOccupati,
-    pontiDisponibili: officina?.ponti_disponibili ?? null,
-    abbonamento,
-  };
-}
+    return {
+      prenotazioniOggi,
+      oggiTotale: prenotazioniOggi.length,
+      oggiConfermate,
+      settimanaT: settimanaStats.length,
+      settimanaAttesa,
+      pontiOccupati,
+      pontiDisponibili: officina?.ponti_disponibili ?? null,
+      abbonamento,
+    };
+  }
 
   async aggiornaStatoPrenotazione(prenotazioneId: number, stato: string, officinaId: number) {
     const prenotazione = await this.prisma.prenotazione.findUnique({
@@ -188,6 +194,10 @@ export class OfficinaService {
               include: {
                 dati_generici: true,
                 dati_specifici: true,
+                storico_intervento: {
+                  orderBy: { data: 'desc' },
+                  take: 5,
+                },
               },
             },
           },
@@ -338,7 +348,7 @@ export class OfficinaService {
     });
   }
 
-  async eliminaAccount(officinaId: number) {
+  async eliminaProfilo(officinaId: number) {
     await this.prisma.abbonamento.deleteMany({
       where: { id_officina: officinaId },
     });
@@ -349,6 +359,35 @@ export class OfficinaService {
 
     return this.prisma.officina.delete({
       where: { id: officinaId },
+    });
+  }
+
+  async agenda(officinaId: number, anno: number, mese: number) {
+    const inizio = new Date(anno, mese - 1, 1);
+    const fine = new Date(anno, mese, 1);
+
+    return this.prisma.prenotazione.findMany({
+      where: {
+        id_officina: officinaId,
+        dataprenotazione: { gte: inizio, lt: fine },
+      },
+      include: {
+        utente: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            veicolo: {
+              select: {
+                marca: true,
+                modello: true,
+                targa: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { dataprenotazione: 'asc' },
     });
   }
 }

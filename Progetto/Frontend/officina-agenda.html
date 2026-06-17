@@ -4,29 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RE|CARS — Prenotazioni</title>
+    <title>RE|CARS — Agenda</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
     <link rel="stylesheet" href="style-officina.css">
+    <link rel="stylesheet" href="style-officina-agenda.css">
     <script src="functions-base.js" defer></script>
-    <script src="functions-app.js" defer></script>
-    <script src="functions-prenotazioni-officina.js" defer></script>
+    <script src="functions-officina-agenda.js" defer></script>
 </head>
 
 <body>
 
-    <div class="oc-detail-overlay" id="oc-detail-overlay">
-        <div class="oc-detail-modal oc-detail-modal-wide">
-            <div class="oc-detail-title">
-                <i class="fa-solid fa-car oc-icon-brand"></i>
-                Dettaglio prenotazione
-                <button class="oc-detail-close" onclick="chiudiDettaglio()">
+    <div class="ag-detail-overlay" id="ag-detail-overlay">
+        <div class="ag-detail-modal">
+            <div class="ag-detail-title">
+                <i class="fa-solid fa-calendar-check ag-icon-brand"></i>
+                <span id="ag-detail-titolo">Dettaglio</span>
+                <button class="ag-detail-close" onclick="chiudiDettaglio()">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div id="oc-detail-content"></div>
-            <div id="oc-detail-azioni" class="oc-detail-actions"></div>
+            <div id="ag-detail-content"></div>
         </div>
     </div>
 
@@ -47,10 +46,10 @@
             <a href="officina.html" class="sidebar-item">
                 <i class="fa-solid fa-gauge"></i> Dashboard
             </a>
-            <a href="prenotazioni-officina.html" class="sidebar-item active">
+            <a href="prenotazioni-officina.html" class="sidebar-item">
                 <i class="fa-solid fa-calendar-check"></i> Prenotazioni
             </a>
-            <a href="officina-agenda.html" class="sidebar-item">
+            <a href="officina-agenda.html" class="sidebar-item active">
                 <i class="fa-solid fa-calendar-days"></i> Agenda
             </a>
             <a href="profilo-officina.html" class="sidebar-item">
@@ -98,49 +97,70 @@
     <div class="breadcrumb">
         <a href="officina.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
         <span>›</span>
-        <span>Prenotazioni</span>
+        <span>Agenda</span>
     </div>
 
-    <div class="oc-intro">
-        <div class="oc-intro-left">
-            <div class="oc-office-avatar">
-                <i class="fa-solid fa-calendar-check"></i>
+    <div class="ag-layout">
+
+        <div class="ag-sidebar">
+
+            <div class="ag-mini-cal">
+                <div class="ag-mini-cal-header">
+                    <button class="ag-nav-btn" onclick="cambiaVista(-1)">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <span id="ag-mini-mese-label">—</span>
+                    <button class="ag-nav-btn" onclick="cambiaVista(1)">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="ag-mini-grid">
+                    <div class="ag-mini-day-name">L</div>
+                    <div class="ag-mini-day-name">M</div>
+                    <div class="ag-mini-day-name">M</div>
+                    <div class="ag-mini-day-name">G</div>
+                    <div class="ag-mini-day-name">V</div>
+                    <div class="ag-mini-day-name">S</div>
+                    <div class="ag-mini-day-name">D</div>
+                </div>
+                <div class="ag-mini-grid" id="ag-mini-cal-days"></div>
             </div>
-            <div>
-                <div class="oc-office-name">Prenotazioni</div>
-                <div class="oc-office-sub">
-                    <i class="fa-solid fa-building-user"></i>
-                    <span id="nome-officina-header">—</span>
+
+            <div class="ag-slots-section">
+                <div class="ag-slots-title">Slot oggi</div>
+                <div id="ag-slots-oggi"></div>
+            </div>
+
+            <div class="ag-legenda">
+                <div class="ag-legenda-title">Legenda</div>
+                <div class="ag-legenda-item">
+                    <span class="ag-legenda-dot ag-ev-attesa"></span> In attesa
+                </div>
+                <div class="ag-legenda-item">
+                    <span class="ag-legenda-dot ag-ev-confermata"></span> Confermata
+                </div>
+                <div class="ag-legenda-item">
+                    <span class="ag-legenda-dot ag-ev-completata"></span> Completata
+                </div>
+                <div class="ag-legenda-item">
+                    <span class="ag-legenda-dot ag-ev-annullata"></span> Annullata
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="oc-filters-wrapper">
-        <div class="oc-filters">
-            <span class="oc-filter-label">Filtra</span>
-            <button class="oc-filter-btn active-all" onclick="setFiltro('all', this)">Tutte</button>
-            <button class="oc-filter-btn" onclick="setFiltro('in_attesa', this)">
-                <span class="oc-filter-dot oc-dot-attesa"></span> In attesa
-            </button>
-            <button class="oc-filter-btn" onclick="setFiltro('confermata', this)">
-                <span class="oc-filter-dot oc-dot-confermata"></span> Confermate
-            </button>
-            <button class="oc-filter-btn" onclick="setFiltro('completata', this)">
-                <span class="oc-filter-dot oc-dot-completata"></span> Completate
-            </button>
-            <button class="oc-filter-btn" onclick="setFiltro('annullata', this)">
-                <span class="oc-filter-dot oc-dot-annullata"></span> Annullate
-            </button>
-            <span class="oc-count-pill oc-count-pill-right" id="pren-count">0 prenotazioni</span>
         </div>
-    </div>
 
-    <div class="oc-prenotazioni-list" id="prenotazioni-list">
-        <div class="oc-empty-state" id="empty-state">
-            <i class="fa-solid fa-calendar-xmark"></i>
-            <span>Nessuna prenotazione trovata</span>
+        <div class="ag-main">
+            <div class="ag-main-header">
+                <div class="ag-main-title" id="ag-main-title">Settimana</div>
+                <div class="ag-view-toggle">
+                    <button class="ag-view-btn active" id="btn-settimana" onclick="setVista('settimana')">Settimana</button>
+                    <button class="ag-view-btn" id="btn-mese" onclick="setVista('mese')">Mese</button>
+                </div>
+            </div>
+
+            <div id="ag-calendario"></div>
         </div>
+
     </div>
 
 </body>

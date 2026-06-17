@@ -27,6 +27,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
  /* ----------------------------------------------------
+/                  MENU E TEMA                         /
+-----------------------------------------------------*/
+function toggleMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('hamburger-overlay');
+    const hamburger = document.getElementById('hamburger9');
+    const header = document.querySelector('.header');
+    if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+        hamburger.classList.remove('open');
+        header.classList.remove('sidebar-is-open');
+    } else {
+        sidebar.classList.add('open');
+        overlay.classList.add('open');
+        hamburger.classList.add('open');
+        header.classList.add('sidebar-is-open');
+    }
+}
+
+function closeMenu() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('hamburger-overlay').classList.remove('open');
+    document.getElementById('hamburger9').classList.remove('open');
+    document.querySelector('.header').classList.remove('sidebar-is-open');
+}
+
+ /* ----------------------------------------------------
 /                  AVATAR MENU                         /
 -----------------------------------------------------*/
 function toggleAvatarMenu() {

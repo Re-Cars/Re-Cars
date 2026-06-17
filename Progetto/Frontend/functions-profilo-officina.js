@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await caricaProfilo();
 });
 
-/* ----------------------------------------------------
+ /* ----------------------------------------------------
 /                  AVATAR MENU                         /
 -----------------------------------------------------*/
 function toggleAvatarMenu() {
@@ -239,9 +239,9 @@ async function disdiciAbbonamento() {
     }
 }
 
-async function eliminaAccount() {
+async function eliminaProfilo() {
     try {
-        const res = await fetch(`${API}/officina/account`, {
+        const res = await fetch(`${API}/officina/profilo`, {
             method: 'DELETE',
             credentials: 'include',
         });

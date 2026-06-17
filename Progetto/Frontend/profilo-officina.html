@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RE|CARS — Account Officina</title>
+    <title>RE|CARS — Profilo Officina</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
     <link rel="stylesheet" href="style-officina.css">
-    <link rel="stylesheet" href="style-account-officina.css">
+    <link rel="stylesheet" href="style-officina.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
-    <script src="functions-account-officina.js" defer></script>
+    <script src="functions-profilo-officina.js" defer></script>
 </head>
 
 <body>
@@ -53,12 +53,12 @@
         <div class="po-modal po-modal-danger">
             <div class="po-modal-title">
                 <i class="fa-solid fa-trash po-icon-danger"></i>
-                <span>Elimina account</span>
+                <span>Elimina profilo</span>
             </div>
             <p class="po-modal-sub">Questa azione è irreversibile. Tutti i dati e le prenotazioni verranno eliminati permanentemente.</p>
             <div class="po-modal-actions">
                 <button class="po-btn-ghost" onclick="chiudiOverlay('po-elimina-overlay')">Annulla</button>
-                <button class="po-btn-danger" onclick="eliminaAccount()">Elimina definitivamente</button>
+                <button class="po-btn-danger" onclick="eliminaProfilo()">Elimina definitivamente</button>
             </div>
         </div>
     </div>
@@ -83,8 +83,11 @@
             <a href="prenotazioni-officina.html" class="sidebar-item">
                 <i class="fa-solid fa-calendar-check"></i> Prenotazioni
             </a>
-            <a href="account-officina.html" class="sidebar-item active">
-                <i class="fa-solid fa-building-user"></i> Account Officina
+            <a href="officina-agenda.html" class="sidebar-item">
+                <i class="fa-solid fa-calendar-days"></i> Agenda
+            </a>
+            <a href="profilo-officina.html" class="sidebar-item active">
+                <i class="fa-solid fa-building-user"></i> Profilo Officina
             </a>
             <a href="#" class="sidebar-item sidebar-logout" onclick="logout()">
                 <i class="fa-solid fa-right-from-bracket"></i> Logout
@@ -95,8 +98,10 @@
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
-            <span class="header-brand">RE<span>|</span>CARS</span>
+            <a href="officina.html">
+                <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+                <span class="header-brand">RE<span>|</span>CARS</span>
+            </a>
         </div>
         <div class="header-right">
             <button id="theme-toggle" onclick="toggleTheme()" class="theme-toggle-btn">
@@ -110,9 +115,9 @@
                     <div class="avatar-header">
                         <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
                     </div>
-                    <a href="account-officina.html" class="avatar-item">
+                    <a href="profilo-officina.html" class="avatar-item">
                         <i class="fa-solid fa-pen"></i>
-                        <span>Modifica account</span>
+                        <span>Modifica profilo</span>
                     </a>
                     <a href="#" class="avatar-item avatar-item-logout" onclick="logout()">
                         <i class="fa-solid fa-right-from-bracket"></i>
@@ -126,7 +131,7 @@
     <div class="breadcrumb">
         <a href="officina.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
         <span>›</span>
-        <span>Account Officina</span>
+        <span>Profilo Officina</span>
     </div>
 
     <div class="po-dashboard">
@@ -339,7 +344,7 @@
             <div class="po-section-body">
                 <div class="po-danger-row">
                     <div class="po-danger-text">
-                        <p>Elimina account officina</p>
+                        <p>Elimina profilo officina</p>
                         <p>Azione irreversibile. Tutti i dati e le prenotazioni verranno eliminati permanentemente.</p>
                     </div>
                     <button class="po-btn-danger" onclick="apriOverlay('po-elimina-overlay')">

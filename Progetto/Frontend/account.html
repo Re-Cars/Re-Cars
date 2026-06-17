@@ -30,13 +30,12 @@
         </div>
 
         <nav class="sidebar-nav">
-            <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
-            <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
-            <a href="impostazioni.html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+            <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+            <a href="veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
             <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
-            <a href="imp_infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+            <a href="info-domande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
             <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
-            <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+            <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
             <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
     </div>
@@ -62,7 +61,7 @@
                     <div class="avatar-header">
                         <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
                     </div>
-                    <a href="il_mio_account.html" class="avatar-item">
+                    <a href="account.html" class="avatar-item">
                         <i class="fa-solid fa-pen"></i>
                         <span>Modifica profilo</span>
                     </a>
@@ -78,8 +77,27 @@
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
         <span>›</span>
-        <span>Il mio account</span>
+        <span>I miei veicoli</span>
     </div>
+
+    <section class="home-intro">
+        <div class="home-intro-veicolo" id="home-intro-veicolo">
+            <i class="fa-solid fa-car" id="veicolo-tipo-icon"></i>
+            <span class="veicolo-nome" id="nome-veicolo-attivo">Caricamento...</span>
+            <span class="veicolo-sep">·</span>
+            <span class="veicolo-targa" id="targa-veicolo-attivo"></span>
+        </div>
+        <div class="veicolo-switcher" id="veicolo-switcher">
+            <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                <span id="switcher-label">
+                    <i class="fa-solid fa-warehouse"></i>
+                    <span id="veicoli-counter"></span>
+                </span>
+                <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+            </button>
+            <div class="switcher-dropdown" id="switcher-dropdown"></div>
+        </div>
+    </section>
 
     <section class="acc-dashboard">
 
