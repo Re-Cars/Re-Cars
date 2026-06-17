@@ -596,54 +596,321 @@
 }
 
  /* ----------------------------------------------------
-/                 RESPONSIVE                           /
+/                   ABBONAMENTI                        /
 -----------------------------------------------------*/
-@media (max-width: 768px) {
-    .acc-dashboard {
-        padding: 12px 16px 24px;
-    }
 
-    .acc-plan-options {
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 6px;
-    }
-
-    .acc-plan-opt {
-        padding: 8px 4px;
-    }
-
-    .acc-plan-opt-name {
-        font-size: 0.72rem;
-    }
-
-    .acc-plan-opt-price {
-        font-size: 0.62rem;
-    }
+@property --sw-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
 }
 
-@media (max-width: 480px) {
-    .acc-dashboard {
-        padding: 8px 12px 20px;
+@keyframes sw-trace {
+    to { --sw-angle: 360deg; }
+}
+
+@keyframes sw-pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.15); }
+    50%       { box-shadow: 0 0 10px 2px rgba(249, 115, 22, 0.2); }
+}
+
+@keyframes abb-fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.abb-dashboard {
+    padding: 16px 28px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 980px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.abb-piano-attivo {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 16px 20px;
+    border: 0.5px solid rgba(249, 115, 22, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: abb-fadeUp 0.3s ease forwards;
+}
+
+.abb-piano-left {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.abb-piano-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 500;
+}
+
+.abb-piano-nome {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+}
+
+.abb-piano-sub {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.abb-piano-stato {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(55, 169, 97, 0.1);
+    border: 0.5px solid rgba(55, 169, 97, 0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--success);
+}
+
+.abb-piano-stato-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: abb-dot-pulse 2s ease-in-out infinite;
+}
+
+@keyframes abb-dot-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+.abb-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.abb-piani-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.abb-piano-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    border: 0.5px solid rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: border-color 0.2s;
+    animation: abb-fadeUp 0.3s ease forwards;
+    opacity: 0;
+}
+
+.abb-piano-card:nth-child(1) { animation-delay: 0.05s; }
+.abb-piano-card:nth-child(2) { animation-delay: 0.1s; }
+.abb-piano-card:nth-child(3) { animation-delay: 0.15s; }
+
+.abb-piano-card:hover {
+    border-color: rgba(249, 115, 22, 0.2);
+}
+
+.abb-piano-card.popolare {
+    border-color: rgba(249, 115, 22, 0.3);
+}
+
+.abb-popolare-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(249, 115, 22, 0.12);
+    color: #f97316;
+    border: 0.5px solid rgba(249, 115, 22, 0.3);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.abb-piano-card-header {
+    padding: 20px 18px 14px;
+}
+
+.abb-piano-card-nome {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 6px;
+}
+
+.abb-piano-card-prezzo {
+    font-size: 26px;
+    font-weight: 700;
+    color: #f97316;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.abb-piano-card-prezzo span {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+}
+
+.abb-piano-card-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.abb-piano-features {
+    padding: 0 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    flex: 1;
+}
+
+.abb-feature {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+}
+
+.abb-feature i {
+    font-size: 11px;
+    width: 14px;
+    flex-shrink: 0;
+}
+
+.abb-feature.ok {
+    color: var(--muted);
+}
+
+.abb-feature.ok i {
+    color: var(--success);
+}
+
+.abb-feature.no {
+    color: rgba(160, 168, 184, 0.35);
+}
+
+.abb-feature.no i {
+    color: rgba(160, 168, 184, 0.3);
+}
+
+.abb-btn-wrap {
+    margin: 0 18px 18px;
+    border-radius: 22px;
+    padding: 1.5px;
+    border: 2px solid transparent;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s;
+    cursor: pointer;
+}
+
+.abb-btn-wrap.animato {
+    background:
+        linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+        conic-gradient(from var(--sw-angle), rgba(249,115,22,0.5) 0%, #f97316 25%, #ffb366 30%, #f97316 35%, rgba(249,115,22,0.5) 60%, rgba(249,115,22,0.5) 100%) border-box;
+    animation: sw-trace 5s linear infinite, sw-pulse-glow 2.5s ease-in-out infinite;
+}
+
+.abb-btn-wrap.animato:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.4));
+    animation: sw-trace 2s linear infinite, sw-pulse-glow 1.2s ease-in-out infinite;
+}
+
+.abb-btn-wrap.animato:active {
+    transform: scale(0.97);
+}
+
+.abb-btn-wrap.statico {
+    background:
+        linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+        linear-gradient(135deg, rgba(55, 169, 97, 0.6), rgba(55, 169, 97, 0.3)) border-box;
+}
+
+.abb-btn-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    background: none;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 18px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+}
+
+.abb-btn-inner.arancione {
+    color: #f97316;
+}
+
+.abb-btn-inner.verde {
+    color: var(--success);
+    cursor: default;
+}
+
+.abb-btn-wrap.animato:hover .abb-btn-inner.arancione {
+    color: #ea580c;
+}
+
+.abb-btn-inner i {
+    font-size: 13px;
+}
+
+.abb-stripe-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 12px 16px;
+    border: 0.5px solid rgba(255, 255, 255, 0.06);
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.abb-stripe-note i {
+    color: #f97316;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #f97316;
+    font-size: 1.1rem;
+    padding: 4px 8px;
+}
+
+@media (max-width: 768px) {
+    .abb-dashboard {
+        padding: 12px 16px 32px;
     }
 
-    .acc-field-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-
-    .acc-btn-pill,
-    .acc-btn-pill-danger {
-        align-self: stretch;
-        justify-content: center;
-    }
-
-    .acc-danger-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .acc-danger-row .acc-btn-pill-danger {
-        justify-content: center;
+    .abb-piani-grid {
+        grid-template-columns: 1fr;
     }
 }

@@ -102,9 +102,7 @@ function renderPrenotazioni() {
         const targa = v?.targa || '—';
         const nomeUtente = p.utente?.username || '—';
         const emailUtente = p.utente?.email || '';
-        const anno = ds?.dataimmatricolazione
-            ? new Date(ds.dataimmatricolazione).getFullYear()
-            : '—';
+        const anno = ds?.dataimmatricolazione ? new Date(ds.dataimmatricolazione).getFullYear() : '—';
         const tipo = dg?.tipo_veicolo || '—';
 
         const dataOra = new Date(p.dataprenotazione).toLocaleString('it-IT', {
@@ -194,9 +192,7 @@ function apriDettaglio(id) {
     const ds = v?.dati_specifici?.[0];
 
     const nomeVeicolo = v ? `${v.marca || ''} ${v.modello || ''}`.trim() : '—';
-    const anno = ds?.dataimmatricolazione
-        ? new Date(ds.dataimmatricolazione).getFullYear()
-        : '—';
+    const anno = ds?.dataimmatricolazione ? new Date(ds.dataimmatricolazione).getFullYear() : '—';
     const dataOra = new Date(p.dataprenotazione).toLocaleString('it-IT', {
         day: '2-digit', month: '2-digit', year: 'numeric',
         hour: '2-digit', minute: '2-digit',
@@ -208,6 +204,48 @@ function apriDettaglio(id) {
         annullata: 'Annullata',
         completata: 'Completata',
     };
+
+    const categoriaLabel = {
+        ordinario: 'Ordinario',
+        straordinario: 'Straordinario',
+        gestione: 'Gestione',
+        annotazioni: 'Annotazione',
+    };
+
+    const categoriaColore = {
+        ordinario: 'oc-badge-blue',
+        straordinario: 'oc-badge-red',
+        gestione: 'oc-badge-green',
+        annotazioni: 'oc-badge-orange',
+    };
+
+    const storico = v?.storico_intervento;
+    const storicoHtml = storico?.length ? `
+        <div class="oc-detail-section">
+            <div class="oc-detail-section-title">Storico interventi veicolo</div>
+            <div class="oc-storico-list">
+                ${storico.map((s, i) => `
+                    <div class="oc-storico-item">
+                        <div class="oc-storico-dot-wrap">
+                            <div class="oc-storico-dot"></div>
+                            ${i < storico.length - 1 ? '<div class="oc-storico-line"></div>' : ''}
+                        </div>
+                        <div class="oc-storico-content">
+                            <div class="oc-storico-nome">${s.nome}</div>
+                            <div class="oc-storico-sub">
+                                ${new Date(s.data).toLocaleDateString('it-IT')}
+                                ${s.mediante ? ' · ' + s.mediante : ''}
+                                ${s.costo ? ' · €' + Number(s.costo).toFixed(2) : ''}
+                            </div>
+                            <span class="oc-storico-badge ${categoriaColore[s.categoria] || ''}">
+                                ${categoriaLabel[s.categoria] || s.categoria}
+                            </span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    ` : '';
 
     document.getElementById('oc-detail-content').innerHTML = `
         <div class="oc-detail-section">
@@ -283,6 +321,8 @@ function apriDettaglio(id) {
                 </div>
             </div>
         </div>
+
+        ${storicoHtml}
     `;
 
     const azioniBtn = p.stato === 'in_attesa' ? `
@@ -335,6 +375,34 @@ async function aggiornaStato(id, stato, event) {
     } catch (err) {
         console.error('Errore aggiornamento stato:', err);
     }
+}
+
+ /* ----------------------------------------------------
+/              MENU E TEMA                             /
+-----------------------------------------------------*/
+function toggleMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('hamburger-overlay');
+    const hamburger = document.getElementById('hamburger9');
+    const header = document.querySelector('.header');
+    if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+        hamburger.classList.remove('open');
+        header.classList.remove('sidebar-is-open');
+    } else {
+        sidebar.classList.add('open');
+        overlay.classList.add('open');
+        hamburger.classList.add('open');
+        header.classList.add('sidebar-is-open');
+    }
+}
+
+function closeMenu() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('hamburger-overlay').classList.remove('open');
+    document.getElementById('hamburger9').classList.remove('open');
+    document.querySelector('.header').classList.remove('sidebar-is-open');
 }
 
  /* ----------------------------------------------------

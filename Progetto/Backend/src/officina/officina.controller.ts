@@ -126,4 +126,20 @@ export class OfficinaController {
     });
     return { message: 'Profilo eliminato' };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('agenda')
+  async agenda(
+    @Req() req: Request,
+    @Query('anno') anno: string,
+    @Query('mese') mese: string,
+  ) {
+    const officinaId = Number((req.user as any).sub);
+    const now = new Date();
+    return this.officinaService.agenda(
+      officinaId,
+      anno ? Number(anno) : now.getFullYear(),
+      mese ? Number(mese) : now.getMonth() + 1,
+    );
+  }
 }

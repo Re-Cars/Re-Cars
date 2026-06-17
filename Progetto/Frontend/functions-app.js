@@ -161,7 +161,7 @@ function renderDropdown() {
     aggiungi.innerHTML = `
         <div style="display:flex;justify-content:center;padding:2px 0">
             <div class="switcher-aggiungi-btn-wrap">
-                <button class="switcher-aggiungi-btn" onclick="location.href='cerca_aggiungi_veicolo.html'">
+                <button class="switcher-aggiungi-btn" onclick="location.href='cerca-veicolo.html'">
                     <div class="switcher-plus-circle"><i class="fa-solid fa-plus"></i></div>
                     Aggiungi veicolo
                 </button>
