@@ -338,7 +338,7 @@ export class OfficinaService {
     });
   }
 
-  async eliminaAccount(officinaId: number) {
+  async eliminaProfilo(officinaId: number) {
     await this.prisma.abbonamento.deleteMany({
       where: { id_officina: officinaId },
     });

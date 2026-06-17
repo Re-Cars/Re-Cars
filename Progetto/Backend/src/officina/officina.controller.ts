@@ -112,18 +112,18 @@ export class OfficinaController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('account')
-  async eliminaAccount(
+  @Delete('profilo')
+  async eliminaProfilo(
     @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
     const officinaId = Number((req.user as any).sub);
-    await this.officinaService.eliminaAccount(officinaId);
+    await this.officinaService.eliminaProfilo(officinaId);
     response.clearCookie('access_token', {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
     });
-    return { message: 'Account eliminato' };
+    return { message: 'Profilo eliminato' };
   }
 }

@@ -33,6 +33,13 @@
     font-size: 22px;
 }
 
+.avatar-dropdown.show {
+    display: block;
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+}
+
 .oc-office-name {
     font-size: 18px;
     font-weight: 600;
