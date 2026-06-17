@@ -162,6 +162,10 @@
     color: var(--muted);
 }
 
+.oc-count-pill-right {
+    margin-left: auto;
+}
+
 .oc-prenotazioni-list {
     display: flex;
     flex-direction: column;
@@ -357,6 +361,10 @@
     color: var(--muted);
 }
 
+ /* ----------------------------------------------------
+/                  OVERLAY DETTAGLIO                   /
+-----------------------------------------------------*/
+
 .oc-detail-overlay {
     position: fixed;
     inset: 0;
@@ -384,6 +392,12 @@
     border: 0.5px solid rgba(255, 255, 255, 0.1);
     transform: translateY(10px);
     transition: transform 0.2s;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.oc-detail-modal-wide {
+    width: 560px;
 }
 
 .oc-detail-overlay.open .oc-detail-modal {
@@ -400,6 +414,27 @@
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.oc-icon-brand {
+    color: #f97316;
+}
+
+.oc-detail-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color 0.15s;
+}
+
+.oc-detail-close:hover {
+    color: var(--error);
 }
 
 .oc-detail-row {
@@ -478,18 +513,223 @@
     color: var(--white) !important;
 }
 
+.oc-detail-section {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+}
+
+.oc-detail-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.oc-detail-section-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+}
+
+.oc-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+ /* ----------------------------------------------------
+/                  FILTRI PRENOTAZIONI                 /
+-----------------------------------------------------*/
+
+.oc-filters-wrapper {
+    padding: 0 28px 16px;
+}
+
+.oc-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 12px 16px;
+}
+
+.oc-filter-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-right: 4px;
+}
+
+.oc-filter-btn {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    font-family: inherit;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.oc-filter-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.oc-dot-attesa    { background: #fbbf24; }
+.oc-dot-confermata { background: var(--success); }
+.oc-dot-completata { background: var(--muted); }
+.oc-dot-annullata  { background: var(--error); }
+
+.oc-filter-btn.active-all {
+    background: rgba(249, 115, 22, 0.1);
+    color: #f97316;
+    border-color: rgba(249, 115, 22, 0.3);
+}
+
+.oc-filter-btn.active-in_attesa {
+    background: rgba(251, 191, 36, 0.1);
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.oc-filter-btn.active-confermata {
+    background: rgba(55, 169, 97, 0.1);
+    color: var(--success);
+    border-color: rgba(55, 169, 97, 0.3);
+}
+
+.oc-filter-btn.active-completata {
+    background: rgba(160, 168, 184, 0.1);
+    color: var(--muted);
+    border-color: rgba(160, 168, 184, 0.2);
+}
+
+.oc-filter-btn.active-annullata {
+    background: rgba(229, 57, 53, 0.1);
+    color: var(--error);
+    border-color: rgba(229, 57, 53, 0.3);
+}
+
+ /* ----------------------------------------------------
+/              CARD BOTTOM PRENOTAZIONE                /
+-----------------------------------------------------*/
+
+.oc-pren-card-bottom {
+    border-top: 0.5px solid rgba(255, 255, 255, 0.05);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: var(--card-bg);
+    border-radius: 0 0 14px 14px;
+}
+
+.oc-pren-card-bottom-item {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.oc-pren-card-bottom-item i {
+    font-size: 11px;
+    color: #f97316;
+}
+
+.oc-pren-card-bottom-item strong {
+    color: var(--white);
+    font-weight: 500;
+}
+
+ /* ----------------------------------------------------
+/                  THEME TOGGLE                        /
+-----------------------------------------------------*/
+
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #f97316;
+    font-size: 1.1rem;
+    padding: 4px 8px;
+}
+
+ /* ----------------------------------------------------
+/              CARD WRAP PRENOTAZIONI                  /
+-----------------------------------------------------*/
+
+.oc-pren-card-wrap {
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 0.5px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.oc-pren-card-wrap:hover {
+    border-color: rgba(249, 115, 22, 0.25);
+    transform: translateX(4px);
+}
+
+.oc-pren-card-wrap .oc-prenotazione-card {
+    border-radius: 0;
+    border: none;
+}
+
+.oc-pren-card-wrap .oc-prenotazione-card:hover {
+    transform: none;
+    border: none;
+}
+
+.oc-detail-row-full {
+    grid-column: 1 / -1;
+}
+
+ /* ----------------------------------------------------
+/                  RESPONSIVE                          /
+-----------------------------------------------------*/
+
 @media (max-width: 768px) {
     .oc-stats-grid {
         grid-template-columns: 1fr;
         padding: 0 16px;
     }
+
     .oc-prenotazioni-list {
         padding: 0 16px 24px;
     }
+
     .oc-section-header {
         padding: 0 16px;
     }
+
     .oc-intro {
         padding: 16px;
+    }
+
+    .oc-filters-wrapper {
+        padding: 0 16px 16px;
+    }
+
+    .oc-detail-grid {
+        grid-template-columns: 1fr;
     }
 }

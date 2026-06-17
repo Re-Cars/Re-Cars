@@ -170,4 +170,30 @@ export class OfficinaService {
       data: { stato: stato as any },
     });
   }
+
+  async tutteLePrenotazioni(officinaId: number, stato?: string) {
+    return this.prisma.prenotazione.findMany({
+      where: {
+        id_officina: officinaId,
+        ...(stato ? { stato: stato as any } : {}),
+      },
+      include: {
+        utente: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            cellulare: true,
+            veicolo: {
+              include: {
+                dati_generici: true,
+                dati_specifici: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { dataprenotazione: 'desc' },
+    });
+  }
 }

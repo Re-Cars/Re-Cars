@@ -593,6 +593,9 @@ async function getUsername() {
     const utenteString = localStorage.getItem('yd_utente_loggato');
     if (!utenteString) return;
     const utente = JSON.parse(utenteString);
+
+    if (!utente.tipo) return utente.nome || utente.ragione_sociale || null;
+
     const idUtente = utente.id;
     try {
         const response = await fetch(`http://localhost:3000/auth/utente/${idUtente}`, {
