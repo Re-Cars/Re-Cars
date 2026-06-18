@@ -43,23 +43,25 @@ body {
 /                      LIGHT MODE                      /
 -----------------------------------------------------*/
 :root {
-    --bg: #f4f4f4;
-    --text: #191919;
+    --bg: #f0f2f8;
+    --text: #1a1a3e;
     --surface: #ffffff;
-    --surface-2: #ededed;
+    --surface-2: #f0f2f8;
     --border: rgba(249, 115, 22, 0.2);
-    --border-table: #d0daea;
-    --text-muted: #141445;
-    --muted: #7a8394;
-    --input-bg: #e8e8e8;
+    --border-table: #c8d0e0;
+    --border-subtle: rgba(20, 20, 69, 0.08);
+    --text-muted: #1a1a3e;
+    --muted: #6b7280;
+    --input-bg: #f5f5fb;
     --card-bg: #141445;
+    --card-border: rgba(20, 20, 69, 0.1);
     --header-bg: #141445;
-    --sidebar-bg: #f5f5f7;
+    --sidebar-bg: #f0f2f8;
     --dropdown-bg: #ffffff;
     --avatar-dropdown-bg: #ffffff;
-    --success: #37a961;
-    --error: #e53935;
-    --white: #fff;
+    --success: #16a34a;
+    --error: #dc2626;
+    --white: #1a1a3e;
 
     --font-xs:   0.72rem;
     --font-sm:   0.8rem;
@@ -79,17 +81,19 @@ body {
     --surface-2: #22253a;
     --border: rgba(249, 115, 22, 0.25);
     --border-table: #1e4d72;
+    --border-subtle: rgba(255, 255, 255, 0.06);
     --text-muted: #a0a8b8;
     --muted: #a0a8b8;
     --input-bg: #2a2d3e;
     --card-bg: #141445;
+    --card-border: rgba(255, 255, 255, 0.06);
     --header-bg: #141445;
     --sidebar-bg: #141445;
     --dropdown-bg: #141445;
     --avatar-dropdown-bg: #141445;
     --success: #37a961;
     --error: #e53935;
-    --white: #fff;
+    --white: #ffffff;
 }
 
 [data-theme="dark"] body {
@@ -100,41 +104,41 @@ body {
  /* ----------------------------------------------------
 /                    TERMINI E PRIVACY                 /
 -----------------------------------------------------*/
-.highlight{
-background:#d6d7d9;
-padding:15px;
-border-left:4px solid #f97316;
-margin:20px 0;
+.highlight {
+    background: #d6d7d9;
+    padding: 15px;
+    border-left: 4px solid #f97316;
+    margin: 20px 0;
 }
 
-.container{
-max-width:900px;
-margin:auto;
-background:white;
-padding:40px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.termini_e_privacy h1{
-color:#1e2a38;
-border-bottom:3px solid #f97316;
-padding-bottom:10px;
+.termini_e_privacy h1 {
+    color: #1e2a38;
+    border-bottom: 3px solid #f97316;
+    padding-bottom: 10px;
 }
 
-.termini_e_privacy h2{
-margin-top:40px;
-color:#f97316;
+.termini_e_privacy h2 {
+    margin-top: 40px;
+    color: #f97316;
 }
 
-.termini_e_privacy h3{
-margin-top:20px;
-color:#7f7e7e;
+.termini_e_privacy h3 {
+    margin-top: 20px;
+    color: #7f7e7e;
 }
 
-.termini_e_privacy p{
-margin:10px 0;
+.termini_e_privacy p {
+    margin: 10px 0;
 }
 
-ul{
-margin-left:20px;
+ul {
+    margin-left: 20px;
 }

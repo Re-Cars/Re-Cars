@@ -6,7 +6,7 @@ const API = 'http://localhost:3000';
 let utente = null;
 
  /* ----------------------------------------------------
-/                  INIT                                /
+/                        INIT                          /
 -----------------------------------------------------*/
 document.addEventListener('DOMContentLoaded', async () => {
     utente = JSON.parse(localStorage.getItem('yd_utente_loggato'));
@@ -14,29 +14,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('avatar-dropdown-name').textContent = utente.username || utente.ragione_sociale;
 
+    initTiltCards();
     await caricaPianoAttivo();
-    aggiornaBtnPianoAttivo();
+    aggiornaPiani();
 });
 
  /* ----------------------------------------------------
-/              CARICA PIANO ATTIVO                     /
+/                   CARICA PIANO ATTIVO                /
 -----------------------------------------------------*/
 async function caricaPianoAttivo() {
     try {
-        const res = await fetch(`${API}/auth/utente/${utente.id}`, {
-            credentials: 'include',
-        });
+        const res = await fetch(`${API}/auth/utente/${utente.id}`, { credentials: 'include' });
         if (!res.ok) return;
         const data = await res.json();
 
         const abbonamento = data.abbonamento?.[0];
         const piano = abbonamento?.piano || 'base';
 
-        const nomiPiani = {
-            base: 'Base',
-            premium: 'Premium',
-            pro: 'Pro',
-        };
+        const nomiPiani = { base: 'Base', premium: 'Premium', pro: 'Pro' };
 
         document.getElementById('abb-piano-nome').textContent = nomiPiani[piano] || piano;
         document.getElementById('abb-piano-sub').textContent = abbonamento?.data_fine
@@ -46,7 +41,7 @@ async function caricaPianoAttivo() {
         utente.piano = piano;
         localStorage.setItem('yd_utente_loggato', JSON.stringify({ ...utente, piano }));
 
-        aggiornaBtnPianoAttivo();
+        aggiornaPiani();
 
     } catch (err) {
         console.error('Errore caricamento piano:', err);
@@ -56,56 +51,73 @@ async function caricaPianoAttivo() {
 }
 
  /* ----------------------------------------------------
-/           AGGIORNA BOTTONE PIANO ATTIVO              /
+/         AGGIORNA CARD + BTN PIANO ATTIVO             /
 -----------------------------------------------------*/
-function aggiornaBtnPianoAttivo() {
+function aggiornaPiani() {
     const piano = utente.piano || 'base';
 
     ['base', 'premium', 'pro'].forEach(p => {
         const card = document.getElementById(`card-${p}`);
         const btn = document.getElementById(`btn-${p}`);
-        if (!card) return;
+        if (!card || !btn) return;
 
-        card.classList.remove('spento');
-        card.style.borderColor = '';
+        // reset stato
+        card.classList.remove('attivo');
+        const oldBadge = card.querySelector('.abb-attivo-badge');
+        if (oldBadge) oldBadge.remove();
 
         if (p === piano) {
-            card.style.borderColor = 'rgba(55, 169, 97, 0.3)';
-            if (btn) {
-                btn.className = 'abb-btn-wrap statico';
-                btn.onclick = null;
-                btn.querySelector('.abb-btn-inner').className = 'abb-btn-inner verde';
-                btn.querySelector('.abb-btn-inner').innerHTML = '<i class="fa-solid fa-check"></i> Piano attuale';
-            }
+            // PIANO ATTUALE — anello verde + badge "Attivo" + bottone-stato (non cliccabile)
+            card.classList.add('attivo');
+            const badge = document.createElement('span');
+            badge.className = 'abb-attivo-badge';
+            badge.innerHTML = '<span class="dot"></span> Attivo';
+            card.appendChild(badge);
+
+            btn.className = 'abb-btn status';
+            btn.onclick = null;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Piano attuale';
 
         } else if (p === 'base') {
-            card.classList.add('spento');
-            if (btn) {
-                btn.className = 'abb-btn-wrap statico-ghost';
-                btn.style.cursor = 'pointer';
-                btn.onclick = () => disdiciAbbonamento();
-                btn.querySelector('.abb-btn-inner').className = 'abb-btn-inner muted';
-                btn.querySelector('.abb-btn-inner').innerHTML = '<i class="fa-solid fa-rotate-left"></i> Passa al Base';
-                btn.querySelector('.abb-btn-inner').style.pointerEvents = 'none';
-            }
+            // DOWNGRADE / DISDETTA
+            btn.className = 'abb-btn ghost';
+            btn.onclick = () => disdiciAbbonamento();
+            btn.innerHTML = '<i class="fa-solid fa-rotate-left"></i> Passa al Base';
 
         } else {
-            if (btn) {
-                btn.className = 'abb-btn-wrap animato';
-                btn.querySelector('.abb-btn-inner').className = 'abb-btn-inner arancione';
-                btn.querySelector('.abb-btn-inner').innerHTML = '<i class="fa-solid fa-credit-card"></i> Abbonati ora';
-                btn.onclick = () => avviaCheckout(p);
-            }
+            // ABBONAMENTO
+            btn.className = 'abb-btn cta';
+            btn.onclick = () => avviaCheckout(p);
+            btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> Abbonati ora';
         }
     });
 }
 
+ /* ----------------------------------------------------
+/              EFFTTO PASSAGGIO DEL MOUSE              /
+-----------------------------------------------------*/
+function initTiltCards() {
+    document.querySelectorAll('.abb-piano-card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width;
+            const py = (e.clientY - r.top) / r.height;
+            const rx = (0.5 - py) * 6;
+            const ry = (px - 0.5) * 6;
+            card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-10px) scale(1.015)`;
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = '';
+        });
+    });
+}
+
+ /* ----------------------------------------------------
+/                   DISDICI ABBONAMENTO                /
+-----------------------------------------------------*/
 async function disdiciAbbonamento() {
     try {
-        const res = await fetch(`${API}/abbonamento/disdici`, {
-            method: 'POST',
-            credentials: 'include',
-        });
+        const res = await fetch(`${API}/abbonamento/disdici`, { method: 'POST', credentials: 'include' });
         if (!res.ok) return;
         utente.piano = 'base';
         localStorage.setItem('yd_utente_loggato', JSON.stringify(utente));
@@ -116,7 +128,7 @@ async function disdiciAbbonamento() {
 }
 
  /* ----------------------------------------------------
-/              AVVIA CHECKOUT STRIPE                   /
+/                   CHECKOUT STRIPE                    /
 -----------------------------------------------------*/
 async function avviaCheckout(piano) {
     try {

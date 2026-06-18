@@ -19,7 +19,7 @@
 
 /* mini calendario */
 .ag-mini-cal {
-    background: var(--card-bg);
+    background: var(--surface);
     border-radius: 14px;
     padding: 16px;
     border: 0.5px solid rgba(255, 255, 255, 0.06);
@@ -100,7 +100,7 @@
 
 /* slot oggi */
 .ag-slots-section {
-    background: var(--card-bg);
+    background: var(--surface);
     border-radius: 14px;
     padding: 14px;
     border: 0.5px solid rgba(255, 255, 255, 0.06);
@@ -163,7 +163,7 @@
 
 /* legenda */
 .ag-legenda {
-    background: var(--card-bg);
+    background: var(--surface);
     border-radius: 14px;
     padding: 14px;
     border: 0.5px solid rgba(255, 255, 255, 0.06);
@@ -196,7 +196,7 @@
 
 /* main area */
 .ag-main {
-    background: var(--card-bg);
+    background: var(--surface);
     border-radius: 14px;
     border: 0.5px solid rgba(255, 255, 255, 0.06);
     overflow: hidden;
@@ -240,7 +240,7 @@
 }
 
 .ag-view-btn.active {
-    background: var(--card-bg);
+    background: var(--surface);
     color: var(--white);
 }
 
@@ -482,7 +482,7 @@
 }
 
 .ag-detail-modal {
-    background: var(--card-bg);
+    background: var(--surface);
     border-radius: 14px;
     padding: 24px;
     width: 420px;

@@ -34,13 +34,21 @@ export class StripeController {
 
     const baseUrl = 'http://127.0.0.1:5500/Progetto/Frontend';
 
+    const successUrl = tipo === 'officina'
+      ? `${baseUrl}/pagamento-officina.html?session_id={CHECKOUT_SESSION_ID}`
+      : `${baseUrl}/pagamento.html?session_id={CHECKOUT_SESSION_ID}`;
+
+    const cancelUrl = tipo === 'officina'
+      ? `${baseUrl}/abbonamenti-officina.html`
+      : `${baseUrl}/abbonamenti.html`;
+
     const session = await this.stripeService.creaCheckoutSession({
       piano: body.piano,
       tipo,
       id,
       email,
-      successUrl: `${baseUrl}/pagamento.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${baseUrl}/abbonamenti.html`,
+      successUrl,
+      cancelUrl,
     });
 
     return { url: session.url };

@@ -281,31 +281,23 @@ async function caricaInfoVeicolo() {
         return;
     }
 
-
     try {
         const response = await fetch(`http://localhost:3000/veicolo/${veicoloAttivo.id}`, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials : 'include'
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
         });
-
-        console.log('Status risposta:', response.status);
 
         if (response.status === 401) {
             alert('Sessione scaduta, effettua di nuovo il login');
-            logout(); 
+            logout();
             return;
         }
-
         if (!response.ok) {
             console.error('Risposta non ok:', response.status);
             return;
         }
 
         const v = await response.json();
-        console.log('Veicolo ricevuto:', v);
-
         const dg = v.dati_generici[0] || {};
         const ds = v.dati_specifici[0] || {};
 
@@ -313,78 +305,78 @@ async function caricaInfoVeicolo() {
         const isMoto = (dg.tipo_veicolo || '').toLowerCase() === 'moto';
         const iconClass = isMoto ? 'fa-solid fa-motorcycle' : 'fa-solid fa-car';
 
-        const heroIcon = document.getElementById('iv-hero-icon');
-        const sectionIcon = document.getElementById('iv-section-icon');
-        const miniTipoIcon = document.getElementById('iv-mini-tipo-icon');
-        const heroName = document.getElementById('iv-hero-name');
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        const setIcon = (id) => { const el = document.getElementById(id); if (el) el.className = iconClass; };
 
-        if (heroIcon) heroIcon.className = iconClass;
-        if (sectionIcon) sectionIcon.className = iconClass;
-        if (miniTipoIcon) miniTipoIcon.className = iconClass;
-        if (heroName) heroName.textContent = nomeVeicolo || 'Veicolo Attivo';
+        setIcon('iv-hero-icon');
+        setIcon('iv-section-icon');
+        setIcon('iv-mini-tipo-icon');
 
-        const nomeVeicoloEl = document.getElementById('nome-veicolo-attivo');
-        if (nomeVeicoloEl) nomeVeicoloEl.textContent = nomeVeicolo || 'Veicolo Attivo';
+        set('iv-hero-name', nomeVeicolo || 'Veicolo Attivo');
+        set('nome-veicolo-attivo', nomeVeicolo || 'Veicolo Attivo');
+        set('iv-targa', v.targa || '-');
+        set('iv-tipo', dg.tipo_veicolo || '-');
+        set('iv-anno', ds.dataimmatricolazione ? new Date(ds.dataimmatricolazione).getFullYear() : '-');
 
-        const tipoEl = document.getElementById('iv-tipo');
-        const marcaEl = document.getElementById('iv-marca');
-        const modelloEl = document.getElementById('iv-modello');
-        const annoEl = document.getElementById('iv-anno');
-        const alimentazioneEl = document.getElementById('iv-alimentazione');
-        const cilindEl = document.getElementById('iv-cilindrata');
-        const cavalliEl = document.getElementById('iv-cavalli');
-        const targaEl = document.getElementById('iv-targa');
+        set('iv-alimentazione', dg.alimentazione || '-');
+        set('iv-cilindrata', dg.cilindrata ? `${dg.cilindrata} cc` : '-');
+        set('iv-cavalli', dg.cavalli ? `${dg.cavalli} CV` : '-');
+        set('iv-marca', v.marca || '-');
 
-        if (tipoEl) tipoEl.textContent = dg.tipo_veicolo || '-';
-        if (marcaEl) marcaEl.textContent = v.marca || '-';
-        if (modelloEl) modelloEl.textContent = v.modello || '-';
-        if (annoEl) annoEl.textContent = ds.dataimmatricolazione
-            ? new Date(ds.dataimmatricolazione).getFullYear() : '-';
-        if (alimentazioneEl) alimentazioneEl.textContent = dg.alimentazione || '-';
-        if (cilindEl) cilindEl.textContent = dg.cilindrata ? `${dg.cilindrata} cc` : '-';
-        if (cavalliEl) cavalliEl.textContent = dg.cavalli ? `${dg.cavalli} CV` : '-';
-        if (targaEl) targaEl.textContent = v.targa || '-';
-
-        const bollDateEl = document.getElementById('iv-bollo-date');
-        const bolloBadge = document.getElementById('iv-bollo-stato');
+        const bolloDateEl = document.getElementById('iv-bollo-date');
         if (ds.datascadenzabollo) {
             const dataBollo = new Date(ds.datascadenzabollo).toLocaleDateString('it-IT');
-            if (bollDateEl) bollDateEl.textContent = `scade il ${dataBollo}`;
-            if (bolloBadge) {
-                bolloBadge.textContent = ds.isbolloattivo ? 'Attivo' : 'Scaduto';
-                bolloBadge.className = `iv-badge ${ds.isbolloattivo ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
-            }
+            if (bolloDateEl) bolloDateEl.textContent = `scade il ${dataBollo}`;
+            setStatoMaint('iv-bollo-pill', 'iv-bollo-stato', ds.isbolloattivo, 'Attivo', 'Scaduto');
         } else {
-            if (bollDateEl) bollDateEl.textContent = 'Dato non disponibile';
-            if (bolloBadge) {
-                bolloBadge.textContent = 'Scaduto';
-                bolloBadge.className = 'iv-badge iv-badge-scaduta';
-            }
+            if (bolloDateEl) bolloDateEl.textContent = 'Dato non disponibile';
+            setStatoMaint('iv-bollo-pill', 'iv-bollo-stato', false, 'Attivo', 'Scaduto');
         }
 
+        // mantenimento — ASSICURAZIONE
         const rcaDateEl = document.getElementById('iv-assicurazione-date');
-        const rcaBadge = document.getElementById('iv-assicurazione-stato');
-        const compagniaEl = document.getElementById('iv-assicurazione-compagnia');
+        set('iv-assicurazione-compagnia', ds.nomeassicurazione || '-');
         if (ds.datascadenzarca) {
             const dataRca = new Date(ds.datascadenzarca).toLocaleDateString('it-IT');
             if (rcaDateEl) rcaDateEl.textContent = `scade il ${dataRca}`;
-            if (compagniaEl) compagniaEl.textContent = ds.nomeassicurazione || '-';
-            if (rcaBadge) {
-                rcaBadge.textContent = ds.isinsured ? 'Attiva' : 'Scaduta';
-                rcaBadge.className = `iv-badge ${ds.isinsured ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
-            }
+            setStatoMaint('iv-assicurazione-pill', 'iv-assicurazione-stato', ds.isinsured, 'Attiva', 'Scaduta');
         } else {
             if (rcaDateEl) rcaDateEl.textContent = 'Dato non disponibile';
-            if (compagniaEl) compagniaEl.textContent = ds.nomeassicurazione || '-';
-            if (rcaBadge) {
-                rcaBadge.textContent = 'Scaduta';
-                rcaBadge.className = 'iv-badge iv-badge-scaduta';
-            }
+            setStatoMaint('iv-assicurazione-pill', 'iv-assicurazione-stato', false, 'Attiva', 'Scaduta');
         }
+
+        initInfoVeicoloTilt();
 
     } catch (err) {
         console.error('Errore nel caricamento info veicolo', err);
     }
+}
+
+/* helper: stato card mantenimento (bordo + icona + badge) */
+function setStatoMaint(pillId, badgeId, attivo, labelOk, labelKo) {
+    const stato = attivo ? 'attiva' : 'scaduta';
+    const pill = document.getElementById(pillId);
+    const badge = document.getElementById(badgeId);
+    if (pill) pill.className = 'iv-maint-pill stato-' + stato;
+    if (badge) {
+        badge.className = 'iv-badge iv-badge-' + stato;
+        badge.innerHTML = `<span class="iv-badge-dot"></span> ${attivo ? labelOk : labelKo}`;
+    }
+}
+
+/* helper: tilt 3D delle card info-veicolo */
+function initInfoVeicoloTilt() {
+    document.querySelectorAll('.iv-dashboard .iv-section-card').forEach(card => {
+        if (card.dataset.tiltInit) return;
+        card.dataset.tiltInit = '1';
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width;
+            const py = (e.clientY - r.top) / r.height;
+            card.style.transform = `perspective(1200px) rotateX(${(0.5 - py) * 4}deg) rotateY(${(px - 0.5) * 4}deg) translateY(-6px)`;
+        });
+        card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+    });
 }
 
  /* ---------------------------------------------------

@@ -81,6 +81,7 @@ export class UtenteService {
                 username: true,
                 email: true,
                 cellulare: true,
+                avatar: true,
                 abbonamento: {
                     where: { stato: 'attivo' },
                     orderBy: { data_inizio: 'desc' },
@@ -90,26 +91,27 @@ export class UtenteService {
         });
     }
 
-
     async aggiornaUtente(id: number, data: UpdateUtenteDto) {
-    const campiDaAggiornare: any = {};
+        const campiDaAggiornare: any = {};
 
-    if (data.username) campiDaAggiornare.username = data.username;
-    if (data.email) campiDaAggiornare.email = data.email;
-    if (data.cellulare) campiDaAggiornare.cellulare = data.cellulare;
-    if (data.password) {
-      campiDaAggiornare.password = await bcrypt.hash(data.password, 10);
+        if (data.username) campiDaAggiornare.username = data.username;
+        if (data.email) campiDaAggiornare.email = data.email;
+        if (data.cellulare) campiDaAggiornare.cellulare = data.cellulare;
+        if (data.avatar) campiDaAggiornare.avatar = data.avatar;
+        if (data.password) {
+            campiDaAggiornare.password = await bcrypt.hash(data.password, 10);
+        }
+
+        return this.prisma.utente.update({
+            where: { id },
+            data: campiDaAggiornare,
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                cellulare: true,
+                avatar: true,
+            },
+        });
     }
-
-    return this.prisma.utente.update({
-      where: { id },
-      data: campiDaAggiornare,
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        cellulare: true,
-      },
-    });
-  }
-} 
+}
