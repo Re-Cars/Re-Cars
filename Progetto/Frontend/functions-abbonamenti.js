@@ -43,8 +43,10 @@ async function caricaPianoAttivo() {
             ? `Rinnovo il ${new Date(abbonamento.data_fine).toLocaleDateString('it-IT')}`
             : piano === 'base' ? 'Piano gratuito · Nessun rinnovo' : 'Rinnovo automatico mensile';
 
-        localStorage.setItem('yd_utente_loggato', JSON.stringify({ ...utente, piano }));
         utente.piano = piano;
+        localStorage.setItem('yd_utente_loggato', JSON.stringify({ ...utente, piano }));
+
+        aggiornaBtnPianoAttivo();
 
     } catch (err) {
         console.error('Errore caricamento piano:', err);
@@ -60,23 +62,57 @@ function aggiornaBtnPianoAttivo() {
     const piano = utente.piano || 'base';
 
     ['base', 'premium', 'pro'].forEach(p => {
-        const btn = document.getElementById(`btn-${p}`);
         const card = document.getElementById(`card-${p}`);
-        if (!btn) return;
+        const btn = document.getElementById(`btn-${p}`);
+        if (!card) return;
+
+        card.classList.remove('spento');
+        card.style.borderColor = '';
 
         if (p === piano) {
-            btn.className = 'abb-btn-wrap statico';
-            btn.onclick = null;
-            btn.querySelector('.abb-btn-inner').className = 'abb-btn-inner verde';
-            btn.querySelector('.abb-btn-inner').innerHTML = '<i class="fa-solid fa-check"></i> Piano attuale';
             card.style.borderColor = 'rgba(55, 169, 97, 0.3)';
+            if (btn) {
+                btn.className = 'abb-btn-wrap statico';
+                btn.onclick = null;
+                btn.querySelector('.abb-btn-inner').className = 'abb-btn-inner verde';
+                btn.querySelector('.abb-btn-inner').innerHTML = '<i class="fa-solid fa-check"></i> Piano attuale';
+            }
+
+        } else if (p === 'base') {
+            card.classList.add('spento');
+            if (btn) {
+                btn.className = 'abb-btn-wrap statico-ghost';
+                btn.style.cursor = 'pointer';
+                btn.onclick = () => disdiciAbbonamento();
+                btn.querySelector('.abb-btn-inner').className = 'abb-btn-inner muted';
+                btn.querySelector('.abb-btn-inner').innerHTML = '<i class="fa-solid fa-rotate-left"></i> Passa al Base';
+                btn.querySelector('.abb-btn-inner').style.pointerEvents = 'none';
+            }
+
         } else {
-            btn.className = 'abb-btn-wrap animato';
-            btn.querySelector('.abb-btn-inner').className = 'abb-btn-inner arancione';
-            btn.querySelector('.abb-btn-inner').innerHTML = '<i class="fa-solid fa-credit-card"></i> Abbonati ora';
-            btn.onclick = () => avviaCheckout(p);
+            if (btn) {
+                btn.className = 'abb-btn-wrap animato';
+                btn.querySelector('.abb-btn-inner').className = 'abb-btn-inner arancione';
+                btn.querySelector('.abb-btn-inner').innerHTML = '<i class="fa-solid fa-credit-card"></i> Abbonati ora';
+                btn.onclick = () => avviaCheckout(p);
+            }
         }
     });
+}
+
+async function disdiciAbbonamento() {
+    try {
+        const res = await fetch(`${API}/abbonamento/disdici`, {
+            method: 'POST',
+            credentials: 'include',
+        });
+        if (!res.ok) return;
+        utente.piano = 'base';
+        localStorage.setItem('yd_utente_loggato', JSON.stringify(utente));
+        await caricaPianoAttivo();
+    } catch (err) {
+        console.error('Errore disdetta:', err);
+    }
 }
 
  /* ----------------------------------------------------

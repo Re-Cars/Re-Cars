@@ -1,18 +1,17 @@
  /* ----------------------------------------------------
 /             IL MIO ACCOUNT — caricamento dati        /
 -----------------------------------------------------*/
+const API = 'http://localhost:3000';
 let accUtenteCorrente = null;
 
 async function caricaDatiAccount() {
     const utenteString = localStorage.getItem('yd_utente_loggato');
     if (!utenteString) return;
     const utente = JSON.parse(utenteString);
-    const idUtente = utente.id;
 
     try {
-        const response = await fetch(`http://localhost:3000/auth/utente/${idUtente}`, {
+        const response = await fetch(`${API}/auth/utente/${utente.id}`, {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
         });
 
@@ -52,7 +51,7 @@ async function caricaDatiAccount() {
             memberSince.textContent = `Membro da ${mesi[d.getMonth()]} ${d.getFullYear()}`;
         }
 
-        renderPianoAttivo(data.piano || 'base');
+        caricaPianoAccount(data);
 
     } catch (err) {
         console.error('Errore nel caricamento dati account', err);
@@ -62,89 +61,35 @@ async function caricaDatiAccount() {
 document.addEventListener('DOMContentLoaded', caricaDatiAccount);
 
  /* ----------------------------------------------------
-/             GESTIONE ABBONAMENTO                      /
+/             PIANO ABBONAMENTO                        /
 -----------------------------------------------------*/
-function renderPianoAttivo(piano) {
-    const nomi = { base: 'Piano Base', premium: 'Piano Premium', pro: 'Piano Pro' };
-    const prezzi = { base: 'Gratis', premium: '4,99€/mese', pro: '9,99€/mese' };
-    const badgeLabel = { base: 'Base', premium: 'Premium', pro: 'Pro' };
-    const badgeIcon = { base: 'fa-circle-check', premium: 'fa-crown', pro: 'fa-crown' };
+function caricaPianoAccount(data) {
+    const abbonamento = data.abbonamento?.[0];
+    const piano = abbonamento?.piano || 'base';
 
-    const nomeEl = document.getElementById('acc-plan-nome');
-    const subEl = document.getElementById('acc-plan-sub');
-    const badgeEl = document.getElementById('acc-plan-badge');
-    const disdiciBtn = document.getElementById('acc-btn-disdici');
+    const nomiPiani = {
+        base: 'Base',
+        premium: 'Premium',
+        pro: 'Pro',
+    };
 
-    if (nomeEl) nomeEl.textContent = nomi[piano] || 'Piano Base';
-    if (subEl) subEl.textContent = piano === 'base' ? 'Nessun rinnovo programmato' : `Rinnovo automatico mensile (${prezzi[piano]})`;
+    const nomeEl = document.getElementById('acc-piano-nome');
+    const subEl = document.getElementById('acc-piano-sub');
 
-    if (badgeEl) {
-        badgeEl.innerHTML = `
-            <div class="acc-plan-pill-static"><i class="fa-solid ${piano === 'base' ? 'fa-circle-check' : 'fa-circle'}"></i> Attivo</div>
-            <div class="acc-plan-pill-animated"><i class="fa-solid ${badgeIcon[piano]}"></i> ${badgeLabel[piano]}</div>
-        `;
-    }
-
-    if (disdiciBtn) disdiciBtn.style.display = piano === 'base' ? 'none' : 'inline-flex';
-
-    document.querySelectorAll('.acc-plan-opt').forEach(opt => {
-        opt.classList.toggle('attivo', opt.dataset.plan === piano);
-    });
-
-    pianoSelezionato = piano;
+    if (nomeEl) nomeEl.textContent = nomiPiani[piano] || piano;
+    if (subEl) subEl.textContent = abbonamento?.data_fine
+        ? `Rinnovo il ${new Date(abbonamento.data_fine).toLocaleDateString('it-IT')}`
+        : piano === 'base' ? 'Piano gratuito · Nessun rinnovo' : 'Rinnovo automatico mensile';
 }
 
-document.addEventListener('click', (e) => {
-    const opt = e.target.closest('.acc-plan-opt');
-    if (!opt) return;
-    document.querySelectorAll('.acc-plan-opt').forEach(o => o.classList.remove('attivo'));
-    opt.classList.add('attivo');
-    pianoSelezionato = opt.dataset.plan;
-});
-
-function cambiaPiano() {
-    if (!pianoSelezionato) return;
-    renderPianoAttivo(pianoSelezionato);
-}
-    /*const utenteString = localStorage.getItem('yd_utente_loggato');
-    if (!utenteString) return;
-    const utente = JSON.parse(utenteString);
-
-    try {
-        const response = await fetch(`http://localhost:3000/auth/utente/${utente.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ piano: pianoSelezionato })
-        });
-
-        if (!response.ok) {
-            alert('Errore durante il cambio piano.');
-            return;
-        }
-
-        renderPianoAttivo(pianoSelezionato);
-    } catch (err) {
-        alert('Errore di connessione.');
-    }
-}
-*/
  /* ----------------------------------------------------
-/        CONFERMA DISDICI / ELIMINA ACCOUNT             /
+/        CONFERMA ELIMINA ACCOUNT                      /
 -----------------------------------------------------*/
 function mostraConfermaAccount(tipo) {
     const esistente = document.getElementById('conferma-account-overlay');
     if (esistente) esistente.remove();
 
     const config = {
-        disdici: {
-            icon: 'fa-ban',
-            title: 'Disdici abbonamento',
-            sub: `Sei sicuro di voler disdire il tuo ${pianoSelezionato === 'pro' ? 'piano Pro' : 'piano Premium'}? Perderai l'accesso alle funzionalità premium.`,
-            btnLabel: 'Disdici',
-            btnIcon: 'fa-ban',
-            action: 'confermaDisdici'
-        },
         elimina: {
             icon: 'fa-triangle-exclamation',
             title: 'Elimina account',
@@ -177,31 +122,6 @@ function mostraConfermaAccount(tipo) {
     document.body.appendChild(overlay);
 }
 
-async function confermaDisdici() {
-    document.getElementById('conferma-account-overlay')?.remove();
-    const utenteString = localStorage.getItem('yd_utente_loggato');
-    if (!utenteString) return;
-    const utente = JSON.parse(utenteString);
-
-    try {
-        const response = await fetch(`http://localhost:3000/auth/utente/${utente.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ piano: 'base' })
-        });
-
-        if (!response.ok) {
-            alert('Errore durante la disdetta.');
-            return;
-        }
-
-        renderPianoAttivo('base');
-    } catch (err) {
-        alert('Errore di connessione.');
-    }
-}
-
 async function confermaEliminaAccount() {
     document.getElementById('conferma-account-overlay')?.remove();
     const utenteString = localStorage.getItem('yd_utente_loggato');
@@ -209,7 +129,7 @@ async function confermaEliminaAccount() {
     const utente = JSON.parse(utenteString);
 
     try {
-        const response = await fetch(`http://localhost:3000/auth/utente/${utente.id}`, {
+        const response = await fetch(`${API}/auth/utente/${utente.id}`, {
             method: 'DELETE',
             credentials: 'include'
         });
@@ -227,17 +147,17 @@ async function confermaEliminaAccount() {
 }
 
  /* ----------------------------------------------------
-/        MODIFICA CAMPO (username, email, telefono, password) /
+/ MODIFICA CAMPO (username, email, telefono, password) /
 -----------------------------------------------------*/
 function apriModifica(campo) {
     const esistente = document.getElementById('modifica-campo-overlay');
     if (esistente) esistente.remove();
 
     const config = {
-        username: { icon: 'fa-user', title: 'Cambia username', placeholder: 'Nuovo username', type: 'text', current: accUtenteCorrente?.username || '' },
-        email: { icon: 'fa-envelope', title: 'Cambia email', placeholder: 'Nuova email', type: 'email', current: accUtenteCorrente?.email || '' },
-        cellulare: { icon: 'fa-phone', title: 'Numero di telefono', placeholder: 'Es. 3331234567', type: 'tel', current: accUtenteCorrente?.cellulare || '' },
-        password: { icon: 'fa-key', title: 'Cambia password', placeholder: 'Nuova password', type: 'password', current: '' }
+        username:  { icon: 'fa-user',     title: 'Cambia username',    placeholder: 'Nuovo username',   type: 'text',     current: accUtenteCorrente?.username  || '' },
+        email:     { icon: 'fa-envelope', title: 'Cambia email',        placeholder: 'Nuova email',       type: 'email',    current: accUtenteCorrente?.email     || '' },
+        cellulare: { icon: 'fa-phone',    title: 'Numero di telefono',  placeholder: 'Es. 3331234567',    type: 'tel',      current: accUtenteCorrente?.cellulare || '' },
+        password:  { icon: 'fa-key',      title: 'Cambia password',     placeholder: 'Nuova password',    type: 'password', current: '' }
     };
 
     const c = config[campo];
@@ -288,7 +208,7 @@ async function salvaModificaCampo(campo) {
     body[campo] = valore;
 
     try {
-        const response = await fetch(`http://localhost:3000/auth/utente/${utente.id}`, {
+        const response = await fetch(`${API}/auth/utente/${utente.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -344,7 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 avatarBig.insertBefore(img, avatarBig.firstChild);
             }
             img.src = ev.target.result;
-
             localStorage.setItem('yd_avatar_img', ev.target.result);
         };
         reader.readAsDataURL(file);
@@ -361,11 +280,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+ /* ----------------------------------------------------
+/                  OVERLAY CLICK FUORI                 /
+-----------------------------------------------------*/
 document.addEventListener('click', (e) => {
-    if (e.target.id === 'modifica-campo-overlay') {
-        e.target.remove();
-    }
-    if (e.target.id === 'conferma-account-overlay') {
-        e.target.remove();
-    }
+    if (e.target.id === 'modifica-campo-overlay') e.target.remove();
+    if (e.target.id === 'conferma-account-overlay') e.target.remove();
 });
