@@ -11,6 +11,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OfficinaModule } from './officina/officina.module';
 import { PrismaModule } from './prisma.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PrismaModule } from './prisma.module';
       inject: [ConfigService],
     }),
     OfficinaModule,
+    StripeModule,
   ],
   controllers: [AppController, UtenteController, VeicoloController],
   providers: [

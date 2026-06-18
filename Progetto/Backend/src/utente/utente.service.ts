@@ -11,46 +11,46 @@ import * as bcrypt from 'bcrypt';
 export class UtenteService {
   constructor(private prisma: PrismaService, private jwtService: JwtService,) {}
 
-  async registra(data: CreateUtenteDto) {
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    async registra(data: CreateUtenteDto) {
+      const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    return this.prisma.utente.create({
-      data: {
-        username: data.username,
-        email: data.email,
-        password: hashedPassword,
-        cellulare: data.cellulare || null,
-        tipo: data.tipo || 'privato',
-        ragione_sociale: data.ragione_sociale || null,
-        partita_iva: data.partita_iva || null,
-        codice_sdi: data.codice_sdi || null,
-      },
-    });
-  }
-
-   async login(data: LoginUtenteDto) {
-    const utente = await this.prisma.utente.findUnique({
-      where: { email: data.email },
-    });
-
-    if (!utente) {
-      throw new UnauthorizedException('Credenziali non valide');
+      return this.prisma.utente.create({
+        data: {
+          username: data.username,
+          email: data.email,
+          password: hashedPassword,
+          cellulare: data.cellulare || null,
+          tipo: data.tipo || 'privato',
+          ragione_sociale: data.ragione_sociale || null,
+          partita_iva: data.partita_iva || null,
+          codice_sdi: data.codice_sdi || null,
+        },
+      });
     }
 
-    const passwordValida = await bcrypt.compare(data.password, utente.password);
-    if (!passwordValida) {
-      throw new UnauthorizedException('Credenziali non valide');
+    async login(data: LoginUtenteDto) {
+      const utente = await this.prisma.utente.findUnique({
+        where: { email: data.email },
+      });
+
+      if (!utente) {
+        throw new UnauthorizedException('Credenziali non valide');
+      }
+
+      const passwordValida = await bcrypt.compare(data.password, utente.password);
+      if (!passwordValida) {
+        throw new UnauthorizedException('Credenziali non valide');
+      }
+
+      const { password, ...risultato } = utente;
+
+      //  genera e restituisce il token insieme ai dati utente
+      const payload = { sub: utente.id, email: utente.email, tipo: utente.tipo };
+      return {
+        access_token: this.jwtService.sign(payload), // Lo passeremo al controller che lo imposterà nel cookie
+        utente: risultato,
+      };
     }
-
-    const { password, ...risultato } = utente;
-
-    //  genera e restituisce il token insieme ai dati utente
-    const payload = { sub: utente.id, email: utente.email, tipo: utente.tipo };
-    return {
-      access_token: this.jwtService.sign(payload), // Lo passeremo al controller che lo imposterà nel cookie
-      utente: risultato,
-    };
-  }
 
     async loginAzienda(data: LoginAziendaDto) {
       const utente = await this.prisma.utente.findUnique({
@@ -73,17 +73,22 @@ export class UtenteService {
       };
     }
 
-    async getUtentebyID(id : number)  {
+    async getUtentebyID(id: number) {
         return this.prisma.utente.findUnique({
             where: { id },
             select: {
-            id: true,
-            username: true,
-            email: true,
-            cellulare: true,
-            }
-            }
-        )};
+                id: true,
+                username: true,
+                email: true,
+                cellulare: true,
+                abbonamento: {
+                    where: { stato: 'attivo' },
+                    orderBy: { data_inizio: 'desc' },
+                    take: 1,
+                },
+            },
+        });
+    }
 
 
     async aggiornaUtente(id: number, data: UpdateUtenteDto) {

@@ -554,39 +554,70 @@ async function addVehicle(targa, idUtente) {
     try {
         const response = await fetch(`http://localhost:3000/veicolo`, {
             method: "POST",
-            headers: { "Content-Type": "application/json"},
-            credentials:'include',
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include',
             body: JSON.stringify({ targa, id_utente: idUtente })
         });
+
         if (response.status === 401) {
             alert('Sessione scaduta, effettua di nuovo il login');
             logout();
             return;
         }
+
         if (response.status === 409) {
-            alert("Veicolo già esistente nel db!");
+            alert("Veicolo già esistente nel garage!");
             return;
         }
+
+        if (response.status === 403) {
+            localStorage.setItem('garage_limite_raggiunto', 'true');
+            window.location.href = "homepage.html";
+            return;
+        }
+
         if (!response.ok) {
             alert("Errore durante l'aggiunta del veicolo.");
             return;
         }
+
         localStorage.setItem('garage_animation', 'true');
         window.location.href = "homepage.html";
+
     } catch (err) {
         alert("Errore di connessione.");
     }
 }
 
 function checkGarageAnimation() {
-    if (localStorage.getItem('garage_animation') !== 'true') return;
-    localStorage.removeItem('garage_animation');
-    setTimeout(() => {
-        const btn = document.getElementById('switcher-btn');
-        if (!btn) return;
-        btn.classList.add('garage-pop');
-        setTimeout(() => btn.classList.remove('garage-pop'), 3000);
-    }, 300);
+    if (localStorage.getItem('garage_animation') === 'true') {
+        localStorage.removeItem('garage_animation');
+        setTimeout(() => {
+            const btn = document.getElementById('switcher-btn');
+            if (!btn) return;
+            btn.classList.add('garage-pop');
+            setTimeout(() => btn.classList.remove('garage-pop'), 3000);
+        }, 300);
+    }
+
+    if (localStorage.getItem('garage_limite_raggiunto') === 'true') {
+        localStorage.removeItem('garage_limite_raggiunto');
+        mostraBannerLimite();
+    }
+}
+
+function mostraBannerLimite() {
+    const banner = document.createElement('div');
+    banner.id = 'banner-limite-veicoli';
+    banner.innerHTML = `
+        <div class="banner-limite-content">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Hai raggiunto il limite di veicoli del tuo piano. <a href="abbonamenti.html">Passa a un piano superiore</a> per aggiungerne altri.</span>
+            <button onclick="this.parentElement.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    `;
+    document.body.prepend(banner);
+    setTimeout(() => banner?.remove(), 6000);
 }
 
 async function getUsername() {
