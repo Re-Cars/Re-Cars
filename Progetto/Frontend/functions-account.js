@@ -26,6 +26,11 @@ async function caricaDatiAccount() {
         const data = await response.json();
         accUtenteCorrente = data;
 
+        if (data.avatar) {
+            applicaAvatar(data.avatar);
+            localStorage.setItem('yd_avatar_img', data.avatar);
+        }
+
         const usernameDisplay = document.getElementById('acc-username-display');
         const valUsername = document.getElementById('val-username');
         const valEmail = document.getElementById('val-email');
@@ -238,7 +243,7 @@ async function salvaModificaCampo(campo) {
 }
 
  /* ----------------------------------------------------
-/        UPLOAD IMMAGINE AVATAR                         /
+/        UPLOAD IMMAGINE AVATAR                        /
 -----------------------------------------------------*/
 document.addEventListener('DOMContentLoaded', () => {
     const editBtn = document.getElementById('acc-avatar-edit-btn');
@@ -248,37 +253,90 @@ document.addEventListener('DOMContentLoaded', () => {
 
     editBtn.addEventListener('click', () => fileInput.click());
 
-    fileInput.addEventListener('change', (e) => {
+    fileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            const avatarBig = document.querySelector('.acc-avatar-big');
-            const icon = document.getElementById('acc-avatar-icon');
-            if (icon) icon.style.display = 'none';
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Immagine troppo grande. Massimo 2MB.');
+            return;
+        }
 
-            let img = avatarBig.querySelector('img');
-            if (!img) {
-                img = document.createElement('img');
-                avatarBig.insertBefore(img, avatarBig.firstChild);
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+            const base64 = ev.target.result;
+
+            applicaAvatar(base64);
+
+            const utenteString = localStorage.getItem('yd_utente_loggato');
+            if (!utenteString) return;
+            const utente = JSON.parse(utenteString);
+
+            try {
+                const response = await fetch(`${API}/auth/utente/${utente.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ avatar: base64 }),
+                });
+
+                if (!response.ok) {
+                    console.error('Errore salvataggio avatar');
+                    return;
+                }
+
+                localStorage.setItem('yd_avatar_img', base64);
+
+            } catch (err) {
+                console.error('Errore connessione avatar:', err);
             }
-            img.src = ev.target.result;
-            localStorage.setItem('yd_avatar_img', ev.target.result);
         };
         reader.readAsDataURL(file);
     });
 
-    const savedAvatar = localStorage.getItem('yd_avatar_img');
-    if (savedAvatar) {
-        const avatarBig = document.querySelector('.acc-avatar-big');
-        const icon = document.getElementById('acc-avatar-icon');
-        if (icon) icon.style.display = 'none';
-        const img = document.createElement('img');
-        img.src = savedAvatar;
+    caricaAvatar();
+});
+
+function applicaAvatar(src) {
+    const avatarBig = document.querySelector('.acc-avatar-big');
+    if (!avatarBig) return;
+
+    const icon = document.getElementById('acc-avatar-icon');
+    if (icon) icon.style.display = 'none';
+
+    let img = avatarBig.querySelector('img');
+    if (!img) {
+        img = document.createElement('img');
         avatarBig.insertBefore(img, avatarBig.firstChild);
     }
-});
+    img.src = src;
+}
+
+async function caricaAvatar() {
+    const salvato = localStorage.getItem('yd_avatar_img');
+    if (salvato) {
+        applicaAvatar(salvato);
+        return;
+    }
+
+    const utenteString = localStorage.getItem('yd_utente_loggato');
+    if (!utenteString) return;
+    const utente = JSON.parse(utenteString);
+
+    try {
+        const response = await fetch(`${API}/auth/utente/${utente.id}`, {
+            credentials: 'include',
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data.avatar) {
+            applicaAvatar(data.avatar);
+            localStorage.setItem('yd_avatar_img', data.avatar);
+        }
+    } catch (err) {
+        console.error('Errore caricamento avatar:', err);
+    }
+}
 
  /* ----------------------------------------------------
 /                  OVERLAY CLICK FUORI                 /

@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
     <link rel="stylesheet" href="style-officina.css">
-    <link rel="stylesheet" href="style-officina.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
     <script src="functions-profilo-officina.js" defer></script>
@@ -29,21 +28,6 @@
             <div class="po-modal-actions">
                 <button class="po-btn-ghost" onclick="chiudiModifica()">Annulla</button>
                 <button class="po-btn-primary" onclick="salvaModifica()">Salva</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- OVERLAY CONFERMA DISDICI -->
-    <div class="po-overlay" id="po-disdici-overlay">
-        <div class="po-modal po-modal-danger">
-            <div class="po-modal-title">
-                <i class="fa-solid fa-ban po-icon-danger"></i>
-                <span>Disdici abbonamento</span>
-            </div>
-            <p class="po-modal-sub">Vuoi davvero disdire l'abbonamento? L'officina non sarà più visibile nel catalogo al termine del periodo.</p>
-            <div class="po-modal-actions">
-                <button class="po-btn-ghost" onclick="chiudiOverlay('po-disdici-overlay')">Annulla</button>
-                <button class="po-btn-danger" onclick="disdiciAbbonamento()">Conferma disdetta</button>
             </div>
         </div>
     </div>
@@ -76,23 +60,13 @@
                 <span class="line line4"></span>
             </div>
         </div>
-        <nav class="sidebar-nav">
-            <a href="officina.html" class="sidebar-item">
-                <i class="fa-solid fa-gauge"></i> Dashboard
-            </a>
-            <a href="prenotazioni-officina.html" class="sidebar-item">
-                <i class="fa-solid fa-calendar-check"></i> Prenotazioni
-            </a>
-            <a href="officina-agenda.html" class="sidebar-item">
-                <i class="fa-solid fa-calendar-days"></i> Agenda
-            </a>
-            <a href="profilo-officina.html" class="sidebar-item active">
-                <i class="fa-solid fa-building-user"></i> Profilo Officina
-            </a>
-            <a href="#" class="sidebar-item sidebar-logout" onclick="logout()">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
-            </a>
-        </nav>
+            <nav class="sidebar-nav">
+                <a href="profilo-officina.html"><i class="fa-solid fa-building-user"></i> Profilo Officina</a>
+                <a href="prenotazioni-officina.html"><i class="fa-solid fa-calendar-check"></i> Prenotazioni</a>
+                <a href="officina-agenda.html"><i class="fa-solid fa-calendar-days"></i> Agenda</a>
+                <a href="abbonamenti-officina.html"><i class="fa-solid fa-credit-card"></i> Abbonamento</a>
+                <a href="#" class="sidebar-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </nav>
     </div>
 
     <header class="header">
@@ -287,51 +261,21 @@
                 <span>Abbonamento</span>
             </div>
             <div class="po-section-body">
-                <div class="po-piano-attivo" id="po-piano-attivo">
+                <div class="po-piano-row">
                     <div class="po-piano-attivo-left">
                         <span class="po-piano-label">Piano attivo</span>
                         <span class="po-piano-nome" id="po-piano-nome">—</span>
                         <span class="po-piano-sub" id="po-piano-sub">—</span>
                     </div>
-                    <span class="po-piano-stato" id="po-piano-stato">
+                    <span class="po-piano-stato">
                         <span class="po-piano-stato-dot"></span>
                         Attivo
                     </span>
                 </div>
-
-                <div class="po-piani-grid">
-                    <div class="po-piano-card" id="po-card-business" onclick="selezionaPiano('officina_business')">
-                        <div class="po-piano-check" id="po-check-business"></div>
-                        <div class="po-piano-card-nome">Business</div>
-                        <div class="po-piano-card-prezzo">29,99€<span>/mese</span></div>
-                        <div class="po-piano-features">
-                            <div class="po-piano-feature"><i class="fa-solid fa-check"></i> Visibile nel catalogo</div>
-                            <div class="po-piano-feature"><i class="fa-solid fa-check"></i> Prenotazioni illimitate</div>
-                            <div class="po-piano-feature"><i class="fa-solid fa-check"></i> Dashboard prenotazioni</div>
-                            <div class="po-piano-feature"><i class="fa-solid fa-check"></i> Supporto base</div>
-                        </div>
-                    </div>
-                    <div class="po-piano-card" id="po-card-business-pro" onclick="selezionaPiano('officina_business_pro')">
-                        <div class="po-piano-check" id="po-check-business-pro"></div>
-                        <div class="po-piano-card-nome">Business Pro</div>
-                        <div class="po-piano-card-prezzo">59,99€<span>/mese</span></div>
-                        <div class="po-piano-features">
-                            <div class="po-piano-feature"><i class="fa-solid fa-check"></i> Tutto di Business</div>
-                            <div class="po-piano-feature"><i class="fa-solid fa-check"></i> Posizione prioritaria</div>
-                            <div class="po-piano-feature"><i class="fa-solid fa-check"></i> Badge verificata</div>
-                            <div class="po-piano-feature"><i class="fa-solid fa-check"></i> Supporto prioritario</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="po-abbonamento-actions">
-                    <button class="po-btn-ghost" onclick="apriOverlay('po-disdici-overlay')">
-                        <i class="fa-solid fa-ban"></i> Disdici abbonamento
-                    </button>
-                    <button class="po-btn-primary" onclick="cambiaPiano()">
-                        <i class="fa-solid fa-arrows-rotate"></i> Cambia piano
-                    </button>
-                </div>
+                <a href="abbonamenti-officina.html" class="po-btn-primary po-btn-gestisci">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    Gestisci abbonamento
+                </a>
             </div>
         </div>
 

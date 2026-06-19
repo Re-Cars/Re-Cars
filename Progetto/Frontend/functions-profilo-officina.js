@@ -5,7 +5,6 @@
 const API = 'http://localhost:3000';
 let officina = null;
 let datiProfilo = null;
-let pianoSelezionato = null;
 let campoInModifica = null;
 const TIPI_DISPONIBILI = ['meccanica', 'carrozzeria', 'gommista', 'elettrauto', 'multimarca', 'concessionaria', 'tagliando', 'revisione'];
 
@@ -59,16 +58,7 @@ function renderProfilo() {
     document.getElementById('po-hero-telefono').textContent = of.telefono || '—';
     document.getElementById('po-hero-email').textContent = of.email || '—';
 
-    const abbonamento = of.abbonamento?.[0];
-    if (abbonamento) {
-        document.getElementById('po-abbonamento-piano').textContent = abbonamento.piano.replace(/_/g, ' ');
-        document.getElementById('po-piano-nome').textContent = abbonamento.piano.replace(/_/g, ' ');
-        document.getElementById('po-piano-sub').textContent = abbonamento.data_fine
-            ? `Rinnovo il ${new Date(abbonamento.data_fine).toLocaleDateString('it-IT')} · 29,99€/mese`
-            : 'Nessun rinnovo programmato';
-        pianoSelezionato = abbonamento.piano;
-        aggiornaSelezioneCard();
-    }
+    caricaPianoProfiloOfficina(of);
 
     document.getElementById('stat-totale').textContent = stats.totale;
     document.getElementById('stat-mese').textContent = stats.mese;
@@ -90,6 +80,24 @@ function renderProfilo() {
     document.getElementById('po-val-ponti').textContent = of.ponti_disponibili ?? '—';
 
     renderTipi(of.tipi || []);
+}
+
+function caricaPianoProfiloOfficina(of) {
+    const abbonamento = of.abbonamento?.[0];
+    const piano = abbonamento?.piano || 'officina_business';
+
+    const nomi = {
+        officina_business: 'Business',
+        officina_business_pro: 'Business Pro',
+    };
+
+    const nomeEl = document.getElementById('po-piano-nome');
+    const subEl = document.getElementById('po-piano-sub');
+
+    if (nomeEl) nomeEl.textContent = nomi[piano] || piano;
+    if (subEl) subEl.textContent = abbonamento?.data_fine
+        ? `Rinnovo il ${new Date(abbonamento.data_fine).toLocaleDateString('it-IT')}`
+        : 'Rinnovo automatico mensile';
 }
 
  /* ----------------------------------------------------
@@ -189,53 +197,6 @@ async function salvaModifica() {
         await caricaProfilo();
     } catch (err) {
         errEl.textContent = 'Errore di connessione';
-    }
-}
-
- /* ----------------------------------------------------
-/              ABBONAMENTO                             /
------------------------------------------------------*/
-function selezionaPiano(piano) {
-    pianoSelezionato = piano;
-    aggiornaSelezioneCard();
-}
-
-function aggiornaSelezioneCard() {
-    document.getElementById('po-card-business').classList.toggle('selected', pianoSelezionato === 'officina_business');
-    document.getElementById('po-card-business-pro').classList.toggle('selected', pianoSelezionato === 'officina_business_pro');
-    const checkB = document.getElementById('po-check-business');
-    const checkBP = document.getElementById('po-check-business-pro');
-    checkB.innerHTML = pianoSelezionato === 'officina_business' ? '<i class="fa-solid fa-check"></i>' : '';
-    checkBP.innerHTML = pianoSelezionato === 'officina_business_pro' ? '<i class="fa-solid fa-check"></i>' : '';
-}
-
-async function cambiaPiano() {
-    if (!pianoSelezionato) return;
-    try {
-        const res = await fetch(`${API}/officina/abbonamento`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ piano: pianoSelezionato }),
-            credentials: 'include',
-        });
-        if (!res.ok) return;
-        await caricaProfilo();
-    } catch (err) {
-        console.error('Errore cambio piano:', err);
-    }
-}
-
-async function disdiciAbbonamento() {
-    try {
-        const res = await fetch(`${API}/officina/abbonamento`, {
-            method: 'DELETE',
-            credentials: 'include',
-        });
-        if (!res.ok) return;
-        chiudiOverlay('po-disdici-overlay');
-        await caricaProfilo();
-    } catch (err) {
-        console.error('Errore disdetta:', err);
     }
 }
 

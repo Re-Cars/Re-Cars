@@ -26,7 +26,7 @@
 /                 CARD SECTION                         /
 -----------------------------------------------------*/
 .vl-section-card {
-    background: var(--card-bg);
+    background: var(--surface);
     border: 1px solid rgba(249, 115, 22, 0.2);
     border-radius: 14px;
     overflow: hidden;

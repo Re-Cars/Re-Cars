@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE|CARS — Abbonamenti Officina</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-account.css">
+    <link rel="stylesheet" href="style-officina.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-app.js" defer></script>
+    <script src="functions-abbonamenti-officina.js" defer></script>
+</head>
+<body>
+
+    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">RE<span>|</span>CARS</span>
+            <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+                <span class="line line4"></span>
+            </div>
+        </div>
+            <nav class="sidebar-nav">
+                <a href="profilo-officina.html"><i class="fa-solid fa-building-user"></i> Profilo Officina</a>
+                <a href="prenotazioni-officina.html"><i class="fa-solid fa-calendar-check"></i> Prenotazioni</a>
+                <a href="officina-agenda.html"><i class="fa-solid fa-calendar-days"></i> Agenda</a>
+                <a href="abbonamenti-officina.html"><i class="fa-solid fa-credit-card"></i> Abbonamento</a>
+                <a href="#" class="sidebar-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </nav>
+    </div>
+
+    <header class="header">
+        <div class="header-left"></div>
+        <div class="header-center">
+            <a href="officina.html">
+                <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+                <span class="header-brand">RE<span>|</span>CARS</span>
+            </a>
+        </div>
+        <div class="header-right">
+            <button id="theme-toggle" onclick="toggleTheme()" class="theme-toggle-btn">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar">
+                    <i class="fa-solid fa-building-user"></i>
+                </div>
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                    </div>
+                    <a href="profilo-officina.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica profilo</span>
+                    </a>
+                    <a href="#" class="avatar-item avatar-item-logout" onclick="logout()">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="breadcrumb">
+        <a href="officina.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+        <span>›</span>
+        <a href="profilo-officina.html">Profilo Officina</a>
+        <span>›</span>
+        <span>Abbonamenti</span>
+    </div>
+
+    <div class="abb-dashboard">
+
+        <div class="abb-piano-attivo" id="abb-piano-attivo">
+            <div class="abb-piano-left">
+                <span class="abb-piano-label">Piano attivo</span>
+                <span class="abb-piano-nome" id="abb-piano-nome">—</span>
+                <span class="abb-piano-sub" id="abb-piano-sub">—</span>
+            </div>
+            <span class="abb-piano-stato">
+                <span class="abb-piano-stato-dot"></span>
+                Attivo
+            </span>
+        </div>
+
+        <span class="abb-section-title">Scegli il tuo piano</span>
+
+        <div class="abb-piani-grid abb-piani-grid-officina" id="abb-piani-grid">
+
+            <div class="abb-piano-card" id="card-business">
+                <div class="abb-piano-card-content">
+                    <div class="abb-piano-card-nome">Business</div>
+                    <div class="abb-piano-card-prezzo">29,99€<span>/mese</span></div>
+                    <div class="abb-piano-card-desc">Per officine che vogliono essere visibili e gestire le prenotazioni</div>
+                    <div class="abb-piano-features">
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Visibile nel catalogo</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Prenotazioni illimitate</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Dashboard prenotazioni</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Agenda appuntamenti</div>
+                        <div class="abb-feature no"><i class="fa-solid fa-xmark"></i> Posizione prioritaria</div>
+                        <div class="abb-feature no"><i class="fa-solid fa-xmark"></i> Badge verificata</div>
+                        <div class="abb-feature no"><i class="fa-solid fa-xmark"></i> Supporto prioritario</div>
+                    </div>
+                    <button class="abb-btn cta" id="btn-business"></button>
+                </div>
+            </div>
+
+            <div class="abb-piano-card popolare" id="card-business-pro">
+                <span class="abb-popolare-badge">Più popolare</span>
+                <div class="abb-piano-card-content">
+                    <div class="abb-piano-card-nome">Business Pro</div>
+                    <div class="abb-piano-card-prezzo">59,99€<span>/mese</span></div>
+                    <div class="abb-piano-card-desc">Per officine che vogliono il massimo della visibilità e del supporto</div>
+                    <div class="abb-piano-features">
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Tutto di Business</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Posizione prioritaria</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Badge verificata</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Supporto prioritario</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Statistiche avanzate</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Export prenotazioni</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> API accesso dati</div>
+                    </div>
+                    <button class="abb-btn cta" id="btn-business-pro"></button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="abb-stripe-note">
+            <i class="fa-solid fa-lock"></i>
+            Il pagamento è gestito in modo sicuro da Stripe. Non conserviamo i dati della tua carta. Disdici in qualsiasi momento.
+        </div>
+
+    </div>
+
+</body>
+</html>
