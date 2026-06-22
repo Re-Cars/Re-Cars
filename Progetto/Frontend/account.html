@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE|CARS - Il mio account</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-account.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-app.js" defer></script>
+    <script src="functions-account.js" defer></script>
+</head>
+<body>
+
+<div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">RE<span>|</span>CARS</span>
+            <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+                <span class="line line4"></span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+            <a href="veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
+            <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti</a>
+            <a href="info-domande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+            <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
+            <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+            <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </div>
+
+    <header class="header">
+        <div class="header-left"></div>
+        <div class="header-center">
+            <a href="homepage.html">
+                <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+                <span class="header-brand">RE<span>|</span>CARS</span>
+            </a>
+        </div>
+        <div class="header-right">
+            <button id="theme-toggle" onclick="toggleTheme()" class="theme-toggle-btn">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                    </div>
+                    <a href="account.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica profilo</span>
+                    </a>
+                    <a href="landing.html" class="avatar-item avatar-item-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="breadcrumb">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
+        <span>›</span>
+        <span>Il mio account</span>
+    </div>
+
+    <section class="home-intro">
+        <div class="home-intro-veicolo" id="home-intro-veicolo">
+            <i class="fa-solid fa-car" id="veicolo-tipo-icon"></i>
+            <span class="veicolo-nome" id="nome-veicolo-attivo">Caricamento...</span>
+            <span class="veicolo-sep">·</span>
+            <span class="veicolo-targa" id="targa-veicolo-attivo"></span>
+        </div>
+        <div class="veicolo-switcher" id="veicolo-switcher">
+            <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                <span id="switcher-label">
+                    <i class="fa-solid fa-warehouse"></i>
+                    <span id="veicoli-counter"></span>
+                </span>
+                <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+            </button>
+            <div class="switcher-dropdown" id="switcher-dropdown"></div>
+        </div>
+    </section>
+
+    <section class="acc-dashboard">
+
+        <div class="acc-section-card">
+            <div class="acc-section-bar">
+                <i class="fa-solid fa-user"></i>
+                <span>Profilo</span>
+            </div>
+            <div class="acc-section-body">
+                <div class="acc-avatar-row">
+                    <div class="acc-avatar-big">
+                        <i class="fa-solid fa-user" id="acc-avatar-icon"></i>
+                        <button class="acc-avatar-edit" id="acc-avatar-edit-btn" title="Cambia immagine">
+                            <i class="fa-solid fa-camera"></i>
+                            <div class="acc-avatar-plus-badge"><i class="fa-solid fa-plus"></i></div>
+                        </button>
+                        <input type="file" id="acc-avatar-input" accept="image/*" style="display:none">
+                    </div>
+                    <div class="acc-avatar-info">
+                        <p class="acc-avatar-name" id="acc-username-display">-</p>
+                        <p class="acc-avatar-sub" id="acc-member-since">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="acc-section-card">
+            <div class="acc-section-bar">
+                <i class="fa-solid fa-id-card"></i>
+                <span>Dati account</span>
+            </div>
+            <div class="acc-section-body">
+                <div class="acc-field-row" id="row-username">
+                    <div class="acc-field-lbl">
+                        <span>Username</span>
+                        <span id="val-username">-</span>
+                    </div>
+                    <button class="acc-btn-pill" onclick="apriModifica('username')">
+                        <div class="acc-icon-circle"><i class="fa-solid fa-pen"></i></div>
+                        Modifica
+                    </button>
+                </div>
+                <div class="acc-field-row" id="row-email">
+                    <div class="acc-field-lbl">
+                        <span>Email</span>
+                        <span id="val-email">-</span>
+                    </div>
+                    <button class="acc-btn-pill" onclick="apriModifica('email')">
+                        <div class="acc-icon-circle"><i class="fa-solid fa-pen"></i></div>
+                        Modifica
+                    </button>
+                </div>
+                <div class="acc-field-row" id="row-cellulare">
+                    <div class="acc-field-lbl">
+                        <span>Telefono</span>
+                        <span id="val-cellulare">Non impostato</span>
+                    </div>
+                    <button class="acc-btn-pill" onclick="apriModifica('cellulare')">
+                        <div class="acc-icon-circle"><i class="fa-solid fa-plus"></i></div>
+                        <span id="btn-cellulare-label">Aggiungi</span>
+                    </button>
+                </div>
+                <div class="acc-field-row" id="row-password">
+                    <div class="acc-field-lbl">
+                        <span>Password</span>
+                        <span>••••••••</span>
+                    </div>
+                    <button class="acc-btn-pill" onclick="apriModifica('password')">
+                        <div class="acc-icon-circle"><i class="fa-solid fa-key"></i></div>
+                        Cambia
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="acc-section-card">
+            <div class="acc-section-bar">
+                <i class="fa-solid fa-credit-card"></i>
+                <span>Abbonamento</span>
+            </div>
+            <div class="acc-section-body">
+                <div class="acc-piano-row">
+                    <div class="acc-piano-info">
+                        <span class="acc-piano-label">Piano attivo</span>
+                        <span class="acc-piano-nome" id="acc-piano-nome">—</span>
+                        <span class="acc-piano-sub" id="acc-piano-sub">—</span>
+                    </div>
+                    <span class="acc-piano-stato">
+                        <span class="acc-piano-stato-dot"></span>
+                        Attivo
+                    </span>
+                </div>
+                <a href="abbonamenti.html" class="acc-btn-pill acc-btn-gestisci">
+                    <div class="acc-icon-circle"><i class="fa-solid fa-arrow-right"></i></div>
+                    Gestisci abbonamento
+                </a>
+            </div>
+        </div>
+
+        <div class="acc-section-card acc-danger-card">
+            <div class="acc-section-bar acc-danger-bar">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Zona pericolosa</span>
+            </div>
+            <div class="acc-section-body">
+                <div class="acc-danger-row">
+                    <div class="acc-danger-text">
+                        <p>Elimina account</p>
+                        <p>Questa azione è irreversibile. Tutti i tuoi dati verranno eliminati permanentemente.</p>
+                    </div>
+                    <button class="acc-btn-pill-danger" onclick="mostraConfermaAccount('elimina')">
+                        <div class="acc-icon-circle-danger"><i class="fa-solid fa-trash"></i></div>
+                        Elimina
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</body>
+</html>

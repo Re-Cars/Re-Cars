@@ -41,10 +41,22 @@ function closeMenu() {
  /* ----------------------------------------------------
 /                   LOGOUT                             /
 -----------------------------------------------------*/
-function logout() {
-    localStorage.removeItem('yd_utente_loggato');
-    localStorage.removeItem('access_token');
-    window.location.href = 'landing.html';
+
+async function logout() {
+    try {
+        await fetch('http://localhost:3000/auth/logout', {
+            method: 'POST',
+            credentials: 'include' // Invia il cookie HttpOnly da cancellare
+        });
+    } catch (err) {
+        console.error('Errore durante il logout sul server:', err);
+    } finally {
+        // In ogni caso, puliamo il client e reindirizziamo
+        localStorage.removeItem('yd_utente_loggato');
+        localStorage.removeItem('veicoloAttivo');
+        localStorage.removeItem('veicoloAttivoId');
+        window.location.href = 'landing.html';
+    }
 }
 
  /* ----------------------------------------------------
@@ -54,16 +66,21 @@ let veicoli = [];
 let veicoloAttivoIndex = 0;
 
 async function caricaVeicoli() {
-    const token = getData('access_token');
-    if (!token) return;
-    const Idtoken = getUserIdFromToken(token);
+    const utenteString = localStorage.getItem('yd_utente_loggato');
+    if (!utenteString) return;
+    const utente = JSON.parse(utenteString);
+    const idUtente = utente.id;
     try {
-        const response = await fetch(`http://localhost:3000/veicolo/utente/${Idtoken}`, {
+        const response = await fetch(`http://localhost:3000/veicolo/utente/${idUtente}`, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-            }
+            },
+            credentials: 'include',
         });
+        if (response.status === 401) {
+            logout();
+            return;
+        }
         const data = await response.json();
         veicoli = data.map(v => ({
             id: v.id,
@@ -71,6 +88,15 @@ async function caricaVeicoli() {
             targa: v.targa,
             tipo: v.dati_generici[0]?.tipo_veicolo === 'Moto' ? 'motorcycle' : 'car',
         }));
+
+        const idSalvato = localStorage.getItem('veicoloAttivoId');
+        if (idSalvato) {
+            const idx = veicoli.findIndex(v => v.id === parseInt(idSalvato));
+            veicoloAttivoIndex = idx !== -1 ? idx : 0;
+        } else {
+            veicoloAttivoIndex = 0;
+        }
+
         const counterEl = document.getElementById('veicoli-counter');
         if (counterEl) counterEl.textContent = veicoli.length;
         renderVeicoloAttivo();
@@ -87,9 +113,21 @@ function getVeicoloAttivo() {
 function renderVeicoloAttivo() {
     const v = getVeicoloAttivo();
     if (!v) return;
-    const el = document.getElementById('nome-veicolo-attivo');
-    if (el) el.textContent = v.nome;
+
+    const nomeEl = document.getElementById('nome-veicolo-attivo');
+    const targaEl = document.getElementById('targa-veicolo-attivo');
+    const iconEl = document.getElementById('veicolo-tipo-icon');
+
+    if (nomeEl) nomeEl.textContent = v.nome;
+    if (targaEl) targaEl.textContent = v.targa;
+    if (iconEl) {
+        iconEl.className = v.tipo === 'motorcycle'
+            ? 'fa-solid fa-motorcycle'
+            : 'fa-solid fa-car';
+    }
+
     localStorage.setItem('veicoloAttivo', JSON.stringify(v));
+    localStorage.setItem('veicoloAttivoId', v.id);
 }
 
 function renderDropdown() {
@@ -108,7 +146,6 @@ function renderDropdown() {
                 <i class="fa-solid fa-trash"></i>
             </button>
         `;
-        btn.querySelector('.switcher-item span:first-of-type, i.fa-solid:first-child')?.addEventListener('click', () => selezionaVeicolo(i));
         btn.addEventListener('click', (e) => {
             if (!e.target.closest('.switcher-delete-btn')) selezionaVeicolo(i);
         });
@@ -118,30 +155,35 @@ function renderDropdown() {
         });
         dropdown.appendChild(btn);
     });
+
     const aggiungi = document.createElement('div');
     aggiungi.className = 'switcher-aggiungi';
     aggiungi.innerHTML = `
-        <button class="switcher-item" onclick="location.href='cerca_aggiungi_veicolo.html'">
-            <i class="fa-solid fa-plus"></i>
-            <span>Aggiungi veicolo</span>
-        </button>
+        <div style="display:flex;justify-content:center;padding:2px 0">
+            <div class="switcher-aggiungi-btn-wrap">
+                <button class="switcher-aggiungi-btn" onclick="location.href='cerca-veicolo.html'">
+                    <div class="switcher-plus-circle"><i class="fa-solid fa-plus"></i></div>
+                    Aggiungi veicolo
+                </button>
+            </div>
+        </div>
     `;
     dropdown.appendChild(aggiungi);
 }
 
 function mostraConfermaElimina(id, nome) {
-    const esistente = document.getElementById('confirma-elimina-overlay');
+    const esistente = document.getElementById('conferma-elimina-overlay');
     if (esistente) esistente.remove();
 
     const overlay = document.createElement('div');
-    overlay.id = 'confirma-elimina-overlay';
+    overlay.id = 'conferma-elimina-overlay';
     overlay.innerHTML = `
         <div class="conferma-elimina-box">
             <div class="conferma-elimina-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
             <p class="conferma-elimina-title">Elimina veicolo</p>
             <p class="conferma-elimina-sub">Vuoi rimuovere <strong>${nome}</strong> dal tuo garage?</p>
             <div class="conferma-elimina-btns">
-                <button class="conferma-btn-annulla" onclick="document.getElementById('confirma-elimina-overlay').remove()">Annulla</button>
+                <button class="conferma-btn-annulla" onclick="document.getElementById('conferma-elimina-overlay').remove()">Annulla</button>
                 <button class="conferma-btn-elimina" onclick="eliminaVeicolo(${id})">Elimina</button>
             </div>
         </div>
@@ -150,19 +192,43 @@ function mostraConfermaElimina(id, nome) {
 }
 
 async function eliminaVeicolo(id) {
-    const token = getData('access_token');
-    document.getElementById('confirma-elimina-overlay')?.remove();
+
+    document.getElementById('conferma-elimina-overlay')?.remove();
     try {
         const response = await fetch(`http://localhost:3000/veicolo/${id}`, {
             method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials:'include'
         });
+        if (response.status === 401) {
+            alert('Sessione scaduta, effettua di nuovo il login');
+            logout(); 
+            return;
+        }
         if (!response.ok) {
             alert('Errore durante l\'eliminazione del veicolo.');
             return;
         }
+
+        const veicoloEliminato = veicoli.find(v => v.id === id);
+        const idAttivoSalvato = localStorage.getItem('veicoloAttivoId');
+        if (idAttivoSalvato && parseInt(idAttivoSalvato) === id) {
+            localStorage.removeItem('veicoloAttivoId');
+            localStorage.removeItem('veicoloAttivo');
+        }
+
         await caricaVeicoli();
         closeSwitcher();
+
+        const btn = document.getElementById('switcher-btn');
+        if (btn) {
+            btn.classList.add('garage-delete');
+            setTimeout(() => btn.classList.remove('garage-delete'), 600);
+        }
+
+        if (document.getElementById('vl-lista-veicoli') && typeof renderListaVeicoli === 'function') {
+            renderListaVeicoli();
+        }
+
     } catch (err) {
         alert('Errore di connessione.');
     }
@@ -210,50 +276,112 @@ document.addEventListener('DOMContentLoaded', async () => {
 -----------------------------------------------------*/
 async function caricaInfoVeicolo() {
     const veicoloAttivo = JSON.parse(localStorage.getItem('veicoloAttivo'));
+    if (!veicoloAttivo) {
+        console.warn('Nessun veicoloAttivo in localStorage');
+        return;
+    }
+
     try {
-        const response = await fetch(`http://localhost:3000/veicolo/${veicoloAttivo.id}`);
-        if (!response.ok) return;
+        const response = await fetch(`http://localhost:3000/veicolo/${veicoloAttivo.id}`, {
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+
+        if (response.status === 401) {
+            alert('Sessione scaduta, effettua di nuovo il login');
+            logout();
+            return;
+        }
+        if (!response.ok) {
+            console.error('Risposta non ok:', response.status);
+            return;
+        }
+
         const v = await response.json();
         const dg = v.dati_generici[0] || {};
         const ds = v.dati_specifici[0] || {};
+
         const nomeVeicolo = `${v.marca || ''} ${v.modello || ''}`.trim();
-        document.getElementById('nome-veicolo-attivo').textContent = nomeVeicolo || 'Veicolo Attivo';
-        document.getElementById('iv-tipo').textContent = dg.tipo_veicolo || '-';
-        document.getElementById('iv-marca').textContent = v.marca || '-';
-        document.getElementById('iv-modello').textContent = v.modello || '-';
-        document.getElementById('iv-anno').textContent = ds.dataimmatricolazione
-            ? new Date(ds.dataimmatricolazione).getFullYear() : '-';
-        document.getElementById('iv-alimentazione').textContent = dg.alimentazione || '-';
-        document.getElementById('iv-cilindrata').textContent = dg.cilindrata ? `${dg.cilindrata} cc` : '-';
-        document.getElementById('iv-cavalli').textContent = dg.cavalli ? `${dg.cavalli} CV` : '-';
-        document.getElementById('iv-targa').textContent = v.targa || '-';
+        const isMoto = (dg.tipo_veicolo || '').toLowerCase() === 'moto';
+        const iconClass = isMoto ? 'fa-solid fa-motorcycle' : 'fa-solid fa-car';
+
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        const setIcon = (id) => { const el = document.getElementById(id); if (el) el.className = iconClass; };
+
+        setIcon('iv-hero-icon');
+        setIcon('iv-section-icon');
+        setIcon('iv-mini-tipo-icon');
+
+        set('iv-hero-name', nomeVeicolo || 'Veicolo Attivo');
+        set('nome-veicolo-attivo', nomeVeicolo || 'Veicolo Attivo');
+        set('iv-targa', v.targa || '-');
+        set('iv-tipo', dg.tipo_veicolo || '-');
+        set('iv-anno', ds.dataimmatricolazione ? new Date(ds.dataimmatricolazione).getFullYear() : '-');
+
+        set('iv-alimentazione', dg.alimentazione || '-');
+        set('iv-cilindrata', dg.cilindrata ? `${dg.cilindrata} cc` : '-');
+        set('iv-cavalli', dg.cavalli ? `${dg.cavalli} CV` : '-');
+        set('iv-marca', v.marca || '-');
+
+        const bolloDateEl = document.getElementById('iv-bollo-date');
         if (ds.datascadenzabollo) {
             const dataBollo = new Date(ds.datascadenzabollo).toLocaleDateString('it-IT');
-            document.getElementById('iv-bollo-date').textContent = `scade il ${dataBollo}`;
-            const badgeBollo = document.getElementById('iv-bollo-stato');
-            badgeBollo.textContent = ds.isbolloattivo ? 'Attivo' : 'Scaduto';
-            badgeBollo.className = `iv-badge ${ds.isbolloattivo ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+            if (bolloDateEl) bolloDateEl.textContent = `scade il ${dataBollo}`;
+            setStatoMaint('iv-bollo-pill', 'iv-bollo-stato', ds.isbolloattivo, 'Attivo', 'Scaduto');
         } else {
-            document.getElementById('iv-bollo-date').textContent = 'Dato non disponibile';
+            if (bolloDateEl) bolloDateEl.textContent = 'Dato non disponibile';
+            setStatoMaint('iv-bollo-pill', 'iv-bollo-stato', false, 'Attivo', 'Scaduto');
         }
+
+        // mantenimento — ASSICURAZIONE
+        const rcaDateEl = document.getElementById('iv-assicurazione-date');
+        set('iv-assicurazione-compagnia', ds.nomeassicurazione || '-');
         if (ds.datascadenzarca) {
             const dataRca = new Date(ds.datascadenzarca).toLocaleDateString('it-IT');
-            document.getElementById('iv-assicurazione-date').textContent = `scade il ${dataRca}`;
-            document.getElementById('iv-assicurazione-compagnia').textContent = ds.nomeassicurazione || '-';
-            const badgeRca = document.getElementById('iv-assicurazione-stato');
-            badgeRca.textContent = ds.isinsured ? 'Attiva' : 'Scaduta';
-            badgeRca.className = `iv-badge ${ds.isinsured ? 'iv-badge-attiva' : 'iv-badge-scaduta'}`;
+            if (rcaDateEl) rcaDateEl.textContent = `scade il ${dataRca}`;
+            setStatoMaint('iv-assicurazione-pill', 'iv-assicurazione-stato', ds.isinsured, 'Attiva', 'Scaduta');
         } else {
-            document.getElementById('iv-assicurazione-date').textContent = 'Dato non disponibile';
+            if (rcaDateEl) rcaDateEl.textContent = 'Dato non disponibile';
+            setStatoMaint('iv-assicurazione-pill', 'iv-assicurazione-stato', false, 'Attiva', 'Scaduta');
         }
+
+        initInfoVeicoloTilt();
+
     } catch (err) {
         console.error('Errore nel caricamento info veicolo', err);
     }
 }
 
-/* =============================================
-/           AVATAR DROPDOWN
-/ ============================================*/
+/* helper: stato card mantenimento (bordo + icona + badge) */
+function setStatoMaint(pillId, badgeId, attivo, labelOk, labelKo) {
+    const stato = attivo ? 'attiva' : 'scaduta';
+    const pill = document.getElementById(pillId);
+    const badge = document.getElementById(badgeId);
+    if (pill) pill.className = 'iv-maint-pill stato-' + stato;
+    if (badge) {
+        badge.className = 'iv-badge iv-badge-' + stato;
+        badge.innerHTML = `<span class="iv-badge-dot"></span> ${attivo ? labelOk : labelKo}`;
+    }
+}
+
+/* helper: tilt 3D delle card info-veicolo */
+function initInfoVeicoloTilt() {
+    document.querySelectorAll('.iv-dashboard .iv-section-card').forEach(card => {
+        if (card.dataset.tiltInit) return;
+        card.dataset.tiltInit = '1';
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width;
+            const py = (e.clientY - r.top) / r.height;
+            card.style.transform = `perspective(1200px) rotateX(${(0.5 - py) * 4}deg) rotateY(${(px - 0.5) * 4}deg) translateY(-6px)`;
+        });
+        card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+    });
+}
+
+ /* ---------------------------------------------------
+/                  AVATAR DROPDOWN                    /
+----------------------------------------------------*/
 function toggleAvatarMenu() {
     const dropdown = document.getElementById('avatar-dropdown');
     dropdown.classList.toggle('open');
@@ -307,8 +435,18 @@ function renderStorico() {
     if (storico.length === 0) { container.style.display = 'none'; return; }
     container.style.display = 'block';
     tags.innerHTML = storico.map(t => `
-        <span class="cerca-storico-tag" onclick="usaStorico('${t}')">${t}</span>
+        <span class="cerca-storico-tag">
+            <span onclick="usaStorico('${t}')">${t}</span>
+            <div class="x-circle" onclick="rimuoviStorico('${t}')"><i class="fa-solid fa-xmark"></i></div>
+        </span>
     `).join('');
+}
+
+function rimuoviStorico(targa) {
+    let storico = JSON.parse(localStorage.getItem('storico_targhe') || '[]');
+    storico = storico.filter(t => t !== targa);
+    localStorage.setItem('storico_targhe', JSON.stringify(storico));
+    renderStorico();
 }
 
 function usaStorico(targa) {
@@ -325,25 +463,25 @@ document.addEventListener("DOMContentLoaded", () => {
     searchBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         const plate = plateInput.value.trim().toUpperCase();
-        const token = getData('access_token');
-        if (!token) { alert("Devi effettuare il login."); return; }
-        const Idtoken = getUserIdFromToken(token);
-        if (plate.length < 5) {
-            showResult(`<p style="color:#f87171; margin-top:10px;">Inserisci una targa valida.</p>`);
-            return;
-        }
+        const utenteString = localStorage.getItem('yd_utente_loggato');
+        if (!utenteString) { alert("Devi effettuare il login."); return; }
+        const utente = JSON.parse(utenteString);
+        const idUtente = utente.id;
+
         document.getElementById('cerca-loading').classList.add('show');
         document.getElementById('vehicleResult').innerHTML = '';
         try {
             const response = await fetch(`http://localhost:3000/veicolo/cerca/${plate}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials:'include'
             });
             document.getElementById('cerca-loading').classList.remove('show');
+            const data = await response.json();
             if (!response.ok) {
-                showResult(`<p style="color:#f87171; margin-top:10px;">Veicolo non trovato.</p>`);
+                const msg = Array.isArray(data.message) ? data.message[0] : data.message;
+                showResult(`<p style="color:#f87171; margin-top:10px;">${msg || 'Veicolo non trovato.'}</p>`);
                 return;
             }
-            const data = await response.json();
+            
             salvaStorico(plate);
             renderStorico();
             showResult(`
@@ -379,9 +517,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                     <div class="vehicle-result-footer">
                         <button id="addVehicleBtn" type="button" class="btn-aggiungi-garage">
-                            <i class="fa-solid fa-warehouse" aria-hidden="true"></i>
-                            Aggiungi al mio garage
-                            <i class="fa-solid fa-arrow-right btn-arrow" aria-hidden="true"></i>
+                            <div class="btn-icon-circle"><i class="fa-solid fa-warehouse"></i></div>
+                            Aggiungi al garage
                         </button>
                     </div>
                 </div>
@@ -391,7 +528,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 addBtn.addEventListener("click", (evt) => {
                     evt.preventDefault();
                     evt.stopPropagation();
-                    addVehicle(data.targa, Idtoken);
+                    addVehicle(data.targa, idUtente);
                 }, { once: true });
             }
         } catch (err) {
@@ -405,52 +542,89 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-async function addVehicle(targa, Idtoken) {
-    const token = getData('access_token');
+async function addVehicle(targa, idUtente) {
     try {
         const response = await fetch(`http://localhost:3000/veicolo`, {
             method: "POST",
-            headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ targa, id_utente: Idtoken })
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include',
+            body: JSON.stringify({ targa, id_utente: idUtente })
         });
+
         if (response.status === 401) {
             alert('Sessione scaduta, effettua di nuovo il login');
             logout();
             return;
         }
+
         if (response.status === 409) {
-            alert("Veicolo già esistente nel db!");
+            alert("Veicolo già esistente nel garage!");
             return;
         }
+
+        if (response.status === 403) {
+            localStorage.setItem('garage_limite_raggiunto', 'true');
+            window.location.href = "homepage.html";
+            return;
+        }
+
         if (!response.ok) {
             alert("Errore durante l'aggiunta del veicolo.");
             return;
         }
+
         localStorage.setItem('garage_animation', 'true');
         window.location.href = "homepage.html";
+
     } catch (err) {
         alert("Errore di connessione.");
     }
 }
 
 function checkGarageAnimation() {
-    if (localStorage.getItem('garage_animation') !== 'true') return;
-    localStorage.removeItem('garage_animation');
-    setTimeout(() => {
-        const btn = document.getElementById('switcher-btn');
-        if (!btn) return;
-        btn.classList.add('garage-pop');
-        setTimeout(() => btn.classList.remove('garage-pop'), 3000);
-    }, 300);
+    if (localStorage.getItem('garage_animation') === 'true') {
+        localStorage.removeItem('garage_animation');
+        setTimeout(() => {
+            const btn = document.getElementById('switcher-btn');
+            if (!btn) return;
+            btn.classList.add('garage-pop');
+            setTimeout(() => btn.classList.remove('garage-pop'), 3000);
+        }, 300);
+    }
+
+    if (localStorage.getItem('garage_limite_raggiunto') === 'true') {
+        localStorage.removeItem('garage_limite_raggiunto');
+        mostraBannerLimite();
+    }
+}
+
+function mostraBannerLimite() {
+    const banner = document.createElement('div');
+    banner.id = 'banner-limite-veicoli';
+    banner.innerHTML = `
+        <div class="banner-limite-content">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Hai raggiunto il limite di veicoli del tuo piano. <a href="abbonamenti.html">Passa a un piano superiore</a> per aggiungerne altri.</span>
+            <button onclick="this.parentElement.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    `;
+    document.body.prepend(banner);
+    setTimeout(() => banner?.remove(), 6000);
 }
 
 async function getUsername() {
-    const token = getData('access_token');
-    const Idtoken = getUserIdFromToken(token);
+    const utenteString = localStorage.getItem('yd_utente_loggato');
+    if (!utenteString) return;
+    const utente = JSON.parse(utenteString);
+
+    if (!utente.tipo) return utente.nome || utente.ragione_sociale || null;
+
+    const idUtente = utente.id;
     try {
-        const response = await fetch(`http://localhost:3000/auth/utente/${Idtoken}`, {
+        const response = await fetch(`http://localhost:3000/auth/utente/${idUtente}`, {
             method: "GET",
-            headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` }
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include'
         });
         if (response.status === 401) {
             alert('Sessione scaduta, effettua di nuovo il login');
@@ -462,7 +636,7 @@ async function getUsername() {
             return null;
         }
         const data = await response.json();
-        return data[0].username;
+        return data.username;
     } catch (err) {
         alert("Errore di connessione.");
         return null;
@@ -480,46 +654,48 @@ document.addEventListener("DOMContentLoaded", async () => {
 /            LAYOUT CIRCOLARE HOMEPAGE                 /
 -----------------------------------------------------*/
 document.addEventListener('DOMContentLoaded', () => {
-    const scene = document.querySelector('.cards-scene');
-    if (!scene) return;
-    const cards = [
-        { id: 'hc1', angle: -90 },
-        { id: 'hc2', angle: -18 },
-        { id: 'hc3', angle: 54 },
-        { id: 'hc4', angle: 126 },
-        { id: 'hc5', angle: 198 },
-    ];
-    const r = 240;
-    const cx = scene.offsetWidth / 2;
-    const cy = scene.offsetHeight / 2;
-    cards.forEach((c, i) => {
-        const el = document.getElementById(c.id);
-        if (!el) return;
-        const rad = (c.angle * Math.PI) / 180;
-        const x = cx + Math.cos(rad) * r;
-        const y = cy + Math.sin(rad) * r;
-        el.style.left = x + 'px';
-        el.style.top = y + 'px';
-        setTimeout(() => {
-            el.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, box-shadow 0.25s ease, border-color 0.2s';
-            el.style.transform = 'translate(-50%, -50%)';
-            el.style.opacity = '1';
-            el.addEventListener('mouseenter', () => {
-                el.style.transform = 'translate(-50%, -50%) perspective(400px) rotateX(8deg) rotateY(-4deg) scale(1.1)';
-                el.style.boxShadow = '0 20px 40px rgba(0,0,0,0.6)';
-                el.style.borderColor = 'rgba(255,255,255,0.2)';
-            });
-            el.addEventListener('mouseleave', () => {
+    setTimeout(() => {
+        const scene = document.querySelector('.cards-scene');
+        if (!scene) return;
+        const cards = [
+            { id: 'hc1', angle: -90 },
+            { id: 'hc2', angle: -18 },
+            { id: 'hc3', angle: 54 },
+            { id: 'hc4', angle: 126 },
+            { id: 'hc5', angle: 198 },
+        ];
+        const cx = scene.offsetWidth / 2;
+        const cy = scene.offsetHeight / 2;
+        const r = Math.min(cx, cy) * 0.80;
+        cards.forEach((c, i) => {
+            const el = document.getElementById(c.id);
+            if (!el) return;
+            const rad = (c.angle * Math.PI) / 180;
+            const x = cx + Math.cos(rad) * r;
+            const y = cy + Math.sin(rad) * r;
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            setTimeout(() => {
+                el.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, box-shadow 0.25s ease, border-color 0.2s';
                 el.style.transform = 'translate(-50%, -50%)';
-                el.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
-                el.style.borderColor = 'rgba(255,255,255,0.08)';
-            });
-            el.addEventListener('mousedown', () => {
-                el.style.transform = 'translate(-50%, -50%) scale(0.96)';
-            });
-            el.addEventListener('mouseup', () => {
-                el.style.transform = 'translate(-50%, -50%)';
-            });
-        }, 100 + i * 80);
-    });
+                el.style.opacity = '1';
+                el.addEventListener('mouseenter', () => {
+                    el.style.transform = 'translate(-50%, -50%) perspective(400px) rotateX(8deg) rotateY(-4deg) scale(1.1)';
+                    el.style.boxShadow = '0 20px 40px rgba(0,0,0,0.6)';
+                    el.style.borderColor = 'rgba(255,255,255,0.2)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = 'translate(-50%, -50%)';
+                    el.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
+                    el.style.borderColor = 'rgba(255,255,255,0.08)';
+                });
+                el.addEventListener('mousedown', () => {
+                    el.style.transform = 'translate(-50%, -50%) scale(0.96)';
+                });
+                el.addEventListener('mouseup', () => {
+                    el.style.transform = 'translate(-50%, -50%)';
+                });
+            }, 100 + i * 80);
+        });
+    }, 50);
 });

@@ -1,0 +1,275 @@
+ /* ----------------------------------------------------
+/                 ELENCO VEICOLI                       /
+-----------------------------------------------------*/
+
+@keyframes vl-fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes vl-fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.vl-dashboard {
+    padding: 16px 24px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+ /* ----------------------------------------------------
+/                 CARD SECTION                         /
+-----------------------------------------------------*/
+.vl-section-card {
+    background: var(--surface);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    border-radius: 14px;
+    overflow: hidden;
+    opacity: 0;
+    animation: vl-fadeUp 0.5s ease forwards;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.vl-section-bar {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(249, 115, 22, 0.1);
+    background: rgba(249, 115, 22, 0.06);
+}
+
+.vl-section-bar i {
+    font-size: 0.9rem;
+    color: #f97316;
+}
+
+.vl-section-bar span {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.vl-section-body {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+ /* ----------------------------------------------------
+/                 VEICOLO ROW                          /
+-----------------------------------------------------*/
+.vl-veicolo-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 0.5px solid rgba(249, 115, 22, 0.15);
+    border-radius: 12px;
+    padding: 12px 14px;
+    transition: 0.2s;
+    opacity: 0;
+    animation: vl-fadeIn 0.35s ease forwards;
+}
+
+.vl-veicolo-row:hover {
+    border-color: rgba(249, 115, 22, 0.4);
+    background: rgba(249, 115, 22, 0.04);
+}
+
+.vl-veicolo-row.attivo {
+    border-color: #f97316;
+    background: rgba(249, 115, 22, 0.06);
+}
+
+.vl-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: rgba(249, 115, 22, 0.08);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: #f97316;
+    flex-shrink: 0;
+}
+
+.vl-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.vl-nome {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--white);
+}
+
+.vl-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.vl-targa {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #f97316;
+    letter-spacing: 1px;
+    background: rgba(249, 115, 22, 0.1);
+    border: 0.5px solid rgba(249, 115, 22, 0.3);
+    padding: 2px 8px;
+    border-radius: 5px;
+}
+
+.vl-tipo {
+    font-size: 0.7rem;
+    color: var(--muted);
+}
+
+.vl-stato {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.vl-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.vl-badge.ok {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+    border: 0.5px solid rgba(74, 222, 128, 0.3);
+}
+
+.vl-badge.ko {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+    border: 0.5px solid rgba(248, 113, 113, 0.3);
+}
+
+[data-theme="dark"] .vl-badge.ok {
+    background: rgba(74, 222, 128, 0.1);
+}
+
+[data-theme="dark"] .vl-badge.ko {
+    background: rgba(248, 113, 113, 0.1);
+}
+
+ /* ----------------------------------------------------
+/                       AZIONI                         /
+-----------------------------------------------------*/
+.vl-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.vl-icon-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    background: none;
+    color: rgba(249, 115, 22, 0.85);
+    transition: 0.2s;
+    font-size: 0.8rem;
+}
+
+.vl-icon-btn:hover {
+    border-color: #f97316;
+    color: #f97316;
+    background: rgba(249, 115, 22, 0.08);
+}
+
+.vl-icon-btn.del:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+}
+
+ /* ----------------------------------------------------
+/                 STATO VUOTO                          /
+-----------------------------------------------------*/
+.vl-empty {
+    text-align: center;
+    padding: 30px 16px;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.vl-empty i {
+    font-size: 1.6rem;
+    color: rgba(249, 115, 22, 0.4);
+    display: block;
+    margin-bottom: 10px;
+}
+
+ /* ----------------------------------------------------
+/                 ADD VEICOLO                          /
+-----------------------------------------------------*/
+.vl-aggiungi-wrap {
+    display: flex;
+    justify-content: center;
+}
+
+ /* ----------------------------------------------------
+/                 RESPONSIVE                           /
+-----------------------------------------------------*/
+@media (max-width: 768px) {
+    .vl-dashboard {
+        padding: 12px 16px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .vl-dashboard {
+        padding: 8px 12px 20px;
+    }
+
+    .vl-veicolo-row {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .vl-info {
+        flex-basis: calc(100% - 60px);
+    }
+
+    .vl-stato {
+        flex-direction: row;
+        align-items: center;
+        margin-left: 60px;
+    }
+
+    .vl-actions {
+        margin-left: auto;
+    }
+}

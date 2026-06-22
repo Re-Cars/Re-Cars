@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RE|CARS-Abbonamenti</title>
+    <title>RE|CARS — Abbonamenti</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
-    <link rel="stylesheet" href="style_abbonamento.css">
+    <link rel="stylesheet" href="style-account.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
+    <script src="functions-abbonamenti.js" defer></script>
 </head>
 
 <body>
 
-<div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
-
             <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
                 <span class="line line1"></span>
                 <span class="line line2"></span>
@@ -28,15 +29,13 @@
                 <span class="line line4"></span>
             </div>
         </div>
-
         <nav class="sidebar-nav">
-            <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
-            <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
-            <a href="impostazioni.html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
-            <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
-            <a href="imp_infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+            <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+            <a href="veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
+            <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti</a>
+            <a href="info-domande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
             <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
-            <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+            <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
             <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
     </div>
@@ -50,300 +49,117 @@
             </a>
         </div>
         <div class="header-right">
-           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
-            <div class="header-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>   -->
-
-               <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
-                    <div class="header-avatar"> 
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <div class="avatar-dropdown" id="avatar-dropdown">
-                            <div class="avatar-header">
-                                <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
-                            </div>                
-                            <a href="il_mio_account.html" class="avatar-item">
-                            <i class="fa-solid fa-pen"></i>
-                            <span>Modifica profilo</span>
-                        </a>
-                        <a href="landing.html" class="avatar-item avatar-item-logout">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>Logout</span>
-                        </a>
-                    </div>
+            <button id="theme-toggle" onclick="toggleTheme()" class="theme-toggle-btn">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar">
+                    <i class="fa-solid fa-user"></i>
                 </div>
-
-            
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                    </div>
+                    <a href="account.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica profilo</span>
+                    </a>
+                    <a href="landing.html" class="avatar-item avatar-item-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </header>
-<div class="page-wrapper">
+
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
         <span>›</span>
         <span>Abbonamenti</span>
     </div>
 
-    <!-- <section class="page-hero">
-       <h2 class="section-title-page">Abbonamenti</h2>
-    </section>-->
+    <section class="abb-dashboard">
 
-  <h6 class="sotto-title">Scegli il tuo piano</h6>
-  <p class="page-sub">Gestisci i tuoi veicoli con il piano più adatto alle tue esigenze.</p>
-
-  <div class="plans-grid">
-
-        <!-- FREE -->
-        <div class="plan-card">
-          <h2 class="plan-name">PIANO GRATUITO</h2>
-
-          <p class="plan-section-label">Veicoli</p>
-          <ul class="plan-features">
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Registrazione fino a 2 veicoli</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Storico interventi base</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Annotazione problemi veicolo</li>
-          </ul>
-
-          <p class="plan-section-label">Notifiche</p>
-          <ul class="plan-features">
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Notifiche scadenze</li>
-            <li><svg class="icon-x" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>Promemoria manutenzione</li>
-          </ul>
-
-          <p class="plan-section-label">Officine</p>
-          <ul class="plan-features">
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Ricerca officine vicine</li>
-            <li><svg class="icon-x" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>Prenotazione officina</li>
-            <li><svg class="icon-x" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>Recensioni officine</li>
-          </ul>
-
-          <p class="plan-section-label">Pubblicità</p>
-          <ul class="plan-features">
-            <li><svg class="icon-warn" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>Pubblicità presente</li>
-          </ul>
-
-          <div class="plan-footer">
-            <div class="plan-price">Gratis</div>
-            <button class="btn-abbonati disabled" disabled>ATTIVO</button>
-          </div>
-          <p class="plan-note">Piano corrente</p>
-        </div>
-
-        <!-- GOLD -->
-        <div class="plan-card featured">
-          <div class="plan-badge">Popolare</div>
-          <h2 class="plan-name">PIANO GOLD</h2>
-
-          <p class="plan-section-label">Veicoli</p>
-          <ul class="plan-features">
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Fino a 5 veicoli</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Storico completo interventi</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Cronologia problemi veicolo</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Memoria e archiviazione dati</li>
-          </ul>
-
-          <p class="plan-section-label">Notifiche</p>
-          <ul class="plan-features">
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Notifiche scadenze personalizzate</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Promemoria manutenzione preventiva</li>
-          </ul>
-
-          <p class="plan-section-label">Officine</p>
-          <ul class="plan-features">
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Ricerca + filtro qualità/prezzo</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Prenotazione officina</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Recensioni e community</li>
-          </ul>
-
-          <p class="plan-section-label">Pubblicità</p>
-          <ul class="plan-features">
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>0 pubblicità</li>
-          </ul>
-
-          <div class="plan-footer">
-            <div class="plan-price">€ 4,99 <span>/mese</span></div>
-            <button class="btn-abbonati" onclick="goToPagamento('gold','4.99')">ABBONATI</button>
-          </div>
-        </div>
-
-        <!-- PREMIUM -->
-        <div class="plan-card">
-          <h2 class="plan-name">PIANO PREMIUM</h2>
-
-          <p class="plan-section-label">Veicoli</p>
-          <ul class="plan-features">
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Veicoli illimitati</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Storico completo + grafici costi</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Cronologia problemi avanzata</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Archivio documenti veicolo</li>
-          </ul>
-
-          <p class="plan-section-label">Notifiche</p>
-          <ul class="plan-features">
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Tutte le notifiche Gold</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Analisi consumi e risparmio</li>
-          </ul>
-
-          <p class="plan-section-label">Officine</p>
-          <ul class="plan-features">
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Prenotazione prioritaria</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Storico interventi per officina</li>
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Supporto dedicato clienti</li>
-          </ul>
-
-          <p class="plan-section-label">Pubblicità</p>
-          <ul class="plan-features">
-            <li><svg class="icon-check" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>0 pubblicità</li>
-          </ul>
-
-          <div class="plan-footer">
-            <div class="plan-price">€ 9,99 <span>/mese</span></div>
-            <button class="btn-abbonati" onclick="goToPagamento('premium','9.99')">ABBONATI</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- PAGE 2: Pagamento -->
-  <div class="pg" id="pg-pag">
-    <div class="breadcrumb">
-      <i class="ti ti-home" aria-hidden="true"></i>
-      <a href="#" onclick="showPage('abb');return false">Abbonamenti</a>
-      <span>›</span><span>Dati di Pagamento</span>
-    </div>
-
-    <div style="padding-top:20px">
-    <div class="payment-card">
-
-      <div class="billing-panel">
-        <h2 class="panel-title">
-          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
-          DATI DI FATTURAZIONE
-        </h2>
-        <div class="form-grid">
-          <div class="section-label-form">Intestatario</div>
-          <div class="form-group">
-            <label for="nome">Nome *</label>
-            <input type="text" id="nome" placeholder="Mario"/>
-            <span class="field-error" id="err-nome">Inserisci il nome</span>
-          </div>
-          <div class="form-group">
-            <label for="cognome">Cognome *</label>
-            <input type="text" id="cognome" placeholder="Rossi"/>
-            <span class="field-error" id="err-cognome">Inserisci il cognome</span>
-          </div>
-          <div class="form-group full">
-            <label for="email">Email *</label>
-            <input type="email" id="email" placeholder="mario.rossi@email.com"/>
-            <span class="field-error" id="err-email">Email non valida</span>
-          </div>
-          <div class="form-group full">
-            <label for="indirizzo">Indirizzo *</label>
-            <input type="text" id="indirizzo" placeholder="Via Roma, 1"/>
-            <span class="field-error" id="err-indirizzo">Inserisci l'indirizzo</span>
-          </div>
-          <div class="form-group">
-            <label for="citta">Città *</label>
-            <input type="text" id="citta" placeholder="Palermo"/>
-            <span class="field-error" id="err-citta">Inserisci la città</span>
-          </div>
-          <div class="form-group">
-            <label for="cap">CAP *</label>
-            <input type="text" id="cap" placeholder="90100" maxlength="5"/>
-            <span class="field-error" id="err-cap">CAP non valido</span>
-          </div>
-          <div class="form-group full">
-            <label for="cf">Codice Fiscale / P.IVA</label>
-            <input type="text" id="cf" placeholder="Opzionale"/>
-          </div>
-          <div class="section-label-form">Dati Carta</div>
-          <div class="form-group full">
-            <label for="card-number">Numero Carta *</label>
-            <div class="card-input-wrap">
-              <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)"/>
+        <div class="abb-piano-attivo" id="abb-piano-attivo">
+            <div class="abb-piano-left">
+                <span class="abb-piano-label">Piano attivo</span>
+                <span class="abb-piano-nome" id="abb-piano-nome">—</span>
+                <span class="abb-piano-sub" id="abb-piano-sub">—</span>
             </div>
-            <span class="field-error" id="err-card">Numero carta non valido</span>
-          </div>
-          <div class="form-group">
-            <label for="expiry">Scadenza *</label>
-            <input type="text" id="expiry" placeholder="MM/AA" maxlength="5" oninput="formatExpiry(this)"/>
-            <span class="field-error" id="err-expiry">Data non valida</span>
-          </div>
-          <div class="form-group">
-            <label for="cvv">CVV *</label>
-            <input type="password" id="cvv" placeholder="•••" maxlength="4"/>
-            <span class="field-error" id="err-cvv">CVV non valido</span>
-          </div>
+            <span class="abb-piano-stato">
+                <span class="abb-piano-stato-dot"></span>
+                Attivo
+            </span>
         </div>
-      </div>
 
-      <div class="summary-panel">
-        <h2 class="plan-summary-title">
-          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-          TIPO ABBONAMENTO
-        </h2>
-        <div class="plan-tag">
-          <svg viewBox="0 0 24 24"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/></svg>
-          <span id="plan-label">Piano Gold</span>
+        <div class="abb-section-title">Scegli il tuo piano</div>
+
+        <div class="abb-piani-grid">
+
+            <div class="abb-piano-card free" id="card-base">
+                <div class="abb-piano-card-content">
+                    <div>
+                        <div class="abb-piano-card-nome">Base</div>
+                        <div class="abb-piano-card-prezzo">Gratis</div>
+                        <div class="abb-piano-card-desc">Per iniziare a gestire i tuoi veicoli</div>
+                    </div>
+                    <div class="abb-piano-features">
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> 1 veicolo</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Storico interventi base</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Notifiche scadenze</div>
+                        <div class="abb-feature no"><i class="fa-solid fa-xmark"></i> Prenotazione officine</div>
+                        <div class="abb-feature no"><i class="fa-solid fa-xmark"></i> Recensioni officine</div>
+                        <div class="abb-feature no"><i class="fa-solid fa-xmark"></i> Supporto prioritario</div>
+                    </div>
+                    <button class="abb-btn ghost" id="btn-base"></button>
+                </div>
+            </div>
+
+            <div class="abb-piano-card popolare" id="card-premium">
+                <span class="abb-popolare-badge">Più popolare</span>
+                <div class="abb-piano-card-content">
+                    <div>
+                        <div class="abb-piano-card-nome">Premium</div>
+                        <div class="abb-piano-card-prezzo">4,99€<span>/mese</span></div>
+                        <div class="abb-piano-card-desc">Per chi vuole il massimo dalla propria auto</div>
+                    </div>
+                    <div class="abb-piano-features">
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Fino a 5 veicoli</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Storico completo interventi</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Notifiche personalizzate</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Prenotazione officine</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Recensioni officine</div>
+                        <div class="abb-feature no"><i class="fa-solid fa-xmark"></i> Supporto prioritario</div>
+                    </div>
+                    <button class="abb-btn cta" id="btn-premium"></button>
+                </div>
+            </div>
+
+            <div class="abb-piano-card" id="card-pro">
+                <div class="abb-piano-card-content">
+                    <div>
+                        <div class="abb-piano-card-nome">Pro</div>
+                        <div class="abb-piano-card-prezzo">9,99€<span>/mese</span></div>
+                        <div class="abb-piano-card-desc">Per chi gestisce più veicoli e vuole tutto</div>
+                    </div>
+                    <div class="abb-piano-features">
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Veicoli illimitati</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Storico + grafici costi</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Notifiche avanzate</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Prenotazione prioritaria</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Recensioni + community</div>
+                        <div class="abb-feature ok"><i class="fa-solid fa-check"></i> Supporto prioritario</div>
+                    </div>
+                    <button class="abb-btn cta" id="btn-pro"></button>
+                </div>
+            </div>
+
         </div>
-        <ul class="summary-features" id="summary-features"></ul>
-        <div class="summary-rows">
-          <div class="summary-row"><span class="lbl">Piano</span><span class="val" id="sum-piano">Gold</span></div>
-          <div class="summary-row"><span class="lbl">Durata</span><span class="val">Mensile</span></div>
-          <div class="summary-row"><span class="lbl">Rinnovo automatico</span><span class="val">Sì</span></div>
-          <div class="summary-row"><span class="lbl">IVA (22%)</span><span class="val" id="sum-iva">€ 0,00</span></div>
-          <hr class="summary-divider"/>
+
+        <div class="abb-stripe-note">
+            <i class="fa-solid fa-lock"></i>
+            Il pagamento è gestito in modo sicuro da Stripe. Non conserviamo i dati della tua carta. Disdici in qualsiasi momento.
         </div>
-        <div class="summary-total">
-          <span class="lbl">Totale oggi</span>
-          <span class="amount" id="sum-total">€ 0,00</span>
-        </div>
-        <div class="secure-badge">
-          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-          Pagamento sicuro SSL
-        </div>
-        <button class="btn-pay" onclick="submitPagamento()">ABBONATI ORA</button>
-        <p class="terms-note">Procedendo accetti i <a href="#">Termini</a> e la <a href="#">Privacy Policy</a>. Disdici in qualsiasi momento.</p>
-      </div>
-    </div>
-    </div>
 
-    <div class="success-overlay" id="successOverlay">
-      <div class="success-modal">
-        <div class="success-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
-        <h2>Abbonamento Attivato!</h2>
-        <p>Il tuo piano <strong id="modal-plan"></strong> è stato attivato con successo. Riceverai conferma via email.</p>
-        <button class="btn-back" onclick="showPage('abb')">Torna agli Abbonamenti</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-const pianiInfo={gold:{label:'Piano Gold',nome:'Gold',prezzo:4.99,features:['Fino a 5 veicoli','Storico completo interventi','Notifiche scadenze personalizzate','Prenotazione officina','Recensioni e community','0 pubblicità']},premium:{label:'Piano Premium',nome:'Premium',prezzo:9.99,features:['Veicoli illimitati','Storico completo + grafici costi','Archivio documenti veicolo','Analisi consumi e risparmio','Prenotazione prioritaria','Supporto dedicato clienti','0 pubblicità']}};
-function showPage(id){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));document.getElementById('pg-'+id).classList.add('active')}
-function goToPagamento(key,pr){
-  const piano=pianiInfo[key]||pianiInfo.gold;
-  document.getElementById('plan-label').textContent=piano.label;
-  document.getElementById('sum-piano').textContent=piano.nome;
-  document.getElementById('modal-plan').textContent=piano.label;
-  const iva=+(piano.prezzo*0.22).toFixed(2);
-  const tot=+(piano.prezzo+iva).toFixed(2);
-  document.getElementById('sum-iva').textContent='€ '+iva.toFixed(2).replace('.',',');
-  document.getElementById('sum-total').textContent='€ '+tot.toFixed(2).replace('.',',');
-  const ul=document.getElementById('summary-features');ul.innerHTML='';
-  piano.features.forEach(f=>{const li=document.createElement('li');li.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>'+f;ul.appendChild(li)});
-  showPage('pag');
-}
-function formatCard(i){let v=i.value.replace(/\D/g,'').substring(0,16);i.value=v.replace(/(.{4})/g,'$1 ').trim()}
-function formatExpiry(i){let v=i.value.replace(/\D/g,'').substring(0,4);if(v.length>=2)v=v.substring(0,2)+'/'+v.substring(2);i.value=v}
-function showErr(id,show){const el=document.getElementById('err-'+id);const inp=document.getElementById(id==='card'?'card-number':id);if(el)el.classList.toggle('show',show);if(inp)inp.classList.toggle('error',show)}
-function validate(){let ok=true;['nome','cognome','email','indirizzo','citta','cap'].forEach(f=>{const v=document.getElementById(f).value.trim();showErr(f,!v);if(!v)ok=false});const email=document.getElementById('email').value.trim();if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('email',true);ok=false}const cap=document.getElementById('cap').value.trim();if(cap&&!/^\d{5}$/.test(cap)){showErr('cap',true);ok=false}const card=document.getElementById('card-number').value.replace(/\s/g,'');showErr('card',card.length<13);if(card.length<13)ok=false;const exp=document.getElementById('expiry').value;showErr('expiry',!/^\d{2}\/\d{2}$/.test(exp));if(!/^\d{2}\/\d{2}$/.test(exp))ok=false;const cvv=document.getElementById('cvv').value;showErr('cvv',!/^\d{3,4}$/.test(cvv));if(!/^\d{3,4}$/.test(cvv))ok=false;return ok}
-function submitPagamento(){if(!validate())return;document.getElementById('successOverlay').classList.add('show')}
-</script>
-
-</body>
-
-</html>
+    </section>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE|CARS — Profilo Officina</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-officina.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-app.js" defer></script>
+    <script src="functions-profilo-officina.js" defer></script>
+</head>
+
+<body>
+
+    <!-- OVERLAY MODIFICA CAMPO -->
+    <div class="po-overlay" id="po-modifica-overlay">
+        <div class="po-modal">
+            <div class="po-modal-title">
+                <i class="fa-solid fa-pen po-icon-brand"></i>
+                <span id="po-modifica-titolo">Modifica campo</span>
+            </div>
+            <input type="text" id="po-modifica-input" class="po-input">
+            <p class="po-error" id="po-modifica-error"></p>
+            <div class="po-modal-actions">
+                <button class="po-btn-ghost" onclick="chiudiModifica()">Annulla</button>
+                <button class="po-btn-primary" onclick="salvaModifica()">Salva</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY CONFERMA ELIMINA -->
+    <div class="po-overlay" id="po-elimina-overlay">
+        <div class="po-modal po-modal-danger">
+            <div class="po-modal-title">
+                <i class="fa-solid fa-trash po-icon-danger"></i>
+                <span>Elimina profilo</span>
+            </div>
+            <p class="po-modal-sub">Questa azione è irreversibile. Tutti i dati e le prenotazioni verranno eliminati permanentemente.</p>
+            <div class="po-modal-actions">
+                <button class="po-btn-ghost" onclick="chiudiOverlay('po-elimina-overlay')">Annulla</button>
+                <button class="po-btn-danger" onclick="eliminaProfilo()">Elimina definitivamente</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">RE<span>|</span>CARS</span>
+            <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+                <span class="line line4"></span>
+            </div>
+        </div>
+            <nav class="sidebar-nav">
+                <a href="profilo-officina.html"><i class="fa-solid fa-building-user"></i> Profilo Officina</a>
+                <a href="prenotazioni-officina.html"><i class="fa-solid fa-calendar-check"></i> Prenotazioni</a>
+                <a href="officina-agenda.html"><i class="fa-solid fa-calendar-days"></i> Agenda</a>
+                <a href="abbonamenti-officina.html"><i class="fa-solid fa-credit-card"></i> Abbonamento</a>
+                <a href="#" class="sidebar-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </nav>
+    </div>
+
+    <header class="header">
+        <div class="header-left"></div>
+        <div class="header-center">
+            <a href="officina.html">
+                <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+                <span class="header-brand">RE<span>|</span>CARS</span>
+            </a>
+        </div>
+        <div class="header-right">
+            <button id="theme-toggle" onclick="toggleTheme()" class="theme-toggle-btn">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar">
+                    <i class="fa-solid fa-building-user"></i>
+                </div>
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                    </div>
+                    <a href="profilo-officina.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica profilo</span>
+                    </a>
+                    <a href="#" class="avatar-item avatar-item-logout" onclick="logout()">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="breadcrumb">
+        <a href="officina.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+        <span>›</span>
+        <span>Profilo Officina</span>
+    </div>
+
+    <div class="po-dashboard">
+
+        <!-- HERO -->
+        <div class="po-hero">
+            <div class="po-hero-logo">
+                <i class="fa-solid fa-building-user"></i>
+            </div>
+            <div class="po-hero-info">
+                <div class="po-hero-nome" id="po-hero-nome">Caricamento...</div>
+                <div class="po-hero-sub">
+                    <span><i class="fa-solid fa-location-dot"></i> <span id="po-hero-indirizzo">—</span></span>
+                    <span><i class="fa-solid fa-phone"></i> <span id="po-hero-telefono">—</span></span>
+                    <span><i class="fa-solid fa-envelope"></i> <span id="po-hero-email">—</span></span>
+                    <span class="po-abbonamento-badge" id="po-abbonamento-badge">
+                        <i class="fa-solid fa-crown"></i>
+                        <span id="po-abbonamento-piano">—</span>
+                    </span>
+                </div>
+                <div class="po-hero-actions">
+                    <button class="po-btn-primary" onclick="apriModifica('password')">
+                        <i class="fa-solid fa-key"></i> Cambia password
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="po-stats-grid">
+            <div class="po-stat">
+                <div class="po-stat-label">Prenotazioni totali</div>
+                <div class="po-stat-value" id="stat-totale">—</div>
+                <div class="po-stat-sub">da sempre</div>
+            </div>
+            <div class="po-stat">
+                <div class="po-stat-label">Questo mese</div>
+                <div class="po-stat-value" id="stat-mese">—</div>
+                <div class="po-stat-sub" id="stat-mese-sub">—</div>
+            </div>
+            <div class="po-stat">
+                <div class="po-stat-label">Completate</div>
+                <div class="po-stat-value" id="stat-completate">—</div>
+                <div class="po-stat-sub" id="stat-tasso">—</div>
+            </div>
+            <div class="po-stat">
+                <div class="po-stat-label">Ponti disponibili</div>
+                <div class="po-stat-value" id="stat-ponti">—</div>
+                <div class="po-stat-sub">configurati</div>
+            </div>
+        </div>
+
+        <!-- DATI OFFICINA -->
+        <div class="po-section">
+            <div class="po-section-bar">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Dati officina</span>
+            </div>
+            <div class="po-section-body">
+                <div class="po-field-row">
+                    <div class="po-field-lbl">
+                        <span>Nome officina</span>
+                        <span id="po-val-nome">—</span>
+                    </div>
+                    <button class="po-btn-edit" onclick="apriModifica('nome')">
+                        <i class="fa-solid fa-pen"></i> Modifica
+                    </button>
+                </div>
+                <div class="po-field-row">
+                    <div class="po-field-lbl">
+                        <span>Ragione sociale</span>
+                        <span id="po-val-ragione-sociale">—</span>
+                    </div>
+                    <button class="po-btn-edit" onclick="apriModifica('ragione_sociale')">
+                        <i class="fa-solid fa-pen"></i> Modifica
+                    </button>
+                </div>
+                <div class="po-field-row">
+                    <div class="po-field-lbl">
+                        <span>Partita IVA</span>
+                        <span id="po-val-piva">—</span>
+                    </div>
+                    <button class="po-btn-edit" onclick="apriModifica('partita_iva')">
+                        <i class="fa-solid fa-pen"></i> Modifica
+                    </button>
+                </div>
+                <div class="po-field-row">
+                    <div class="po-field-lbl">
+                        <span>Codice SDI</span>
+                        <span id="po-val-sdi">—</span>
+                    </div>
+                    <button class="po-btn-edit" onclick="apriModifica('codice_sdi')">
+                        <i class="fa-solid fa-pen"></i> Modifica
+                    </button>
+                </div>
+                <div class="po-field-row">
+                    <div class="po-field-lbl">
+                        <span>Email</span>
+                        <span id="po-val-email">—</span>
+                    </div>
+                    <button class="po-btn-edit" onclick="apriModifica('email')">
+                        <i class="fa-solid fa-pen"></i> Modifica
+                    </button>
+                </div>
+                <div class="po-field-row">
+                    <div class="po-field-lbl">
+                        <span>Telefono</span>
+                        <span id="po-val-telefono">—</span>
+                    </div>
+                    <button class="po-btn-edit" onclick="apriModifica('telefono')">
+                        <i class="fa-solid fa-pen"></i> Modifica
+                    </button>
+                </div>
+                <div class="po-field-row">
+                    <div class="po-field-lbl">
+                        <span>Indirizzo</span>
+                        <span id="po-val-indirizzo">—</span>
+                    </div>
+                    <button class="po-btn-edit" onclick="apriModifica('indirizzo')">
+                        <i class="fa-solid fa-pen"></i> Modifica
+                    </button>
+                </div>
+                <div class="po-field-row">
+                    <div class="po-field-lbl">
+                        <span>Ponti disponibili</span>
+                        <span id="po-val-ponti">—</span>
+                    </div>
+                    <button class="po-btn-edit" onclick="apriModifica('ponti_disponibili')">
+                        <i class="fa-solid fa-pen"></i> Modifica
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SERVIZI -->
+        <div class="po-section">
+            <div class="po-section-bar">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <span>Servizi offerti</span>
+            </div>
+            <div class="po-section-body">
+                <div class="po-tipi-grid" id="po-tipi-grid"></div>
+                <button class="po-btn-primary po-btn-salva-tipi" id="po-btn-salva-tipi" onclick="salvaTipi()" style="display:none">
+                    <i class="fa-solid fa-floppy-disk"></i> Salva modifiche
+                </button>
+            </div>
+        </div>
+
+        <!-- ABBONAMENTO -->
+        <div class="po-section">
+            <div class="po-section-bar">
+                <i class="fa-solid fa-credit-card"></i>
+                <span>Abbonamento</span>
+            </div>
+            <div class="po-section-body">
+                <div class="po-piano-row">
+                    <div class="po-piano-attivo-left">
+                        <span class="po-piano-label">Piano attivo</span>
+                        <span class="po-piano-nome" id="po-piano-nome">—</span>
+                        <span class="po-piano-sub" id="po-piano-sub">—</span>
+                    </div>
+                    <span class="po-piano-stato">
+                        <span class="po-piano-stato-dot"></span>
+                        Attivo
+                    </span>
+                </div>
+                <a href="abbonamenti-officina.html" class="po-btn-primary po-btn-gestisci">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    Gestisci abbonamento
+                </a>
+            </div>
+        </div>
+
+        <!-- ZONA PERICOLOSA -->
+        <div class="po-section po-danger-section">
+            <div class="po-section-bar po-danger-bar">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Zona pericolosa</span>
+            </div>
+            <div class="po-section-body">
+                <div class="po-danger-row">
+                    <div class="po-danger-text">
+                        <p>Elimina profilo officina</p>
+                        <p>Azione irreversibile. Tutti i dati e le prenotazioni verranno eliminati permanentemente.</p>
+                    </div>
+                    <button class="po-btn-danger" onclick="apriOverlay('po-elimina-overlay')">
+                        <i class="fa-solid fa-trash"></i> Elimina
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

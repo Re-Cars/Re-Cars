@@ -2,25 +2,27 @@
 <html lang="it">
 
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RE|CARS-Prenotazioni</title>
+    <title>RE|CARS — Cerca Officina</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-prenotazione-utente.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="functions-prenotazione-utente.js" defer></script>
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
 </head>
 
 <body>
-
 <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
-
             <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
                 <span class="line line1"></span>
                 <span class="line line2"></span>
@@ -28,15 +30,13 @@
                 <span class="line line4"></span>
             </div>
         </div>
-
         <nav class="sidebar-nav">
-            <a href="il_mio_account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
-            <a href="imp_imiei_veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
-            <a href="impostazioni.html"><i class="fa-solid fa-gear"></i> Impostazioni</a>
-            <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
-            <a href="imp_infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+            <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+            <a href="veicoli.html"><i class="fa-solid fa-car"></i> Veicolo</a>
+            <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti</a>
+            <a href="info-domande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
             <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
-            <a href="terminie e policy privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+            <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
             <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
     </div>
@@ -44,122 +44,166 @@
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <a href="homepage.html">
-                <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
-                <span class="header-brand">RE<span>|</span>CARS</span>
-            </a>
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+            <span class="header-brand">RE<span>|</span>CARS</span>
         </div>
         <div class="header-right">
-
-            <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
+            <button id="theme-toggle" onclick="toggleTheme()" class="btn-theme-toggle">
                 <i class="fa-solid fa-moon" id="theme-icon"></i>
             </button>
-
-               <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
-                    <div class="header-avatar"> 
-                        <i class="fa-solid fa-user"></i>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
                     </div>
-                    <div class="avatar-dropdown" id="avatar-dropdown">
-                            <div class="avatar-header">
-                                <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
-                            </div>                
-                            <a href="il_mio_account.html" class="avatar-item">
-                            <i class="fa-solid fa-pen"></i>
-                            <span>Modifica profilo</span>
-                        </a>
-                        <a href="landing.html" class="avatar-item avatar-item-logout">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>Logout</span>
-                        </a>
-                    </div>
+                    <a href="account.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i><span>Modifica profilo</span>
+                    </a>
+                    <a href="landing.html" class="avatar-item avatar-item-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+                    </a>
                 </div>
-
-            
+            </div>
         </div>
     </header>
 
     <div class="breadcrumb">
-        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
-        <span>›</span>
-        <span>Prenotazioni</span>
+        <a href="homepage.html">Home</a>
+        <i class="fa-solid fa-chevron-right" style="font-size:0.7rem;"></i>
+        <span>Cerca Officine</span>
     </div>
 
-    <section class="home-intro">
-        <div class="home-intro-veicolo">
-            <div class="veicolo-dot"></div>
-            <span id="nome-veicolo-attivo">Caricamento...</span>
+    <main class="section section-no-top">
+
+        <div class="page-hero">
+            <h1 class="section-title-page"><i class="fa-solid fa-magnifying-glass"></i> Cerca Officina</h1>
+            <p class="section-subtitle">Trova la migliore officina vicino a te</p>
         </div>
-        <div class="veicolo-switcher" id="veicolo-switcher">
-            <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
-                <span id="switcher-label">
-                    <i class="fa-solid fa-warehouse"></i>
-                    <span id="veicoli-counter"></span>
-                </span>
-                <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
-            </button>
-            <div class="switcher-dropdown" id="switcher-dropdown"></div>
-        </div>
-    </section>
 
-
-    <section class="page-hero">
-        <h2 class="section-title-page">Prenota Officina</h2>
-    </section>
-
-    <section class="section">
-        <div class="section-row">
-
-            <div class="card">
-                <h3><i class="fa-solid fa-magnifying-glass"></i> Cerca Officina</h3>
-                <div class="input-group">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <input type="text" placeholder="Città o indirizzo">
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-calendar"></i>
-                    <input type="date">
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-wrench"></i>
-                    <select>
-                        <option value="">— Tipo di officina —</option>
-                        <option>Meccanica</option>
-                        <option>Carrozzeria</option>
-                        <option>Gommista</option>
-                        <option>Elettrauto</option>
-                        <option>Multimarca</option>
-                        <option>Concessionaria</option>
-                        <option>Tagliando</option>
-                        <option>Revisione</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-car"></i>
-                    <select>
-                        <option value="">— Seleziona veicolo —</option>
-                    </select>
-                </div>
-                <button class="btn-landing btn-prenotazioni">
-                    <i class="fa-solid fa-search"></i> Cerca
+        <div class="search-container">
+            <div class="input-group search-bar-wrapper">
+                <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted);"></i>
+                <input id="input-ricerca" type="text" placeholder="Tipo di servizio, nome officina...">
+                <button id="btn-gps" class="btn-info-veicolo btn-gps-spec">
+                    <i class="fa-solid fa-location-crosshairs"></i> GPS
                 </button>
             </div>
 
-            <div class="card">
-                <h3><i class="fa-solid fa-list"></i> Officine Trovate</h3>
-                <p>Inserisci luogo, data e tipo per cercare.</p>
+            <div id="filtri-categorie" class="categories-wrapper"></div>
+        </div>
+
+        <div class="main-grid">
+
+            <div class="left-column">
+                <div class="list-meta">
+                    <span id="risultati-count">— risultati</span>
+                    <span id="sort-btn" onclick="toggleSort()">
+                        Più vicine <i class="fa-solid fa-chevron-down"></i>
+                    </span>
+                </div>
+
+                <div id="officine-list"></div>
+
+                <div id="lista-skeleton" class="skeleton-list-container">
+                    <div class="skeleton" style="height:90px;"></div>
+                    <div class="skeleton" style="height:90px;"></div>
+                    <div class="skeleton" style="height:90px;"></div>
+                </div>
+
+                <div id="no-results" class="stato-box u-display-none">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <p style="margin:0;">Nessuna officina trovata</p>
+                </div>
+
+                <div id="lista-errore" class="stato-box u-display-none">
+                    <i class="fa-solid fa-triangle-exclamation" style="color:#f87171;"></i>
+                    <p style="margin:0;color:#f87171;">Impossibile caricare le officine</p>
+                    <button class="btn-info-veicolo btn-retry" onclick="caricaOfficine()">
+                        <i class="fa-solid fa-rotate-right"></i> Riprova
+                    </button>
+                </div>
+            </div>
+
+            <div class="right-column">
+                <div style="position:relative;">
+                    <div id="mappa-leaflet"></div>
+                    <button onclick="apriMappa()" class="btn-open-map">
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="color:#f97316;"></i> Apri Mappa
+                    </button>
+                </div>
+
+                <div id="dettaglio-skeleton" class="card show skeleton-detail-box">
+                    <div class="skeleton" style="height:28px;width:60%;"></div>
+                    <div class="skeleton" style="height:16px;width:40%;"></div>
+                    <div class="skeleton-grid-3">
+                        <div class="skeleton" style="height:70px;border-radius:12px;"></div>
+                        <div class="skeleton" style="height:70px;border-radius:12px;"></div>
+                        <div class="skeleton" style="height:70px;border-radius:12px;"></div>
+                    </div>
+                    <div class="skeleton" style="height:40px;"></div>
+                    <div class="skeleton" style="height:48px;border-radius:12px;"></div>
+                </div>
+
+                <div id="dettaglio-box" class="card show detail-box-actual"></div>
             </div>
 
         </div>
-    </section>
+    </main>
 
-    <section class="section section-no-top">
-        <div class="section-row">
-            <div class="card">
-                <h3><i class="fa-solid fa-clock-rotate-left"></i> Le mie Prenotazioni</h3>
-                <p>Nessuna prenotazione effettuata.</p>
+    <div id="modal-prenotazione">
+        <div class="modal-box">
+            <button onclick="chiudiModal()" class="btn-modal-close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div>
+                <h2 class="modal-title">
+                    <i class="fa-solid fa-calendar-check" style="color:#f97316;margin-right:8px;"></i>Prenota Appuntamento
+                </h2>
+                <p id="modal-officina-nome" class="modal-subtitle"></p>
             </div>
+
+            <div>
+                <label class="modal-label">Servizio</label>
+                <div class="input-group" style="border:1px solid var(--border);">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    <select id="modal-servizio">
+                        <option value="">Seleziona un servizio...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="modal-label">Data</label>
+                <div class="input-group" style="border:1px solid var(--border);">
+                    <i class="fa-regular fa-calendar"></i>
+                    <input type="date" id="modal-data">
+                </div>
+            </div>
+
+            <div>
+                <label class="modal-label">Orario</label>
+                <div id="modal-slots" class="modal-slots-container"></div>
+            </div>
+
+            <div>
+                <label class="modal-label">Note (opzionale)</label>
+                <div class="input-group input-group-textarea" style="border:1px solid var(--border);">
+                    <i class="fa-regular fa-comment"></i>
+                    <textarea id="modal-note" rows="2" placeholder="Es. portare a freddo, problema ai freni..."></textarea>
+                </div>
+            </div>
+
+            <div id="modal-feedback"></div>
+
+            <button onclick="confermaPrenotazione()" class="btn-aggiungi-garage btn-confirm-booking">
+                <i class="fa-solid fa-check"></i> Conferma Prenotazione
+            </button>
         </div>
-    </section>
+    </div>
+
+    <div id="toast"></div>
 
 </body>
 </html>

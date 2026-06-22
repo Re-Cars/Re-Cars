@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE|CARS — Agenda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-officina.css">
+    <link rel="stylesheet" href="style-officina-agenda.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-officina-agenda.js" defer></script>
+</head>
+
+<body>
+
+    <div class="ag-detail-overlay" id="ag-detail-overlay">
+        <div class="ag-detail-modal">
+            <div class="ag-detail-title">
+                <i class="fa-solid fa-calendar-check ag-icon-brand"></i>
+                <span id="ag-detail-titolo">Dettaglio</span>
+                <button class="ag-detail-close" onclick="chiudiDettaglio()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="ag-detail-content"></div>
+        </div>
+    </div>
+
+    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">RE<span>|</span>CARS</span>
+            <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+                <span class="line line4"></span>
+            </div>
+        </div>
+            <nav class="sidebar-nav">
+                <a href="profilo-officina.html"><i class="fa-solid fa-building-user"></i> Profilo Officina</a>
+                <a href="prenotazioni-officina.html"><i class="fa-solid fa-calendar-check"></i> Prenotazioni</a>
+                <a href="officina-agenda.html"><i class="fa-solid fa-calendar-days"></i> Agenda</a>
+                <a href="abbonamenti-officina.html"><i class="fa-solid fa-credit-card"></i> Abbonamento</a>
+                <a href="#" class="sidebar-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </nav>
+    </div>
+
+    <header class="header">
+        <div class="header-left"></div>
+        <div class="header-center">
+            <a href="officina.html">
+                <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+                <span class="header-brand">RE<span>|</span>CARS</span>
+            </a>
+        </div>
+        <div class="header-right">
+            <button id="theme-toggle" onclick="toggleTheme()" class="theme-toggle-btn">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar">
+                    <i class="fa-solid fa-building-user"></i>
+                </div>
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                    </div>
+                    <a href="profilo-officina.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica profilo</span>
+                    </a>
+                    <a href="#" class="avatar-item avatar-item-logout" onclick="logout()">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="breadcrumb">
+        <a href="officina.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+        <span>›</span>
+        <span>Agenda</span>
+    </div>
+
+    <div class="ag-layout">
+
+        <div class="ag-sidebar">
+
+            <div class="ag-mini-cal">
+                <div class="ag-mini-cal-header">
+                    <button class="ag-nav-btn" onclick="cambiaVista(-1)">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <span id="ag-mini-mese-label">—</span>
+                    <button class="ag-nav-btn" onclick="cambiaVista(1)">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="ag-mini-grid">
+                    <div class="ag-mini-day-name">L</div>
+                    <div class="ag-mini-day-name">M</div>
+                    <div class="ag-mini-day-name">M</div>
+                    <div class="ag-mini-day-name">G</div>
+                    <div class="ag-mini-day-name">V</div>
+                    <div class="ag-mini-day-name">S</div>
+                    <div class="ag-mini-day-name">D</div>
+                </div>
+                <div class="ag-mini-grid" id="ag-mini-cal-days"></div>
+            </div>
+
+            <div class="ag-slots-section">
+                <div class="ag-slots-title">Slot oggi</div>
+                <div id="ag-slots-oggi"></div>
+            </div>
+
+            <div class="ag-legenda">
+                <div class="ag-legenda-title">Legenda</div>
+                <div class="ag-legenda-item">
+                    <span class="ag-legenda-dot ag-ev-attesa"></span> In attesa
+                </div>
+                <div class="ag-legenda-item">
+                    <span class="ag-legenda-dot ag-ev-confermata"></span> Confermata
+                </div>
+                <div class="ag-legenda-item">
+                    <span class="ag-legenda-dot ag-ev-completata"></span> Completata
+                </div>
+                <div class="ag-legenda-item">
+                    <span class="ag-legenda-dot ag-ev-annullata"></span> Annullata
+                </div>
+            </div>
+
+        </div>
+
+        <div class="ag-main">
+            <div class="ag-main-header">
+                <div class="ag-main-title" id="ag-main-title">Settimana</div>
+                <div class="ag-view-toggle">
+                    <button class="ag-view-btn active" id="btn-settimana" onclick="setVista('settimana')">Settimana</button>
+                    <button class="ag-view-btn" id="btn-mese" onclick="setVista('mese')">Mese</button>
+                </div>
+            </div>
+
+            <div id="ag-calendario"></div>
+        </div>
+
+    </div>
+
+</body>
+</html>

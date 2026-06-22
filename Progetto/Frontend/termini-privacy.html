@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReCars — Termini&Privacy police</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-base.css">
+    <script src="functions-base.js" defer></script>
+    <script src="functions-app.js" defer></script>
+</head>
+<body>
+
+   <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <span class="sidebar-brand">RE<span>|</span>CARS</span>
+        </div>
+        <nav class="sidebar-nav">
+      <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+      <a href="veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
+      <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
+      <a href="infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+      <a href="#"><i class="fa-solid fa-envelope"></i> Contatti</a>
+       <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+      <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </nav>
+  </div>
+
+    <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+        <span class="line line1"></span>
+        <span class="line line2"></span>
+        <span class="line line3"></span>
+        <span class="line line4"></span>
+    </div>
+
+    <header class="header">
+        <div class="header-left"></div>
+        <div class="header-center">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+           <span class="header-brand">RE<span>|</span>CARS</span>
+        </div>
+        <div class="header-right">
+           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
+            <div class="header-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>   -->
+
+               <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                    <div class="header-avatar"> 
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="avatar-dropdown" id="avatar-dropdown">
+                            <div class="avatar-header">
+                                <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                            </div>                
+                            <a href="account.html" class="avatar-item">
+                            <i class="fa-solid fa-pen"></i>
+                            <span>Modifica profilo</span>
+                        </a>
+                        <a href="landing.html" class="avatar-item avatar-item-logout">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+
+            
+        </div>
+    </header>
+
+    <div class="breadcrumb">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
+        <span>›</span>
+        <span>termini e privacy police</span>
+    </div>
+
+    <section class="page-hero">
+        <h2 class="section-title-page">termini e privacy police</h2>
+        <p>Ultimo aggiornamento: [DATA]</p>
+
+    </section>
+
+    <section class="termini_e_privacy">
+     
+    <div class="section">
+
+    <h2>Introduzione</h2>
+
+    <p>
+    Questa pagina descrive i Termini di Servizio e la Privacy Policy dell'applicazione <strong>YOUdrive / RECARS</strong>.
+    </p>
+
+    <p>
+    L'app consente agli utenti di:
+    </p>
+
+    <ul>
+    <li>Gestire informazioni sui propri veicoli</li>
+    <li>Annotare manutenzioni e interventi</li>
+    <li>Prenotare appuntamenti presso officine o meccanici</li>
+    <li>Pubblicare recensioni sui servizi ricevuti</li>
+    </ul>
+
+    </div>
+
+
+    <div class="section">
+
+    <h2>Titolare del Servizio</h2>
+
+    <p>
+    Titolare del trattamento dei dati:
+    </p>
+
+    <div class="highlight">
+    <p><strong>[Nome Azienda / Sviluppatore]</strong></p>
+    <p>Email: [email]</p>
+    <p>Indirizzo: [indirizzo]</p>
+    </div>
+
+    </div>
+
+
+    <div class="section">
+
+    <h2>Dati Raccolti</h2>
+
+    <h3>Dati forniti dall'utente</h3>
+
+    <ul>
+    <li>Nome e cognome</li>
+    <li>Email</li>
+    <li>Numero di telefono (opzionale)</li>
+    <li>Dati del veicolo (marca, modello, targa, chilometraggio)</li>
+    <li>Note e manutenzioni</li>
+    <li>Recensioni pubblicate</li>
+    </ul>
+
+    <h3>Dati tecnici</h3>
+
+    <ul>
+    <li>Indirizzo IP</li>
+    <li>Tipo di dispositivo</li>
+    <li>Sistema operativo</li>
+    <li>Dati di utilizzo dell'app</li>
+    </ul>
+
+    </div>
+
+
+    <div class="section">
+
+    <h2>Finalità del Trattamento</h2>
+
+    <p>I dati vengono utilizzati per:</p>
+
+    <ul>
+    <li>Fornire i servizi dell'app</li>
+    <li>Gestire prenotazioni con officine</li>
+    <li>Consentire la pubblicazione di recensioni</li>
+    <li>Migliorare il servizio</li>
+    <li>Garantire sicurezza della piattaforma</li>
+    </ul>
+
+    </div>
+
+
+    <div class="section">
+
+    <h2>Condivisione dei Dati</h2>
+
+    <p>I dati possono essere condivisi con:</p>
+
+    <ul>
+    <li>Officine coinvolte negli appuntamenti</li>
+    <li>Servizi cloud e hosting</li>
+    <li>Strumenti di analisi delle prestazioni</li>
+    </ul>
+
+    <p>I dati non vengono venduti a terzi.</p>
+
+    </div>
+
+
+    <div class="section">
+
+    <h2>Conservazione dei Dati</h2>
+
+    <p>
+    I dati vengono conservati per il tempo necessario a fornire il servizio o fino alla richiesta di cancellazione dell'utente.
+    </p>
+
+    </div>
+
+
+    <div class="section">
+
+    <h2>Diritti dell'Utente</h2>
+
+    <p>L'utente ha diritto di:</p>
+
+    <ul>
+    <li>Accedere ai propri dati</li>
+    <li>Richiedere la modifica dei dati</li>
+    <li>Richiedere la cancellazione</li>
+    <li>Limitare il trattamento</li>
+    <li>Richiedere la portabilità dei dati</li>
+    </ul>
+
+    <p>
+    Per esercitare questi diritti contattare: <strong>[email]</strong>
+    </p>
+
+    </div>
+
+
+    <div class="section">
+
+    <h2>Termini di Servizio</h2>
+
+    <h3>Utilizzo dell'app</h3>
+
+    <p>
+    L'utente si impegna a utilizzare l'applicazione in modo conforme alle leggi vigenti.
+    </p>
+
+    <h3>Prenotazioni officine</h3>
+
+    <p>
+    L'app funge da piattaforma per facilitare il contatto tra utenti e officine.
+    Il gestore dell'app non è responsabile per i servizi forniti dalle officine.
+    </p>
+
+    <h3>Recensioni</h3>
+
+    <p>
+    Le recensioni rappresentano opinioni personali degli utenti.
+    Contenuti offensivi, falsi o illegali possono essere rimossi.
+    </p>
+
+    <h3>Limitazione di responsabilità</h3>
+
+    <p>
+    L'app è fornita "così com'è" senza garanzia di disponibilità continua o assenza di errori.
+    </p>
+
+    </div>   
+    </section>
+
+<footer class="footer" id="footer">
+        <p>© 2025 — YouDrive</p>
+</footer>
+
+</body>
+</html>

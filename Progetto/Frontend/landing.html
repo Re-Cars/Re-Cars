@@ -19,55 +19,219 @@
     <div class="auth-container">
         
         <div class="auth-nav">
-            <a href="#" class="auth-back" onclick="closeGarage(event)">
-                <i class="fa-solid fa-arrow-left"></i> Torna al forum 
+            <a href="#" class="auth-toggle-left" id="auth-toggle-left" onclick="switchForm(event)">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span>Accedi</span>
             </a>
-
-            <a href="#" class="auth-back" id="auth-toggle-nav" onclick="switchForm()">
-                <span>Registrati</span> <i class="fa-solid fa-arrow-right" id="nav-arrow-icon"></i>
+            <a href="#" class="auth-back" onclick="closeGarage(event)">
+                <i class="fa-solid fa-house"></i>
+                Torna alla Landing
+            </a>
+            <a href="#" id="auth-toggle-nav" onclick="switchForm(event)">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Registrati</span>
             </a>
         </div>
 
         <div class="auth-logo">
-    <img src="Img/LOGO/solo-logo-C-e-O/SVG/Logo.car.lineaN.svg" alt="Logo RE|CARS" class="logo-svg2">
-        <h1 class="landing-title2">RE<span class="divisore">|</span>CARS</h1>
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="Logo RE|CARS" class="auth-logo-img">
+            <h1 class="landing-title2">RE|CARS</h1>
         </div>
 
+        <!-- ─── LOGIN ─────────────────────────────────── -->
         <div class="auth-form-wrapper active" id="wrapper-login">
-            <div class="auth-form">
-                <div class="input-group">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="login-email" placeholder="Email">
+
+            <!-- step 1: chi sei? -->
+            <div class="auth-step" id="login-step-tipo">
+                <p class="auth-step-label">Accedi come...</p>
+                <div class="auth-tipo-group">
+                    <button class="auth-tipo-btn" onclick="loginSelezionaTipo('utente')">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Utente</span>
+                    </button>
+                    <button class="auth-tipo-btn" onclick="loginSelezionaTipo('business')">
+                        <i class="fa-solid fa-building"></i>
+                        <span>Business</span>
+                    </button>
                 </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="login-password" placeholder="Password">
-                </div>
-                <p id="login-error" class="auth-error"></p>
-                <button class="btn-landing btn-login" onclick="login()">ACCEDI</button>
             </div>
-            <br>
+
+            <!-- step 2a: login utente -->
+            <div class="auth-step hidden" id="login-step-utente">
+                <button class="auth-back-step" onclick="loginTornaATipo()">
+                    <i class="fa-solid fa-arrow-left"></i> Indietro
+                </button>
+                <div class="auth-form">
+                    <div class="input-group">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" id="login-email" placeholder="Email">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="login-password" placeholder="Password">
+                    </div>
+                    <p id="login-error" class="auth-error"></p>
+                    <button class="btn-landing btn-login" onclick="login('utente')">
+                        <i class="fa-solid fa-right-to-bracket"></i> ACCEDI
+                    </button>
+                </div>
+            </div>
+
+            <!-- step 2b: login business (azienda o officina) -->
+            <div class="auth-step hidden" id="login-step-business">
+                <button class="auth-back-step" onclick="loginTornaATipo()">
+                    <i class="fa-solid fa-arrow-left"></i> Indietro
+                </button>
+                <div class="auth-tipo-group" style="margin-bottom: 16px;">
+                    <button class="auth-tipo-btn" id="login-btn-azienda" onclick="loginSelezionaBusiness('azienda')">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <span>Azienda</span>
+                    </button>
+                    <button class="auth-tipo-btn" id="login-btn-officina" onclick="loginSelezionaBusiness('officina')">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        <span>Officina</span>
+                    </button>
+                </div>
+                <div class="auth-form">
+                    <div class="input-group">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <input type="text" id="login-piva" placeholder="Partita IVA">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="login-password-business" placeholder="Password">
+                    </div>
+                    <p id="login-error-business" class="auth-error"></p>
+                    <button class="btn-landing btn-login" onclick="login('business')">
+                        <i class="fa-solid fa-right-to-bracket"></i> ACCEDI
+                    </button>
+                </div>
+            </div>
+
             <p class="auth-switch">Non hai un account? <a href="#" onclick="switchForm(event)">Registrati</a></p>
         </div>
 
+        <!-- ─── REGISTER ──────────────────────────────── -->
         <div class="auth-form-wrapper" id="wrapper-register">
-            <div class="auth-form">
-                <div class="input-group">
-                    <i class="fa-solid fa-user"></i>
-                    <input type="text" id="reg-user" placeholder="Username">
+
+            <!-- step 1: chi sei? -->
+            <div class="auth-step" id="reg-step-tipo">
+                <p class="auth-step-label">Registrati come...</p>
+                <div class="auth-tipo-group">
+                    <button class="auth-tipo-btn" onclick="regSelezionaTipo('privato')">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Privato</span>
+                    </button>
+                    <button class="auth-tipo-btn" onclick="regSelezionaTipo('azienda')">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <span>Azienda</span>
+                    </button>
+                    <button class="auth-tipo-btn" onclick="regSelezionaTipo('officina')">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        <span>Officina</span>
+                    </button>
                 </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="reg-email" placeholder="Email">
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="reg-password" placeholder="Password">
-                </div>
-                <p id="reg-error" class="auth-error"></p>
-                <button class="btn-landing btn-register" onclick="register()">REGISTRATI</button>
             </div>
-            <br>
+
+            <!-- step 2: form registrazione -->
+            <div class="auth-step hidden" id="reg-step-form">
+                <button class="auth-back-step" onclick="regTornaATipo()">
+                    <i class="fa-solid fa-arrow-left"></i> Indietro
+                </button>
+
+                <!-- privato -->
+                <div class="auth-form hidden" id="reg-form-privato">
+                    <div class="input-group">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="reg-username" placeholder="Username">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" id="reg-email" placeholder="Email">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="reg-password" placeholder="Password">
+                    </div>
+                </div>
+
+                <!-- azienda -->
+                <div class="auth-form hidden" id="reg-form-azienda">
+                    <div class="input-group">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="reg-az-username" placeholder="Username">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" id="reg-az-email" placeholder="Email">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="reg-az-password" placeholder="Password">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-building"></i>
+                        <input type="text" id="reg-az-ragione-sociale" placeholder="Ragione Sociale">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <input type="text" id="reg-az-piva" placeholder="Partita IVA">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <input type="text" id="reg-az-sdi" placeholder="Codice SDI (opzionale)">
+                    </div>
+                </div>
+
+                <!-- officina -->
+                <div class="auth-form hidden" id="reg-form-officina">
+                    <div class="input-group">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" id="reg-of-email" placeholder="Email">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="reg-of-password" placeholder="Password">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-store"></i>
+                        <input type="text" id="reg-of-nome" placeholder="Nome Officina">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-building"></i>
+                        <input type="text" id="reg-of-ragione-sociale" placeholder="Ragione Sociale">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <input type="text" id="reg-of-piva" placeholder="Partita IVA">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <input type="text" id="reg-of-sdi" placeholder="Codice SDI (opzionale)">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-phone"></i>
+                        <input type="text" id="reg-of-telefono" placeholder="Telefono">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <input type="text" id="reg-of-indirizzo" placeholder="Indirizzo">
+                    </div>
+                    <!-- dropdown città con ricerca -->
+                    <div class="input-group" style="position:relative;">
+                        <i class="fa-solid fa-city"></i>
+                        <input type="text" id="reg-of-citta-input" placeholder="Città (es. Milano)" autocomplete="off" oninput="cercaCitta(this.value)">
+                        <input type="hidden" id="reg-of-citta-sigla">
+                        <div class="citta-dropdown" id="citta-dropdown"></div>
+                    </div>
+                </div>
+
+                <p id="reg-error" class="auth-error"></p>
+                <button class="btn-landing btn-register" style="width:100%; justify-content:center; margin-top:8px;" onclick="register()">
+                    <i class="fa-solid fa-user-plus"></i> REGISTRATI
+                </button>
+            </div>
+
             <p class="auth-switch">Hai già un account? <a href="#" onclick="switchForm(event)">Accedi</a></p>
         </div>
 

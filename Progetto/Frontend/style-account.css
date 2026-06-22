@@ -1,0 +1,981 @@
+ /* ----------------------------------------------------
+/                   IL MIO ACCOUNT                     /
+-----------------------------------------------------*/
+
+@keyframes acc-fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.acc-dashboard {
+    padding: 16px 24px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+ /* ----------------------------------------------------
+/                 CARD SECTION                         /
+-----------------------------------------------------*/
+.acc-section-card {
+    background: var(--surface);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    border-radius: 14px;
+    overflow: hidden;
+    opacity: 0;
+    animation: acc-fadeUp 0.5s ease forwards;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.acc-section-card:nth-child(1) { animation-delay: 0.05s; }
+.acc-section-card:nth-child(2) { animation-delay: 0.12s; }
+.acc-section-card:nth-child(3) { animation-delay: 0.19s; }
+.acc-section-card:nth-child(4) { animation-delay: 0.26s; }
+
+.acc-section-bar {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(249, 115, 22, 0.1);
+    background: rgba(249, 115, 22, 0.06);
+}
+
+.acc-section-bar i {
+    font-size: 0.9rem;
+    color: #f97316;
+}
+
+.acc-section-bar span {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.acc-section-body {
+    padding: 16px 18px;
+}
+
+ /* ----------------------------------------------------
+/                 PROFILO/AVATAR                       /
+-----------------------------------------------------*/
+.acc-avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.acc-avatar-big {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(249, 115, 22, 0.12);
+    border: 2px solid rgba(249, 115, 22, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: #f97316;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.acc-avatar-big img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.acc-avatar-edit {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--surface);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.acc-avatar-edit:hover {
+    transform: scale(1.1);
+}
+
+.acc-avatar-edit i {
+    font-size: 0.65rem;
+    color: #fff;
+}
+
+.acc-avatar-plus-badge {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #f97316;
+}
+
+.acc-avatar-plus-badge i {
+    font-size: 0.4rem;
+    color: #f97316;
+}
+
+.acc-avatar-info p {
+    margin: 0;
+}
+
+.acc-avatar-name {
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.acc-avatar-sub {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 2px;
+}
+
+ /* ----------------------------------------------------
+/                     FIELD-ROWS                       /
+-----------------------------------------------------*/
+.acc-field-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid rgba(249, 115, 22, 0.1);
+}
+
+.acc-field-row:last-child {
+    border-bottom: none;
+}
+
+.acc-field-lbl {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.acc-field-lbl span:first-child {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.acc-field-lbl span:last-child {
+    font-size: 0.85rem;
+    color: var(--white);
+    font-weight: 600;
+}
+
+ /* ----------------------------------------------------
+/                 BOTTONI-PILL                         /
+-----------------------------------------------------*/
+.acc-btn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(249, 115, 22, 0.18);
+    border: 1px solid #f97316;
+    border-radius: 20px;
+    padding: 7px 16px;
+    color: #f97316;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.acc-btn-pill:hover {
+    background: rgba(249, 115, 22, 0.28);
+    box-shadow: 0 4px 14px rgba(249, 115, 22, 0.25);
+}
+
+.acc-icon-circle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.acc-icon-circle i {
+    font-size: 0.55rem;
+    color: #fff;
+}
+
+.acc-btn-pill-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid #ef4444;
+    border-radius: 20px;
+    padding: 7px 16px;
+    color: #ef4444;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.acc-btn-pill-danger:hover {
+    background: rgba(239, 68, 68, 0.2);
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.2);
+}
+
+.acc-icon-circle-danger {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.acc-icon-circle-danger i {
+    font-size: 0.55rem;
+    color: #fff;
+}
+
+ /* ----------------------------------------------------
+/              ABBONAMENTO IN ACCOUNT                  /
+-----------------------------------------------------*/
+.acc-piano-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.acc-piano-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.acc-piano-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 500;
+}
+
+.acc-piano-nome {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+}
+
+.acc-piano-sub {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.acc-piano-stato {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(55, 169, 97, 0.1);
+    border: 0.5px solid rgba(55, 169, 97, 0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--success);
+}
+
+.acc-piano-stato-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: abb-dot-pulse 2s ease-in-out infinite;
+}
+
+.acc-btn-gestisci {
+    text-decoration: none;
+    display: inline-flex;
+}
+
+ /* ----------------------------------------------------
+/                 DANGER ZONE                          /
+-----------------------------------------------------*/
+.acc-danger-card {
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+.acc-danger-bar {
+    background: rgba(239, 68, 68, 0.08);
+    border-bottom: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.acc-danger-bar i {
+    color: #ef4444;
+}
+
+.acc-danger-bar span {
+    color: #f87171;
+}
+
+.acc-danger-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.acc-danger-text p:first-child {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--whte);
+    margin: 0;
+}
+
+.acc-danger-text p:last-child {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin: 4px 0 0;
+}
+
+ /* ----------------------------------------------------
+/                 OVERLAY CONFERMA                     /
+-----------------------------------------------------*/
+#conferma-account-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: acc-fadeIn 0.2s ease;
+}
+
+@keyframes acc-fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.conferma-account-box {
+    background: var(--surface);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    max-width: 340px;
+    width: 90%;
+}
+
+.conferma-account-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 1.3rem;
+    color: #ef4444;
+}
+
+.conferma-account-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white);
+    margin: 0 0 6px;
+}
+
+.conferma-account-sub {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin: 0 0 16px;
+}
+
+.conferma-account-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.conferma-account-btns .btn-annulla,
+.modifica-campo-btns .btn-annulla {
+    background: none;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    border-radius: 20px;
+    padding: 8px 18px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: 0.2s;
+}
+
+.conferma-account-btns .btn-annulla:hover,
+.modifica-campo-btns .btn-annulla:hover {
+    border-color: rgba(249, 115, 22, 0.6);
+    color: var(--white);
+}
+
+ /* ----------------------------------------------------
+/                 MODIFICA CAMPO                       /
+-----------------------------------------------------*/
+#modifica-campo-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: acc-fadeIn 0.2s ease;
+}
+
+.modifica-campo-box {
+    background: var(--surface);
+    border: 1px solid rgba(249, 115, 22, 0.25);
+    border-radius: 14px;
+    padding: 24px;
+    max-width: 360px;
+    width: 90%;
+}
+
+.modifica-campo-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white);
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modifica-campo-title i {
+    color: #f97316;
+}
+
+.modifica-campo-box input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--input-bg);
+    color: var(--white);
+    font-size: 0.85rem;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+    margin-bottom: 12px;
+}
+
+.modifica-campo-box input:focus {
+    border-color: #f97316;
+}
+
+.modifica-campo-error {
+    color: #f87171;
+    font-size: 0.78rem;
+    margin: -4px 0 12px;
+    min-height: 1em;
+}
+
+.modifica-campo-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+ /* ----------------------------------------------------
+/                   ABBONAMENTI                        /
+-----------------------------------------------------*/
+
+@property --sw-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes sw-trace { to { --sw-angle: 360deg; } }
+@keyframes abb-dot-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+/* anima solo il transform: se l'animazione non parte la card resta comunque visibile */
+@keyframes abb-fadeUp { from { transform: translateY(12px); } to { transform: translateY(0); } }
+
+.abb-dashboard {
+    padding: 8px 28px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 1060px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ---- Banner piano attivo ---- */
+.abb-piano-attivo {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 18px 22px;
+    border: 1px solid color-mix(in srgb, var(--success) 55%, transparent);
+    box-shadow: 0 14px 36px -18px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.abb-piano-left { display: flex; flex-direction: column; gap: 4px; }
+.abb-piano-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--success); }
+.abb-piano-nome { font-size: 20px; font-weight: 800; color: var(--white); }
+.abb-piano-sub { font-size: 12.5px; color: var(--muted); }
+
+.abb-piano-stato {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: color-mix(in srgb, var(--success) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--success) 50%, transparent);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--success);
+}
+
+.abb-piano-stato-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: abb-dot-pulse 2s ease-in-out infinite; }
+
+.abb-section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+/* ---- Griglia ---- */
+.abb-piani-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch; }
+
+/* ---- Card ---- */
+.abb-piano-card {
+    position: relative;
+    background: var(--surface);
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--white) 10%, transparent);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.45);
+    transition: transform 0.3s cubic-bezier(.2, .7, .2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+    transform-style: preserve-3d;
+    will-change: transform;
+    animation: abb-fadeUp 0.5s ease backwards;
+}
+
+.abb-piano-card:nth-child(2) { animation-delay: 0.06s; }
+.abb-piano-card:nth-child(3) { animation-delay: 0.12s; }
+
+/* anello accentato (visibile in dark e light) */
+.abb-piano-card.popolare,
+.abb-piano-card.attivo { border-color: transparent; }
+
+.abb-piano-card.popolare::before,
+.abb-piano-card.attivo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    padding: 1.7px;
+    z-index: 3;
+    pointer-events: none;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+.abb-piano-card.popolare::before {
+    background: conic-gradient(from var(--sw-angle),
+        rgba(249, 115, 22, 0) 0%, #f97316 20%, #ffd0a3 28%, #f97316 36%,
+        rgba(249, 115, 22, 0) 60%, rgba(249, 115, 22, 0) 100%);
+    animation: sw-trace 5s linear infinite;
+}
+
+.abb-piano-card.popolare {
+    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.45), 0 22px 50px -22px rgba(249, 115, 22, 0.45);
+}
+
+.abb-piano-card.attivo::before {
+    background: linear-gradient(140deg,
+        color-mix(in srgb, var(--success) 95%, transparent),
+        color-mix(in srgb, var(--success) 40%, transparent));
+    animation: none;
+}
+
+.abb-piano-card.attivo {
+    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.45),
+        0 22px 50px -22px color-mix(in srgb, var(--success) 45%, transparent);
+}
+
+.abb-piano-card.attivo .abb-popolare-badge { display: none; }
+
+/* hover lift (il tilt 3D è gestito via JS) */
+.abb-piano-card:hover { box-shadow: 0 34px 70px -22px rgba(0, 0, 0, 0.6); }
+.abb-piano-card.popolare:hover { box-shadow: 0 34px 70px -22px rgba(0, 0, 0, 0.6), 0 30px 60px -20px rgba(249, 115, 22, 0.55); }
+.abb-piano-card.attivo:hover { box-shadow: 0 34px 70px -22px rgba(0, 0, 0, 0.6), 0 30px 60px -20px color-mix(in srgb, var(--success) 55%, transparent); }
+
+/* ---- Badge ---- */
+.abb-popolare-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 6;
+    background: rgba(249, 115, 22, 0.14);
+    color: #f97316;
+    border: 1px solid rgba(249, 115, 22, 0.45);
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 4px 11px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+}
+
+.abb-attivo-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 6;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: color-mix(in srgb, var(--success) 13%, transparent);
+    color: var(--success);
+    border: 1px solid color-mix(in srgb, var(--success) 50%, transparent);
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 4px 11px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+}
+
+.abb-attivo-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: abb-dot-pulse 2s ease-in-out infinite; }
+
+/* ---- Contenuto card ---- */
+.abb-piano-card-content { position: relative; z-index: 1; padding: 24px 22px 22px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+.abb-piano-card-nome { font-size: 16px; font-weight: 800; color: var(--white); letter-spacing: 0.2px; }
+
+.abb-piano-card-prezzo {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.5px;
+    color: #f97316;
+    min-height: 38px;
+    display: flex;
+    align-items: baseline;
+    margin-top: 6px;
+}
+
+.abb-piano-card.free .abb-piano-card-prezzo { color: var(--white); }
+.abb-piano-card-prezzo span { font-size: 13px; font-weight: 600; color: var(--muted); margin-left: 3px; }
+.abb-piano-card-desc { font-size: 12px; line-height: 1.5; color: var(--muted); margin-top: 6px; }
+
+.abb-piano-features { display: flex; flex-direction: column; gap: 10px; flex: 1; margin-top: 2px; }
+.abb-feature { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+.abb-feature i { font-size: 11px; width: 16px; flex-shrink: 0; text-align: center; }
+.abb-feature.ok { color: color-mix(in srgb, var(--white) 78%, var(--muted)); }
+.abb-feature.ok i { color: var(--success); }
+.abb-feature.no { color: color-mix(in srgb, var(--muted) 55%, transparent); }
+.abb-feature.no i { color: color-mix(in srgb, var(--muted) 45%, transparent); }
+
+/* ---- Bottoni ---- */
+.abb-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    border-radius: 12px;
+    padding: 13px 16px;
+    font-size: 13.5px;
+    font-weight: 700;
+    font-family: inherit;
+    letter-spacing: 0.2px;
+    border: none;
+    margin-top: 4px;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(.34, 1.56, .64, 1), box-shadow 0.25s ease, background 0.2s, color 0.2s;
+}
+
+.abb-btn i { font-size: 13px; }
+
+.abb-btn.cta { background: linear-gradient(135deg, #fb8a3c, #f97316); color: #fff; box-shadow: 0 12px 24px -8px rgba(249, 115, 22, 0.7); }
+.abb-btn.cta:hover { transform: translateY(-2px); box-shadow: 0 18px 32px -8px rgba(249, 115, 22, 0.85); filter: brightness(1.06); }
+.abb-btn.cta:active { transform: translateY(0) scale(0.98); }
+
+/* stato "piano attuale": NON sembra cliccabile */
+.abb-btn.status {
+    background: color-mix(in srgb, var(--success) 13%, transparent);
+    color: var(--success);
+    border: 1px solid color-mix(in srgb, var(--success) 45%, transparent);
+    cursor: default;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--success) 18%, transparent);
+}
+
+.abb-btn.ghost { background: transparent; color: var(--muted); border: 1px solid color-mix(in srgb, var(--white) 12%, transparent); }
+.abb-btn.ghost:hover { background: color-mix(in srgb, var(--white) 6%, transparent); color: var(--white); }
+
+/* ---- Nota Stripe ---- */
+.abb-stripe-note {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 13px 18px;
+    border: 1px solid color-mix(in srgb, var(--white) 8%, transparent);
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.abb-stripe-note i { color: #f97316; font-size: 14px; flex-shrink: 0; }
+
+.theme-toggle-btn { background: none; border: none; cursor: pointer; color: #f97316; font-size: 1.1rem; padding: 4px 8px; }
+
+@media (max-width: 768px) {
+    .abb-dashboard { padding: 12px 16px 32px; }
+    .abb-piani-grid { grid-template-columns: 1fr; }
+}
+
+ /* ----------------------------------------------------
+/        PAGAMENTO SUCCESSO ABBONAMENTO STRIPE         /
+-----------------------------------------------------*/
+
+@keyframes ps-fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ps-checkPop {
+    0%   { transform: scale(0.5) translate(-50%, -50%); opacity: 0; }
+    70%  { transform: scale(1.15) translate(-50%, -50%); }
+    100% { transform: scale(1) translate(-50%, -50%); opacity: 1; }
+}
+
+@keyframes ps-ringPulse {
+    0%   { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+}
+
+@keyframes ps-brand {
+    0%   { background-position: 0%; }
+    100% { background-position: 300%; }
+}
+
+@keyframes ps-dot-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+
+.ps-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 80px);
+    padding: 24px;
+}
+
+.ps-card {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 48px 40px;
+    border: 0.5px solid rgba(55, 169, 97, 0.25);
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    animation: ps-fadeUp 0.5s ease forwards;
+    position: relative;
+    overflow: hidden;
+}
+
+.ps-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(55, 169, 97, 0.06) 1.5px, transparent 1.5px);
+    background-size: 22px 22px;
+    pointer-events: none;
+}
+
+.ps-icon-wrap {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    flex-shrink: 0;
+}
+
+.ps-icon-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(55, 169, 97, 0.3);
+    animation: ps-ringPulse 2s ease-out infinite;
+}
+
+.ps-icon-ring2 {
+    animation-delay: 0.6s;
+}
+
+.ps-icon-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(55, 169, 97, 0.12);
+    border: 1.5px solid rgba(55, 169, 97, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--success);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: ps-checkPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+
+.ps-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(55, 169, 97, 0.1);
+    border: 0.5px solid rgba(55, 169, 97, 0.3);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--success);
+}
+
+.ps-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: ps-dot-pulse 2s ease-in-out infinite;
+}
+
+.ps-brand {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #ffffff, #f97316, #ffffff);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: ps-brand 4s linear infinite;
+}
+
+.ps-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.3;
+    margin: 0;
+}
+
+.ps-sub {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 320px;
+    margin: 0;
+}
+
+.ps-divider {
+    width: 100%;
+    height: 0.5px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.ps-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    width: 100%;
+}
+
+.ps-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    position: relative;
+    padding-bottom: 2px;
+}
+
+.ps-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: #f97316;
+    transition: width 0.25s;
+}
+
+.ps-link:hover {
+    color: #f97316;
+}
+
+.ps-link:hover::after {
+    width: 100%;
+}
+
+.ps-link-icon {
+    font-size: 11px;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.ps-link:hover .ps-link-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.ps-link-sep {
+    color: rgba(160, 168, 184, 0.2);
+    font-size: 16px;
+}
