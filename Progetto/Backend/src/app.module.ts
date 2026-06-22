@@ -12,6 +12,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OfficinaModule } from './officina/officina.module';
 import { PrismaModule } from './prisma.module';
 import { StripeModule } from './stripe/stripe.module';
+import { PrenotazioneModule } from './prenotazione/prenotazione.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { StripeModule } from './stripe/stripe.module';
     }),
     OfficinaModule,
     StripeModule,
+    PrenotazioneModule,
   ],
   controllers: [AppController, UtenteController, VeicoloController],
   providers: [
