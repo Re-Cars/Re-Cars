@@ -142,4 +142,10 @@ export class OfficinaController {
       mese ? Number(mese) : now.getMonth() + 1,
     );
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('all') // Senza un percorso esplicito, l'URL diventa http://localhost:3000/officina
+  async findAll() {
+  return this.officinaService.findAll();
+}
 }
