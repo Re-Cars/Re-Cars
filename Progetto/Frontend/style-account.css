@@ -152,6 +152,60 @@
     margin-top: 2px;
 }
 
+#cropper-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.cropper-box {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 24px;
+    width: 420px;
+    max-width: 95vw;
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cropper-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cropper-title i {
+    color: #f97316;
+}
+
+.cropper-area {
+    width: 100%;
+    height: 320px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #000;
+}
+
+.cropper-area img {
+    max-width: 100%;
+    display: block;
+}
+
+.cropper-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
  /* ----------------------------------------------------
 /                     FIELD-ROWS                       /
 -----------------------------------------------------*/
@@ -430,7 +484,8 @@
 }
 
 .conferma-account-btns .btn-annulla,
-.modifica-campo-btns .btn-annulla {
+.modifica-campo-btns .btn-annulla,
+.cropper-btns .btn-annulla {
     background: none;
     border: 1px solid rgba(249, 115, 22, 0.3);
     border-radius: 20px;
@@ -444,7 +499,8 @@
 }
 
 .conferma-account-btns .btn-annulla:hover,
-.modifica-campo-btns .btn-annulla:hover {
+.modifica-campo-btns .btn-annulla:hover,
+.cropper-btns .btn-annulla:hover {
     border-color: rgba(249, 115, 22, 0.6);
     color: var(--white);
 }

@@ -13,9 +13,19 @@ export class UtenteController {
     constructor(private readonly utenteService: UtenteService) {}
 
     @Post('register')
-      async register(@Body() datiRicevuti: CreateUtenteDto) {
-          return this.utenteService.registra(datiRicevuti);
-      }
+        async register(
+            @Body() datiRicevuti: CreateUtenteDto,
+            @Res({ passthrough: true }) response: Response,
+        ) {
+            const { access_token, utente } = await this.utenteService.registra(datiRicevuti);
+            response.cookie('access_token', access_token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 3600000,
+            });
+            return { utente };
+        }
       
     @Post('login')
         async login(

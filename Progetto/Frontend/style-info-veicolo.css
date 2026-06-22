@@ -23,18 +23,6 @@
 }
 
  /* ----------------------------------------------------
-/   INFO-VEICOLO — card sempre blu, testo sempre chiaro
------------------------------------------------------*/
-.iv-dashboard {
-    --c-surface: var(--surface);
-    --c-text:   #f3f5fc;
-    --c-muted:  #a9b1cc;
-    --c-strong: #eef1fb;
-    --c-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    --c-shadow-hover: 0 34px 70px -22px rgba(0, 0, 0, 0.60), 0 22px 48px -22px rgba(249, 115, 22, 0.40);
-}
-
- /* ----------------------------------------------------
 /                      ANIMAZIONI                      /
 -----------------------------------------------------*/
 @keyframes iv-fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
@@ -59,13 +47,13 @@
 -----------------------------------------------------*/
 .iv-section-card {
     position: relative;
-    background: var(--surface);
+    background: var(--c-surface);
      border: 1px solid color-mix(in srgb, var(--white) 10%, transparent);
     border-radius: 18px;
     overflow: hidden;
     opacity: 0;
     animation: iv-fadeIn 0.5s ease forwards;
-    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    box-shadow: var(--c-shadow);
     transition: transform 0.3s cubic-bezier(.2, .7, .2, 1), box-shadow 0.3s ease;
     transform-style: preserve-3d;
     will-change: transform;
@@ -75,7 +63,7 @@
 .iv-section-card:nth-child(2) { animation-delay: 0.15s; }
 .iv-section-card:nth-child(3) { animation-delay: 0.25s; }
 
-.iv-section-card:hover { box-shadow: 0 34px 70px -22px rgba(0, 0, 0, 0.15), 0 22px 48px -22px rgba(249, 115, 22, 0.20); }
+.iv-section-card:hover { box-shadow: var(--c-shadow-hover); }
 
  /* ----------------------------------------------------
 /                      HEADER SECTION                  /
@@ -96,7 +84,7 @@
 .iv-section-bar span {
     font-size: 0.72rem;
     font-weight: 700;
-    color: var(--muted);
+    color: var(--c-muted);
     letter-spacing: 1px;
     text-transform: uppercase;
 }
@@ -134,7 +122,7 @@
 .iv-hero-name {
     font-size: 1.6rem;
     font-weight: 800;
-    color: var(--text);
+    color: var(--c-text);
     line-height: 1.1;
     letter-spacing: -0.3px;
 }
@@ -163,13 +151,13 @@
     border-radius: 20px;
     padding: 5px 12px;
     font-size: 0.78rem;
-    color: var(--muted);
+    color: var(--c-muted);
     transition: border-color 0.2s;
 }
 
 .iv-mini-pill:hover { border-color: rgba(249, 115, 22, 0.5); }
 .iv-mini-pill i { font-size: 0.75rem; color: #f97316; }
-.iv-mini-pill strong { font-weight: 700; color: var(--text); }
+.iv-mini-pill strong { font-weight: 700; color: var(--c-strong); }
 
  /* ----------------------------------------------------
 /                CARATTERISTICHE — STAT TILES          /
@@ -221,13 +209,13 @@
     font-weight: 700;
     letter-spacing: 0.6px;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--c-muted);
 }
 
 .iv-spec-val {
     font-size: 1rem;
     font-weight: 800;
-    color: var(--text);
+    color: var(--c-text);
     line-height: 1.2;
     word-break: break-word;
 }
@@ -297,13 +285,13 @@
 .iv-maint-title {
     font-size: 0.84rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--c-text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.iv-maint-date { font-size: 0.72rem; color: var(--muted); }
+.iv-maint-date { font-size: 0.72rem; color: var(--c-muted); }
 
  /* ----------------------------------------------------
 /                      BADGE STATO                     /
