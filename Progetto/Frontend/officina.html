@@ -16,13 +16,21 @@
 <body>
 
     <div class="oc-detail-overlay" id="oc-detail-overlay">
-        <div class="oc-detail-modal">
-            <div class="oc-detail-title">
-                <i class="fa-solid fa-car" style="color:#f97316"></i>
-                Dettaglio prenotazione
+        <div class="oc-new-modal">
+            <div class="oc-new-modal-header">
+                <div class="oc-new-modal-title">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    Dettaglio prenotazione
+                </div>
+                <div class="oc-new-modal-header-right">
+                    <span id="oc-detail-stato-badge"></span>
+                    <button class="oc-detail-close" onclick="chiudiDettaglio()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
             </div>
-            <div id="oc-detail-content"></div>
-            <div class="oc-detail-actions" id="oc-detail-azioni"></div>
+            <div class="oc-new-modal-body" id="oc-detail-content"></div>
+            <div class="oc-new-modal-footer" id="oc-detail-azioni"></div>
         </div>
     </div>
 

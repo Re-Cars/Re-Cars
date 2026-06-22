@@ -17,16 +17,21 @@
 <body>
 
     <div class="oc-detail-overlay" id="oc-detail-overlay">
-        <div class="oc-detail-modal oc-detail-modal-wide">
-            <div class="oc-detail-title">
-                <i class="fa-solid fa-car oc-icon-brand"></i>
-                Dettaglio prenotazione
-                <button class="oc-detail-close" onclick="chiudiDettaglio()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+        <div class="oc-new-modal">
+            <div class="oc-new-modal-header">
+                <div class="oc-new-modal-title">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    Dettaglio prenotazione
+                </div>
+                <div class="oc-new-modal-header-right">
+                    <span id="oc-detail-stato-badge"></span>
+                    <button class="oc-detail-close" onclick="chiudiDettaglio()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
             </div>
-            <div id="oc-detail-content"></div>
-            <div id="oc-detail-azioni" class="oc-detail-actions"></div>
+            <div class="oc-new-modal-body" id="oc-detail-content"></div>
+            <div class="oc-new-modal-footer" id="oc-detail-azioni"></div>
         </div>
     </div>
 
@@ -126,11 +131,10 @@
         </div>
     </div>
 
-    <div class="oc-prenotazioni-list" id="prenotazioni-list">
-        <div class="oc-empty-state" id="empty-state">
-            <i class="fa-solid fa-calendar-xmark"></i>
-            <span>Nessuna prenotazione trovata</span>
-        </div>
+    <div class="oc-prenotazioni-list" id="prenotazioni-list"></div>
+    <div class="oc-empty-state oc-empty-state-outer" id="empty-state">
+        <i class="fa-solid fa-calendar-xmark"></i>
+        <span>Nessuna prenotazione trovata</span>
     </div>
 
 </body>

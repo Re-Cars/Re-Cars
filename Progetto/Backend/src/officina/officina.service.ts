@@ -115,6 +115,7 @@ export class OfficinaService {
             veicolo: {
               include: {
                 dati_generici: true,
+                dati_specifici: true,
                 storico_intervento: {
                   orderBy: { data: 'desc' },
                   take: 5,
@@ -377,11 +378,11 @@ export class OfficinaService {
             id: true,
             username: true,
             email: true,
+            cellulare: true,
             veicolo: {
-              select: {
-                marca: true,
-                modello: true,
-                targa: true,
+              include: {
+                dati_generici: true,
+                dati_specifici: true,
               },
             },
           },

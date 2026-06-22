@@ -16,16 +16,22 @@
 
 <body>
 
-    <div class="ag-detail-overlay" id="ag-detail-overlay">
-        <div class="ag-detail-modal">
-            <div class="ag-detail-title">
-                <i class="fa-solid fa-calendar-check ag-icon-brand"></i>
-                <span id="ag-detail-titolo">Dettaglio</span>
-                <button class="ag-detail-close" onclick="chiudiDettaglio()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+    <div class="oc-detail-overlay" id="ag-detail-overlay">
+        <div class="oc-new-modal">
+            <div class="oc-new-modal-header">
+                <div class="oc-new-modal-title">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    Dettaglio prenotazione
+                </div>
+                <div class="oc-new-modal-header-right">
+                    <span id="ag-detail-stato-badge"></span>
+                    <button class="oc-detail-close" onclick="chiudiDettaglio()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
             </div>
-            <div id="ag-detail-content"></div>
+            <div class="oc-new-modal-body" id="ag-detail-content"></div>
+            <div class="oc-new-modal-footer" id="ag-detail-azioni"></div>
         </div>
     </div>
 
