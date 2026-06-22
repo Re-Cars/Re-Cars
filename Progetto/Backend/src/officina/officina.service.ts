@@ -361,7 +361,6 @@ export class OfficinaService {
       where: { id: officinaId },
     });
   }
-
   async agenda(officinaId: number, anno: number, mese: number) {
     const inizio = new Date(anno, mese - 1, 1);
     const fine = new Date(anno, mese, 1);
@@ -389,5 +388,42 @@ export class OfficinaService {
       },
       orderBy: { dataprenotazione: 'asc' },
     });
+  }
+  
+
+  async findAll() {
+    const officine = await this.prisma.officina.findMany({
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        telefono: true,
+        indirizzo: true,
+        latitudine: true,
+        longitudine: true,
+        tipi: true,
+      },
+    });
+
+    // Mappa i campi del DB PostgreSQL sul formato atteso dal Frontend
+    return officine.map((o) => ({
+      id: o.id,
+      nome: o.nome,
+      email: o.email,
+      telefono: o.telefono,
+      indirizzo: o.indirizzo,
+      // Se mancano le coordinate sul DB, usa Milano come centro di fallback
+      latitude: o.latitudine ?? 45.4642,
+      longitude: o.longitudine ?? 9.1900,
+      // Trasforma l'array di enum nella stringa richiesta dal frontend
+      categoria: o.tipi.length > 0 ? o.tipi[0] : 'Meccanica',
+      specialita: o.tipi.join(', ') || 'Riparazioni Generiche',
+      // Dati statici/fittizi non presenti nello schema per la UI
+      stelle: 4.5,
+      recensioni: 12,
+      aperta: true,
+      orario: '08:00 - 18:00',
+      disponibilita: true,
+    }));
   }
 }
