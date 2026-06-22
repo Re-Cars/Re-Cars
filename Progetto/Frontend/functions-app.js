@@ -1,4 +1,4 @@
- /* ----------------------------------------------------
+/* ----------------------------------------------------
 /                   AVVIO PAGINA                       /
 -----------------------------------------------------*/
 document.addEventListener('DOMContentLoaded', function () {
@@ -46,16 +46,31 @@ async function logout() {
     try {
         await fetch('http://localhost:3000/auth/logout', {
             method: 'POST',
-            credentials: 'include' // Invia il cookie HttpOnly da cancellare
+            credentials: 'include'
         });
     } catch (err) {
         console.error('Errore durante il logout sul server:', err);
     } finally {
-        // In ogni caso, puliamo il client e reindirizziamo
         localStorage.removeItem('yd_utente_loggato');
         localStorage.removeItem('veicoloAttivo');
         localStorage.removeItem('veicoloAttivoId');
         window.location.href = 'landing.html';
+    }
+}
+
+ /* ----------------------------------------------------
+/                   AVATAR HEADER                      /
+-----------------------------------------------------*/
+function applicaAvatarHeader() {
+    const utenteString = localStorage.getItem('yd_utente_loggato');
+    if (!utenteString) return;
+    let utente;
+    try { utente = JSON.parse(utenteString); } catch { return; }
+    const avatar = utente.avatar;
+    const headerAvatar = document.getElementById('avatar-wrapper')?.querySelector('.header-avatar');
+    if (!headerAvatar) return;
+    if (avatar) {
+        headerAvatar.innerHTML = `<img src="${avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
     }
 }
 
@@ -269,6 +284,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await caricaVeicoli();
     checkGarageAnimation();
     if (document.getElementById('iv-tipo')) caricaInfoVeicolo();
+    applicaAvatarHeader();
 });
 
  /* ----------------------------------------------------
@@ -333,7 +349,6 @@ async function caricaInfoVeicolo() {
             setStatoMaint('iv-bollo-pill', 'iv-bollo-stato', false, 'Attivo', 'Scaduto');
         }
 
-        // mantenimento — ASSICURAZIONE
         const rcaDateEl = document.getElementById('iv-assicurazione-date');
         set('iv-assicurazione-compagnia', ds.nomeassicurazione || '-');
         if (ds.datascadenzarca) {
@@ -648,6 +663,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (username) {
         document.getElementById("avatar-dropdown-name").textContent = username;
     }
+    applicaAvatarHeader();
 });
 
  /* ----------------------------------------------------

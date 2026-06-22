@@ -253,49 +253,96 @@ document.addEventListener('DOMContentLoaded', () => {
 
     editBtn.addEventListener('click', () => fileInput.click());
 
-    fileInput.addEventListener('change', async (e) => {
+    fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        fileInput.value = '';
 
-        if (file.size > 2 * 1024 * 1024) {
-            alert('Immagine troppo grande. Massimo 2MB.');
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Immagine troppo grande. Massimo 5MB.');
             return;
         }
 
         const reader = new FileReader();
-        reader.onload = async (ev) => {
-            const base64 = ev.target.result;
-
-            applicaAvatar(base64);
-
-            const utenteString = localStorage.getItem('yd_utente_loggato');
-            if (!utenteString) return;
-            const utente = JSON.parse(utenteString);
-
-            try {
-                const response = await fetch(`${API}/auth/utente/${utente.id}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ avatar: base64 }),
-                });
-
-                if (!response.ok) {
-                    console.error('Errore salvataggio avatar');
-                    return;
-                }
-
-                localStorage.setItem('yd_avatar_img', base64);
-
-            } catch (err) {
-                console.error('Errore connessione avatar:', err);
-            }
-        };
+        reader.onload = (ev) => apriCropper(ev.target.result);
         reader.readAsDataURL(file);
     });
 
     caricaAvatar();
 });
+
+function apriCropper(src) {
+    const esistente = document.getElementById('cropper-overlay');
+    if (esistente) esistente.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'cropper-overlay';
+    overlay.innerHTML = `
+        <div class="cropper-box">
+            <p class="cropper-title"><i class="fa-solid fa-crop-simple"></i> Ritaglia la tua foto</p>
+            <div class="cropper-area">
+                <img id="cropper-img" src="${src}">
+            </div>
+            <div class="cropper-btns">
+                <button class="btn-annulla" onclick="document.getElementById('cropper-overlay').remove(); if(window._cropper){window._cropper.destroy();window._cropper=null;}">Annulla</button>
+                <button class="acc-btn-pill" onclick="confermaCrop()">
+                    <div class="acc-icon-circle"><i class="fa-solid fa-check"></i></div>
+                    Applica
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const img = document.getElementById('cropper-img');
+    window._cropper = new Cropper(img, {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: 'move',
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        autoCropArea: 0.8,
+        background: false,
+        guides: false,
+        center: true,
+        highlight: false,
+    });
+}
+
+async function confermaCrop() {
+    const cropper = window._cropper;
+    if (!cropper) return;
+
+    const canvas = cropper.getCroppedCanvas({ width: 256, height: 256 });
+    const base64 = canvas.toDataURL('image/jpeg', 0.85);
+
+    cropper.destroy();
+    window._cropper = null;
+    document.getElementById('cropper-overlay')?.remove();
+
+    applicaAvatar(base64);
+    applicaAvatarHeader();
+
+    const utenteString = localStorage.getItem('yd_utente_loggato');
+    if (!utenteString) return;
+    const utente = JSON.parse(utenteString);
+
+    const nuovoUtente = { ...utente, avatar: base64 };
+    localStorage.setItem('yd_utente_loggato', JSON.stringify(nuovoUtente));
+    localStorage.setItem('yd_avatar_img', base64);
+
+    try {
+        const response = await fetch(`${API}/auth/utente/${utente.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ avatar: base64 }),
+        });
+        if (!response.ok) console.error('Errore salvataggio avatar');
+    } catch (err) {
+        console.error('Errore connessione avatar:', err);
+    }
+}
 
 function applicaAvatar(src) {
     const avatarBig = document.querySelector('.acc-avatar-big');
@@ -310,31 +357,22 @@ function applicaAvatar(src) {
         avatarBig.insertBefore(img, avatarBig.firstChild);
     }
     img.src = src;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
 }
 
 async function caricaAvatar() {
-    const salvato = localStorage.getItem('yd_avatar_img');
-    if (salvato) {
-        applicaAvatar(salvato);
-        return;
-    }
-
     const utenteString = localStorage.getItem('yd_utente_loggato');
     if (!utenteString) return;
     const utente = JSON.parse(utenteString);
-
-    try {
-        const response = await fetch(`${API}/auth/utente/${utente.id}`, {
-            credentials: 'include',
-        });
-        if (!response.ok) return;
-        const data = await response.json();
-        if (data.avatar) {
-            applicaAvatar(data.avatar);
-            localStorage.setItem('yd_avatar_img', data.avatar);
-        }
-    } catch (err) {
-        console.error('Errore caricamento avatar:', err);
+    if (utente.avatar) {
+        applicaAvatar(utente.avatar);
+        applicaAvatarHeader();
+        return;
+    }
+    const salvato = localStorage.getItem('yd_avatar_img');
+    if (salvato) {
+        applicaAvatar(salvato);
+        applicaAvatarHeader();
     }
 }
 

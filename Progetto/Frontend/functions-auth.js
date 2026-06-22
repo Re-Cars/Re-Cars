@@ -227,6 +227,7 @@ async function register() {
         });
 
         const data = await response.json();
+        console.log('risposta registrazione:', data);
 
         if (!response.ok) {
             const msg = Array.isArray(data.message) ? data.message[0] : data.message;
@@ -236,6 +237,8 @@ async function register() {
 
         // auto-login dopo registrazione
         const profilo = regTipo === 'officina' ? data.officina : data.utente;
+        console.log('profilo da salvare:', profilo);
+        console.log('data completo:', data);
         localStorage.setItem('yd_utente_loggato', JSON.stringify(profilo));
 
         if (regTipo === 'officina') {
