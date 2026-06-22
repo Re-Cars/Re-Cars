@@ -226,10 +226,11 @@ function renderSettimana() {
                             return `
                                 <div class="ag-day-cell">
                                     ${pren ? `
-                                        <div class="ag-event ag-ev-${pren.stato}"
-                                             onclick="apriDettaglio(${pren.id})"
-                                             title="${nomeVeicolo} · ${pren.utente?.username || ''}">
-                                            ${nomeVeicolo || pren.utente?.username || '—'}
+                                        <div class="ag-grid-event ag-grid-${pren.stato}"
+                                            onclick="apriDettaglio(${pren.id})"
+                                            title="${nomeVeicolo} · ${pren.utente?.username || ''}">
+                                            <span class="ag-event-nome">${nomeVeicolo || '—'}</span>
+                                            <span class="ag-event-sub">${pren.utente?.username || ''}</span>
                                         </div>
                                     ` : ''}
                                 </div>
@@ -320,50 +321,79 @@ function apriDettaglio(id) {
     if (!p) return;
 
     const v = p.utente?.veicolo?.[0];
+    const dg = v?.dati_generici?.[0];
+    const ds = v?.dati_specifici?.[0];
+
     const nomeVeicolo = v ? `${v.marca || ''} ${v.modello || ''}`.trim() : '—';
+    const targa = v?.targa || '—';
+    const tipo = dg?.tipo_veicolo || '—';
+    const anno = ds?.dataimmatricolazione ? new Date(ds.dataimmatricolazione).getFullYear() : '—';
+    const isMoto = tipo === 'Moto' || tipo === 'Scooter';
+    const iconaVeicolo = isMoto ? 'fa-motorcycle' : 'fa-car';
+
     const dataOra = new Date(p.dataprenotazione).toLocaleString('it-IT', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
+        day: '2-digit', month: 'short', year: 'numeric',
         hour: '2-digit', minute: '2-digit',
     });
 
-    const statoLabel = {
-        in_attesa: 'In attesa',
-        confermata: 'Confermata',
-        annullata: 'Annullata',
-        completata: 'Completata',
-    };
+    const statoLabel = { in_attesa: 'In attesa', confermata: 'Confermata', annullata: 'Annullata', completata: 'Completata' };
+    const statoClasse = { in_attesa: 'oc-stato in_attesa', confermata: 'oc-stato confermata', annullata: 'oc-stato annullata', completata: 'oc-stato completata' };
 
-    document.getElementById('ag-detail-titolo').textContent = nomeVeicolo;
+    const nomeUtente = p.utente?.username || '—';
+    const iniziale = nomeUtente.charAt(0).toUpperCase();
+    const email = p.utente?.email || '';
+    const cellulare = p.utente?.cellulare || '';
+    const clienteSub = [email, cellulare].filter(Boolean).join(' · ');
+
+    const notaHtml = p.descrizione ? `
+        <div class="oc-new-nota">
+            <div class="oc-new-nota-label">
+                <i class="fa-solid fa-note-sticky"></i> Note
+            </div>
+            <div class="oc-new-nota-text">${p.descrizione}</div>
+        </div>
+    ` : '';
+
+    document.getElementById('ag-detail-stato-badge').className = statoClasse[p.stato] || 'oc-stato';
+    document.getElementById('ag-detail-stato-badge').textContent = statoLabel[p.stato] || p.stato;
+
     document.getElementById('ag-detail-content').innerHTML = `
-        <div class="ag-detail-row">
-            <span class="ag-detail-label">Veicolo</span>
-            <span class="ag-detail-value">${nomeVeicolo}</span>
+        <div class="oc-new-hero">
+            <div class="oc-new-car-icon">
+                <i class="fa-solid ${iconaVeicolo}"></i>
+            </div>
+            <div>
+                <div class="oc-new-car-name">${nomeVeicolo}</div>
+                <div class="oc-new-car-sub">
+                    <span class="oc-new-targa">${targa}</span>
+                    ${tipo !== '—' ? `<span>${tipo} · ${anno}</span>` : ''}
+                </div>
+            </div>
         </div>
-        <div class="ag-detail-row">
-            <span class="ag-detail-label">Targa</span>
-            <span class="ag-detail-value">${v?.targa || '—'}</span>
+        <div class="oc-new-chips">
+            <div class="oc-new-chip ora">
+                <i class="fa-solid fa-clock"></i> ${dataOra}
+            </div>
+            ${p.servizio ? `
+            <div class="oc-new-chip">
+                <i class="fa-solid fa-screwdriver-wrench"></i> ${p.servizio}
+            </div>` : ''}
         </div>
-        <div class="ag-detail-row">
-            <span class="ag-detail-label">Cliente</span>
-            <span class="ag-detail-value">${p.utente?.username || '—'}</span>
+        ${notaHtml}
+        <div class="oc-new-divider"></div>
+        <div class="oc-new-client">
+            <div class="oc-new-avatar">${iniziale}</div>
+            <div>
+                <div class="oc-new-client-name">${nomeUtente}</div>
+                <div class="oc-new-client-sub">${clienteSub || '—'}</div>
+            </div>
         </div>
-        <div class="ag-detail-row">
-            <span class="ag-detail-label">Email</span>
-            <span class="ag-detail-value">${p.utente?.email || '—'}</span>
-        </div>
-        <div class="ag-detail-row">
-            <span class="ag-detail-label">Data e ora</span>
-            <span class="ag-detail-value">${dataOra}</span>
-        </div>
-        <div class="ag-detail-row">
-            <span class="ag-detail-label">Stato</span>
-            <span class="oc-stato ${p.stato}">${statoLabel[p.stato] || p.stato}</span>
-        </div>
-        ${p.descrizione ? `
-        <div class="ag-detail-row">
-            <span class="ag-detail-label">Note</span>
-            <span class="ag-detail-value">${p.descrizione}</span>
-        </div>` : ''}
+    `;
+
+    document.getElementById('ag-detail-azioni').innerHTML = `
+        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
+            <i class="fa-solid fa-xmark"></i> Chiudi
+        </button>
     `;
 
     document.getElementById('ag-detail-overlay').classList.add('open');

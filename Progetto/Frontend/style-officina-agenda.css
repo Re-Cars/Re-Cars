@@ -199,7 +199,6 @@
     background: var(--surface);
     border-radius: 14px;
     border: 0.5px solid rgba(255, 255, 255, 0.06);
-    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -292,8 +291,8 @@
 .ag-week-grid {
     display: grid;
     grid-template-columns: 52px repeat(7, 1fr);
-    overflow-y: auto;
     max-height: 500px;
+    overflow-y: scroll;
 }
 
 .ag-time-col {
@@ -302,7 +301,7 @@
 }
 
 .ag-time-slot {
-    height: 52px;
+    height: 64px;
     border-bottom: 0.5px solid rgba(255, 255, 255, 0.03);
     display: flex;
     align-items: flex-start;
@@ -326,51 +325,96 @@
 }
 
 .ag-day-cell {
-    height: 52px;
+    height: 64px;
     border-bottom: 0.5px solid rgba(255, 255, 255, 0.03);
-    position: relative;
+    padding: 4px 3px;
+    display: flex;
+    align-items: stretch;
 }
 
 .ag-event {
-    position: absolute;
-    left: 2px;
-    right: 2px;
+    flex: 1;
+    min-width: 0;
     border-radius: 6px;
-    padding: 3px 6px;
-    font-size: 10px;
-    font-weight: 500;
-    overflow: hidden;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.15s;
-    z-index: 1;
+    transition: filter 0.15s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    overflow: hidden;
 }
 
 .ag-event:hover {
-    opacity: 0.85;
+    filter: brightness(1.25);
+    transform: none;
 }
 
-.ag-ev-attesa {
-    background: rgba(251, 191, 36, 0.15);
+.ag-event-nome {
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 700;
+}
+
+.ag-event-sub {
+    font-size: 10px;
+    opacity: 0.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ----------------------------------------------------
+/              EVENTI GRIGLIA SETTIMANA                /
+-----------------------------------------------------*/
+
+.ag-grid-event {
+    flex: 1;
+    min-width: 0;
+    border-radius: 0 6px 6px 0;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.15s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.ag-grid-event:hover {
+    filter: brightness(1.25);
+}
+
+.ag-grid-in_attesa {
+    background: rgba(251, 191, 36, 0.2);
     color: #fbbf24;
-    border-left: 2px solid #fbbf24;
+    border-left: 3px solid #fbbf24;
 }
 
-.ag-ev-confermata {
-    background: rgba(249, 115, 22, 0.15);
-    color: #f97316;
-    border-left: 2px solid #f97316;
+.ag-grid-confermata {
+    background: rgba(55, 169, 97, 0.2);
+    color: #37a961;
+    border-left: 3px solid #37a961;
 }
 
-.ag-ev-completata {
-    background: rgba(55, 169, 97, 0.12);
-    color: var(--success);
-    border-left: 2px solid var(--success);
-}
-
-.ag-ev-annullata {
-    background: rgba(160, 168, 184, 0.08);
+.ag-grid-completata {
+    background: rgba(160, 168, 184, 0.12);
     color: var(--muted);
-    border-left: 2px solid var(--muted);
+    border-left: 3px solid var(--muted);
+}
+
+.ag-grid-annullata {
+    background: rgba(229, 57, 53, 0.12);
+    color: var(--error);
+    border-left: 3px solid var(--error);
 }
 
 /* vista mese */
@@ -460,97 +504,6 @@
     font-size: 10px;
     color: var(--muted);
     padding: 2px 4px;
-}
-
-/* overlay dettaglio */
-.ag-detail-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-}
-
-.ag-detail-overlay.open {
-    opacity: 1;
-    pointer-events: all;
-}
-
-.ag-detail-modal {
-    background: var(--surface);
-    border-radius: 14px;
-    padding: 24px;
-    width: 420px;
-    max-width: 95vw;
-    border: 0.5px solid rgba(255, 255, 255, 0.1);
-    transform: translateY(10px);
-    transition: transform 0.2s;
-}
-
-.ag-detail-overlay.open .ag-detail-modal {
-    transform: translateY(0);
-}
-
-.ag-detail-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.ag-icon-brand { color: #f97316; }
-
-.ag-detail-close {
-    margin-left: auto;
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    padding: 0;
-    transition: color 0.15s;
-}
-
-.ag-detail-close:hover {
-    color: var(--error);
-}
-
-.ag-detail-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
-    font-size: 13px;
-}
-
-.ag-detail-row:last-child {
-    border-bottom: none;
-}
-
-.ag-detail-label {
-    font-size: 10px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 500;
-}
-
-.ag-detail-value {
-    color: var(--white);
-    font-weight: 500;
 }
 
 /* responsive */

@@ -241,72 +241,102 @@ function apriDettaglio(id) {
 
     const p = prenotazioneSelezionata;
     const v = p.utente?.veicolo?.[0];
+    const dg = v?.dati_generici?.[0];
+    const ds = v?.dati_specifici?.[0];
+
     const nomeVeicolo = v ? `${v.marca || ''} ${v.modello || ''}`.trim() : '—';
-    const data = new Date(p.dataprenotazione).toLocaleString('it-IT', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
+    const targa = v?.targa || '—';
+    const tipo = dg?.tipo_veicolo || '—';
+    const anno = ds?.dataimmatricolazione ? new Date(ds.dataimmatricolazione).getFullYear() : '—';
+    const isMoto = tipo === 'Moto' || tipo === 'Scooter';
+    const iconaVeicolo = isMoto ? 'fa-motorcycle' : 'fa-car';
+
+    const dataOra = new Date(p.dataprenotazione).toLocaleString('it-IT', {
+        day: '2-digit', month: 'short', year: 'numeric',
         hour: '2-digit', minute: '2-digit',
     });
 
-    const statoLabel = {
-        in_attesa: 'In attesa',
-        confermata: 'Confermata',
-        annullata: 'Annullata',
-        completata: 'Completata',
-    }[p.stato] || p.stato;
+    const statoLabel = { in_attesa: 'In attesa', confermata: 'Confermata', annullata: 'Annullata', completata: 'Completata' };
+    const statoClasse = { in_attesa: 'oc-stato in_attesa', confermata: 'oc-stato confermata', annullata: 'oc-stato annullata', completata: 'oc-stato completata' };
 
-    const azioniBtn = p.stato === 'in_attesa' ? `
-        <button class="oc-btn-conferma" onclick="aggiornaStato(${p.id}, 'confermata')">
-            <i class="fa-solid fa-check"></i> Conferma
-        </button>
-        <button class="oc-btn-annulla" onclick="aggiornaStato(${p.id}, 'annullata')">
-            <i class="fa-solid fa-xmark"></i> Annulla
-        </button>
-    ` : p.stato === 'confermata' ? `
-        <button class="oc-btn-conferma" onclick="aggiornaStato(${p.id}, 'completata')">
-            <i class="fa-solid fa-flag-checkered"></i> Completa
-        </button>
+    const nomeUtente = p.utente?.username || '—';
+    const iniziale = nomeUtente.charAt(0).toUpperCase();
+    const email = p.utente?.email || '';
+    const cellulare = p.utente?.cellulare || '';
+    const clienteSub = [email, cellulare].filter(Boolean).join(' · ');
+
+    const notaHtml = p.descrizione ? `
+        <div class="oc-new-nota">
+            <div class="oc-new-nota-label">
+                <i class="fa-solid fa-note-sticky"></i> Note
+            </div>
+            <div class="oc-new-nota-text">${p.descrizione}</div>
+        </div>
     ` : '';
 
+    document.getElementById('oc-detail-stato-badge').className = statoClasse[p.stato] || 'oc-stato';
+    document.getElementById('oc-detail-stato-badge').textContent = statoLabel[p.stato] || p.stato;
+
     document.getElementById('oc-detail-content').innerHTML = `
-        <div class="oc-detail-row">
-            <span class="oc-detail-label">Veicolo</span>
-            <span class="oc-detail-value">${nomeVeicolo}</span>
+        <div class="oc-new-hero">
+            <div class="oc-new-car-icon">
+                <i class="fa-solid ${iconaVeicolo}"></i>
+            </div>
+            <div>
+                <div class="oc-new-car-name">${nomeVeicolo}</div>
+                <div class="oc-new-car-sub">
+                    <span class="oc-new-targa">${targa}</span>
+                    <span>${tipo} · ${anno}</span>
+                </div>
+            </div>
         </div>
-        <div class="oc-detail-row">
-            <span class="oc-detail-label">Targa</span>
-            <span class="oc-detail-value">${v?.targa || '—'}</span>
+        <div class="oc-new-chips">
+            <div class="oc-new-chip ora">
+                <i class="fa-solid fa-clock"></i> ${dataOra}
+            </div>
+            ${p.servizio ? `
+            <div class="oc-new-chip">
+                <i class="fa-solid fa-screwdriver-wrench"></i> ${p.servizio}
+            </div>` : ''}
         </div>
-        <div class="oc-detail-row">
-            <span class="oc-detail-label">Tipo veicolo</span>
-            <span class="oc-detail-value">${v?.dati_generici?.[0]?.tipo_veicolo || '—'}</span>
-        </div>
-        <div class="oc-detail-row">
-            <span class="oc-detail-label">Utente</span>
-            <span class="oc-detail-value">${p.utente?.username || '—'}</span>
-        </div>
-        <div class="oc-detail-row">
-            <span class="oc-detail-label">Email</span>
-            <span class="oc-detail-value">${p.utente?.email || '—'}</span>
-        </div>
-        <div class="oc-detail-row">
-            <span class="oc-detail-label">Data</span>
-            <span class="oc-detail-value">${data}</span>
-        </div>
-        <div class="oc-detail-row">
-            <span class="oc-detail-label">Note</span>
-            <span class="oc-detail-value">${p.descrizione || '—'}</span>
-        </div>
-        <div class="oc-detail-row">
-            <span class="oc-detail-label">Stato</span>
-            <span class="oc-stato ${p.stato}">${statoLabel}</span>
+        ${notaHtml}
+        <div class="oc-new-divider"></div>
+        <div class="oc-new-client">
+            <div class="oc-new-avatar">${iniziale}</div>
+            <div>
+                <div class="oc-new-client-name">${nomeUtente}</div>
+                <div class="oc-new-client-sub">${clienteSub || '—'}</div>
+            </div>
         </div>
     `;
 
-    document.getElementById('oc-detail-azioni').innerHTML = `
-        <button class="oc-detail-actions button oc-btn-chiudi" onclick="chiudiDettaglio()">Chiudi</button>
-        ${azioniBtn}
+    const azioniBtn = p.stato === 'in_attesa' ? `
+        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
+            <i class="fa-solid fa-xmark"></i> Chiudi
+        </button>
+        <button class="oc-new-btn conferma" onclick="aggiornaStato(${p.id}, 'confermata')">
+            <i class="fa-solid fa-check"></i> Conferma
+        </button>
+        <button class="oc-new-btn annulla" onclick="aggiornaStato(${p.id}, 'annullata')">
+            <i class="fa-solid fa-ban"></i> Annulla
+        </button>
+    ` : p.stato === 'confermata' ? `
+        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
+            <i class="fa-solid fa-xmark"></i> Chiudi
+        </button>
+        <button class="oc-new-btn conferma" onclick="aggiornaStato(${p.id}, 'completata')">
+            <i class="fa-solid fa-flag-checkered"></i> Completa
+        </button>
+        <button class="oc-new-btn annulla" onclick="aggiornaStato(${p.id}, 'annullata')">
+            <i class="fa-solid fa-ban"></i> Annulla
+        </button>
+    ` : `
+        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
+            <i class="fa-solid fa-xmark"></i> Chiudi
+        </button>
     `;
 
+    document.getElementById('oc-detail-azioni').innerHTML = azioniBtn;
     document.getElementById('oc-detail-overlay').classList.add('open');
 }
 
