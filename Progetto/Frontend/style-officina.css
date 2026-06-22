@@ -371,6 +371,18 @@
  /* ----------------------------------------------------
 /                  OVERLAY DETTAGLIO                   /
 -----------------------------------------------------*/
+.oc-new-modal {
+    background: var(--surface);
+    border-radius: 16px;
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    width: 520px;
+    max-width: 95vw;
+    transform: translateY(10px);
+    transition: transform 0.2s;
+    max-height: 85vh;
+    overflow-y: auto;
+}
 
 .oc-detail-overlay {
     position: fixed;
@@ -390,45 +402,11 @@
     pointer-events: all;
 }
 
-.oc-detail-modal {
-    background: var(--surface);
-    border-radius: 14px;
-    padding: 28px;
-    width: 480px;
-    max-width: 95vw;
-    border: 0.5px solid rgba(255, 255, 255, 0.1);
-    transform: translateY(10px);
-    transition: transform 0.2s;
-    max-height: 85vh;
-    overflow-y: auto;
-}
-
-.oc-detail-modal-wide {
-    width: 560px;
-}
-
-.oc-detail-overlay.open .oc-detail-modal {
+.oc-detail-overlay.open .oc-new-modal {
     transform: translateY(0);
 }
 
-.oc-detail-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 20px;
-    padding-bottom: 14px;
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.oc-icon-brand {
-    color: #f97316;
-}
-
 .oc-detail-close {
-    margin-left: auto;
     background: none;
     border: none;
     color: var(--muted);
@@ -444,194 +422,241 @@
     color: var(--error);
 }
 
-.oc-detail-row {
+.oc-new-modal-header {
+    padding: 16px 20px;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
-    font-size: 13px;
 }
 
-.oc-detail-row:last-child {
-    border-bottom: none;
-}
-
-.oc-detail-label {
-    color: var(--muted);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 500;
-}
-
-.oc-detail-value {
-    color: var(--white);
-    font-weight: 500;
-}
-
-.oc-detail-actions {
+.oc-new-modal-title {
     display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+    align-items: center;
+    gap: 9px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
 }
 
-.oc-detail-actions button {
-    flex: 1;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: inherit;
-    transition: all 0.15s;
+.oc-new-modal-title i {
+    color: #f97316;
+    font-size: 16px;
 }
 
-.oc-btn-chiudi {
-    background: rgba(255, 255, 255, 0.06) !important;
-    color: var(--muted) !important;
-    border: 0.5px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.oc-btn-chiudi:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
-}
-
-.oc-btn-conferma {
-    background: rgba(55, 169, 97, 0.15) !important;
-    color: var(--success) !important;
-}
-
-.oc-btn-conferma:hover {
-    background: var(--success) !important;
-    color: var(--white) !important;
-}
-
-.oc-btn-annulla {
-    background: rgba(229, 57, 53, 0.1) !important;
-    color: var(--error) !important;
-}
-
-.oc-btn-annulla:hover {
-    background: var(--error) !important;
-    color: var(--white) !important;
-}
-
-.oc-detail-section {
-    margin-bottom: 16px;
-    padding-bottom: 16px;
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
-}
-
-.oc-detail-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.oc-detail-section-title {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 10px;
-}
-
-.oc-detail-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+.oc-new-modal-header-right {
+    display: flex;
+    align-items: center;
     gap: 8px;
 }
 
-/* storico interventi nel dettaglio */
-.oc-storico-list {
+.oc-new-modal-body {
+    padding: 18px 20px;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 16px;
 }
 
-.oc-storico-item {
+.oc-new-modal-footer {
+    padding: 14px 20px;
+    border-top: 0.5px solid rgba(255, 255, 255, 0.06);
     display: flex;
-    gap: 10px;
-    padding: 8px 0;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.12);
 }
 
-.oc-storico-dot-wrap {
+.oc-new-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    width: 12px;
-    flex-shrink: 0;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.15s;
 }
 
-.oc-storico-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #f97316;
-    flex-shrink: 0;
-    margin-top: 3px;
-}
-
-.oc-storico-line {
-    width: 1px;
-    flex: 1;
-    background: rgba(255, 255, 255, 0.08);
-    margin-top: 3px;
-}
-
-.oc-storico-content {
-    flex: 1;
-    padding-bottom: 8px;
-}
-
-.oc-storico-nome {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--white);
-    margin-bottom: 2px;
-}
-
-.oc-storico-sub {
-    font-size: 11px;
+.oc-new-btn.chiudi {
+    background: rgba(255, 255, 255, 0.05);
     color: var(--muted);
-    margin-bottom: 4px;
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
 }
 
-.oc-storico-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
+.oc-new-btn.chiudi:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
-.oc-badge-blue {
-    background: rgba(59, 130, 246, 0.12);
-    color: #3b82f6;
-    border: 0.5px solid rgba(59, 130, 246, 0.3);
+.oc-new-btn.conferma {
+    background: rgba(55, 169, 97, 0.15);
+    color: var(--success);
+    border: 0.5px solid rgba(55, 169, 97, 0.35);
 }
 
-.oc-badge-red {
-    background: rgba(229, 57, 53, 0.12);
+.oc-new-btn.conferma:hover {
+    background: var(--success);
+    color: #fff;
+}
+
+.oc-new-btn.annulla {
+    background: rgba(229, 57, 53, 0.1);
     color: var(--error);
     border: 0.5px solid rgba(229, 57, 53, 0.3);
 }
 
-.oc-badge-green {
-    background: rgba(55, 169, 97, 0.12);
-    color: var(--success);
-    border: 0.5px solid rgba(55, 169, 97, 0.3);
+.oc-new-btn.annulla:hover {
+    background: var(--error);
+    color: #fff;
 }
 
-.oc-badge-orange {
-    background: rgba(249, 115, 22, 0.12);
+.oc-new-hero {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+}
+
+.oc-new-car-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(249, 115, 22, 0.1);
+    border: 1px solid rgba(249, 115, 22, 0.25);
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
     color: #f97316;
+    flex-shrink: 0;
+}
+
+.oc-new-car-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 5px;
+}
+
+.oc-new-car-sub {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.oc-new-targa {
+    background: rgba(249, 115, 22, 0.1);
     border: 0.5px solid rgba(249, 115, 22, 0.3);
+    border-radius: 5px;
+    padding: 1px 7px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #f97316;
+    letter-spacing: 1px;
+}
+
+.oc-new-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.oc-new-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 6px 11px;
+    font-size: 12px;
+    color: var(--white);
+    white-space: nowrap;
+}
+
+.oc-new-chip i {
+    font-size: 12px;
+    color: #f97316;
+}
+
+.oc-new-chip.ora {
+    background: rgba(249, 115, 22, 0.08);
+    border-color: rgba(249, 115, 22, 0.2);
+    color: #f97316;
+}
+
+.oc-new-nota {
+    background: rgba(255, 255, 255, 0.03);
+    border: 0.5px solid rgba(255, 255, 255, 0.07);
+    border-left: 2px solid rgba(249, 115, 22, 0.4);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+}
+
+.oc-new-nota-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(249, 115, 22, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.oc-new-nota-text {
+    font-size: 13px;
+    color: rgba(228, 228, 228, 0.85);
+    line-height: 1.5;
+}
+
+.oc-new-divider {
+    height: 0.5px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.oc-new-client {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border: 0.5px solid rgba(255, 255, 255, 0.06);
+}
+
+.oc-new-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(249, 115, 22, 0.12);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #f97316;
+    flex-shrink: 0;
+}
+
+.oc-new-client-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 2px;
+}
+
+.oc-new-client-sub {
+    font-size: 11px;
+    color: var(--muted);
 }
 
  /* ----------------------------------------------------
@@ -795,6 +820,10 @@
 
 .oc-detail-row-full {
     grid-column: 1 / -1;
+}
+
+.oc-empty-state-outer {
+    margin: 0 28px 32px;
 }
 
  /* ----------------------------------------------------
@@ -1412,16 +1441,12 @@
 }
 
  /* ----------------------------------------------------
-/              ABBONAMENTI OFFICINA                    /
------------------------------------------------------*/
- /* ----------------------------------------------------
 /                   ABBONAMENTI                        /
 -----------------------------------------------------*/
 
 @property --sw-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 @keyframes sw-trace { to { --sw-angle: 360deg; } }
 @keyframes abb-dot-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
-/* anima solo il transform: se l'animazione non parte la card resta comunque visibile */
 @keyframes abb-fadeUp { from { transform: translateY(12px); } to { transform: translateY(0); } }
 
 .abb-dashboard {
@@ -1676,7 +1701,6 @@
  /* ----------------------------------------------------
 /                  RESPONSIVE                          /
 -----------------------------------------------------*/
-
 @media (max-width: 768px) {
     .oc-stats-grid {
         grid-template-columns: 1fr;

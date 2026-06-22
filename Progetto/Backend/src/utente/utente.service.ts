@@ -10,23 +10,32 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UtenteService {
   constructor(private prisma: PrismaService, private jwtService: JwtService,) {}
+  
 
-    async registra(data: CreateUtenteDto) {
+  async registra(data: CreateUtenteDto) {
       const hashedPassword = await bcrypt.hash(data.password, 10);
 
-      return this.prisma.utente.create({
-        data: {
-          username: data.username,
-          email: data.email,
-          password: hashedPassword,
-          cellulare: data.cellulare || null,
-          tipo: data.tipo || 'privato',
-          ragione_sociale: data.ragione_sociale || null,
-          partita_iva: data.partita_iva || null,
-          codice_sdi: data.codice_sdi || null,
-        },
+      const utente = await this.prisma.utente.create({
+          data: {
+              username: data.username,
+              email: data.email,
+              password: hashedPassword,
+              cellulare: data.cellulare || null,
+              tipo: data.tipo || 'privato',
+              ragione_sociale: data.ragione_sociale || null,
+              partita_iva: data.partita_iva || null,
+              codice_sdi: data.codice_sdi || null,
+          },
       });
-    }
+
+      const { password, ...risultato } = utente;
+
+      const payload = { sub: utente.id, email: utente.email, tipo: utente.tipo };
+      return {
+          access_token: this.jwtService.sign(payload),
+          utente: risultato,
+      };
+  }
 
     async login(data: LoginUtenteDto) {
       const utente = await this.prisma.utente.findUnique({

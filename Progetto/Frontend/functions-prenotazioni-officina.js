@@ -77,7 +77,6 @@ function renderPrenotazioni() {
 
     if (!filtrate.length) {
         container.innerHTML = '';
-        container.appendChild(emptyState);
         emptyState.style.display = 'flex';
         return;
     }
@@ -91,7 +90,7 @@ function renderPrenotazioni() {
         completata: 'Completata',
     };
 
-    const cards = filtrate.map(p => {
+    container.innerHTML = filtrate.map(p => {
         const v = p.utente?.veicolo?.[0];
         const dg = v?.dati_generici?.[0];
         const ds = v?.dati_specifici?.[0];
@@ -124,13 +123,6 @@ function renderPrenotazioni() {
                 <button class="oc-action-btn completa" title="Completa" onclick="aggiornaStato(${p.id}, 'completata', event)">
                     <i class="fa-solid fa-flag-checkered"></i>
                 </button>
-            </div>
-        ` : '';
-
-        const bottomDescrizione = p.descrizione ? `
-            <div class="oc-pren-card-bottom-item">
-                <i class="fa-solid fa-file-lines"></i>
-                ${p.descrizione}
             </div>
         ` : '';
 
@@ -170,14 +162,16 @@ function renderPrenotazioni() {
                         <i class="fa-solid fa-car"></i>
                         <strong>${tipo}</strong> · ${anno}
                     </div>
-                    ${bottomDescrizione}
+                    ${p.servizio ? `
+                    <div class="oc-pren-card-bottom-item">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        ${p.servizio}
+                    </div>` : ''}
                     ${bottomCellulare}
                 </div>
             </div>
         `;
     }).join('');
-
-    container.innerHTML = cards;
 }
 
  /* ----------------------------------------------------
@@ -192,162 +186,103 @@ function apriDettaglio(id) {
     const ds = v?.dati_specifici?.[0];
 
     const nomeVeicolo = v ? `${v.marca || ''} ${v.modello || ''}`.trim() : '—';
+    const targa = v?.targa || '—';
     const anno = ds?.dataimmatricolazione ? new Date(ds.dataimmatricolazione).getFullYear() : '—';
+    const tipo = dg?.tipo_veicolo || '—';
+    const isMoto = tipo === 'Moto' || tipo === 'Scooter';
+    const iconaVeicolo = isMoto ? 'fa-motorcycle' : 'fa-car';
+
     const dataOra = new Date(p.dataprenotazione).toLocaleString('it-IT', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
+        day: '2-digit', month: 'short', year: 'numeric',
         hour: '2-digit', minute: '2-digit',
     });
 
-    const statoLabel = {
-        in_attesa: 'In attesa',
-        confermata: 'Confermata',
-        annullata: 'Annullata',
-        completata: 'Completata',
-    };
+    const statoLabel = { in_attesa: 'In attesa', confermata: 'Confermata', annullata: 'Annullata', completata: 'Completata' };
+    const statoClasse = { in_attesa: 'oc-stato in_attesa', confermata: 'oc-stato confermata', annullata: 'oc-stato annullata', completata: 'oc-stato completata' };
 
-    const categoriaLabel = {
-        ordinario: 'Ordinario',
-        straordinario: 'Straordinario',
-        gestione: 'Gestione',
-        annotazioni: 'Annotazione',
-    };
+    const nomeUtente = p.utente?.username || '—';
+    const iniziale = nomeUtente.charAt(0).toUpperCase();
+    const email = p.utente?.email || '';
+    const cellulare = p.utente?.cellulare || '';
+    const clienteSub = [email, cellulare].filter(Boolean).join(' · ');
 
-    const categoriaColore = {
-        ordinario: 'oc-badge-blue',
-        straordinario: 'oc-badge-red',
-        gestione: 'oc-badge-green',
-        annotazioni: 'oc-badge-orange',
-    };
-
-    const storico = v?.storico_intervento;
-    const storicoHtml = storico?.length ? `
-        <div class="oc-detail-section">
-            <div class="oc-detail-section-title">Storico interventi veicolo</div>
-            <div class="oc-storico-list">
-                ${storico.map((s, i) => `
-                    <div class="oc-storico-item">
-                        <div class="oc-storico-dot-wrap">
-                            <div class="oc-storico-dot"></div>
-                            ${i < storico.length - 1 ? '<div class="oc-storico-line"></div>' : ''}
-                        </div>
-                        <div class="oc-storico-content">
-                            <div class="oc-storico-nome">${s.nome}</div>
-                            <div class="oc-storico-sub">
-                                ${new Date(s.data).toLocaleDateString('it-IT')}
-                                ${s.mediante ? ' · ' + s.mediante : ''}
-                                ${s.costo ? ' · €' + Number(s.costo).toFixed(2) : ''}
-                            </div>
-                            <span class="oc-storico-badge ${categoriaColore[s.categoria] || ''}">
-                                ${categoriaLabel[s.categoria] || s.categoria}
-                            </span>
-                        </div>
-                    </div>
-                `).join('')}
+    const notaHtml = p.descrizione ? `
+        <div class="oc-new-nota">
+            <div class="oc-new-nota-label">
+                <i class="fa-solid fa-note-sticky"></i> Note
             </div>
+            <div class="oc-new-nota-text">${p.descrizione}</div>
         </div>
     ` : '';
 
+    document.getElementById('oc-detail-stato-badge').className = statoClasse[p.stato] || 'oc-stato';
+    document.getElementById('oc-detail-stato-badge').textContent = statoLabel[p.stato] || p.stato;
+
     document.getElementById('oc-detail-content').innerHTML = `
-        <div class="oc-detail-section">
-            <div class="oc-detail-section-title">Veicolo</div>
-            <div class="oc-detail-grid">
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Modello</span>
-                    <span class="oc-detail-value">${nomeVeicolo}</span>
-                </div>
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Targa</span>
-                    <span class="oc-detail-value">${v?.targa || '—'}</span>
-                </div>
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Tipo</span>
-                    <span class="oc-detail-value">${dg?.tipo_veicolo || '—'}</span>
-                </div>
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Anno</span>
-                    <span class="oc-detail-value">${anno}</span>
-                </div>
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Alimentazione</span>
-                    <span class="oc-detail-value">${dg?.alimentazione || '—'}</span>
-                </div>
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Cilindrata</span>
-                    <span class="oc-detail-value">${dg?.cilindrata ? dg.cilindrata + ' cc' : '—'}</span>
-                </div>
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Cavalli</span>
-                    <span class="oc-detail-value">${dg?.cavalli ? dg.cavalli + ' CV' : '—'}</span>
-                </div>
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Colore</span>
-                    <span class="oc-detail-value">${dg?.colore || '—'}</span>
+        <div class="oc-new-hero">
+            <div class="oc-new-car-icon">
+                <i class="fa-solid ${iconaVeicolo}"></i>
+            </div>
+            <div>
+                <div class="oc-new-car-name">${nomeVeicolo}</div>
+                <div class="oc-new-car-sub">
+                    <span class="oc-new-targa">${targa}</span>
+                    <span>${tipo} · ${anno}</span>
                 </div>
             </div>
         </div>
-
-        <div class="oc-detail-section">
-            <div class="oc-detail-section-title">Cliente</div>
-            <div class="oc-detail-grid">
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Username</span>
-                    <span class="oc-detail-value">${p.utente?.username || '—'}</span>
-                </div>
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Email</span>
-                    <span class="oc-detail-value">${p.utente?.email || '—'}</span>
-                </div>
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Cellulare</span>
-                    <span class="oc-detail-value">${p.utente?.cellulare || '—'}</span>
-                </div>
+        <div class="oc-new-chips">
+            <div class="oc-new-chip ora">
+                <i class="fa-solid fa-clock"></i> ${dataOra}
+            </div>
+            <div class="oc-new-chip">
+                <i class="fa-solid fa-screwdriver-wrench"></i> ${p.servizio || 'Servizio generico'}
             </div>
         </div>
-
-        <div class="oc-detail-section">
-            <div class="oc-detail-section-title">Prenotazione</div>
-            <div class="oc-detail-grid">
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Data e ora</span>
-                    <span class="oc-detail-value">${dataOra}</span>
-                </div>
-                <div class="oc-detail-row">
-                    <span class="oc-detail-label">Stato</span>
-                    <span class="oc-stato ${p.stato}">${statoLabel[p.stato] || p.stato}</span>
-                </div>
-                <div class="oc-detail-row oc-detail-row-full">
-                    <span class="oc-detail-label">Note</span>
-                    <span class="oc-detail-value">${p.descrizione || '—'}</span>
-                </div>
+        ${notaHtml}
+        <div class="oc-new-divider"></div>
+        <div class="oc-new-client">
+            <div class="oc-new-avatar">${iniziale}</div>
+            <div>
+                <div class="oc-new-client-name">${nomeUtente}</div>
+                <div class="oc-new-client-sub">${clienteSub || '—'}</div>
             </div>
         </div>
-
-        ${storicoHtml}
     `;
 
     const azioniBtn = p.stato === 'in_attesa' ? `
-        <button class="oc-btn-conferma" onclick="aggiornaStato(${p.id}, 'confermata')">
+        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
+            <i class="fa-solid fa-xmark"></i> Chiudi
+        </button>
+        <button class="oc-new-btn conferma" onclick="aggiornaStato(${p.id}, 'confermata')">
             <i class="fa-solid fa-check"></i> Conferma
         </button>
-        <button class="oc-btn-annulla" onclick="aggiornaStato(${p.id}, 'annullata')">
-            <i class="fa-solid fa-xmark"></i> Annulla
+        <button class="oc-new-btn annulla" onclick="aggiornaStato(${p.id}, 'annullata')">
+            <i class="fa-solid fa-ban"></i> Annulla
         </button>
     ` : p.stato === 'confermata' ? `
-        <button class="oc-btn-conferma" onclick="aggiornaStato(${p.id}, 'completata')">
+        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
+            <i class="fa-solid fa-xmark"></i> Chiudi
+        </button>
+        <button class="oc-new-btn conferma" onclick="aggiornaStato(${p.id}, 'completata')">
             <i class="fa-solid fa-flag-checkered"></i> Completa
         </button>
-    ` : '';
-
-    document.getElementById('oc-detail-azioni').innerHTML = `
-        <button class="oc-btn-chiudi" onclick="chiudiDettaglio()">Chiudi</button>
-        ${azioniBtn}
+        <button class="oc-new-btn annulla" onclick="aggiornaStato(${p.id}, 'annullata')">
+            <i class="fa-solid fa-ban"></i> Annulla
+        </button>
+    ` : `
+        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
+            <i class="fa-solid fa-xmark"></i> Chiudi
+        </button>
     `;
 
+    document.getElementById('oc-detail-azioni').innerHTML = azioniBtn;
     document.getElementById('oc-detail-overlay').classList.add('open');
 }
 
 function chiudiDettaglio() {
     document.getElementById('oc-detail-overlay').classList.remove('open');
+    prenotazioneSelezionata = null;
 }
 
  /* ----------------------------------------------------
