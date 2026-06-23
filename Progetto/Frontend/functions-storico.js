@@ -67,8 +67,8 @@ function renderRows() {
  
       <!-- AZIONI -->
       <div class="actions">
-        <button class="action-btn edit-btn" title="Modifica">
-          <i class="fa-solid fa-pen"></i>
+        <button class="action-btn edit-btn" title="Modifica" onclick="openEditModal(${item.id})">
+        <i class="fa-solid fa-pen"></i>
         </button>
         <button class="action-btn del-btn" title="Elimina" onclick="deleteRow(${item.id})">
           <i class="fa-solid fa-trash"></i>
@@ -148,3 +148,68 @@ document.getElementById('modalOverlay').addEventListener('click', function(e) {
 });
  
 renderRows();
+
+// MODIFICA STORICO
+function updateEditNomi() {
+  const cat = document.getElementById('editCategoria').value;
+  const sel = document.getElementById('editNome');
+  if (!cat) { sel.innerHTML = '<option value="">Prima seleziona categoria...</option>'; return; }
+  const nomi = tipiIntervento[cat] || [];
+  sel.innerHTML = nomi.map(n => `<option value="${n}">${n}</option>`).join('');
+}
+
+function openEditModal(id) {
+  const item = interventi.find(i => i.id === id);
+  if (!item) return;
+
+  document.getElementById('editId').value = item.id;
+  document.getElementById('editData').value = item.data;
+  document.getElementById('editCategoria').value = item.categoria;
+  updateEditNomi();
+
+  // seleziona il nome corretto dopo aver popolato le opzioni
+  document.getElementById('editNome').value = item.nome;
+
+  document.getElementById('editDescrizione').value = item.descrizione || '';
+  document.getElementById('editMediante').value    = item.mediante    || '';
+  document.getElementById('editCosto').value       = item.costo       || '';
+
+  document.getElementById('modalEditOverlay').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('modalEditOverlay').classList.remove('open');
+}
+
+function saveEdit() {
+  const id  = parseInt(document.getElementById('editId').value);
+  const data = document.getElementById('editData').value;
+  const cat  = document.getElementById('editCategoria').value;
+  const nome = document.getElementById('editNome').value;
+
+  if (!data || !cat || !nome) {
+    alert('Data, categoria e tipo intervento sono obbligatori.');
+    return;
+  }
+
+  const idx = interventi.findIndex(i => i.id === id);
+  if (idx === -1) return;
+
+  interventi[idx] = {
+    id,
+    data,
+    categoria:   cat,
+    nome,
+    descrizione: document.getElementById('editDescrizione').value || null,
+    mediante:    document.getElementById('editMediante').value    || null,
+    costo:       parseFloat(document.getElementById('editCosto').value) || null,
+  };
+
+  closeEditModal();
+  renderRows();
+}
+
+// Chiudi cliccando fuori
+document.getElementById('modalEditOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeEditModal();
+});
