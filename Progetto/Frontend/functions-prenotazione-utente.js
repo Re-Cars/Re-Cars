@@ -42,7 +42,7 @@ async function caricaOfficine() {
             categoria:     o.categoria || 'Meccanica',
             stelle:        parseFloat(o.stelle || 4.5), 
             recensioni:    parseInt(o.recensioni || 12),
-            distanza_km:   parseFloat(o.distanza_km || (Math.random() * 5).toFixed(1)), 
+            distanza_km:   parseFloat(o.distanza_km || 0),
             aperta:        o.aperta !== undefined ? o.aperta : true,
             orario:        o.orario || '08:00 - 18:00',
             disponibilita: o.disponibilita || 'Immediata',
@@ -313,13 +313,12 @@ function apriModal() {
 
     document.getElementById('modal-officina-nome').textContent = officineSelezionata.nome;
 
-    // Imposta la data minima selezionabile ad oggi
+    
     const oggi = new Date().toISOString().split('T')[0];
     const inputData = document.getElementById('modal-data');
     inputData.value = oggi;
     inputData.min = oggi;
 
-    // Popola select dei servizi dell'officina selezionata
     const selectServizio = document.getElementById('modal-servizio');
     selectServizio.innerHTML = '<option value="">Seleziona un servizio...</option>';
     officineSelezionata.servizi.forEach(s => {
@@ -358,7 +357,7 @@ function renderSlotOrari() {
 async function confermaPrenotazione() {
     const servizio = document.getElementById('modal-servizio').value;
     const dataInput = document.getElementById('modal-data').value;
-    const dataIso = new Date(dataInput).toISOString();
+    const dataIso = `${dataInput}T${slotSelezionato}:00`;
     const note = document.getElementById('modal-note').value;
 
     if (!servizio || !dataInput || !slotSelezionato) {
@@ -449,15 +448,11 @@ function renderFiltriCategorie() {
     });
 }
 
-document.getElementById('input-ricerca').addEventListener('input', e => {
-    applicaFiltriERender(e.target.value);
-});
-
 function applicaFiltriERender(q = '') {
     q = q.toLowerCase().trim();
     officineVisibili = tutteLeOfficine.filter(o => {
         const matchCat = !filtroCategoria || o.categoria === filtroCategoria;
-        const matchQ   = !q || o.nome.toLowerCase().includes(q) || o.specialita.toLowerCase().includes(q);
+        const matchQ = !q || o.nome.toLowerCase().includes(q) || o.specialita.toLowerCase().includes(q) || o.servizi.some(s => s.toLowerCase().includes(q));
         return matchCat && matchQ;
     });
     applicaSort();
@@ -489,7 +484,13 @@ function mostraStato(stato) {
     document.getElementById('lista-skeleton').style.display = stato === 'skeleton' ? 'flex' : 'none';
     document.getElementById('lista-errore').style.display   = stato === 'errore'   ? 'flex' : 'none';
     document.getElementById('no-results').style.display     = stato === 'vuoto'    ? 'flex' : 'none';
-    document.getElementById('officine-list').style.display  = stato === 'lista'    ? 'flex' : 'none';
+    const listEl = document.getElementById('officine-list');
+    if (stato === 'lista') {
+        listEl.style.display = 'flex';
+        listEl.style.flexDirection = 'column';
+    } else {
+        listEl.style.display = 'none';
+    }
 }
 
 function isOfficinaSalvata(id) { return false; }
@@ -501,4 +502,27 @@ function chiamaOfficina(tel) { if(tel) window.location.href = 'tel:' + tel; }
    ═══════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
     caricaOfficine();
+    document.getElementById('input-ricerca').addEventListener('input', e => {
+    applicaFiltriERender(e.target.value);
+    });
+    document.getElementById('btn-gps').addEventListener('click', () => {
+        if (!navigator.geolocation) {
+            gestisciToast('GPS non supportato dal browser');
+            return;
+        }
+        gestisciToast('Localizzazione in corso...');
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                if (mappaLeaflet) {
+                    mappaLeaflet.setView([pos.coords.latitude, pos.coords.longitude], 13, { animate: true });
+                }
+                gestisciToast('Posizione rilevata!');
+            },
+            () => gestisciToast('Impossibile rilevare la posizione')
+        );
+    });
+    
+     document.getElementById('modal-prenotazione').addEventListener('click', e => {
+        if (e.target === document.getElementById('modal-prenotazione')) chiudiModal();
+    });
 });

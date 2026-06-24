@@ -13,9 +13,11 @@ import { OfficinaModule } from './officina/officina.module';
 import { PrismaModule } from './prisma.module';
 import { StripeModule } from './stripe/stripe.module';
 import { PrenotazioneModule } from './prenotazione/prenotazione.module';
-
+import { MailerModule } from '@nestjs-modules/mailer';
+import { AppMailerModule } from './mailer.module';
 @Module({
   imports: [
+    AppMailerModule, 
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     PassportModule,
