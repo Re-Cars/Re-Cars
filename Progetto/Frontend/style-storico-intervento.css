@@ -252,7 +252,7 @@
     border: 1px solid var(--border);
 }
 .cat-badge.annotazioni {
-    background: var(--iv-orange2);
+    background: var(--surface);
     color: var(--iv-orange);
     border: 1px solid var(--border);
 }

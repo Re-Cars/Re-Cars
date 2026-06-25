@@ -255,6 +255,7 @@ function selezionaVeicolo(index) {
     renderDropdown();
     closeSwitcher();
     if (document.getElementById('iv-tipo')) caricaInfoVeicolo();
+    if (typeof caricaInterventi === 'function') caricaInterventi();
 }
 
 function toggleSwitcher() {
