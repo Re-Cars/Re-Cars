@@ -79,11 +79,13 @@ function initTiltCards() {
 
 async function avviaCheckout(piano) {
     try {
+        const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+
         const res = await fetch(`${API}/abbonamento/checkout`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ piano }),
+            body: JSON.stringify({ piano, baseUrl }),
         });
         if (!res.ok) return;
         const data = await res.json();
