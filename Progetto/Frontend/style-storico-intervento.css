@@ -1,48 +1,47 @@
 /* ----------------------------------------------------
-   BARRA STORICO INTERVENTI
+   LAYOUT DASHBOARD
 ----------------------------------------------------- */
 .iv-dashboard {
-    padding: 16px 24px 30px;
+    padding: 18px 15px 15px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    max-width: 900px;
+    gap: 16px;
+    max-width: 950px;
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
 }
 
+/* ----------------------------------------------------
+   BARRA STORICO INTERVENTI
+----------------------------------------------------- */
 .iv-section-bar2 {
-    padding: 10px 16px;
+    padding: 12px 18px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: #141445;
-    border-radius: 10px;
+    gap: 9px;
+    border-bottom: 1px solid rgba(249, 115, 22, 0.12);
+    background: rgba(249, 115, 22, 0.06);
 }
- 
-.iv-section-bar2 i {
-    font-size: 0.9rem;
-    color: #f97316;
-}
- 
+
 .iv-section-bar2 .section-title {
     font-size: 0.72rem;
-    font-weight: 600;
-    color: #a0a8b8;
-    letter-spacing: 0.8px;
+    font-weight: 700;
+    color: var(--c-muted);
+    letter-spacing: 1px;
     text-transform: uppercase;
 }
- 
+
 .count-badge {
-    background: rgba(255, 255, 255, 0.25);
-    color: white;
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+    border: 1px solid rgba(249, 115, 22, 0.35);
     padding: 2px 10px;
-    border-radius: 10px;
+    border-radius: 20px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
 }
- 
+
 /* Bottone aggiungi nella barra */
 .aggiungi-btn {
     background: rgba(249, 115, 22, 0.15);
@@ -60,144 +59,157 @@
     transition: 0.3s;
     margin-left: auto;
 }
- 
+
 .aggiungi-btn:hover {
     background: var(--iv-orange);
     border-color: var(--iv-orange);
-    color: #141445;
+    color: #fff;
 }
- 
-.aggiungi-btn i.fa-plus {
-    transition: color 0.3s;
-}
- 
+
 .aggiungi-btn:hover i.fa-plus {
-    color: #141445;
+    color: #fff;
 }
- 
- 
+
 /* ----------------------------------------------------
-   FILTRI  (blocco separato dalla tabella)
+   FILTRI
 ----------------------------------------------------- */
 .filters {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(249, 115, 22, 0.08);
+    border-radius: 0;
     padding: 12px 18px;
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
 }
+
 .filter-label {
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--c-muted);
     font-weight: 500;
     margin-right: 4px;
 }
+
 .filter-btn {
     padding: 5px 14px;
     border-radius: 20px;
-    border: 1.5px solid var(--border);
-    background: var(--surface);
+    border: 1.5px solid rgba(249, 115, 22, 0.2);
+    background: transparent;
     cursor: pointer;
     font-size: 12px;
     font-weight: 500;
-    color: var(--text-muted);
+    color: var(--c-muted);
     transition: all 0.18s ease;
     display: flex;
     align-items: center;
     gap: 6px;
 }
+
 .filter-btn .dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
 }
+
 .filter-btn.active-all {
-    background: var(--ordinario-bg);
+    background: rgba(82, 97, 105, 0.1);
     color: var(--tutti);
+    border-color: rgba(82, 97, 105, 0.3);
 }
 .filter-btn.active-ordinario {
     background: var(--ordinario-bg);
     color: var(--ordinario);
+    border-color: var(--ordinario-border);
 }
 .filter-btn.active-straordinario {
     background: var(--straordinario-bg);
-   color: var(--straordinario);
+    color: var(--straordinario);
+    border-color: var(--straordinario-border);
 }
 .filter-btn.active-gestione {
     background: var(--gestione-bg);
     color: var(--gestione);
-} 
+    border-color: var(--gestione-border);
+}
 .filter-btn.active-annotazioni {
     background: var(--iv-orange2);
     color: var(--iv-orange);
+    border-color: rgba(249, 115, 22, 0.35);
 }
- /* Filtro per data */
+
+/* Filtro per data */
 .filter-date-wrap {
     display: flex;
     align-items: center;
     gap: 6px;
     margin-left: auto;
     font-size: 12px;
-    color: var(--text-muted);
-    border: 1.5px solid var(--border);
+    color: var(--c-muted);
+    border: 1.5px solid rgba(249, 115, 22, 0.2);
     border-radius: 20px;
     padding: 4px 12px;
-    background: var(--surface);}
+    background: transparent;
+}
+
 .filter-date-wrap input[type="date"] {
     border: none;
     background: transparent;
     font-size: 12px;
-    color: var(--text);
+    color: var(--c-text);
     outline: none;
     font-family: inherit;
     cursor: pointer;
     width: 120px;
     padding: 0;
 }
+
 .filter-date-clear {
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--text-muted);
+    color: var(--c-muted);
     font-size: 11px;
     padding: 0;
-    transition: color 0.2s;}
+    transition: color 0.2s;
+}
+
 .filter-date-clear:hover {
     color: #ef4444;
 }
-  
+
 /* ----------------------------------------------------
-   TABELLA  (blocco separato dai filtri)
+   TABELLA
 ----------------------------------------------------- */
 .table-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
     overflow: hidden;
-} 
+}
+
 .table-head {
     display: grid;
     grid-template-columns: 120px 130px 1fr 150px 90px 60px;
     padding: 10px 18px;
-    background: #141445;
-    border-bottom: 1px solid var(--border);
+    background: rgba(249, 115, 22, 0.06);
+    border-bottom: 1px solid rgba(249, 115, 22, 0.12);
     font-size: 11px;
-    font-weight: 600;
-    color: #a0a8b8;
+    font-weight: 700;
+    color: var(--c-muted);
     text-transform: uppercase;
     letter-spacing: 0.6px;
     gap: 8px;
     align-items: center;
-} 
+}
+
 .table-row {
     display: grid;
     grid-template-columns: 120px 130px 1fr 150px 90px 60px;
     padding: 12px 18px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(249, 115, 22, 0.08);
     gap: 8px;
     align-items: center;
     font-size: 13px;
@@ -205,12 +217,15 @@
     cursor: default;
     animation: iv-fadeIn 0.3s ease forwards;
 }
+
 .table-row:last-child {
     border-bottom: none;
 }
+
 .table-row:hover {
-    background: var(--surface-2);
+    background: rgba(249, 115, 22, 0.04);
 }
+
 /* Pallino categoria */
 .cat-dot {
     width: 10px;
@@ -219,18 +234,21 @@
     flex-shrink: 0;
     display: inline-block;
 }
+
 .cat-dot.ordinario     { background: var(--ordinario); }
 .cat-dot.straordinario { background: var(--straordinario); }
 .cat-dot.annotazioni   { background: var(--iv-orange); }
 .cat-dot.gestione      { background: var(--gestione); }
- /* Cella data */
+
+/* Cella data */
 .date-cell {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--c-muted);
 }
+
 /* Badge categoria */
 .cat-badge {
     display: inline-flex;
@@ -241,61 +259,68 @@
     font-weight: 600;
     white-space: nowrap;
 }
+
 .cat-badge.ordinario {
-    background: var(--surface);
+    background: var(--ordinario-bg);
     color: var(--ordinario);
-    border: 1px solid var(--border);
+    border: 1px solid var(--ordinario-border);
 }
 .cat-badge.straordinario {
-    background: var(--surface);
+    background: var(--straordinario-bg);
     color: var(--straordinario);
-    border: 1px solid var(--border);
+    border: 1px solid var(--straordinario-border);
 }
 .cat-badge.annotazioni {
-    background: var(--surface);
+    background: var(--iv-orange2);
     color: var(--iv-orange);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(249, 115, 22, 0.35);
 }
 .cat-badge.gestione {
-    background: var(---surface);
+    background: var(--gestione-bg);
     color: var(--gestione);
-    border: 1px solid var(--border);
+    border: 1px solid var(--gestione-border);
 }
+
 /* Celle contenuto */
 .desc-cell {
-    color: var(--text);
+    color: var(--c-text);
     font-weight: 400;
 }
+
 .desc-sub {
     font-size: 11px;
-    color: var(--text-muted);
+    color: var(--c-muted);
     margin-top: 2px;
 }
+
 .mediante-cell {
-    color: var(--text-muted);
+    color: var(--c-muted);
     font-size: 12px;
 }
+
 .costo-cell {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 13px;
-    color: var(--text);
+    color: var(--c-text);
 }
 
 .costo-cell.vuoto {
-    color: var(--text-muted);
+    color: var(--c-muted);
     font-weight: 400;
     font-size: 12px;
 }
- /* Bottoni azione */
+
+/* Bottoni azione */
 .actions {
     display: flex;
     gap: 6px;
     justify-content: flex-end;
-} 
+}
+
 .action-btn {
     width: 28px;
     height: 28px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
     display: flex;
@@ -304,56 +329,63 @@
     font-size: 12px;
     transition: all 0.15s;
 }
- 
+
 .edit-btn {
     background: rgba(59, 130, 246, 0.1);
     color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.25);
 }
- 
+
 .edit-btn:hover {
     background: #2b88b8;
     color: white;
+    border-color: #2b88b8;
 }
- 
+
 .del-btn {
     background: rgba(239, 68, 68, 0.1);
     color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.25);
 }
- 
+
 .del-btn:hover {
     background: #ef4444;
     color: white;
+    border-color: #ef4444;
 }
- 
+
 /* Stato vuoto */
 .empty-state {
     padding: 40px;
     text-align: center;
-    color: var(--text-muted);
+    color: var(--c-muted);
     font-size: 13px;
     display: none;
 }
 
 .empty-state.visible {
     display: block;
-} 
+}
+
 /* ----------------------------------------------------
-   BOTTONE AGGIUNGI FLOTTANTE (vecchio stile)
+   BOTTONE AGGIUNGI FLOTTANTE
 ----------------------------------------------------- */
 .add-section {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    margin-top: 14px;
+    margin-top: 4px;
     gap: 10px;
-    padding: 0 4px 20px;
+    padding: 0 4px 8px;
 }
+
 .btn-aggiungi-label {
-    color: var(--text-muted);
+    color: var(--c-muted);
     font-size: 0.9rem;
     text-align: right;
     font-style: italic;
 }
+
 .btn-intervento {
     width: 52px;
     height: 52px;
@@ -366,13 +398,15 @@
     font-size: 1.5rem;
     border: none;
     cursor: pointer;
+    box-shadow: 0 8px 20px -6px rgba(249, 115, 22, 0.6);
     transition: 0.3s;
 }
+
 .btn-intervento:hover {
     background: #ea580c;
     transform: scale(1.08);
 }
- 
+
 /* ----------------------------------------------------
    MODAL (NUOVO E MODIFICA)
 ----------------------------------------------------- */
@@ -494,14 +528,14 @@
     transform: scale(1.03);
     box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
- /* ----------------------------------------------------
+
+/* ----------------------------------------------------
    RESPONSIVE
 ----------------------------------------------------- */
-/* Tablet (≤768px) */
 @media (max-width: 768px) {
     .iv-dashboard {
-        padding: 10px 14px 24px;
-        gap: 10px;
+        padding: 14px 16px 28px;
+        gap: 12px;
     }
     .iv-section-bar2 {
         flex-wrap: wrap;
@@ -527,10 +561,8 @@
         padding: 2px 8px;
     }
 }
- 
-/* Tablet piccolo (≤600px) */
+
 @media (max-width: 600px) {
-    /* Nasconde colonna "Mediante" */
     .table-head > div:nth-child(4),
     .table-row  > div:nth-child(4) {
         display: none;
@@ -543,14 +575,12 @@
         gap: 5px;
     }
 }
-/* Mobile (≤480px) */
+
 @media (max-width: 480px) {
- 
     .iv-dashboard {
         padding: 8px 10px 20px;
         gap: 8px;
     }
-    /* Barra: bottone a tutta larghezza */
     .iv-section-bar2 {
         flex-direction: column;
         align-items: flex-start;
@@ -562,19 +592,10 @@
         width: 100%;
         justify-content: center;
     }
-    /* Filtri: scroll orizzontale */
-     .filters {
-        flex-wrap: wrap;        
-        overflow-x: visible;    
+    .filters {
+        flex-wrap: wrap;
         padding: 8px 10px;
         gap: 6px;
-        scrollbar-width: unset; 
-    }
-    .filters::-webkit-scrollbar {
-        display: unset;         
-    }
-    .filter-label {
-        flex-shrink: 0;
     }
     .filter-btn {
         flex-shrink: 0;
@@ -584,11 +605,11 @@
     .filter-date-wrap {
         flex-shrink: 0;
         padding: 4px 10px;
+        margin-left: 0;
     }
     .filter-date-wrap input[type="date"] {
         width: 95px;
     }
-    /* Nasconde "Categoria" — il pallino nella data la sostituisce */
     .table-head > div:nth-child(2),
     .table-row  > div:nth-child(2) {
         display: none;
@@ -612,16 +633,14 @@
         height: 24px;
         font-size: 10px;
     }
-    /* Bottone flottante più piccolo */
     .btn-intervento {
         width: 44px;
         height: 44px;
         font-size: 1.3rem;
     }
-    /* Modal: colonna singola */
     .modal {
         padding: 20px 16px;
-        border-radius: 12px;
+        border-radius: 14px;
     }
     .form-grid {
         grid-template-columns: 1fr;
