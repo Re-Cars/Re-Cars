@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
- 
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,18 +13,16 @@
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
     <script src="functions-storico.js" defer></script>
- 
 </head>
- 
+
 <body>
- 
-<div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+
+    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
-
             <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
                 <span class="line line1"></span>
                 <span class="line line2"></span>
@@ -32,11 +30,10 @@
                 <span class="line line4"></span>
             </div>
         </div>
-
         <nav class="sidebar-nav">
             <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
             <a href="veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
-            <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
+            <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti</a>
             <a href="info-domande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
             <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
             <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
@@ -52,217 +49,209 @@
                 <span class="header-brand">RE<span>|</span>CARS</span>
             </a>
         </div>
-      <div class="header-right">
-
-      <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
-          <i class="fa-solid fa-moon" id="theme-icon"></i>
-      </button>
-
-      <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
-        <div class="header-avatar">
-          <i class="fa-solid fa-user"></i>
+        <div class="header-right">
+            <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                    </div>
+                    <a href="account.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica profilo</span>
+                    </a>
+                    <a href="landing.html" class="avatar-item avatar-item-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="avatar-dropdown" id="avatar-dropdown">
-          <div class="avatar-header">
-            <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
-          </div>
-          <a href="account.html" class="avatar-item">
-            <i class="fa-solid fa-pen"></i>
-            <span>Modifica profilo</span>
-          </a>
-          <a href="landing.html" class="avatar-item avatar-item-logout">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Logout</span>
-          </a>
-        </div>
-      </div>
-
     </header>
- 
-  <div class="breadcrumb">
-    <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
-    <span>›</span>
-    <span>Storico Interventi</span>
-  </div>
- 
-  <section class="home-intro">
-    <div class="home-intro-veicolo" id="home-intro-veicolo">
-      <i class="fa-solid fa-car" id="veicolo-tipo-icon"></i>
-      <span class="veicolo-nome" id="nome-veicolo-attivo">Caricamento...</span>
-      <span class="veicolo-sep">·</span>
-      <span class="veicolo-targa" id="targa-veicolo-attivo"></span>
-    </div>
-    <div class="veicolo-switcher" id="veicolo-switcher">
-      <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
-        <span id="switcher-label">
-          <i class="fa-solid fa-warehouse"></i>
-          <span id="veicoli-counter"></span>
-        </span>
-        <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
-      </button>
-      <div class="switcher-dropdown" id="switcher-dropdown"></div>
-    </div>
-  </section>
- 
- <section class="iv-dashboard">
- 
-    <br><br>
- 
-    <!-- BARRA STORICO INTERVENTI -->
-     
-    <div class="iv-section-bar2">
-        <div style="display:flex; align-items:center; gap:10px;">
-        <span class="section-title">STORICO INTERVENTI</span>
-        <span class="count-badge" id="countBadge">0 interventi</span>
-        </div>
-        <button class="aggiungi-btn" onclick="openModal()">
-          <i class="fa-solid fa-plus"></i>
-          Aggiungi intervento
-        </button>
-    </div>
- 
-    <!-- FILTRI -->
-    <div class="filters">
-      <span class="filter-label"><b>Filtra:</b></span>
-      <button class="filter-btn active-all" data-filter="all" onclick="setFilter('all', this)">
-        Tutti
-      </button>
-      <button class="filter-btn" data-filter="ordinario" onclick="setFilter('ordinario', this)">
-        <span class="dot" style="background:#2b88b8"></span> Ordinario
-      </button>
-      <button class="filter-btn" data-filter="straordinario" onclick="setFilter('straordinario', this)">
-        <span class="dot" style="background:#ef4444"></span> Straordinario
-      </button>
-      <button class="filter-btn" data-filter="annotazioni" onclick="setFilter('annotazioni', this)">
-        <span class="dot" style="background:#f8782f"></span> Annotazione problemi
-      </button>
-      <button class="filter-btn" data-filter="gestione" onclick="setFilter('gestione', this)">
-        <span class="dot" style="background:#22c55e"></span> Spese di gestione
-      </button>
+
+    <div class="breadcrumb">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
+        <span>›</span>
+        <span>Storico Interventi</span>
     </div>
 
- 
-    <!-- TABELLA -->
-    <div class="table-wrap">
-      <div class="table-head">
-        <div>Data</div>
-        <div>Categoria</div>
-        <div>Descrizione</div>
-        <div>Mediante</div>
-        <div>Costo</div>
-        <div></div>
-      </div>
-      <div class="table-body" id="tableBody"></div>
-      <div class="empty-state" id="emptyState">Nessun intervento trovato per questa categoria.</div>
-    </div>
- 
-    <!-- BOTTONE AGGIUNGI -->
-    <div class="add-section">
-      <span class="btn-aggiungi-label">aggiungi<br>intervento!</span>
-      <button class="btn-intervento" onclick="openModal()">+</button>
-    </div>
- 
-  </section>
- 
-  <!-- MODAL NUOVO INTERVENTO -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <div class="modal-title">
-        <i class="fa-solid fa-plus" style="color:#f26f21"></i> Nuovo intervento
-      </div>
-      <div class="form-grid">
-        <div class="form-row">
-          <label>Data</label>
-          <input type="date" id="inputData">
+    <section class="home-intro">
+        <div class="home-intro-veicolo" id="home-intro-veicolo">
+            <i class="fa-solid fa-car" id="veicolo-tipo-icon"></i>
+            <span class="veicolo-nome" id="nome-veicolo-attivo">Caricamento...</span>
+            <span class="veicolo-sep">·</span>
+            <span class="veicolo-targa" id="targa-veicolo-attivo"></span>
         </div>
-        <div class="form-row">
-          <label>Categoria</label>
-          <select id="inputCategoria" onchange="updateNomi()">
-            <option value="">Seleziona...</option>
-            <option value="ordinario">Ordinario</option>
-            <option value="straordinario">Straordinario</option>
-            <option value="gestione">Spese di gestione</option>
-            <option value="annotazioni">Annotazioni</option>
-          </select>
+        <div class="veicolo-switcher" id="veicolo-switcher">
+            <button class="switcher-btn" id="switcher-btn" onclick="toggleSwitcher()">
+                <span id="switcher-label">
+                    <i class="fa-solid fa-warehouse"></i>
+                    <span id="veicoli-counter"></span>
+                </span>
+                <i class="fa-solid fa-chevron-down" id="switcher-icon"></i>
+            </button>
+            <div class="switcher-dropdown" id="switcher-dropdown"></div>
         </div>
-      </div>
-      <div class="form-row">
-        <label>Tipo intervento</label>
-        <select id="inputNome">
-          <option value="">Prima seleziona categoria...</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label>Descrizione (opzionale)</label>
-        <input type="text" id="inputDescrizione" placeholder="es. cambio olio motore 5W30">
-      </div>
-      <div class="form-grid">
-        <div class="form-row">
-          <label>Mediante (opzionale)</label>
-          <input type="text" id="inputMediante" placeholder="es. offician/benzinaio/negozio">
-        </div>
-        <div class="form-row">
-          <label>Costo (opzionale)</label>
-          <input type="number" id="inputCosto" placeholder="€ 0.00" step="0.01">
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-cancel" onclick="closeModal()">Cancella</button>
-        <button class="btn-save" onclick="saveIntervento()">Salva</button>
-      </div>
-    </div>
-  </div>
- 
-     <!-- MODAL MODIFICA INTERVENTO -->
+    </section>
 
+    <section class="iv-dashboard">
+
+        <!-- CARD UNICA: barra + filtri + tabella -->
+        <div class="iv-section-card" style="animation-delay: 0.05s;">
+
+            <!-- BARRA STORICO INTERVENTI -->
+            <div class="iv-section-bar2">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="section-title">Storico Interventi</span>
+                    <span class="count-badge" id="countBadge">0 interventi</span>
+                </div>
+                <button class="aggiungi-btn" onclick="openModal()">
+                    <i class="fa-solid fa-plus"></i>
+                    Aggiungi intervento
+                </button>
+            </div>
+
+            <!-- FILTRI -->
+            <div class="filters">
+                <span class="filter-label"><b>Filtra:</b></span>
+                <button class="filter-btn active-all" data-filter="all" onclick="setFilter('all', this)">
+                    Tutti
+                </button>
+                <button class="filter-btn" data-filter="ordinario" onclick="setFilter('ordinario', this)">
+                    <span class="dot" style="background:#2b88b8"></span> Ordinario
+                </button>
+                <button class="filter-btn" data-filter="straordinario" onclick="setFilter('straordinario', this)">
+                    <span class="dot" style="background:#ef4444"></span> Straordinario
+                </button>
+                <button class="filter-btn" data-filter="annotazioni" onclick="setFilter('annotazioni', this)">
+                    <span class="dot" style="background:#f8782f"></span> Annotazione problemi
+                </button>
+                <button class="filter-btn" data-filter="gestione" onclick="setFilter('gestione', this)">
+                    <span class="dot" style="background:#22c55e"></span> Spese di gestione
+                </button>
+            </div>
+
+            <!-- TABELLA -->
+            <div class="table-wrap">
+                <div class="table-head">
+                    <div>Data</div>
+                    <div>Categoria</div>
+                    <div>Descrizione</div>
+                    <div>Mediante</div>
+                    <div>Costo</div>
+                    <div></div>
+                </div>
+                <div class="table-body" id="tableBody"></div>
+                <div class="empty-state" id="emptyState">Nessun intervento trovato per questa categoria.</div>
+            </div>
+
+        </div>
+
+
+
+    </section>
+
+    <!-- MODAL NUOVO INTERVENTO -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-title">
+                <i class="fa-solid fa-plus" style="color:#f97316"></i> Nuovo intervento
+            </div>
+            <div class="form-grid">
+                <div class="form-row">
+                    <label>Data</label>
+                    <input type="date" id="inputData">
+                </div>
+                <div class="form-row">
+                    <label>Categoria</label>
+                    <select id="inputCategoria" onchange="updateNomi()">
+                        <option value="">Seleziona...</option>
+                        <option value="ordinario">Ordinario</option>
+                        <option value="straordinario">Straordinario</option>
+                        <option value="gestione">Spese di gestione</option>
+                        <option value="annotazioni">Annotazioni</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <label>Tipo intervento</label>
+                <select id="inputNome">
+                    <option value="">Prima seleziona categoria...</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Descrizione (opzionale)</label>
+                <input type="text" id="inputDescrizione" placeholder="es. cambio olio motore 5W30">
+            </div>
+            <div class="form-grid">
+                <div class="form-row">
+                    <label>Mediante (opzionale)</label>
+                    <input type="text" id="inputMediante" placeholder="es. officina/benzinaio/negozio">
+                </div>
+                <div class="form-row">
+                    <label>Costo (opzionale)</label>
+                    <input type="number" id="inputCosto" placeholder="€ 0.00" step="0.01">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancella</button>
+                <button class="btn-save" onclick="saveIntervento()">Salva</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL MODIFICA INTERVENTO -->
     <div class="modal-overlay" id="modalEditOverlay">
-      <div class="modal">
-        <div class="modal-title">
-          <i class="fa-solid fa-pen" style="color:#f26f21"></i> Modifica intervento
+        <div class="modal">
+            <div class="modal-title">
+                <i class="fa-solid fa-pen" style="color:#f97316"></i> Modifica intervento
+            </div>
+            <input type="hidden" id="editId">
+            <div class="form-grid">
+                <div class="form-row">
+                    <label>Data</label>
+                    <input type="date" id="editData">
+                </div>
+                <div class="form-row">
+                    <label>Categoria</label>
+                    <select id="editCategoria" onchange="updateEditNomi()">
+                        <option value="">Seleziona...</option>
+                        <option value="ordinario">Ordinario</option>
+                        <option value="straordinario">Straordinario</option>
+                        <option value="gestione">Spese di gestione</option>
+                        <option value="annotazioni">Annotazioni</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <label>Tipo intervento</label>
+                <select id="editNome"></select>
+            </div>
+            <div class="form-row">
+                <label>Descrizione (opzionale)</label>
+                <input type="text" id="editDescrizione" placeholder="es. cambio olio motore 5W30">
+            </div>
+            <div class="form-grid">
+                <div class="form-row">
+                    <label>Mediante (opzionale)</label>
+                    <input type="text" id="editMediante" placeholder="es. officina/benzinaio/negozio">
+                </div>
+                <div class="form-row">
+                    <label>Costo (opzionale)</label>
+                    <input type="number" id="editCosto" placeholder="€ 0.00" step="0.01">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeEditModal()">Cancella</button>
+                <button class="btn-save" onclick="saveEdit()">Salva modifiche</button>
+            </div>
         </div>
-        <input type="hidden" id="editId">
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Data</label>
-            <input type="date" id="editData">
-          </div>
-          <div class="form-row">
-            <label>Categoria</label>
-            <select id="editCategoria" onchange="updateEditNomi()">
-              <option value="">Seleziona...</option>
-              <option value="ordinario">Ordinario</option>
-              <option value="straordinario">Straordinario</option>
-              <option value="gestione">Spese di gestione</option>
-              <option value="annotazioni">Annotazioni</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <label>Tipo intervento</label>
-          <select id="editNome"></select>
-        </div>
-        <div class="form-row">
-          <label>Descrizione (opzionale)</label>
-          <input type="text" id="editDescrizione" placeholder="es. cambio olio motore 5W30">
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Mediante (opzionale)</label>
-            <input type="text" id="editMediante" placeholder="es. officina/benzinaio/negozio">
-          </div>
-          <div class="form-row">
-            <label>Costo (opzionale)</label>
-            <input type="number" id="editCosto" placeholder="€ 0.00" step="0.01">
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeEditModal()">Cancella</button>
-          <button class="btn-save" onclick="saveEdit()">Salva modifiche</button>
-        </div>
-      </div>
     </div>
 
- 
- 
 </body>
 </html>
