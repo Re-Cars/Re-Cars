@@ -16,7 +16,7 @@ export class StripeController {
   @UseGuards(JwtAuthGuard)
   @Post('checkout')
   async checkout(
-    @Body() body: { piano: string },
+    @Body() body: { piano: string; baseUrl?: string },
     @Req() req: Request,
   ) {
     const user = (req as any).user;
@@ -32,7 +32,7 @@ export class StripeController {
       email = officina?.email || '';
     }
 
-    const baseUrl = 'http://127.0.0.1:5500/Progetto/Frontend';
+    const baseUrl = body.baseUrl || process.env.FRONTEND_BASE_URL || 'http://127.0.0.1:5500/Frontend';
 
     const successUrl = tipo === 'officina'
       ? `${baseUrl}/pagamento-officina.html?session_id={CHECKOUT_SESSION_ID}`

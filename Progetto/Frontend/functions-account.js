@@ -36,7 +36,7 @@ async function caricaDatiAccount() {
         const valEmail = document.getElementById('val-email');
         const valCellulare = document.getElementById('val-cellulare');
         const btnCellulareLabel = document.getElementById('btn-cellulare-label');
-        const memberSince = document.getElementById('acc-member-since');
+        const btnCellulareIcon = document.getElementById('btn-cellulare-icon');
 
         if (usernameDisplay) usernameDisplay.textContent = data.username || '-';
         if (valUsername) valUsername.textContent = data.username || '-';
@@ -45,15 +45,17 @@ async function caricaDatiAccount() {
         if (data.cellulare) {
             if (valCellulare) valCellulare.textContent = data.cellulare;
             if (btnCellulareLabel) btnCellulareLabel.textContent = 'Modifica';
+            if (btnCellulareIcon) {
+                btnCellulareIcon.classList.remove('fa-plus');
+                btnCellulareIcon.classList.add('fa-pen');
+            }
         } else {
             if (valCellulare) valCellulare.textContent = 'Non impostato';
             if (btnCellulareLabel) btnCellulareLabel.textContent = 'Aggiungi';
-        }
-
-        if (memberSince && data.createdAt) {
-            const d = new Date(data.createdAt);
-            const mesi = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-            memberSince.textContent = `Membro da ${mesi[d.getMonth()]} ${d.getFullYear()}`;
+            if (btnCellulareIcon) {
+                btnCellulareIcon.classList.remove('fa-pen');
+                btnCellulareIcon.classList.add('fa-plus');
+            }
         }
 
         caricaPianoAccount(data);
