@@ -132,10 +132,12 @@ async function disdiciAbbonamento() {
 -----------------------------------------------------*/
 async function avviaCheckout(piano) {
     try {
+        const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+
         const res = await fetch(`${API}/abbonamento/checkout`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ piano, id_utente: utente.id }),
+            body: JSON.stringify({ piano, id_utente: utente.id, baseUrl }),
             credentials: 'include',
         });
 

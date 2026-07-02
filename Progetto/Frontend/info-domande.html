@@ -7,48 +7,54 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
-    <link rel="stylesheet" href="style-imp_v_e_info.css">
+        <link rel="stylesheet" href="style-infodomande.css">
+    <link rel="stylesheet" href="style-info-veicolo.css">
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
 </head>
+
 <body>
 
    <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
-        </div>
-        <nav class="sidebar-nav">
-      <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
-      <a href="veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
-      <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
-      <a href="info-domande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
-      <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
-       <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
-      <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-    </nav>
-  </div>
 
-    <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
-        <span class="line line1"></span>
-        <span class="line line2"></span>
-        <span class="line line3"></span>
-        <span class="line line4"></span>
-    </div>
+            <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+                <span class="line line4"></span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+            <a href="veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
+            <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
+            <a href="info-domande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+            <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
+            <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+            <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+  </div>
 
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
-           <span class="header-brand">RE<span>|</span>CARS</span>
+            <a href="homepage.html">
+                <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+                <span class="header-brand">RE<span>|</span>CARS</span>
+            </a>
         </div>
+        
         <div class="header-right">
-           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
-            <div class="header-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>   -->
+
+            <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
 
                <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
                     <div class="header-avatar"> 
@@ -75,7 +81,7 @@
 
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
-        <span>›</span> <span>Impostazioni</span> <span>›</span>
+         <span>›</span>
         <span>Info e domande</span>
     </div>
 
@@ -83,208 +89,262 @@
   <p class="page-sub">Hai bisogno di aiuto per comprendere meglio l'applicazione? Clicca sulle possibili domande</p>
 
  
-  <section class="yd-accordion">
  
-   <!-- 1 DOMANDA -->
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Perchè utilizzare la nostra applicazione tra tante?</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="testo">
-          <a>
-            <p>
-            Segna posto </p>
-          </a>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- 2 DOMANDA -->
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Come avviene l'inserimento del veicolo?</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="testo">
-          <a>
-            <p>
-            Segna posto </p>
-          </a>
-        </div>
-      </div>
-    </div>
+<section class="faq-accordion">
  
-    <!-- 3 DOMANDA -->
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Quanti veicoli posso registrare?</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="testo">
-          <a>
-            <p>
-            Segna posto </p>
-          </a>
-        </div>
+  <!-- 1 -->
+  <div class="faq-row">
+    <button class="faq-trigger" onclick="toggleFaq(this)">
+      <span class="faq-dash"><i class="fa-solid fa-plus"></i></span>
+      <span class="faq-label">Perché utilizzare la nostra applicazione tra tante?</span>
+      <i class="fa-solid fa-chevron-down faq-arrow"></i>
+    </button>
+    <div class="faq-body">
+      <p class="faq-text">RE|CARS è l'unica app pensata esclusivamente per chi vuole tenere tutto sotto controllo: scadenze, interventi, prenotazioni officina e segnalazioni in un unico posto. Niente più appunti sparsi o reminder dimenticati.</p>
+      <div class="faq-pills">
+        <span class="faq-pill"><i class="fa-solid fa-clock"></i> Scadenze sempre sotto controllo</span>
+        <span class="faq-pill"><i class="fa-solid fa-screwdriver-wrench"></i> Storico interventi completo</span>
+        <span class="faq-pill"><i class="fa-solid fa-calendar-days"></i> Prenotazione officina rapida</span>
+        <span class="faq-pill"><i class="fa-solid fa-star"></i> Recensioni verificate</span>
       </div>
     </div>
-
-   <!-- 4 DOMANDA -->
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Come cancello la registrazione del veicolo nella mia area?</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="testo">
-          <a>
-            <p>
-            Segna posto </p>
-          </a>
-        </div>
-      </div>
-    </div> 
-
-    <!-- 5 DOMANDA -->
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Cosa offre il piano gratuito?</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="testo">
-          <a>
-            <p>
-            Segna posto </p>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Gli abbonamenti come funzionano? e Procedura</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="testo">
-          <a>
-            <p>
-            Segna posto </p>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Prenotare una officina per il veicolo? Come fare?</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="testo">
-          <a>
-            <p>
-            Segna posto </p>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Recensire officina? procedura</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="testo">
-          <a>
-            <p>
-            Segna posto </p>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Segnalare problemantiche, come fare:</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="testo">
-          <a>
-            <p>
-            Segna posto </p>
-          </a>
-        </div>
-      </div>
-    </div>
-
-       <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Annullare iscrizione all'applicazione, come fare:</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="testo">
-          <a>
-            <p>
-            Segna posto </p>
-          </a>
-        </div>
-      </div>
-    </div>
-
-       <div class="yd-accordion-row">
-      <button class="yd-accordion-trigger" onclick="toggleYdSubmenu(this)">
-        <span class="yd-dash">-</span>
-        <span class="yd-label">Annullare o modificare abbonamento, come fare:</span>
-        <i class="fa-solid fa-chevron-down yd-arrow"></i>
-      </button>
-      <div class="yd-submenu">
-        <div class="testo">
-          <a>
-            <p>
-            Segna posto </p>
-          </a>
-        </div>
-      </div>
-    </div>
+  </div>
  
-  </section>
+  <!-- 2 -->
+  <div class="faq-row">
+    <button class="faq-trigger" onclick="toggleFaq(this)">
+      <span class="faq-dash"><i class="fa-solid fa-plus"></i></span>
+      <span class="faq-label">Come avviene l'inserimento del veicolo nel mio garage virtuale?</span>
+      <i class="fa-solid fa-chevron-down faq-arrow"></i>
+    </button>
+    <div class="faq-body">
+      <p class="faq-text">Aggiungere il tuo veicolo è velocissimo. Segui questi passaggi:</p>
+        <p class="faq-text">Puoi aggiungere il tuo veicolo dalla homepage:</p>
+      <ul class="faq-steps">
+        <li><span class="faq-step-num">1</span> Puoi cliccare sia dal pulsante di ricerca centrale, sia dalla sezione garage in alto a destra.</li>
+        <li><span class="faq-step-num">2</span> Dopo aver cliccato, si aprirà la finestra per la ricerca dei veicoli.</li>
+        <li><span class="faq-step-num">3</span> Inserisci la targa, cosi che il sistema recupera automaticamente marca, modello e dati tecnici.</li>
+        <li><span class="faq-step-num">4</span> Salva la ricerca o corregila, e per aggiungerla nel tua area conferma cliccando sul pulsante <strong>+ Aggiungi al garage</strong>.</li>
+        <li><span class="faq-step-num">5</span> Il veicolo è salvato e ora potrai accedersi sia dalla HomePage sia dalle impostazione del mio veicolo</li>
+      </ul>
+       <br>
+       <p class="faq-text">Puoi aggiungere il tuo veicolo dal menu:</p>
+      <ul class="faq-steps">
+        <li><span class="faq-step-num">1</span> Vai nella sezione <strong>Veicolo</strong>.</li>
+        <li><span class="faq-step-num">2</span> Tocca il pulsante <strong>+ Aggiungi veicolo</strong> in basso centrale che ti porterà alla finestra per la ricerca dei veicoli.</li>
+        <li><span class="faq-step-num">3</span> Inserisci la targa, cosi che il sistema recupera automaticamente marca, modello e dati tecnici.</li>
+        <li><span class="faq-step-num">4</span> Salva la ricerca o corregila, e per aggiungerla nel tua area conferma cliccando sul pulsante <strong>+ Aggiungi al garage</strong>.</li>
+        <li><span class="faq-step-num">5</span> Il veicolo è salvato e ora potrai accederci sia dalla HomePage sia dalle impostazione del mio veicolo</li>
+      </ul>
+      <div class="faq-note"><i class="fa-solid fa-circle-info"></i> Puoi inserire dati aggiuntivi come chilometraggio, data di acquisto e note personali in qualsiasi momento.</div>
+    </div>
+  </div>
+ 
+  <!-- 3 -->
+  <div class="faq-row">
+    <button class="faq-trigger" onclick="toggleFaq(this)">
+      <span class="faq-dash"><i class="fa-solid fa-plus"></i></span>
+      <span class="faq-label">Come cancello la registrazione del veicolo nella mia area?</span>
+      <i class="fa-solid fa-chevron-down faq-arrow"></i>
+    </button>
+    <div class="faq-body">
+      <p class="faq-text">Puoi rimuovere un veicolo dal tuo garage in pochi tocchi:</p>
+      <ul class="faq-steps">
+        <li><span class="faq-step-num">1</span> Apri il menu del garage dalla barra in alto a destra (icona magazzino).</li>
+        <li><span class="faq-step-num">2</span> Individua il veicolo da eliminare nell'elenco.</li>
+        <li><span class="faq-step-num">3</span> Tocca l'icona del cestino <i class="fa-solid fa-trash faq-inline-icon"></i> accanto al veicolo.</li>
+        <li><span class="faq-step-num">4</span> Conferma la rimozione nella finestra di dialogo.</li>
+      </ul>
+
+      <p class="faq-text">Oppure:</p>
+      <ul class="faq-steps">
+        <li><span class="faq-step-num">1</span> Apri il menu a sinitra e clicca sulla voce veicolo.</li>
+        <li><span class="faq-step-num">2</span> Individua il veicolo da eliminare nell'elenco.</li>
+        <li><span class="faq-step-num">3</span> Tocca l'icona del cestino <i class="fa-solid fa-trash faq-inline-icon"></i> accanto al veicolo.</li>
+        <li><span class="faq-step-num">4</span> Conferma la rimozione nella finestra di dialogo.</li>
+      </ul>
+      <div class="faq-note faq-note--warn"><i class="fa-solid fa-triangle-exclamation"></i> <strong> ATTENZIONE !</strong>L'eliminazione è permanente: tutto lo storico interventi e le scadenze associate al veicolo verranno rimossi.</div>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="faq-row">
+    <button class="faq-trigger" onclick="toggleFaq(this)">
+      <span class="faq-dash"><i class="fa-solid fa-plus"></i></span>
+      <span class="faq-label">Quanti veicoli posso registrare?</span>
+      <i class="fa-solid fa-chevron-down faq-arrow"></i>
+    </button>
+    <div class="faq-body">
+      <p class="faq-text">Dipende dal piano che hai attivo:</p>
+      <div class="plan-grid">
+        <p class="faq-text">Puoi visionare l'abbonamento sia dall'area <a href="abbonamenti.html"><strong>abbonamenti</strong></a>, sia dal <a href="account.html"><strong>il mio account</strong></a>.</p>
+        <p class="faq-text">In ogni caso, appena tenti di salvare un veicolo in più dal piano che hai attivo, ti rimanda alla sezione abbonamento.</p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  
+ 
+  <!-- 5 -->
+  <div class="faq-row">
+    <button class="faq-trigger" onclick="toggleFaq(this)">
+      <span class="faq-dash"><i class="fa-solid fa-plus"></i></span>
+      <span class="faq-label">Cosa offre il piano gratuito?</span>
+      <i class="fa-solid fa-chevron-down faq-arrow"></i>
+    </button>
+    <div class="faq-body">
+      <p class="faq-text">Con il piano gratuito puoi iniziare subito a gestire il tuo veicolo senza costi:</p>
+      <ul class="faq-steps">
+        <li><span class="faq-step-num"><i class="fa-solid fa-check faq-step-ico"></i></span> Registrazione di <strong>1 veicolo</strong></li>
+        <li><span class="faq-step-num"><i class="fa-solid fa-check faq-step-ico"></i></span> Monitoraggio delle <strong>scadenze principali</strong> (bollo, assicurazione, revisione)</li>
+        <li><span class="faq-step-num"><i class="fa-solid fa-check faq-step-ico"></i></span> Inserimento manuale dello <strong>storico interventi</strong></li>
+        <li><span class="faq-step-num"><i class="fa-solid fa-check faq-step-ico"></i></span> Segnalazione problemi di base</li>
+      </ul>
+      <div class="faq-note"><i class="fa-solid fa-circle-info"></i> Per sbloccare prenotazioni officina, più veicoli e funzioni avanzate, passa ad un nuovo piano in abbonamento dalla sezione <a href="abbonamenti.html"><strong>Abbonamenti</strong></a>.
+      <i>Per ulteriori informazioni clicca su <a href="abbonamenti.html"><strong>abbonamenti</strong></a></i></div>
+    </div>
+  </div>
+ 
+  <!-- 6 -->
+  <div class="faq-row">
+    <button class="faq-trigger" onclick="toggleFaq(this)">
+      <span class="faq-dash"><i class="fa-solid fa-plus"></i></span>
+      <span class="faq-label">Gli abbonamenti come funzionano? e Procedura</span>
+      <i class="fa-solid fa-chevron-down faq-arrow"></i>
+    </button>
+    <div class="faq-body">
+      <p class="faq-text">Gli abbonamenti si attivano e rinnovano automaticamente su base mensile. La procedura è semplice:</p>
+      <ul class="faq-steps">
+        <li><span class="faq-step-num">1</span> Vai su <strong>Abbonamenti</strong> nel menu laterale.</li>
+        <li><span class="faq-step-num">2</span> Scegli il piano più adatto alle tue esigenze.</li>
+        <li><span class="faq-step-num">3</span> Inserisci i dati di pagamento e conferma.</li>
+        <li><span class="faq-step-num">4</span> Le funzioni premium si attivano immediatamente.</li>
+      </ul>
+      <div class="faq-note"><i class="fa-solid fa-credit-card"></i> <a>Puoi annullare o cambiare piano in qualsiasi momento dalla sezione <strong>Abbonamenti</strong>, senza penali. 
+       <br>Inoltre Il pagamento è gestito in modo sicuro da Stripe. Non conserviamo i dati della tua carta. Disdici in qualsiasi momento.</a> </div>
+      <div class="faq-note"><i class="fa-solid fa-circle-info"></i> Per altre informazione contatta <strong>@mail.com</strong>.</div>
+
+    </div>
+  </div>
+ 
+  <!-- 7 -->
+  <div class="faq-row">
+    <button class="faq-trigger" onclick="toggleFaq(this)">
+      <span class="faq-dash"><i class="fa-solid fa-plus"></i></span>
+      <span class="faq-label">Prenotare un'officina per il veicolo? Come fare?</span>
+      <i class="fa-solid fa-chevron-down faq-arrow"></i>
+    </button>
+    <div class="faq-body">
+      <p class="faq-text">Puoi prenotare un'officina convenzionata direttamente dall'app:</p>
+      <ul class="faq-steps">
+        <li><span class="faq-step-num">1</span> Dalla homepage, tocca la card <strong>Prenota Officina</strong>.</li>
+        <li><span class="faq-step-num">2</span> Scegli il tipo di intervento di cui hai bisogno.</li>
+        <li><span class="faq-step-num">3</span> Sfoglia le officine disponibili vicino a te, filtra per valutazione o servizio.</li>
+        <li><span class="faq-step-num">4</span> Seleziona data e orario, e conferma la prenotazione.</li>
+        <li><span class="faq-step-num">5</span> Riceverai una conferma via notifica e sarà visibile nella cronologia delle prenotazioni.</li>
+      </ul>
+    </div>
+  </div>
+ 
+  <!-- 8 RECENSIONI ??
+
+  <div class="faq-row">
+    <button class="faq-trigger" onclick="toggleFaq(this)">
+      <span class="faq-dash"><i class="fa-solid fa-plus"></i></span>
+      <span class="faq-label">Recensire un'officina — procedura</span>
+      <i class="fa-solid fa-chevron-down faq-arrow"></i>
+    </button>
+    <div class="faq-body">
+      <p class="faq-text">Dopo un intervento confermato, puoi lasciare una recensione all'officina per aiutare gli altri utenti:</p>
+      <ul class="faq-steps">
+        <li><span class="faq-step-num">1</span> Vai nella sezione <strong>Recensioni</strong> dalla homepage.</li>
+        <li><span class="faq-step-num">2</span> Seleziona l'officina e l'intervento effettuato.</li>
+        <li><span class="faq-step-num">3</span> Assegna un punteggio da 1 a 5 stelle.</li>
+        <li><span class="faq-step-num">4</span> Scrivi un commento (facoltativo ma utile) e pubblica.</li>
+      </ul>
+      <div class="faq-note"><i class="fa-solid fa-shield-halved"></i> Le recensioni sono verificate: puoi recensire solo le officine presso cui hai effettivamente prenotato tramite RE|CARS.</div>
+    </div>
+  </div> -->
+ 
+  <!-- 9 -->
+  <div class="faq-row">
+    <button class="faq-trigger" onclick="toggleFaq(this)">
+      <span class="faq-dash"><i class="fa-solid fa-plus"></i></span>
+      <span class="faq-label">Segnalare problematiche — come fare</span>
+      <i class="fa-solid fa-chevron-down faq-arrow"></i>
+    </button>
+    <div class="faq-body">
+      <p class="faq-text">Se riscontri un problema con l'applicazione, un'officina o un servizio, puoi segnalarlo in modo semplice:</p>
+      <ul class="faq-steps">
+        <li><span class="faq-step-num">1</span> Dalla homepage, tocca la card <strong> Segnala problema</strong>.</li>
+        <li><span class="faq-step-num">2</span> Scegli la categoria del problema (tecnico, officina, pagamento, altro).</li>
+        <li><span class="faq-step-num">3</span> Descrivi il problema nel campo testo.</li>
+        <li><span class="faq-step-num">4</span> Allega eventuali screenshot e invia.</li>
+      </ul>
+      <div class="faq-note"><i class="fa-solid fa-envelope"></i> Il team RE|CARS ti risponderà entro 48 ore lavorative all'indirizzo email associato al tuo account.</div>
+    </div>
+  </div>
+ 
+  <!-- 10 -->
+  <div class="faq-row">
+    <button class="faq-trigger" onclick="toggleFaq(this)">
+      <span class="faq-dash"><i class="fa-solid fa-plus"></i></span>
+      <span class="faq-label">Annullare l'iscrizione all'applicazione — come fare</span>
+      <i class="fa-solid fa-chevron-down faq-arrow"></i>
+    </button>
+    <div class="faq-body">
+      <p class="faq-text">Puoi eliminare il tuo account in qualsiasi momento dalla sezione profilo:</p>
+      <ul class="faq-steps">
+        <li><span class="faq-step-num">1</span> Vai su <strong>Il mio account</strong> dal menu laterale.</li>
+        <li><span class="faq-step-num">2</span> Scorri fino a <strong>Elimina account</strong> in fondo alla pagina.</li>
+        <li><span class="faq-step-num">3</span> Leggi le informazioni sulla cancellazione e conferma con la tua password.</li>
+      </ul>
+      <div class="faq-note faq-note--warn"><i class="fa-solid fa-triangle-exclamation"></i> L'eliminazione dell'account è definitiva: tutti i dati (veicoli, storico, prenotazioni) saranno rimossi in modo permanente e non recuperabile.</div>
+    </div>
+  </div>
+ 
+  <!-- 11 -->
+  <div class="faq-row faq-row--last">
+    <button class="faq-trigger" onclick="toggleFaq(this)">
+      <span class="faq-dash"><i class="fa-solid fa-plus"></i></span>
+      <span class="faq-label">Annullare o modificare l'abbonamento — come fare</span>
+      <i class="fa-solid fa-chevron-down faq-arrow"></i>
+    </button>
+    <div class="faq-body">
+      <p class="faq-text">Gestire il tuo abbonamento è semplice e senza vincoli:</p>
+      <ul class="faq-steps">
+        <li><span class="faq-step-num">1</span> Vai nella sezione <strong>Abbonamenti</strong> dal menu laterale.</li>
+        <li><span class="faq-step-num">2</span> Visualizza il piano attivo e le opzioni disponibili.</li>
+        <li><span class="faq-step-num">3</span> Scegli <strong>Cambia piano</strong> per passare a un piano diverso, oppure <strong>Annulla abbonamento</strong> per disattivarlo.</li>
+        <li><span class="faq-step-num">4</span> Conferma la scelta. Il piano resterà attivo fino alla scadenza del periodo già pagato.</li>
+      </ul>
+      <div class="faq-note"><i class="fa-solid fa-circle-info"></i> Nessuna penale per il recesso anticipato. Dopo la scadenza tornerai automaticamente al piano gratuito.
+       <br>
+       <i>Per ulteriori informazioni contattare <strong> gmail.com</strong></i>
+      </div>
+    </div>
+  </div>
+ 
+</section>
 
 
 <script>
- function toggleYdSubmenu(btn) {
-      const submenu = btn.nextElementSibling;
-      const isOpen = submenu.classList.contains('yd-open');
+ function toggleFaq(btn) {
+  const body = btn.nextElementSibling;
+  const isOpen = body.classList.contains('open');
  
-      // chiudi tutti gli altri sottomenu aperti
-      document.querySelectorAll('.yd-submenu.yd-open').forEach(s => s.classList.remove('yd-open'));
-      document.querySelectorAll('.yd-accordion-trigger.yd-open').forEach(b => b.classList.remove('yd-open'));
+  // Chiudi tutti gli accordion aperti
+  document.querySelectorAll('.faq-body.open').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.faq-trigger.open').forEach(b => b.classList.remove('open'));
  
-      // apri o chiudi quello cliccato
-      if (!isOpen) {
-        submenu.classList.add('yd-open');
-        btn.classList.add('yd-open');
-      }
-    }
+  // Apri quello cliccato (se era chiuso)
+  if (!isOpen) {
+    body.classList.add('open');
+    btn.classList.add('open');
+  }
+}
 </script>
 </body>
 

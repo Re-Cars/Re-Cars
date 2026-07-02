@@ -13,14 +13,17 @@ import { OfficinaModule } from './officina/officina.module';
 import { PrismaModule } from './prisma.module';
 import { StripeModule } from './stripe/stripe.module';
 import { PrenotazioneModule } from './prenotazione/prenotazione.module';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { AppMailerModule } from './mailer.module';
+import { StoricoModule } from './storico_interventi/storico.module';
+
+
 @Module({
   imports: [
     AppMailerModule, 
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     PassportModule,
+    StoricoModule, 
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
