@@ -332,11 +332,15 @@
     display: none !important;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7a615e8 (aggiornati style.css e functions.js in modo da levare ridondanze del codice in modo da gestire funzioni ripetute da un unico file comune e aggiornate sezioni responsive nei file css in modo da adattarsi bene a vari dispositivi principali)
 
 /* ----------------------------------------------------
    RESPONSIVE
 ----------------------------------------------------- */
 @media (max-width: 1024px) {
+<<<<<<< HEAD
     .main-grid {
         grid-template-columns: 1fr;
     }
@@ -349,17 +353,32 @@
         order: 2;
 =======
     @media (max-width: 1200px) {
+=======
+>>>>>>> 7a615e8 (aggiornati style.css e functions.js in modo da levare ridondanze del codice in modo da gestire funzioni ripetute da un unico file comune e aggiornate sezioni responsive nei file css in modo da adattarsi bene a vari dispositivi principali)
     .main-grid {
-        grid-template-columns: 350px 1fr;
+        grid-template-columns: 1fr;
     }
+<<<<<<< HEAD
     .bookings-column {
         grid-column: 1 / -1; /* va a piena larghezza sotto */
 >>>>>>> 8f54aad (aggiunta gestione prenotazioni (da finire))
+=======
+
+    .left-column {
+        order: 1;
+    }
+
+    .right-column {
+        order: 2;
+>>>>>>> 7a615e8 (aggiornati style.css e functions.js in modo da levare ridondanze del codice in modo da gestire funzioni ripetute da un unico file comune e aggiornate sezioni responsive nei file css in modo da adattarsi bene a vari dispositivi principali)
     }
 }
 
 @media (max-width: 768px) {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7a615e8 (aggiornati style.css e functions.js in modo da levare ridondanze del codice in modo da gestire funzioni ripetute da un unico file comune e aggiornate sezioni responsive nei file css in modo da adattarsi bene a vari dispositivi principali)
     .search-container {
         padding: 0 16px;
     }
@@ -388,6 +407,7 @@
 }
 
 @media (max-width: 480px) {
+<<<<<<< HEAD
     .main-grid {
         gap: 16px;
     }
@@ -437,8 +457,58 @@
     }
 }
 =======
+=======
+>>>>>>> 7a615e8 (aggiornati style.css e functions.js in modo da levare ridondanze del codice in modo da gestire funzioni ripetute da un unico file comune e aggiornate sezioni responsive nei file css in modo da adattarsi bene a vari dispositivi principali)
     .main-grid {
+        gap: 16px;
+    }
+
+    .search-bar-wrapper {
+        padding: 8px 12px;
+    }
+
+    .skeleton-grid-3 {
         grid-template-columns: 1fr;
     }
+<<<<<<< HEAD
 }
 >>>>>>> 8f54aad (aggiunta gestione prenotazioni (da finire))
+=======
+
+    .modal-box {
+        max-width: 100%;
+        padding: 16px;
+        border-radius: 14px;
+        gap: 14px;
+    }
+
+    #modal-prenotazione {
+        padding: 10px;
+    }
+
+    #mappa-leaflet {
+        height: 200px;
+        min-height: 200px;
+    }
+
+    .modal-slots-container {
+        gap: 6px;
+    }
+
+    .slot-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .btn-open-map {
+        top: 8px;
+        right: 8px;
+        padding: 5px 10px;
+    }
+
+    .detail-box-actual,
+    .skeleton-detail-box {
+        padding: 16px;
+    }
+}
+>>>>>>> 7a615e8 (aggiornati style.css e functions.js in modo da levare ridondanze del codice in modo da gestire funzioni ripetute da un unico file comune e aggiornate sezioni responsive nei file css in modo da adattarsi bene a vari dispositivi principali)
