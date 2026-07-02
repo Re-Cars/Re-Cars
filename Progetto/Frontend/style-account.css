@@ -575,253 +575,6 @@
 }
 
  /* ----------------------------------------------------
-/                   ABBONAMENTI                        /
------------------------------------------------------*/
-
-@property --sw-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
-@keyframes sw-trace { to { --sw-angle: 360deg; } }
-@keyframes abb-dot-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
-/* anima solo il transform: se l'animazione non parte la card resta comunque visibile */
-@keyframes abb-fadeUp { from { transform: translateY(12px); } to { transform: translateY(0); } }
-
-.abb-dashboard {
-    padding: 8px 28px 48px;
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-    max-width: 1060px;
-    margin: 0 auto;
-    width: 100%;
-}
-
-/* ---- Banner piano attivo ---- */
-.abb-piano-attivo {
-    background: var(--surface);
-    border-radius: 16px;
-    padding: 18px 22px;
-    border: 1px solid color-mix(in srgb, var(--success) 55%, transparent);
-    box-shadow: 0 14px 36px -18px rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.abb-piano-left { display: flex; flex-direction: column; gap: 4px; }
-.abb-piano-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--success); }
-.abb-piano-nome { font-size: 20px; font-weight: 800; color: var(--white); }
-.abb-piano-sub { font-size: 12.5px; color: var(--muted); }
-
-.abb-piano-stato {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    background: color-mix(in srgb, var(--success) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--success) 50%, transparent);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--success);
-}
-
-.abb-piano-stato-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: abb-dot-pulse 2s ease-in-out infinite; }
-
-.abb-section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-
-/* ---- Griglia ---- */
-.abb-piani-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch; }
-
-/* ---- Card ---- */
-.abb-piano-card {
-    position: relative;
-    background: var(--surface);
-    border-radius: 18px;
-    border: 1px solid color-mix(in srgb, var(--white) 10%, transparent);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.45);
-    transition: transform 0.3s cubic-bezier(.2, .7, .2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
-    transform-style: preserve-3d;
-    will-change: transform;
-    animation: abb-fadeUp 0.5s ease backwards;
-}
-
-.abb-piano-card:nth-child(2) { animation-delay: 0.06s; }
-.abb-piano-card:nth-child(3) { animation-delay: 0.12s; }
-
-/* anello accentato (visibile in dark e light) */
-.abb-piano-card.popolare,
-.abb-piano-card.attivo { border-color: transparent; }
-
-.abb-piano-card.popolare::before,
-.abb-piano-card.attivo::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 18px;
-    padding: 1.7px;
-    z-index: 3;
-    pointer-events: none;
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-}
-
-.abb-piano-card.popolare::before {
-    background: conic-gradient(from var(--sw-angle),
-        rgba(249, 115, 22, 0) 0%, #f97316 20%, #ffd0a3 28%, #f97316 36%,
-        rgba(249, 115, 22, 0) 60%, rgba(249, 115, 22, 0) 100%);
-    animation: sw-trace 5s linear infinite;
-}
-
-.abb-piano-card.popolare {
-    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.45), 0 22px 50px -22px rgba(249, 115, 22, 0.45);
-}
-
-.abb-piano-card.attivo::before {
-    background: linear-gradient(140deg,
-        color-mix(in srgb, var(--success) 95%, transparent),
-        color-mix(in srgb, var(--success) 40%, transparent));
-    animation: none;
-}
-
-.abb-piano-card.attivo {
-    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.45),
-        0 22px 50px -22px color-mix(in srgb, var(--success) 45%, transparent);
-}
-
-.abb-piano-card.attivo .abb-popolare-badge { display: none; }
-
-/* hover lift (il tilt 3D è gestito via JS) */
-.abb-piano-card:hover { box-shadow: 0 34px 70px -22px rgba(0, 0, 0, 0.6); }
-.abb-piano-card.popolare:hover { box-shadow: 0 34px 70px -22px rgba(0, 0, 0, 0.6), 0 30px 60px -20px rgba(249, 115, 22, 0.55); }
-.abb-piano-card.attivo:hover { box-shadow: 0 34px 70px -22px rgba(0, 0, 0, 0.6), 0 30px 60px -20px color-mix(in srgb, var(--success) 55%, transparent); }
-
-/* ---- Badge ---- */
-.abb-popolare-badge {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 6;
-    background: rgba(249, 115, 22, 0.14);
-    color: #f97316;
-    border: 1px solid rgba(249, 115, 22, 0.45);
-    font-size: 10.5px;
-    font-weight: 700;
-    padding: 4px 11px;
-    border-radius: 20px;
-    letter-spacing: 0.3px;
-}
-
-.abb-attivo-badge {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 6;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: color-mix(in srgb, var(--success) 13%, transparent);
-    color: var(--success);
-    border: 1px solid color-mix(in srgb, var(--success) 50%, transparent);
-    font-size: 10.5px;
-    font-weight: 700;
-    padding: 4px 11px;
-    border-radius: 20px;
-    letter-spacing: 0.3px;
-}
-
-.abb-attivo-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: abb-dot-pulse 2s ease-in-out infinite; }
-
-/* ---- Contenuto card ---- */
-.abb-piano-card-content { position: relative; z-index: 1; padding: 24px 22px 22px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
-.abb-piano-card-nome { font-size: 16px; font-weight: 800; color: var(--white); letter-spacing: 0.2px; }
-
-.abb-piano-card-prezzo {
-    font-size: 30px;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.5px;
-    color: #f97316;
-    min-height: 38px;
-    display: flex;
-    align-items: baseline;
-    margin-top: 6px;
-}
-
-.abb-piano-card.free .abb-piano-card-prezzo { color: var(--white); }
-.abb-piano-card-prezzo span { font-size: 13px; font-weight: 600; color: var(--muted); margin-left: 3px; }
-.abb-piano-card-desc { font-size: 12px; line-height: 1.5; color: var(--muted); margin-top: 6px; }
-
-.abb-piano-features { display: flex; flex-direction: column; gap: 10px; flex: 1; margin-top: 2px; }
-.abb-feature { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
-.abb-feature i { font-size: 11px; width: 16px; flex-shrink: 0; text-align: center; }
-.abb-feature.ok { color: color-mix(in srgb, var(--white) 78%, var(--muted)); }
-.abb-feature.ok i { color: var(--success); }
-.abb-feature.no { color: color-mix(in srgb, var(--muted) 55%, transparent); }
-.abb-feature.no i { color: color-mix(in srgb, var(--muted) 45%, transparent); }
-
-/* ---- Bottoni ---- */
-.abb-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    border-radius: 12px;
-    padding: 13px 16px;
-    font-size: 13.5px;
-    font-weight: 700;
-    font-family: inherit;
-    letter-spacing: 0.2px;
-    border: none;
-    margin-top: 4px;
-    cursor: pointer;
-    transition: transform 0.25s cubic-bezier(.34, 1.56, .64, 1), box-shadow 0.25s ease, background 0.2s, color 0.2s;
-}
-
-.abb-btn i { font-size: 13px; }
-
-.abb-btn.cta { background: linear-gradient(135deg, #fb8a3c, #f97316); color: #fff; box-shadow: 0 12px 24px -8px rgba(249, 115, 22, 0.7); }
-.abb-btn.cta:hover { transform: translateY(-2px); box-shadow: 0 18px 32px -8px rgba(249, 115, 22, 0.85); filter: brightness(1.06); }
-.abb-btn.cta:active { transform: translateY(0) scale(0.98); }
-
-/* stato "piano attuale": NON sembra cliccabile */
-.abb-btn.status {
-    background: color-mix(in srgb, var(--success) 13%, transparent);
-    color: var(--success);
-    border: 1px solid color-mix(in srgb, var(--success) 45%, transparent);
-    cursor: default;
-    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--success) 18%, transparent);
-}
-
-.abb-btn.ghost { background: transparent; color: var(--muted); border: 1px solid color-mix(in srgb, var(--white) 12%, transparent); }
-.abb-btn.ghost:hover { background: color-mix(in srgb, var(--white) 6%, transparent); color: var(--white); }
-
-/* ---- Nota Stripe ---- */
-.abb-stripe-note {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    background: var(--surface);
-    border-radius: 12px;
-    padding: 13px 18px;
-    border: 1px solid color-mix(in srgb, var(--white) 8%, transparent);
-    font-size: 12px;
-    color: var(--muted);
-}
-
-.abb-stripe-note i { color: #f97316; font-size: 14px; flex-shrink: 0; }
-
-.theme-toggle-btn { background: none; border: none; cursor: pointer; color: #f97316; font-size: 1.1rem; padding: 4px 8px; }
-
-@media (max-width: 768px) {
-    .abb-dashboard { padding: 12px 16px 32px; }
-    .abb-piani-grid { grid-template-columns: 1fr; }
-}
-
- /* ----------------------------------------------------
 /        PAGAMENTO SUCCESSO ABBONAMENTO STRIPE         /
 -----------------------------------------------------*/
 
@@ -1034,4 +787,91 @@
 .ps-link-sep {
     color: rgba(160, 168, 184, 0.2);
     font-size: 16px;
+}
+
+ /* ----------------------------------------------------
+/                      RESPONSIVE                      /
+-----------------------------------------------------*/
+@media (max-width: 768px) {
+    .acc-dashboard {
+        padding: 14px 16px 24px;
+    }
+
+    .ps-card {
+        padding: 36px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .acc-dashboard {
+        padding: 12px 12px 20px;
+        gap: 10px;
+    }
+
+    .acc-avatar-row {
+        gap: 12px;
+    }
+
+    .acc-field-row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .acc-piano-row {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .acc-danger-row {
+        gap: 10px;
+    }
+
+    .cropper-box {
+        padding: 18px;
+    }
+
+    .cropper-area {
+        height: 220px;
+    }
+
+    .conferma-account-box,
+    .modifica-campo-box {
+        padding: 18px;
+    }
+
+    .conferma-account-btns,
+    .modifica-campo-btns,
+    .cropper-btns {
+        flex-wrap: wrap;
+    }
+
+    .ps-wrap {
+        padding: 16px;
+    }
+
+    .ps-card {
+        padding: 28px 18px;
+        gap: 12px;
+    }
+
+    .ps-icon-wrap,
+    .ps-icon-ring {
+        width: 68px;
+        height: 68px;
+    }
+
+    .ps-icon-circle {
+        width: 56px;
+        height: 56px;
+        font-size: 24px;
+    }
+
+    .ps-title {
+        font-size: 18px;
+    }
+
+    .ps-links {
+        flex-wrap: wrap;
+        gap: 14px;
+    }
 }

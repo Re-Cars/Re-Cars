@@ -1,6 +1,10 @@
  /* ----------------------------------------------------
 /                      RESET                           /
 -----------------------------------------------------*/
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 html, body {
     height: 100%;
     margin: 0;
@@ -141,4 +145,27 @@ body {
 
 ul {
     margin-left: 20px;
+}
+
+ /* ----------------------------------------------------
+/                      RESPONSIVE                      /
+-----------------------------------------------------*/
+@media (max-width: 768px) {
+    .container {
+        max-width: 100%;
+        margin: 20px;
+        padding: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        margin: 12px;
+        padding: 16px;
+    }
+
+    .highlight {
+        padding: 12px;
+        margin: 16px 0;
+    }
 }

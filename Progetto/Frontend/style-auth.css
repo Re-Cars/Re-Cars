@@ -633,6 +633,58 @@ input:-webkit-autofill:active {
     }
 }
 
+@media (max-width: 480px) {
+    .auth-container {
+        margin: 12px;
+        padding: 24px 16px;
+        max-width: calc(100% - 24px);
+    }
+
+    .landing-title {
+        font-size: 1.8rem;
+    }
+
+    .landing-title2 {
+        font-size: 1.6rem;
+    }
+
+    .landing-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .landing-search-section {
+        margin-top: 80px;
+        padding: 24px 12px 40px;
+    }
+
+    .action-group {
+        margin-top: 40px;
+        gap: 20px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .auth-tipo-group {
+        gap: 8px;
+    }
+
+    .auth-tipo-btn {
+        padding: 10px 6px;
+        font-size: 0.72rem;
+    }
+
+    .btn-landing {
+        width: 100%;
+        padding: 12px 20px;
+    }
+
+    .citta-dropdown {
+        max-height: 140px;
+    }
+}
+
 
 
 /* ----------------------------------------------------

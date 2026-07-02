@@ -94,25 +94,6 @@ function aggiornaPiani() {
 }
 
  /* ----------------------------------------------------
-/              EFFTTO PASSAGGIO DEL MOUSE              /
------------------------------------------------------*/
-function initTiltCards() {
-    document.querySelectorAll('.abb-piano-card').forEach(card => {
-        card.addEventListener('mousemove', e => {
-            const r = card.getBoundingClientRect();
-            const px = (e.clientX - r.left) / r.width;
-            const py = (e.clientY - r.top) / r.height;
-            const rx = (0.5 - py) * 6;
-            const ry = (px - 0.5) * 6;
-            card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-10px) scale(1.015)`;
-        });
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = '';
-        });
-    });
-}
-
- /* ----------------------------------------------------
 /                   DISDICI ABBONAMENTO                /
 -----------------------------------------------------*/
 async function disdiciAbbonamento() {
