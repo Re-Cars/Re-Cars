@@ -44,6 +44,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+ /* ----------------------------------------------------
+/                   SIDEBAR / HAMBURGER MENU            /
+-----------------------------------------------------*/
+function toggleMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('hamburger-overlay');
+    const hamburger = document.getElementById('hamburger9');
+    const header = document.querySelector('.header');
+    if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+        hamburger.classList.remove('open');
+        header.classList.remove('sidebar-is-open');
+    } else {
+        sidebar.classList.add('open');
+        overlay.classList.add('open');
+        hamburger.classList.add('open');
+        header.classList.add('sidebar-is-open');
+    }
+}
+
+function closeMenu() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('hamburger-overlay').classList.remove('open');
+    document.getElementById('hamburger9').classList.remove('open');
+    document.querySelector('.header').classList.remove('sidebar-is-open');
+}
+
+ /* ----------------------------------------------------
+/          TILT 3D CARD PIANI ABBONAMENTO               /
+-----------------------------------------------------*/
+function initTiltCards() {
+    document.querySelectorAll('.abb-piano-card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width;
+            const py = (e.clientY - r.top) / r.height;
+            card.style.transform = `perspective(1000px) rotateX(${(0.5 - py) * 6}deg) rotateY(${(px - 0.5) * 6}deg) translateY(-10px) scale(1.015)`;
+        });
+        card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+    });
+}
+
  /* -----------------------------------------------------
 /        FOOTER CHE SI AGGIORNA AUTOMATICAMENTE        /
 -----------------------------------------------------*/

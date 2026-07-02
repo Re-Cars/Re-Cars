@@ -13,31 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-function toggleMenu() {
-    var sidebar = document.getElementById('sidebar');
-    var overlay = document.getElementById('hamburger-overlay');
-    var hamburger = document.getElementById('hamburger9');
-    var header = document.querySelector('.header');
-    if (sidebar.classList.contains('open')) {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('open');
-        hamburger.classList.remove('open');
-        header.classList.remove('sidebar-is-open');
-    } else {
-        sidebar.classList.add('open');
-        overlay.classList.add('open');
-        hamburger.classList.add('open');
-        header.classList.add('sidebar-is-open');
-    }
-}
-
-function closeMenu() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('hamburger-overlay').classList.remove('open');
-    document.getElementById('hamburger9').classList.remove('open');
-    document.querySelector('.header').classList.remove('sidebar-is-open');
-}
-
  /* ----------------------------------------------------
 /                   LOGOUT                             /
 -----------------------------------------------------*/
@@ -278,7 +253,19 @@ function closeSwitcher() {
 
 document.addEventListener('click', (e) => {
     const switcher = document.getElementById('veicolo-switcher');
-    if (switcher && !switcher.contains(e.target)) closeSwitcher();
+    const veicoloPill = document.getElementById('home-intro-veicolo');
+    const insideSwitcher = switcher && switcher.contains(e.target);
+    const insidePill = veicoloPill && veicoloPill.contains(e.target);
+    if (!insideSwitcher && !insidePill) closeSwitcher();
+});
+
+/* su schermi stretti il pill del veicolo attivo e lo switcher sono uniti
+   in un unico pill (vedi style-app.css, ≤480px): il click sul nome veicolo
+   apre lo stesso switcher-dropdown */
+document.getElementById('home-intro-veicolo')?.addEventListener('click', () => {
+    if (window.matchMedia('(max-width: 480px)').matches) {
+        toggleSwitcher();
+    }
 });
 
 document.addEventListener('DOMContentLoaded', async () => {

@@ -331,4 +331,98 @@
 .u-display-none {
     display: none !important;
 }
-    
+
+/* ----------------------------------------------------
+   RESPONSIVE
+----------------------------------------------------- */
+@media (max-width: 1024px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .left-column {
+        order: 1;
+    }
+
+    .right-column {
+        order: 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-container {
+        padding: 0 16px;
+    }
+
+    .search-bar-wrapper {
+        padding: 10px 14px;
+    }
+
+    .categories-wrapper {
+        gap: 6px;
+        margin-top: 12px;
+    }
+
+    .skeleton-grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modal-box {
+        max-width: 90vw;
+        padding: 20px;
+    }
+
+    #mappa-leaflet {
+        height: 220px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-grid {
+        gap: 16px;
+    }
+
+    .search-bar-wrapper {
+        padding: 8px 12px;
+    }
+
+    .skeleton-grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-box {
+        max-width: 100%;
+        padding: 16px;
+        border-radius: 14px;
+        gap: 14px;
+    }
+
+    #modal-prenotazione {
+        padding: 10px;
+    }
+
+    #mappa-leaflet {
+        height: 200px;
+        min-height: 200px;
+    }
+
+    .modal-slots-container {
+        gap: 6px;
+    }
+
+    .slot-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .btn-open-map {
+        top: 8px;
+        right: 8px;
+        padding: 5px 10px;
+    }
+
+    .detail-box-actual,
+    .skeleton-detail-box {
+        padding: 16px;
+    }
+}

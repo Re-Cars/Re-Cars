@@ -243,20 +243,66 @@
 
  
 /* Responsive */
+@media (max-width: 768px) {
+  .faq-accordion {
+    padding: 0 24px;
+  }
+
+  .sotto-title {
+    margin: 24px 16px 6px;
+    font-size: 1.4rem;
+  }
+
+  .page-sub {
+    margin: 0 16px 22px;
+  }
+}
+
 @media (max-width: 600px) {
   .faq-accordion {
     padding: 0 16px;
   }
- 
+
   .faq-body {
     padding-left: 34px;
   }
- 
+
   .plan-grid {
     grid-template-columns: 1fr;
   }
- 
+
   .faq-label {
     font-size: 0.88rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sotto-title {
+    font-size: 1.2rem;
+    margin: 20px 12px 6px;
+  }
+
+  .page-sub {
+    margin: 0 12px 20px;
+    font-size: 0.85rem;
+  }
+
+  .faq-trigger {
+    padding: 14px 4px;
+    gap: 10px;
+  }
+
+  .faq-dash {
+    width: 20px;
+    height: 20px;
+  }
+
+  .faq-body {
+    padding-left: 30px;
+  }
+
+  .faq-pill {
+    font-size: 0.72rem;
+    padding: 4px 10px;
   }
 }

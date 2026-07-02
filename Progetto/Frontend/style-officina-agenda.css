@@ -201,6 +201,7 @@
     border: 0.5px solid rgba(255, 255, 255, 0.06);
     display: flex;
     flex-direction: column;
+    overflow-x: auto;
 }
 
 .ag-main-header {
@@ -507,6 +508,12 @@
 }
 
 /* responsive */
+@media (max-width: 1024px) {
+    .ag-layout {
+        padding: 0 20px 28px;
+    }
+}
+
 @media (max-width: 768px) {
     .ag-layout {
         grid-template-columns: 1fr;
@@ -515,5 +522,55 @@
 
     .ag-sidebar {
         padding-right: 0;
+    }
+
+    .ag-week-header,
+    .ag-week-grid {
+        min-width: 640px;
+    }
+
+    .ag-month-header,
+    .ag-month-grid {
+        min-width: 560px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ag-main-header {
+        padding: 12px 14px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .ag-view-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .ag-slots-section,
+    .ag-mini-cal,
+    .ag-legenda {
+        padding: 12px;
+    }
+
+    .ag-event,
+    .ag-grid-event {
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+
+    .ag-slot-row {
+        gap: 6px;
+    }
+
+    .ag-slot-bar {
+        height: 20px;
+        font-size: 9px;
+        padding: 0 6px;
+    }
+
+    .ag-month-cell {
+        min-height: 60px;
+        padding: 4px;
     }
 }

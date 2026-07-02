@@ -318,10 +318,31 @@
  /* ----------------------------------------------------
 /                      RESPONSIVE                      /
 -----------------------------------------------------*/
+@media (max-width: 1024px) {
+    .iv-dashboard { padding: 18px 20px 40px; }
+}
+
 @media (max-width: 768px) {
     .iv-dashboard { padding: 14px 16px 28px; }
     .iv-specs-grid,
     .iv-maint-grid { grid-template-columns: 1fr; }
     .iv-hero-name { font-size: 1.3rem; }
     .iv-hero-icon { width: 58px; height: 58px; font-size: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+    .iv-dashboard { padding: 10px 12px 24px; gap: 12px; }
+    .iv-hero-body {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 18px;
+    }
+    .iv-hero-icon { width: 50px; height: 50px; font-size: 1.3rem; }
+    .iv-hero-name { font-size: 1.15rem; }
+    .iv-specs-grid,
+    .iv-maint-grid { padding: 12px 14px; gap: 8px; }
+    .iv-spec-tile,
+    .iv-maint-pill { padding: 12px; }
+    .iv-maint-pill { flex-wrap: wrap; }
 }

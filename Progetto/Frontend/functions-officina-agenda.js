@@ -22,19 +22,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
  /* ----------------------------------------------------
-/                  AVATAR MENU                         /
------------------------------------------------------*/
-function toggleAvatarMenu() {
-    document.getElementById('avatar-dropdown').classList.toggle('show');
-}
-
-document.addEventListener('click', (e) => {
-    const wrapper = document.getElementById('avatar-wrapper');
-    const dropdown = document.getElementById('avatar-dropdown');
-    if (wrapper && !wrapper.contains(e.target)) dropdown?.classList.remove('show');
-});
-
- /* ----------------------------------------------------
 /              CARICA AGENDA                           /
 -----------------------------------------------------*/
 async function caricaAgenda() {
@@ -403,39 +390,3 @@ function chiudiDettaglio() {
     document.getElementById('ag-detail-overlay').classList.remove('open');
 }
 
- /* ----------------------------------------------------
-/              MENU E TEMA                             /
------------------------------------------------------*/
-function toggleMenu() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('hamburger-overlay');
-    const hamburger = document.getElementById('hamburger9');
-    const header = document.querySelector('.header');
-    if (sidebar.classList.contains('open')) {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('open');
-        hamburger.classList.remove('open');
-        header.classList.remove('sidebar-is-open');
-    } else {
-        sidebar.classList.add('open');
-        overlay.classList.add('open');
-        hamburger.classList.add('open');
-        header.classList.add('sidebar-is-open');
-    }
-}
-
-function closeMenu() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('hamburger-overlay').classList.remove('open');
-    document.getElementById('hamburger9').classList.remove('open');
-    document.querySelector('.header').classList.remove('sidebar-is-open');
-}
-
- /* ----------------------------------------------------
-/                  LOGOUT                              /
------------------------------------------------------*/
-async function logout() {
-    await fetch(`${API}/officina/logout`, { method: 'POST', credentials: 'include' });
-    localStorage.removeItem('yd_utente_loggato');
-    window.location.href = 'landing.html';
-}
