@@ -17,20 +17,22 @@
     <div class="landing-overlay"></div>
 
     <div class="auth-container">
-        
+      <div class="auth-scroll">
+
         <div class="auth-nav">
-            <a href="#" class="auth-toggle-left" id="auth-toggle-left" onclick="switchForm(event)">
-                <i class="fa-solid fa-right-to-bracket"></i>
-                <span>Accedi</span>
+            <a href="#" class="auth-back" onclick="closeGarage(event)" aria-label="Torna alla landing">
+                <i class="fa-solid fa-arrow-left"></i>
             </a>
-            <a href="#" class="auth-back" onclick="closeGarage(event)">
-                <i class="fa-solid fa-house"></i>
-                Torna alla Landing
-            </a>
-            <a href="#" id="auth-toggle-nav" onclick="switchForm(event)">
-                <i class="fa-solid fa-user-plus"></i>
-                <span>Registrati</span>
-            </a>
+            <div class="auth-toggle-slot">
+                <a href="#" class="auth-toggle-left" id="auth-toggle-left" onclick="switchForm(event)">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Accedi</span>
+                </a>
+                <a href="#" id="auth-toggle-nav" onclick="switchForm(event)">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Registrati</span>
+                </a>
+            </div>
         </div>
 
         <div class="auth-logo">
@@ -43,7 +45,6 @@
 
             <!-- step 1: chi sei? -->
             <div class="auth-step" id="login-step-tipo">
-                <p class="auth-step-label">Accedi come...</p>
                 <div class="auth-tipo-group">
                     <button class="auth-tipo-btn" onclick="loginSelezionaTipo('utente')">
                         <i class="fa-solid fa-user"></i>
@@ -116,7 +117,6 @@
 
             <!-- step 1: chi sei? -->
             <div class="auth-step" id="reg-step-tipo">
-                <p class="auth-step-label">Registrati come...</p>
                 <div class="auth-tipo-group">
                     <button class="auth-tipo-btn" onclick="regSelezionaTipo('privato')">
                         <i class="fa-solid fa-user"></i>
@@ -235,6 +235,7 @@
             <p class="auth-switch">Hai già un account? <a href="#" onclick="switchForm(event)">Accedi</a></p>
         </div>
 
+      </div>
     </div>
 
      <div class="shutter-gate" id="shutter-gate">

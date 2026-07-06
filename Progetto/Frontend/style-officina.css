@@ -22,6 +22,7 @@
     background: rgba(249, 115, 22, 0.12);
     border: 1px solid rgba(249, 115, 22, 0.25);
     border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(249, 115, 22, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -85,13 +86,16 @@
     border-radius: 16px;
     padding: 24px;
     border: 0.5px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     position: relative;
     overflow: hidden;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
 }
 
 .oc-stat-card:hover {
     border-color: rgba(249, 115, 22, 0.25);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+    transform: translateY(-2px);
 }
 
 .oc-stat-accent {
@@ -185,6 +189,7 @@
     border-radius: 14px;
     padding: 18px 20px;
     border: 0.5px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
     display: flex;
     align-items: center;
     gap: 16px;
@@ -195,6 +200,7 @@
 .oc-prenotazione-card:hover {
     border-color: rgba(249, 115, 22, 0.25);
     background: rgba(249, 115, 22, 0.03);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     transform: translateX(4px);
 }
 
@@ -407,19 +413,27 @@
 }
 
 .oc-detail-close {
-    background: none;
-    border: none;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
     color: var(--muted);
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     display: flex;
     align-items: center;
+    justify-content: center;
     padding: 0;
-    transition: color 0.15s;
+    flex-shrink: 0;
+    transition: all 0.2s;
 }
 
 .oc-detail-close:hover {
-    color: var(--error);
+    background: #f97316;
+    border-color: #f97316;
+    color: #fff;
+    transform: rotate(90deg);
 }
 
 .oc-new-modal-header {
@@ -481,14 +495,27 @@
     transition: all 0.15s;
 }
 
+.oc-new-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.oc-new-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
 .oc-new-btn.chiudi {
-    background: rgba(255, 255, 255, 0.05);
+    flex: 0.7;
+    background: transparent;
     color: var(--muted);
-    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
 }
 
 .oc-new-btn.chiudi:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(249, 115, 22, 0.08);
+    border-color: #f97316;
+    color: #f97316;
 }
 
 .oc-new-btn.conferma {
@@ -675,6 +702,7 @@
     background: var(--surface);
     border-radius: 10px;
     padding: 12px 16px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
 }
 
 .oc-filter-label {
@@ -700,6 +728,11 @@
     display: flex;
     align-items: center;
     gap: 6px;
+}
+
+.oc-filter-btn:hover {
+    color: var(--white);
+    border-color: rgba(249, 115, 22, 0.3);
 }
 
 .oc-filter-dot {
@@ -786,11 +819,13 @@
     border-radius: 14px;
     overflow: hidden;
     border: 0.5px solid rgba(255, 255, 255, 0.06);
-    transition: border-color 0.2s, transform 0.2s;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .oc-pren-card-wrap:hover {
     border-color: rgba(249, 115, 22, 0.25);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     transform: translateX(4px);
 }
 

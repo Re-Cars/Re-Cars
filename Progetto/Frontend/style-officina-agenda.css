@@ -395,25 +395,25 @@
 }
 
 .ag-grid-in_attesa {
-    background: rgba(251, 191, 36, 0.2);
+    background: rgba(251, 191, 36, 0.32);
     color: #fbbf24;
     border-left: 3px solid #fbbf24;
 }
 
 .ag-grid-confermata {
-    background: rgba(55, 169, 97, 0.2);
+    background: rgba(55, 169, 97, 0.32);
     color: #37a961;
     border-left: 3px solid #37a961;
 }
 
 .ag-grid-completata {
-    background: rgba(160, 168, 184, 0.12);
+    background: rgba(160, 168, 184, 0.22);
     color: var(--muted);
     border-left: 3px solid var(--muted);
 }
 
 .ag-grid-annullata {
-    background: rgba(229, 57, 53, 0.12);
+    background: rgba(229, 57, 53, 0.22);
     color: var(--error);
     border-left: 3px solid var(--error);
 }
@@ -499,6 +499,44 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     cursor: pointer;
+    transition: filter 0.15s;
+}
+
+.ag-month-event:hover {
+    filter: brightness(1.15);
+}
+
+/* stato prenotazione — sfondo colorato (vista mese + pallino legenda) */
+.ag-ev-in_attesa {
+    background: #fbbf24;
+}
+
+.ag-month-event.ag-ev-in_attesa {
+    color: #3a2e05;
+}
+
+.ag-ev-confermata {
+    background: #37a961;
+}
+
+.ag-month-event.ag-ev-confermata {
+    color: #ffffff;
+}
+
+.ag-ev-completata {
+    background: #6b7280;
+}
+
+.ag-month-event.ag-ev-completata {
+    color: #ffffff;
+}
+
+.ag-ev-annullata {
+    background: var(--error);
+}
+
+.ag-month-event.ag-ev-annullata {
+    color: #ffffff;
 }
 
 .ag-month-more {
