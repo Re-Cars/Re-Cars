@@ -17,6 +17,24 @@
     gap: 20px;
 }
 
+/* ingresso scaglionato dei pannelli */
+@keyframes ag-fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.ag-sidebar > * {
+    animation: ag-fadeUp 0.35s ease both;
+}
+
+.ag-sidebar > :nth-child(1) { animation-delay: 0.05s; }
+.ag-sidebar > :nth-child(2) { animation-delay: 0.1s; }
+.ag-sidebar > :nth-child(3) { animation-delay: 0.15s; }
+
+.ag-main {
+    animation: ag-fadeUp 0.35s ease 0.1s both;
+}
+
 /* mini calendario */
 .ag-mini-cal {
     background: var(--surface);
@@ -47,8 +65,8 @@
 }
 
 .ag-nav-btn:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--white);
+    background: rgba(249, 115, 22, 0.12);
+    color: #f97316;
 }
 
 .ag-mini-grid {
@@ -66,21 +84,23 @@
 }
 
 .ag-mini-day {
+    position: relative;
     font-size: 11px;
-    padding: 4px 2px;
+    padding: 4px 2px 7px;
     border-radius: 6px;
     cursor: pointer;
     color: var(--white);
-    transition: background 0.15s;
+    transition: background 0.15s, transform 0.15s;
 }
 
 .ag-mini-day:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(249, 115, 22, 0.1);
+    transform: scale(1.1);
 }
 
 .ag-mini-day.oggi {
     background: #f97316;
-    color: var(--white);
+    color: #ffffff;
     font-weight: 600;
 }
 
@@ -92,6 +112,19 @@
 .ag-mini-day.ha-eventi {
     font-weight: 600;
     color: #f97316;
+}
+
+/* pallino sotto i giorni con prenotazioni */
+.ag-mini-day.ha-eventi::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #f97316;
 }
 
 .ag-mini-day.altro-mese {
@@ -142,11 +175,12 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     cursor: pointer;
-    transition: opacity 0.15s;
+    transition: opacity 0.15s, transform 0.15s;
 }
 
 .ag-slot-bar:hover {
-    opacity: 0.8;
+    opacity: 0.85;
+    transform: translateX(2px);
 }
 
 .ag-slot-libero {
@@ -202,6 +236,7 @@
     display: flex;
     flex-direction: column;
     overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .ag-main-header {
@@ -216,6 +251,37 @@
     font-size: 14px;
     font-weight: 600;
     color: var(--white);
+}
+
+.ag-main-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ag-oggi-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 0.5px solid rgba(249, 115, 22, 0.3);
+    background: rgba(249, 115, 22, 0.08);
+    color: #f97316;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+}
+
+.ag-oggi-btn i {
+    font-size: 11px;
+}
+
+.ag-oggi-btn:hover {
+    background: rgba(249, 115, 22, 0.18);
+    transform: translateY(-1px);
 }
 
 .ag-view-toggle {
@@ -239,9 +305,14 @@
     transition: all 0.15s;
 }
 
-.ag-view-btn.active {
-    background: var(--surface);
+.ag-view-btn:hover {
     color: var(--white);
+}
+
+.ag-view-btn.active {
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+    font-weight: 600;
 }
 
 /* vista settimana */
@@ -293,7 +364,24 @@
     display: grid;
     grid-template-columns: 52px repeat(7, 1fr);
     max-height: 500px;
-    overflow-y: scroll;
+    overflow-y: auto;
+}
+
+.ag-week-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ag-week-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ag-week-grid::-webkit-scrollbar-thumb {
+    background: rgba(249, 115, 22, 0.35);
+    border-radius: 10px;
+}
+
+.ag-week-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(249, 115, 22, 0.55);
 }
 
 .ag-time-col {
@@ -323,6 +411,12 @@
 
 .ag-day-col:last-child {
     border-right: none;
+}
+
+/* colonna del giorno corrente evidenziata */
+.ag-day-col.oggi {
+    background: rgba(249, 115, 22, 0.04);
+    box-shadow: inset 2px 0 0 rgba(249, 115, 22, 0.35), inset -2px 0 0 rgba(249, 115, 22, 0.35);
 }
 
 .ag-day-cell {
@@ -382,7 +476,7 @@
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
-    transition: filter 0.15s;
+    transition: filter 0.15s, transform 0.15s, box-shadow 0.15s;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -392,6 +486,8 @@
 
 .ag-grid-event:hover {
     filter: brightness(1.25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
 .ag-grid-in_attesa {
@@ -448,11 +544,14 @@
 
 .ag-month-cell {
     min-height: 80px;
+    min-width: 0;
     border-bottom: 0.5px solid rgba(255, 255, 255, 0.04);
     border-right: 0.5px solid rgba(255, 255, 255, 0.04);
     padding: 6px;
     cursor: pointer;
     transition: background 0.15s;
+    display: flex;
+    flex-direction: column;
 }
 
 .ag-month-cell:last-child {
@@ -460,7 +559,7 @@
 }
 
 .ag-month-cell:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(249, 115, 22, 0.04);
 }
 
 .ag-month-cell.oggi {
@@ -490,6 +589,8 @@
 }
 
 .ag-month-event {
+    flex: 1;
+    min-width: 0;
     font-size: 10px;
     font-weight: 500;
     padding: 2px 6px;
@@ -499,11 +600,12 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     cursor: pointer;
-    transition: filter 0.15s;
+    transition: filter 0.15s, transform 0.15s;
 }
 
 .ag-month-event:hover {
     filter: brightness(1.15);
+    transform: translateX(2px);
 }
 
 /* stato prenotazione — sfondo colorato (vista mese + pallino legenda) */
@@ -580,8 +682,14 @@
         gap: 10px;
     }
 
-    .ag-view-toggle {
+    .ag-main-header-right {
         width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .ag-view-toggle {
+        flex: 1;
         justify-content: center;
     }
 

@@ -366,8 +366,11 @@ body.landing-body {
     gap: 24px;
     overflow-y: auto;
     overflow-x: hidden;
-    padding-right: 8px;
-    margin-right: -8px;
+    /* padding + margini negativi: danno spazio agli elementi che si
+       ingrandiscono in hover (es. freccia indietro) senza spostare il layout,
+       così l'overflow del contenitore non li taglia */
+    padding: 4px 8px 4px 4px;
+    margin: -4px -8px -4px -4px;
 }
 
 .auth-scroll::-webkit-scrollbar {
@@ -406,7 +409,7 @@ body.landing-body {
     cursor: pointer;
     transition: 0.2s;
     background: rgba(255, 255, 255, 0.06);
-    border: 0.5px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 50%;
     text-decoration: none;
 }
@@ -450,8 +453,9 @@ body.landing-body {
 
 #auth-toggle-nav:hover {
     color: #fff;
-    transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.14);
+    transform: scale(1.08);
+    background: rgba(249, 115, 22, 0.15);
+    border-color: #f97316;
 }
 
 #auth-toggle-nav i,
@@ -483,8 +487,9 @@ body.landing-body {
 
 .auth-toggle-left:hover {
     color: #fff;
-    transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.14);
+    transform: scale(1.08);
+    background: rgba(249, 115, 22, 0.15);
+    border-color: #f97316;
 }
 
 .auth-toggle-left i {

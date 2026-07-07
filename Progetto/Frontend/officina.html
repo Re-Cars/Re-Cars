@@ -16,7 +16,7 @@
 
 <body>
 
-    <div class="oc-detail-overlay" id="oc-detail-overlay">
+    <div class="oc-detail-overlay" id="oc-detail-overlay" onclick="if (event.target === this) chiudiDettaglio()">
         <div class="oc-new-modal">
             <div class="oc-new-modal-header">
                 <div class="oc-new-modal-title">
@@ -125,18 +125,21 @@
     <div class="oc-stats-grid">
         <div class="oc-stat-card">
             <div class="oc-stat-accent oc-accent-orange"></div>
+            <div class="oc-stat-icon"><i class="fa-solid fa-calendar-day"></i></div>
             <div class="oc-stat-label">Prenotazioni oggi</div>
             <div class="oc-stat-value" id="stat-oggi">—</div>
             <div class="oc-stat-sub" id="stat-oggi-sub"></div>
         </div>
         <div class="oc-stat-card">
             <div class="oc-stat-accent oc-accent-blue"></div>
+            <div class="oc-stat-icon oc-stat-icon-blue"><i class="fa-solid fa-calendar-week"></i></div>
             <div class="oc-stat-label">Questa settimana</div>
             <div class="oc-stat-value" id="stat-settimana">—</div>
             <div class="oc-stat-sub" id="stat-settimana-sub"></div>
         </div>
         <div class="oc-stat-card">
             <div class="oc-stat-accent oc-accent-muted"></div>
+            <div class="oc-stat-icon oc-stat-icon-muted"><i class="fa-solid fa-car-on"></i></div>
             <div class="oc-stat-label">Ponti disponibili</div>
             <div class="oc-stat-value" id="stat-ponti">—</div>
             <div class="oc-stat-sub" id="stat-ponti-sub"></div>

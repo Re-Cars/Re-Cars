@@ -273,9 +273,6 @@ function apriDettaglio(id) {
         <button class="oc-new-btn annulla" onclick="aggiornaStato(${p.id}, 'annullata')">
             <i class="fa-solid fa-ban"></i> Annulla
         </button>
-        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
-            <i class="fa-solid fa-xmark"></i> Chiudi
-        </button>
     ` : p.stato === 'confermata' ? `
         <button class="oc-new-btn conferma" onclick="aggiornaStato(${p.id}, 'completata')">
             <i class="fa-solid fa-square-check"></i> Completa
@@ -283,14 +280,7 @@ function apriDettaglio(id) {
         <button class="oc-new-btn annulla" onclick="aggiornaStato(${p.id}, 'annullata')">
             <i class="fa-solid fa-ban"></i> Annulla
         </button>
-        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
-            <i class="fa-solid fa-xmark"></i> Chiudi
-        </button>
-    ` : `
-        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
-            <i class="fa-solid fa-xmark"></i> Chiudi
-        </button>
-    `;
+    ` : '';
 
     document.getElementById('oc-detail-azioni').innerHTML = azioniBtn;
     document.getElementById('oc-detail-overlay').classList.add('open');

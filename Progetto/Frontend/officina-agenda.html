@@ -17,7 +17,7 @@
 
 <body>
 
-    <div class="oc-detail-overlay" id="ag-detail-overlay">
+    <div class="oc-detail-overlay" id="ag-detail-overlay" onclick="if (event.target === this) chiudiDettaglio()">
         <div class="oc-new-modal">
             <div class="oc-new-modal-header">
                 <div class="oc-new-modal-title">
@@ -150,9 +150,14 @@
         <div class="ag-main">
             <div class="ag-main-header">
                 <div class="ag-main-title" id="ag-main-title">Settimana</div>
-                <div class="ag-view-toggle">
-                    <button class="ag-view-btn active" id="btn-settimana" onclick="setVista('settimana')">Settimana</button>
-                    <button class="ag-view-btn" id="btn-mese" onclick="setVista('mese')">Mese</button>
+                <div class="ag-main-header-right">
+                    <button class="ag-oggi-btn" onclick="vaiAOggi()">
+                        <i class="fa-solid fa-calendar-day"></i> Oggi
+                    </button>
+                    <div class="ag-view-toggle">
+                        <button class="ag-view-btn active" id="btn-settimana" onclick="setVista('settimana')">Settimana</button>
+                        <button class="ag-view-btn" id="btn-mese" onclick="setVista('mese')">Mese</button>
+                    </div>
                 </div>
             </div>
 

@@ -145,6 +145,11 @@ function cambiaVista(direzione) {
     renderMiniCal();
 }
 
+function vaiAOggi() {
+    dataCorrente = new Date();
+    caricaAgenda();
+}
+
 function renderVista() {
     if (vistaAttiva === 'settimana') renderSettimana();
     else renderMese();
@@ -197,13 +202,14 @@ function renderSettimana() {
                 `).join('')}
             </div>
             ${giorni.map(d => {
+                const isOggi = d.toDateString() === oggi.toDateString();
                 const prenGiorno = prenotazioni.filter(p => {
                     const pd = new Date(p.dataprenotazione);
                     return pd.toDateString() === d.toDateString();
                 });
 
                 return `
-                    <div class="ag-day-col">
+                    <div class="ag-day-col ${isOggi ? 'oggi' : ''}">
                         ${ORE.map(ora => {
                             const [h] = ora.split(':').map(Number);
                             const pren = prenGiorno.find(p => new Date(p.dataprenotazione).getHours() === h);
@@ -377,11 +383,7 @@ function apriDettaglio(id) {
         </div>
     `;
 
-    document.getElementById('ag-detail-azioni').innerHTML = `
-        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
-            <i class="fa-solid fa-xmark"></i> Chiudi
-        </button>
-    `;
+    document.getElementById('ag-detail-azioni').innerHTML = '';
 
     document.getElementById('ag-detail-overlay').classList.add('open');
 }
