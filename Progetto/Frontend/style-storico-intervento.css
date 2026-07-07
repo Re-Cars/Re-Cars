@@ -646,3 +646,140 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ======================================================
+   ================  NUOVE REGOLE AGGIUNTE  ==============
+   Riepilogo spese (mese/anno) + Modal Genera PDF
+   ====================================================== */
+
+/* ----------------------------------------------------
+   RIEPILOGO SPESE (card separata sotto la tabella)
+----------------------------------------------------- */
+.spese-dashboard {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px;
+    flex-wrap: wrap;
+}
+
+.spesa-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: rgba(249, 115, 22, 0.06);
+    border: 1px solid rgba(249, 115, 22, 0.15);
+    flex: 1;
+    min-width: 210px;
+}
+
+.spesa-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.spesa-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.spesa-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.spesa-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--c-text);
+}
+
+/* Bottone genera PDF nella card riepilogo */
+.pdf-btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+    box-shadow: 0 6px 16px -4px rgba(249, 115, 22, 0.5);
+    white-space: nowrap;
+}
+
+.pdf-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px -4px rgba(249, 115, 22, 0.6);
+}
+
+/* ----------------------------------------------------
+   MODAL GENERA PDF
+----------------------------------------------------- */
+.modal-pdf {
+    width: 520px;
+}
+
+.pdf-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pdf-anteprima {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 2px;
+}
+
+.pdf-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--c-text);
+    cursor: pointer;
+    text-transform: none;
+    font-weight: 400;
+    letter-spacing: normal;
+}
+
+.pdf-check input {
+    width: auto;
+    accent-color: #f97316;
+    cursor: pointer;
+}
+
+/* Responsive riepilogo spese */
+@media (max-width: 600px) {
+    .spese-dashboard {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .spesa-box {
+        min-width: 0;
+    }
+    .pdf-btn {
+        justify-content: center;
+    }
+}
