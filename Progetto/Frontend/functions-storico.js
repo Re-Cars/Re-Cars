@@ -349,3 +349,200 @@ window.addEventListener('storage', (e) => {
     caricaInterventi();
   }
 });
+
+
+/* ==========================================================================
+   ==========================  CODICE AGGIUNTO  ============================
+   Riepilogo spese (mese/anno) + Genera PDF
+   Nessuna funzione esistente sopra è stata modificata: qui sotto vengono solo
+   aggiunte nuove funzioni e, alla fine, un piccolo "hook" che richiama
+   calcolaTotali() ogni volta che renderRows() viene eseguita, così i totali
+   restano sempre aggiornati senza toccare la funzione originale.
+   ========================================================================== */
+
+let currentPdfFilter = 'all';
+
+/*----------------------------------------------------
+--------------RIEPILOGO SPESE (mese corrente / anno corrente)
+----------------------------------------------------*/
+function calcolaTotali() {
+  const oggi = new Date();
+  const meseCorrente = oggi.getMonth();
+  const annoCorrente = oggi.getFullYear();
+
+  let totMese = 0;
+  let totAnno = 0;
+
+  interventi.forEach(item => {
+    const costo = Number(item.costo) || 0;
+    if (!costo) return;
+
+    // item.data è nel formato "YYYY-MM-DD"
+    const [anno, mese] = item.data.split('-').map(Number);
+
+    if (anno === annoCorrente) {
+      totAnno += costo;
+      if (mese - 1 === meseCorrente) {
+        totMese += costo;
+      }
+    }
+  });
+
+  const elMese = document.getElementById('totaleMese');
+  const elAnno = document.getElementById('totaleAnno');
+  if (elMese) elMese.textContent = totMese.toFixed(2) + ' €';
+  if (elAnno) elAnno.textContent = totAnno.toFixed(2) + ' €';
+}
+
+/*----------------------------------------------------
+--------------MODAL GENERA PDF
+----------------------------------------------------*/
+function popolaAnniPdf() {
+  const sel = document.getElementById('pdfAnno');
+  if (!sel) return;
+
+  const anniSet = new Set(interventi.map(i => i.data.substring(0, 4)));
+  anniSet.add(String(new Date().getFullYear()));
+
+  const anni = Array.from(anniSet).sort((a, b) => b - a);
+  sel.innerHTML = anni.map(a => `<option value="${a}">${a}</option>`).join('');
+}
+
+function setPdfFilter(f, btn) {
+  currentPdfFilter = f;
+  document.querySelectorAll('#pdfFiltri .filter-btn').forEach(b => b.className = 'filter-btn');
+  if      (f === 'all')           btn.classList.add('active-all');
+  else if (f === 'ordinario')     btn.classList.add('active-ordinario');
+  else if (f === 'straordinario') btn.classList.add('active-straordinario');
+  else if (f === 'annotazioni')   btn.classList.add('active-annotazioni');
+  else                            btn.classList.add('active-gestione');
+}
+
+function openPdfModal() {
+  popolaAnniPdf();
+  document.getElementById('modalPdfOverlay').classList.add('open');
+}
+
+function closePdfModal() {
+  document.getElementById('modalPdfOverlay').classList.remove('open');
+}
+
+// Chiudi modal PDF cliccando fuori
+document.getElementById('modalPdfOverlay').addEventListener('click', function (e) {
+  if (e.target === this) closePdfModal();
+});
+
+/*----------------------------------------------------
+--------------GENERAZIONE DEL PDF (jsPDF + autotable)
+----------------------------------------------------*/
+function generaPdf() {
+  if (!window.jspdf) {
+    alert('Libreria PDF non ancora caricata, riprova tra un istante.');
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const anno = document.getElementById('pdfAnno').value;
+
+  let dati = interventi.filter(i => i.data.substring(0, 4) === anno);
+  if (currentPdfFilter !== 'all') {
+    dati = dati.filter(i => i.categoria === currentPdfFilter);
+  }
+
+  let y = 18;
+
+  doc.setFontSize(16);
+  doc.setTextColor(249, 115, 22);
+  doc.text('RE|CARS — Report Interventi', 14, y);
+  doc.setTextColor(0, 0, 0);
+  y += 10;
+
+  // Sezione: info generali veicolo
+  if (document.getElementById('pdfInfoVeicolo').checked) {
+    const nomeVeicolo = document.getElementById('nome-veicolo-attivo')?.textContent?.trim() || '—';
+    const targa       = document.getElementById('targa-veicolo-attivo')?.textContent?.trim() || '—';
+
+    doc.setFontSize(12);
+    doc.text('Info generali veicolo', 14, y);
+    y += 7;
+    doc.setFontSize(10);
+    doc.text(`Veicolo: ${nomeVeicolo}`, 14, y); y += 6;
+    doc.text(`Targa: ${targa}`, 14, y); y += 6;
+    doc.text(`Anno di riferimento: ${anno}`, 14, y); y += 6;
+    doc.text(`Tipologia: ${currentPdfFilter === 'all' ? 'Tutte' : catLabel(currentPdfFilter)}`, 14, y);
+    y += 10;
+  }
+
+  // Sezione: tabella costo generale (totali per categoria)
+  if (document.getElementById('pdfCostoGenerale').checked) {
+    doc.setFontSize(12);
+    doc.text('Tabella costo generale', 14, y);
+    y += 4;
+
+    const categorie = ['ordinario', 'straordinario', 'gestione', 'annotazioni'];
+    const totaleComplessivo = dati.reduce((s, i) => s + (Number(i.costo) || 0), 0);
+
+    const bodyCosti = categorie.map(cat => {
+      const tot = dati.filter(i => i.categoria === cat)
+                      .reduce((s, i) => s + (Number(i.costo) || 0), 0);
+      return [catLabel(cat), tot.toFixed(2) + ' €'];
+    });
+    bodyCosti.push(['Totale complessivo', totaleComplessivo.toFixed(2) + ' €']);
+
+    doc.autoTable({
+      startY: y,
+      head: [['Categoria', 'Totale']],
+      body: bodyCosti,
+      theme: 'grid',
+      headStyles: { fillColor: [249, 115, 22] },
+      margin: { left: 14, right: 14 },
+      styles: { fontSize: 10 },
+    });
+
+    y = doc.lastAutoTable.finalY + 10;
+  }
+
+  // Sezione: tabella cronologia interventi (dettaglio righe)
+  if (document.getElementById('pdfCronologia').checked) {
+    doc.setFontSize(12);
+    doc.text('Tabella cronologia interventi', 14, y);
+    y += 4;
+
+    const bodyCronologia = dati
+      .slice()
+      .sort((a, b) => a.data.localeCompare(b.data))
+      .map(i => [
+        i.data.split('-').reverse().join('/'),
+        catLabel(i.categoria),
+        i.nome + (i.descrizione ? ' - ' + i.descrizione : ''),
+        i.mediante || '—',
+        i.costo ? Number(i.costo).toFixed(2) + ' €' : '—',
+      ]);
+
+    doc.autoTable({
+      startY: y,
+      head: [['Data', 'Categoria', 'Descrizione', 'Fornitore', 'Costo']],
+      body: bodyCronologia.length ? bodyCronologia : [['—', '—', 'Nessun intervento nel periodo selezionato', '—', '—']],
+      theme: 'grid',
+      headStyles: { fillColor: [249, 115, 22] },
+      margin: { left: 14, right: 14 },
+      styles: { fontSize: 9 },
+    });
+  }
+
+  doc.save(`recars-report-interventi-${anno}.pdf`);
+  closePdfModal();
+}
+
+/*----------------------------------------------------
+--------------HOOK: aggiorna i totali dopo ogni render
+----------------------------------------------------*/
+(function agganciaCalcoloTotali() {
+  const renderRowsOriginale = renderRows;
+  renderRows = function () {
+    renderRowsOriginale.apply(this, arguments);
+    calcolaTotali();
+  };
+})();

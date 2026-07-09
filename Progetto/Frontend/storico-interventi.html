@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="style-app.css">
     <link rel="stylesheet" href="style-info-veicolo.css">
     <link rel="stylesheet" href="style-storico-intervento.css">
+    <!-- Libreria per la generazione del PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
     <script src="functions-storico.js" defer></script>
@@ -142,7 +145,7 @@
                     <div>Data</div>
                     <div>Categoria</div>
                     <div>Descrizione</div>
-                    <div>Mediante</div>
+                    <div>Fornitore/Mediante</div>
                     <div>Costo</div>
                     <div></div>
                 </div>
@@ -152,7 +155,37 @@
 
         </div>
 
+        <!-- CARD SEPARATA: RIEPILOGO SPESE + GENERA PDF -->
+        <div class="iv-section-card" style="animation-delay: 0.1s;">
 
+            <div class="iv-section-bar2">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="section-title">Riepilogo Spese</span>
+                </div>
+            </div>
+
+            <div class="spese-dashboard">
+                <div class="spesa-box">
+                    <div class="spesa-icon"><i class="fa-solid fa-calendar-day"></i></div>
+                    <div class="spesa-info">
+                        <span class="spesa-label">Spese questo mese</span>
+                        <span class="spesa-value" id="totaleMese">0.00 €</span>
+                    </div>
+                </div>
+                <div class="spesa-box">
+                    <div class="spesa-icon"><i class="fa-solid fa-calendar"></i></div>
+                    <div class="spesa-info">
+                        <span class="spesa-label">Spese quest'anno</span>
+                        <span class="spesa-value" id="totaleAnno">0.00 €</span>
+                    </div>
+                </div>
+                <button class="pdf-btn" onclick="openPdfModal()">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    Genera PDF
+                </button>
+            </div>
+
+        </div>
 
     </section>
 
@@ -190,7 +223,7 @@
             </div>
             <div class="form-grid">
                 <div class="form-row">
-                    <label>Mediante (opzionale)</label>
+                    <label>Fornitore/Mediante (opzionale)</label>
                     <input type="text" id="inputMediante" placeholder="es. officina/benzinaio/negozio">
                 </div>
                 <div class="form-row">
@@ -238,7 +271,7 @@
             </div>
             <div class="form-grid">
                 <div class="form-row">
-                    <label>Mediante (opzionale)</label>
+                    <label>Fornitore/Mediante (opzionale)</label>
                     <input type="text" id="editMediante" placeholder="es. officina/benzinaio/negozio">
                 </div>
                 <div class="form-row">
@@ -249,6 +282,55 @@
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeEditModal()">Cancella</button>
                 <button class="btn-save" onclick="saveEdit()">Salva modifiche</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GENERA PDF -->
+    <div class="modal-overlay" id="modalPdfOverlay">
+        <div class="modal modal-pdf">
+            <div class="modal-title">
+                <i class="fa-solid fa-file-pdf" style="color:#f97316"></i> Genera PDF
+            </div>
+
+            <div class="form-row">
+                <label>Anno</label>
+                <select id="pdfAnno"></select>
+            </div>
+
+            <div class="form-row">
+                <label>Tipologia</label>
+                <div class="pdf-filters" id="pdfFiltri">
+                    <button type="button" class="filter-btn active-all" data-filter="all" onclick="setPdfFilter('all', this)">
+                        Tutti
+                    </button>
+                    <button type="button" class="filter-btn" data-filter="ordinario" onclick="setPdfFilter('ordinario', this)">
+                        <span class="dot" style="background:#2b88b8"></span> Ordinario
+                    </button>
+                    <button type="button" class="filter-btn" data-filter="straordinario" onclick="setPdfFilter('straordinario', this)">
+                        <span class="dot" style="background:#ef4444"></span> Straordinario
+                    </button>
+                    <button type="button" class="filter-btn" data-filter="annotazioni" onclick="setPdfFilter('annotazioni', this)">
+                        <span class="dot" style="background:#f8782f"></span> Annotazione problemi
+                    </button>
+                    <button type="button" class="filter-btn" data-filter="gestione" onclick="setPdfFilter('gestione', this)">
+                        <span class="dot" style="background:#22c55e"></span> Spese di gestione
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label>Anteprima</label>
+                <div class="pdf-anteprima">
+                    <label class="pdf-check"><input type="checkbox" id="pdfInfoVeicolo" checked> Info generali veicolo</label>
+                    <label class="pdf-check"><input type="checkbox" id="pdfCostoGenerale" checked> Tabella costo generale</label>
+                    <label class="pdf-check"><input type="checkbox" id="pdfCronologia" checked> Tabella cronologia interventi</label>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closePdfModal()">Cancella</button>
+                <button class="btn-save" onclick="generaPdf()"><i class="fa-solid fa-download"></i> Download</button>
             </div>
         </div>
     </div>
