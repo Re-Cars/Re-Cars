@@ -1,4 +1,5 @@
 import TouchFeedback from "@/components/TouchFeedback";
+import MenuLaterale from "@/components/utente/MenuLaterale";
 import VeicoloSwitcher from "@/components/utente/VeicoloSwitcher";
 import { useVeicoli } from "@/hooks/use-veicoli";
 import { FontAwesome6 } from "@expo/vector-icons";
@@ -13,10 +14,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 /* card disposte in cerchio come nel frontend web (functions-app.js):
    angoli -90 / -18 / 54 / 126 / 198, raggio 0.8 * metà scena */
@@ -65,11 +63,9 @@ const CARDS = [
 
 export default function HomeScreen() {
   const { width, height } = useWindowDimensions();
-  const insets = useSafeAreaInsets();
   const { utente, veicoli, veicoloAttivo, seleziona, elimina, logout } =
     useVeicoli();
 
-  const [menuAperto, setMenuAperto] = useState(false);
   const [avatarAperto, setAvatarAperto] = useState(false);
 
   /* dimensioni scena circolare (come .cards-scene responsive del web) */
@@ -84,8 +80,6 @@ export default function HomeScreen() {
   ).current;
   const ringAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(-300)).current;
-  const hamburgerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     /* entrata card a molla, sfalsata */
@@ -110,7 +104,11 @@ export default function HomeScreen() {
               easing: Easing.out(Easing.quad),
               useNativeDriver: true,
             }),
-            Animated.timing(anim, { toValue: 0, duration: 0, useNativeDriver: true }),
+            Animated.timing(anim, {
+              toValue: 0,
+              duration: 0,
+              useNativeDriver: true,
+            }),
             Animated.delay(4000),
           ]),
         ).start();
@@ -146,123 +144,11 @@ export default function HomeScreen() {
     return () => timers.forEach(clearTimeout);
   }, [cardAnims, pulseAnims, ringAnim, glowAnim]);
 
-  function apriMenu() {
-    setMenuAperto(true);
-    Animated.parallel([
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 280,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      Animated.timing(hamburgerAnim, {
-        toValue: 1,
-        duration: 280,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }
-
-  function chiudiMenu() {
-    Animated.parallel([
-      Animated.timing(slideAnim, {
-        toValue: -300,
-        duration: 220,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      Animated.timing(hamburgerAnim, {
-        toValue: 0,
-        duration: 220,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: true,
-      }),
-    ]).start(() => setMenuAperto(false));
-  }
-
-  /* stesse voci della sidebar web (Contatti è un link morto anche lì) */
-  const menuItems = [
-    { icon: "user", label: "Il mio account", route: "/(utente)/account" },
-    { icon: "car", label: "Veicolo", route: "/(utente)/veicoli" },
-    { icon: "credit-card", label: "Abbonamenti", route: "/(utente)/abbonamenti" },
-    { icon: "circle-info", label: "Info e domande utili", route: "/(utente)/info-domande" },
-    { icon: "envelope", label: "Contatti", route: null },
-    { icon: "file-shield", label: "Termini e privacy policy", route: "/(utente)/termini-privacy" },
-  ];
-
   return (
     <SafeAreaView className="flex-1 bg-bg">
       {/* header */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-orange/15">
-        <TouchFeedback
-          onPress={menuAperto ? chiudiMenu : apriMenu}
-          scaleTo={0.8}
-          hitSlop={12}
-          style={{
-            width: 24,
-            height: 18,
-            justifyContent: "space-between",
-            padding: 1,
-          }}
-        >
-          <Animated.View
-            style={{
-              width: 20,
-              height: 1.5,
-              borderRadius: 2,
-              backgroundColor: "#a0a8b8",
-              transform: [
-                {
-                  translateY: hamburgerAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 7.5],
-                  }),
-                },
-                {
-                  rotate: hamburgerAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ["0deg", "45deg"],
-                  }),
-                },
-              ],
-            }}
-          />
-          <Animated.View
-            style={{
-              width: 20,
-              height: 1.5,
-              borderRadius: 2,
-              backgroundColor: "#a0a8b8",
-              opacity: hamburgerAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
-            }}
-          />
-          <Animated.View
-            style={{
-              width: 20,
-              height: 1.5,
-              borderRadius: 2,
-              backgroundColor: "#a0a8b8",
-              transform: [
-                {
-                  translateY: hamburgerAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, -7.5],
-                  }),
-                },
-                {
-                  rotate: hamburgerAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ["0deg", "-45deg"],
-                  }),
-                },
-              ],
-            }}
-          />
-        </TouchFeedback>
+        <MenuLaterale />
         {/* sul sito il logo riporta alla home: qui siamo già in home,
             quindi rimbalza soltanto per dare comunque risposta al tocco */}
         <TouchFeedback scaleTo={0.9} onPress={() => {}}>
@@ -505,161 +391,6 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* hamburger menu laterale */}
-      <Modal
-        visible={menuAperto}
-        transparent
-        animationType="fade"
-        onRequestClose={chiudiMenu}
-      >
-        <TouchableOpacity
-          className="flex-1 bg-black/50"
-          activeOpacity={1}
-          onPress={chiudiMenu}
-        />
-        <Animated.View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            width: 230,
-            backgroundColor: "#141445",
-            borderRightWidth: 0.5,
-            borderColor: "rgba(249,115,22,0.2)",
-            paddingTop: Math.max(insets.top, 54) + 16,
-            paddingHorizontal: 16,
-            transform: [{ translateX: slideAnim }],
-          }}
-        >
-          {/* X per chiudere */}
-          <TouchFeedback
-            onPress={chiudiMenu}
-            scaleTo={0.8}
-            hitSlop={8}
-            style={{
-              position: "absolute",
-              top: Math.max(insets.top, 54) + 16,
-              right: 10,
-              width: 35,
-              height: 30,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {({ pressed }) => (
-              <FontAwesome6
-                name="xmark"
-                size={18}
-                color={pressed ? "#f97316" : "#a0a8b8"}
-              />
-            )}
-          </TouchFeedback>
-
-          {/* header titolo */}
-          <View
-            style={{
-              alignItems: "center",
-              marginBottom: 24,
-              marginTop: 4,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "800",
-                color: "#f97316",
-                letterSpacing: 1.2,
-              }}
-            >
-              RE|CARS
-            </Text>
-          </View>
-
-          {/* voci semplici senza sfondo/contorno, come .sidebar-nav a del web */}
-          <View style={{ flex: 1, gap: 4, paddingBottom: insets.bottom + 20 }}>
-            {menuItems.map((item, i) => (
-              <TouchFeedback
-                key={i}
-                onPress={() => {
-                  if (!item.route) return;
-                  chiudiMenu();
-                  router.push(item.route as any);
-                }}
-                scaleTo={0.96}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 12,
-                  paddingHorizontal: 16,
-                  paddingVertical: 12,
-                  borderRadius: 10,
-                }}
-                /* alla pressione si accende come l'hover arancione del sito */
-                pressedStyle={{ backgroundColor: "rgba(249,115,22,0.16)" }}
-              >
-                {({ pressed }) => (
-                  <>
-                    <View className="w-5 items-center">
-                      <FontAwesome6
-                        name={item.icon as any}
-                        size={14}
-                        color={pressed ? "#f97316" : "#a0a8b8"}
-                      />
-                    </View>
-                    <Text
-                      className="flex-1 text-sm"
-                      style={{
-                        color: pressed ? "#f97316" : "#a0a8b8",
-                        fontWeight: pressed ? "600" : "400",
-                      }}
-                    >
-                      {item.label}
-                    </Text>
-                  </>
-                )}
-              </TouchFeedback>
-            ))}
-            {/* .sidebar-logout: rosso, spinto in fondo */}
-            <TouchFeedback
-              onPress={() => {
-                chiudiMenu();
-                logout();
-              }}
-              scaleTo={0.96}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 12,
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                borderRadius: 10,
-                marginTop: "auto",
-              }}
-              pressedStyle={{ backgroundColor: "rgba(235,32,32,0.14)" }}
-            >
-              {({ pressed }) => (
-                <>
-                  <View className="w-5 items-center">
-                    <FontAwesome6
-                      name="right-from-bracket"
-                      size={14}
-                      color={pressed ? "#ff5252" : "#eb2020"}
-                    />
-                  </View>
-                  <Text
-                    className="text-sm"
-                    style={{ color: pressed ? "#ff5252" : "#eb2020" }}
-                  >
-                    Logout
-                  </Text>
-                </>
-              )}
-            </TouchFeedback>
-          </View>
-        </Animated.View>
-      </Modal>
-
       {/* avatar dropdown */}
       <Modal
         visible={avatarAperto}
@@ -720,7 +451,10 @@ export default function HomeScreen() {
               <>
                 <FontAwesome6 name="user" size={13} color="#f97316" />
                 <Text
-                  style={{ fontSize: 13, color: pressed ? "#f97316" : "#e8e8ff" }}
+                  style={{
+                    fontSize: 13,
+                    color: pressed ? "#f97316" : "#e8e8ff",
+                  }}
                 >
                   Il mio account
                 </Text>

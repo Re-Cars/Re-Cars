@@ -1,4 +1,5 @@
 import InputGroup from "@/components/auth/InputGroup";
+import TouchFeedback from "@/components/TouchFeedback";
 import { API } from "@/constants/api";
 import { FontAwesome6 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -195,17 +196,38 @@ export default function LoginScreen() {
             {/* step 2a: login utente */}
             {step === "utente" && (
               <View className="gap-3.5">
-                <TouchableOpacity
+                {/* .auth-back-step: freccia arancione, testo che si accende
+                    d'arancio alla pressione (hover del web, color 0.2s) */}
+                <TouchFeedback
                   onPress={tornaATipo}
-                  className="flex-row items-center gap-1.5"
+                  scaleTo={0.97}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 6,
+                    alignSelf: "flex-start",
+                  }}
                 >
-                  <FontAwesome6
-                    name="arrow-left"
-                    size={11}
-                    color="rgba(255,255,255,0.5)"
-                  />
-                  <Text className="text-xs text-white/50">Indietro</Text>
-                </TouchableOpacity>
+                  {({ pressed }) => (
+                    <>
+                      <FontAwesome6
+                        name="arrow-left"
+                        size={12}
+                        color={pressed ? "#f97316" : "rgba(255,255,255,0.5)"}
+                      />
+                      <Text
+                        style={{
+                          fontSize: 13,
+                          color: pressed
+                            ? "#f97316"
+                            : "rgba(255,255,255,0.5)",
+                        }}
+                      >
+                        Indietro
+                      </Text>
+                    </>
+                  )}
+                </TouchFeedback>
                 <InputGroup
                   icon="envelope"
                   placeholder="Email"
@@ -227,17 +249,38 @@ export default function LoginScreen() {
             {/* step 2b: login business */}
             {step === "business" && (
               <View className="gap-3.5">
-                <TouchableOpacity
+                {/* .auth-back-step: freccia arancione, testo che si accende
+                    d'arancio alla pressione (hover del web, color 0.2s) */}
+                <TouchFeedback
                   onPress={tornaATipo}
-                  className="flex-row items-center gap-1.5"
+                  scaleTo={0.97}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 6,
+                    alignSelf: "flex-start",
+                  }}
                 >
-                  <FontAwesome6
-                    name="arrow-left"
-                    size={11}
-                    color="rgba(255,255,255,0.5)"
-                  />
-                  <Text className="text-xs text-white/50">Indietro</Text>
-                </TouchableOpacity>
+                  {({ pressed }) => (
+                    <>
+                      <FontAwesome6
+                        name="arrow-left"
+                        size={12}
+                        color={pressed ? "#f97316" : "rgba(255,255,255,0.5)"}
+                      />
+                      <Text
+                        style={{
+                          fontSize: 13,
+                          color: pressed
+                            ? "#f97316"
+                            : "rgba(255,255,255,0.5)",
+                        }}
+                      >
+                        Indietro
+                      </Text>
+                    </>
+                  )}
+                </TouchFeedback>
                 <View className="flex-row gap-2.5">
                   <TipoBtn
                     icon="briefcase"
