@@ -17,7 +17,7 @@
 
 <body>
 
-    <div class="oc-detail-overlay" id="ag-detail-overlay">
+    <div class="oc-detail-overlay" id="ag-detail-overlay" onclick="if (event.target === this) chiudiDettaglio()">
         <div class="oc-new-modal">
             <div class="oc-new-modal-header">
                 <div class="oc-new-modal-title">
@@ -50,6 +50,7 @@
             </div>
         </div>
             <nav class="sidebar-nav">
+                <a href="officina.html" class="sidebar-dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a>
                 <a href="profilo-officina.html"><i class="fa-solid fa-building-user"></i> Profilo Officina</a>
                 <a href="prenotazioni-officina.html"><i class="fa-solid fa-calendar-check"></i> Prenotazioni</a>
                 <a href="officina-agenda.html"><i class="fa-solid fa-calendar-days"></i> Agenda</a>
@@ -131,7 +132,7 @@
             <div class="ag-legenda">
                 <div class="ag-legenda-title">Legenda</div>
                 <div class="ag-legenda-item">
-                    <span class="ag-legenda-dot ag-ev-attesa"></span> In attesa
+                    <span class="ag-legenda-dot ag-ev-in_attesa"></span> In attesa
                 </div>
                 <div class="ag-legenda-item">
                     <span class="ag-legenda-dot ag-ev-confermata"></span> Confermata
@@ -149,9 +150,14 @@
         <div class="ag-main">
             <div class="ag-main-header">
                 <div class="ag-main-title" id="ag-main-title">Settimana</div>
-                <div class="ag-view-toggle">
-                    <button class="ag-view-btn active" id="btn-settimana" onclick="setVista('settimana')">Settimana</button>
-                    <button class="ag-view-btn" id="btn-mese" onclick="setVista('mese')">Mese</button>
+                <div class="ag-main-header-right">
+                    <button class="ag-oggi-btn" onclick="vaiAOggi()">
+                        <i class="fa-solid fa-calendar-day"></i> Oggi
+                    </button>
+                    <div class="ag-view-toggle">
+                        <button class="ag-view-btn active" id="btn-settimana" onclick="setVista('settimana')">Settimana</button>
+                        <button class="ag-view-btn" id="btn-mese" onclick="setVista('mese')">Mese</button>
+                    </div>
                 </div>
             </div>
 

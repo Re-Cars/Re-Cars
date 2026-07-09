@@ -658,27 +658,42 @@ document.addEventListener("DOMContentLoaded", async () => {
 /            LAYOUT CIRCOLARE HOMEPAGE                 /
 -----------------------------------------------------*/
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        const scene = document.querySelector('.cards-scene');
-        if (!scene) return;
-        const cards = [
-            { id: 'hc1', angle: -90 },
-            { id: 'hc2', angle: -18 },
-            { id: 'hc3', angle: 54 },
-            { id: 'hc4', angle: 126 },
-            { id: 'hc5', angle: 198 },
-        ];
+    const scene = document.querySelector('.cards-scene');
+    if (!scene) return;
+    const cards = [
+        { id: 'hc1', angle: -90 },
+        { id: 'hc2', angle: -18 },
+        { id: 'hc3', angle: 54 },
+        { id: 'hc4', angle: 126 },
+        { id: 'hc5', angle: 198 },
+    ];
+
+    // calcola e applica la posizione delle card sul cerchio: richiamabile
+    // più volte (al load, al resize) per restare corretta anche se le
+    // dimensioni di .cards-scene cambiano dopo il primo render (es. barra
+    // degli indirizzi mobile che si riduce, font non ancora caricati, ecc.)
+    function posizionaCards() {
         const cx = scene.offsetWidth / 2;
         const cy = scene.offsetHeight / 2;
         const r = Math.min(cx, cy) * 0.80;
-        cards.forEach((c, i) => {
+        cards.forEach(c => {
             const el = document.getElementById(c.id);
             if (!el) return;
             const rad = (c.angle * Math.PI) / 180;
-            const x = cx + Math.cos(rad) * r;
-            const y = cy + Math.sin(rad) * r;
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
+            el.style.left = (cx + Math.cos(rad) * r) + 'px';
+            el.style.top = (cy + Math.sin(rad) * r) + 'px';
+        });
+    }
+
+    posizionaCards();
+    window.addEventListener('load', posizionaCards);
+    window.addEventListener('resize', posizionaCards);
+
+    setTimeout(() => {
+        posizionaCards();
+        cards.forEach((c, i) => {
+            const el = document.getElementById(c.id);
+            if (!el) return;
             setTimeout(() => {
                 el.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, box-shadow 0.25s ease, border-color 0.2s';
                 el.style.transform = 'translate(-50%, -50%)';

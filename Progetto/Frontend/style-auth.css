@@ -122,8 +122,8 @@
     font-weight: 800;
     margin: 0;
     letter-spacing: 2px;
-    background: #2b88b8;
-    background-size: 300%;
+    background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);
+    background-size: 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: anim-colore 8s linear infinite;
@@ -310,12 +310,18 @@ body.landing-body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    box-shadow: 0 6px 18px rgba(249, 115, 22, 0.25);
     transition: 0.3s;
 }
 
 .btn-landing:hover {
     background: linear-gradient(135deg, #ea580c, #c2410c);
     transform: scale(1.05);
+    box-shadow: 0 8px 22px rgba(249, 115, 22, 0.4);
+}
+
+.btn-landing:active {
+    transform: scale(0.98);
 }
 
  /* ----------------------------------------------------
@@ -326,16 +332,62 @@ body.landing-body {
     z-index: 1;
     width: 100%;
     max-width: 400px;
+    max-height: 92vh;
     padding: 40px 36px;
     background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius: 24px;
     border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(249, 115, 22, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    display: flex;
+    /* il clipping arrotondato resta sul contenitore esterno: lo scroll vive
+       nel figlio .auth-scroll così la scrollbar non taglia mai gli angoli */
+    overflow: hidden;
+}
+
+.auth-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #f97316, transparent);
+    opacity: 0.85;
+    z-index: 1;
+}
+
+.auth-scroll {
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 24px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* padding + margini negativi: danno spazio agli elementi che si
+       ingrandiscono in hover (es. freccia indietro) senza spostare il layout,
+       così l'overflow del contenitore non li taglia */
+    padding: 4px 8px 4px 4px;
+    margin: -4px -8px -4px -4px;
+}
+
+.auth-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.auth-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.auth-scroll::-webkit-scrollbar-thumb {
+    background: rgba(249, 115, 22, 0.35);
+    border-radius: 10px;
+}
+
+.auth-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(249, 115, 22, 0.55);
 }
 
 .auth-nav {
@@ -347,34 +399,40 @@ body.landing-body {
 }
 
 .auth-back {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
     color: rgba(255, 255, 255, 0.65);
-    font-size: 0.8rem;
-    font-weight: 500;
     cursor: pointer;
     transition: 0.2s;
-    white-space: nowrap;
     background: rgba(255, 255, 255, 0.06);
-    border: 0.5px solid rgba(255, 255, 255, 0.14);
-    padding: 5px 14px;
-    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 50%;
     text-decoration: none;
 }
 
 .auth-back i {
     color: #f97316;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .auth-back:hover {
     color: #fff;
-    transform: translateX(-50%) scale(1.05);
-    background: rgba(255, 255, 255, 0.12);
+    transform: scale(1.08);
+    background: rgba(249, 115, 22, 0.15);
+    border-color: #f97316;
+}
+
+.auth-toggle-slot {
+    display: grid;
+    justify-items: end;
+}
+
+.auth-toggle-slot > a {
+    grid-area: 1 / 1;
 }
 
 #auth-toggle-nav {
@@ -389,14 +447,15 @@ body.landing-body {
     padding: 5px 12px;
     border-radius: 20px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: color 0.2s, background 0.2s, border-color 0.2s, transform 0.2s;
     text-decoration: none;
 }
 
 #auth-toggle-nav:hover {
     color: #fff;
-    transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.14);
+    transform: scale(1.08);
+    background: rgba(249, 115, 22, 0.15);
+    border-color: #f97316;
 }
 
 #auth-toggle-nav i,
@@ -418,7 +477,7 @@ body.landing-body {
     padding: 5px 12px;
     border-radius: 20px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: color 0.2s, background 0.2s, border-color 0.2s, transform 0.2s;
     text-decoration: none;
 }
 
@@ -428,8 +487,9 @@ body.landing-body {
 
 .auth-toggle-left:hover {
     color: #fff;
-    transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.14);
+    transform: scale(1.08);
+    background: rgba(249, 115, 22, 0.15);
+    border-color: #f97316;
 }
 
 .auth-toggle-left i {
@@ -476,6 +536,22 @@ body.landing-body {
     color: #ff6b6b;
     font-size: 0.85rem;
     margin: 0;
+}
+
+.auth-error:not(:empty) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 10px;
+    padding: 9px 12px;
+    animation: authErrorIn 0.25s ease;
+}
+
+@keyframes authErrorIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .auth-switch {
@@ -542,6 +618,11 @@ input:-webkit-autofill:active {
     border-color: #f97316;
     background: rgba(255, 255, 255, 0.12);
     box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+    transform: translateY(-1px);
+}
+
+.input-group:focus-within i {
+    color: #fb923c;
 }
 
 .input-group i {
@@ -691,14 +772,22 @@ input:-webkit-autofill:active {
 /              SEQUENZA ANIMAZIONE LANDING             /
 -----------------------------------------------------*/
  
-/* STEP 1 – sfondo: parte invisibile */
+/* STEP 1 – la saracinesca è subito opaca (copre il form fin dal primo frame):
+   un velo scuro sopra di essa si dissolve per dare l'effetto di comparsa,
+   così il form di login non è mai visibile prima che l'animazione parta */
 .shutter-gate {
-    opacity: 0;
-    /* aggiunge opacity alla transition già esistente */
-    transition: opacity 1s ease,
-                transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+    transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
 }
-.shutter-gate.show-bg  { opacity: 1; }
+.shutter-gate::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: #0e0e0e;
+    opacity: 1;
+    transition: opacity 1s ease;
+}
+.shutter-gate.show-bg::before { opacity: 0; }
 /* lift-up resta invariato */
 .shutter-gate.lift-up  { transform: translateY(-100vh); }
  
@@ -762,16 +851,6 @@ input:-webkit-autofill:active {
  /* ----------------------------------------------------
 /              SELEZIONE TIPO + STEP                   /
 -----------------------------------------------------*/
-.auth-step-label {
-    text-align: center;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin: 0 0 14px 0;
-}
-
 .auth-tipo-group {
     display: flex;
     gap: 10px;
@@ -784,7 +863,7 @@ input:-webkit-autofill:active {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    padding: 14px 10px;
+    padding: 16px 10px;
     border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.06);
@@ -793,25 +872,36 @@ input:-webkit-autofill:active {
     font-family: inherit;
     font-size: 0.8rem;
     font-weight: 600;
-    transition: all 0.2s;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .auth-tipo-btn i {
     font-size: 1.2rem;
     color: #f97316;
+    transition: transform 0.25s ease;
 }
 
 .auth-tipo-btn:hover {
     border-color: #f97316;
     background: rgba(249, 115, 22, 0.1);
     color: #fff;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(249, 115, 22, 0.15);
+}
+
+.auth-tipo-btn:hover i {
+    transform: scale(1.12);
+}
+
+.auth-tipo-btn:active {
+    transform: translateY(-1px) scale(0.98);
 }
 
 .auth-tipo-btn.selected {
     border-color: #f97316;
-    background: rgba(249, 115, 22, 0.15);
+    background: rgba(249, 115, 22, 0.18);
     color: #fff;
+    box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.4), 0 8px 18px rgba(249, 115, 22, 0.2);
 }
 
 .auth-back-step {
@@ -841,15 +931,26 @@ input:-webkit-autofill:active {
     display: none !important;
 }
 
+.auth-step:not(.hidden) {
+    animation: authStepIn 0.35s ease;
+}
+
+@keyframes authStepIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
 /* dropdown città */
 .citta-dropdown {
     position: absolute;
     top: calc(100% + 4px);
     left: 0;
     right: 0;
-    background: rgba(20, 20, 60, 0.97);
+    background: rgba(10, 12, 30, 0.97);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(249, 115, 22, 0.3);
     border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
     z-index: 100;
     max-height: 180px;
     overflow-y: auto;

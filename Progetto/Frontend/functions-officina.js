@@ -110,7 +110,7 @@ function renderPrenotazioniOggi() {
             </button>
         ` : p.stato === 'confermata' ? `
             <button class="oc-action-btn completa" title="Completa" onclick="aggiornaStato(${p.id}, 'completata', event)">
-                <i class="fa-solid fa-flag-checkered"></i>
+                <i class="fa-solid fa-square-check"></i>
             </button>
         ` : '';
 
@@ -267,9 +267,6 @@ function apriDettaglio(id) {
     `;
 
     const azioniBtn = p.stato === 'in_attesa' ? `
-        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
-            <i class="fa-solid fa-xmark"></i> Chiudi
-        </button>
         <button class="oc-new-btn conferma" onclick="aggiornaStato(${p.id}, 'confermata')">
             <i class="fa-solid fa-check"></i> Conferma
         </button>
@@ -277,20 +274,13 @@ function apriDettaglio(id) {
             <i class="fa-solid fa-ban"></i> Annulla
         </button>
     ` : p.stato === 'confermata' ? `
-        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
-            <i class="fa-solid fa-xmark"></i> Chiudi
-        </button>
         <button class="oc-new-btn conferma" onclick="aggiornaStato(${p.id}, 'completata')">
-            <i class="fa-solid fa-flag-checkered"></i> Completa
+            <i class="fa-solid fa-square-check"></i> Completa
         </button>
         <button class="oc-new-btn annulla" onclick="aggiornaStato(${p.id}, 'annullata')">
             <i class="fa-solid fa-ban"></i> Annulla
         </button>
-    ` : `
-        <button class="oc-new-btn chiudi" onclick="chiudiDettaglio()">
-            <i class="fa-solid fa-xmark"></i> Chiudi
-        </button>
-    `;
+    ` : '';
 
     document.getElementById('oc-detail-azioni').innerHTML = azioniBtn;
     document.getElementById('oc-detail-overlay').classList.add('open');

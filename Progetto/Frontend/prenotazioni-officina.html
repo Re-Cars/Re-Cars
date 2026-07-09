@@ -16,7 +16,7 @@
 
 <body>
 
-    <div class="oc-detail-overlay" id="oc-detail-overlay">
+    <div class="oc-detail-overlay" id="oc-detail-overlay" onclick="if (event.target === this) chiudiDettaglio()">
         <div class="oc-new-modal">
             <div class="oc-new-modal-header">
                 <div class="oc-new-modal-title">
@@ -49,6 +49,7 @@
             </div>
         </div>
             <nav class="sidebar-nav">
+                <a href="officina.html" class="sidebar-dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a>
                 <a href="profilo-officina.html"><i class="fa-solid fa-building-user"></i> Profilo Officina</a>
                 <a href="prenotazioni-officina.html"><i class="fa-solid fa-calendar-check"></i> Prenotazioni</a>
                 <a href="officina-agenda.html"><i class="fa-solid fa-calendar-days"></i> Agenda</a>
@@ -114,18 +115,20 @@
     <div class="oc-filters-wrapper">
         <div class="oc-filters">
             <span class="oc-filter-label">Filtra</span>
-            <button class="oc-filter-btn active-all" onclick="setFiltro('all', this)">Tutte</button>
+            <button class="oc-filter-btn active-all" onclick="setFiltro('all', this)">
+                Tutte <span class="oc-filter-count" id="fcount-all"></span>
+            </button>
             <button class="oc-filter-btn" onclick="setFiltro('in_attesa', this)">
-                <span class="oc-filter-dot oc-dot-attesa"></span> In attesa
+                <span class="oc-filter-dot oc-dot-attesa"></span> In attesa <span class="oc-filter-count" id="fcount-in_attesa"></span>
             </button>
             <button class="oc-filter-btn" onclick="setFiltro('confermata', this)">
-                <span class="oc-filter-dot oc-dot-confermata"></span> Confermate
+                <span class="oc-filter-dot oc-dot-confermata"></span> Confermate <span class="oc-filter-count" id="fcount-confermata"></span>
             </button>
             <button class="oc-filter-btn" onclick="setFiltro('completata', this)">
-                <span class="oc-filter-dot oc-dot-completata"></span> Completate
+                <span class="oc-filter-dot oc-dot-completata"></span> Completate <span class="oc-filter-count" id="fcount-completata"></span>
             </button>
             <button class="oc-filter-btn" onclick="setFiltro('annullata', this)">
-                <span class="oc-filter-dot oc-dot-annullata"></span> Annullate
+                <span class="oc-filter-dot oc-dot-annullata"></span> Annullate <span class="oc-filter-count" id="fcount-annullata"></span>
             </button>
             <span class="oc-count-pill oc-count-pill-right" id="pren-count">0 prenotazioni</span>
         </div>
