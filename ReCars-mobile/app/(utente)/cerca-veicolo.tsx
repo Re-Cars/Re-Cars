@@ -1,3 +1,4 @@
+import TouchFeedback from "@/components/TouchFeedback";
 import SectionScreen from "@/components/utente/SectionScreen";
 import { apiFetch } from "@/constants/api";
 import { logoutGlobale, useVeicoli } from "@/hooks/use-veicoli";
@@ -7,6 +8,7 @@ import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
+  Keyboard,
   Text,
   TextInput,
   TouchableOpacity,
@@ -157,6 +159,10 @@ export default function CercaVeicoloScreen() {
   }
 
   async function cerca(plate?: string) {
+    /* un solo tap: chiude la tastiera E lancia la ricerca (il tap non viene
+       più assorbito dal blur grazie a keyboardShouldPersistTaps="handled"
+       sulla ScrollView di SectionScreen) */
+    Keyboard.dismiss();
     const p = (plate ?? targa).toUpperCase();
     if (!TARGA_REGEX.test(p)) {
       setMessaggio("Inserisci una targa valida (es. AA123BB)");
@@ -218,6 +224,9 @@ export default function CercaVeicoloScreen() {
       }
       setAggiunto(true);
       await ricarica();
+      /* come il web: flag consumato dallo switcher della home, che
+         parte con l'animazione garage-pop */
+      await AsyncStorage.setItem("garage_animation", "true");
       setTimeout(() => router.replace("/(utente)/home"), 900);
     } catch {
       setMessaggio("Errore di connessione.");
@@ -305,6 +314,8 @@ export default function CercaVeicoloScreen() {
               maxLength={7}
               autoCapitalize="characters"
               autoCorrect={false}
+              returnKeyType="search"
+              onSubmitEditing={() => cerca()}
               placeholder="Es. AA123BB"
               placeholderTextColor="rgba(255,255,255,0.2)"
               className="text-white text-sm font-semibold rounded-xl"
@@ -332,21 +343,31 @@ export default function CercaVeicoloScreen() {
               </View>
             )}
           </View>
-          <TouchableOpacity
+          {/* stesso feedback a molla degli altri bottoni dell'app */}
+          <TouchFeedback
             onPress={() => cerca()}
-            activeOpacity={0.8}
-            className="flex-row items-center gap-2 rounded-full px-4"
+            haptic="medium"
+            scaleTo={0.94}
             style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              borderRadius: 999,
+              paddingHorizontal: 16,
               backgroundColor: "rgba(249,115,22,0.18)",
               borderWidth: 1,
               borderColor: "#f97316",
+            }}
+            pressedStyle={{
+              backgroundColor: "rgba(249,115,22,0.3)",
+              borderColor: "#fb923c",
             }}
           >
             <View className="w-5 h-5 rounded-full bg-orange items-center justify-center">
               <FontAwesome6 name="magnifying-glass" size={9} color="#fff" />
             </View>
             <Text className="text-xs font-bold text-orange">Cerca</Text>
-          </TouchableOpacity>
+          </TouchFeedback>
         </View>
 
         {loading && <LoadingDots />}
