@@ -492,7 +492,25 @@ function mostraStato(stato) {
         listEl.style.display = 'none';
     }
 }
+async function caricaPrenotazioniUtente() {
+    const res = await fetch('/api/prenotazioni/utente'); // adatta all'endpoint tuo
+    const data = await res.json();
+    const container = document.getElementById('prenotazioni-list');
 
+    if (!data.length) {
+        container.innerHTML = '<div class="stato-box">Nessuna prenotazione</div>';
+        return;
+    }
+
+    container.innerHTML = data.map(p => `
+        <div class="card booking-card">
+            <p class="booking-officina">${p.officina_nome}</p>
+            <p class="booking-info"><i class="fa-regular fa-calendar"></i> ${p.data} · ${p.orario}</p>
+            <p class="booking-servizio"><i class="fa-solid fa-wrench"></i> ${p.servizio}</p>
+            <span class="booking-status status-${p.stato}">${p.stato}</span>
+        </div>
+    `).join('');
+}
 function isOfficinaSalvata(id) { return false; }
 function toggleSalvata(id) {}
 function chiamaOfficina(tel) { if(tel) window.location.href = 'tel:' + tel; }
@@ -502,6 +520,7 @@ function chiamaOfficina(tel) { if(tel) window.location.href = 'tel:' + tel; }
    ═══════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
     caricaOfficine();
+    caricaPrenotazioniUtente();
     document.getElementById('input-ricerca').addEventListener('input', e => {
     applicaFiltriERender(e.target.value);
     });
