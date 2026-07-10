@@ -23,6 +23,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           }
           return data;
         },
+        // fallback per l'app mobile, che manda il token come Bearer header
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       ignoreExpiration: false,
       secretOrKey: secret, 

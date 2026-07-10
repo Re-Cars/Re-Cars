@@ -1,4 +1,5 @@
 import TouchFeedback from "@/components/TouchFeedback";
+import MenuLaterale from "@/components/utente/MenuLaterale";
 import VeicoloSwitcher from "@/components/utente/VeicoloSwitcher";
 import { Veicolo } from "@/constants/api";
 import { FontAwesome6 } from "@expo/vector-icons";
@@ -19,8 +20,10 @@ type Props = {
 };
 
 /**
- * Struttura comune delle sezioni utente: header con back + brand,
+ * Struttura comune delle sezioni utente: header con hamburger + brand,
  * breadcrumb e pill switcher centrale (come header/breadcrumb/home-intro web).
+ * Per tornare indietro restano il link Home del breadcrumb, il logo e lo
+ * swipe-back nativo dello stack.
  */
 export default function SectionScreen({
   titolo,
@@ -34,21 +37,10 @@ export default function SectionScreen({
   const Body = scroll ? ScrollView : View;
   return (
     <SafeAreaView className="flex-1 bg-bg">
-      {/* header */}
+      {/* header: hamburger globale come sul sito, dove hamburger9 e
+          sidebar sono presenti in tutte le pagine dell'area utente */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-orange/15">
-        <TouchFeedback
-          onPress={() => router.back()}
-          hitSlop={10}
-          scaleTo={0.8}
-        >
-          {({ pressed }) => (
-            <FontAwesome6
-              name="arrow-left"
-              size={16}
-              color={pressed ? "#f97316" : "#a0a8b8"}
-            />
-          )}
-        </TouchFeedback>
+        <MenuLaterale />
         {/* come sul sito: il logo riporta alla homepage */}
         <TouchFeedback
           onPress={() => router.replace("/(utente)/home")}
@@ -58,7 +50,7 @@ export default function SectionScreen({
             RE|CARS
           </Text>
         </TouchFeedback>
-        <View style={{ width: 16 }} />
+        <View style={{ width: 30 }} />
       </View>
 
       {/* breadcrumb */}
@@ -101,7 +93,12 @@ export default function SectionScreen({
       <Body
         className="flex-1"
         {...(scroll
-          ? { contentContainerStyle: { padding: 16, paddingBottom: 40 } }
+          ? {
+              contentContainerStyle: { padding: 16, paddingBottom: 40 },
+              /* senza "handled" il primo tap con tastiera aperta viene
+                 consumato solo per chiudere la tastiera (vedi login web/app) */
+              keyboardShouldPersistTaps: "handled" as const,
+            }
           : { style: { flex: 1, padding: 16 } })}
       >
         {children}
