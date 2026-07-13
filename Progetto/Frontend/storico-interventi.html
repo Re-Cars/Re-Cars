@@ -15,6 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
+    <script src="assets-pdf.js" defer></script>
     <script src="functions-storico.js" defer></script>
 </head>
 
@@ -294,9 +295,31 @@
                 <i class="fa-solid fa-file-pdf" style="color:#f97316"></i> Genera PDF
             </div>
 
-            <div class="form-row">
-                <label>Anno</label>
-                <select id="pdfAnno"></select>
+            <div class="form-grid">
+                <div class="form-row">
+                    <label>Anno</label>
+                    <select id="pdfAnno"></select>
+                </div>
+                <div class="form-row">
+                    <label>Periodo</label>
+                    <select id="pdfMese">
+                        <option value="all">Tutti i mesi</option>
+                        <option value="sem1">Gennaio - Giugno</option>
+                        <option value="sem2">Luglio - Dicembre</option>
+                        <option value="0">Gennaio</option>
+                        <option value="1">Febbraio</option>
+                        <option value="2">Marzo</option>
+                        <option value="3">Aprile</option>
+                        <option value="4">Maggio</option>
+                        <option value="5">Giugno</option>
+                        <option value="6">Luglio</option>
+                        <option value="7">Agosto</option>
+                        <option value="8">Settembre</option>
+                        <option value="9">Ottobre</option>
+                        <option value="10">Novembre</option>
+                        <option value="11">Dicembre</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-row">
@@ -331,7 +354,8 @@
 
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closePdfModal()">Cancella</button>
-                <button class="btn-save" onclick="generaPdf()"><i class="fa-solid fa-download"></i> Download</button>
+                <button class="btn-preview" onclick="anteprimaPdf()"><i class="fa-solid fa-eye"></i> Anteprima</button>
+                <button class="btn-save" onclick="scaricaPdf()"><i class="fa-solid fa-download"></i> Download</button>
             </div>
         </div>
     </div>
