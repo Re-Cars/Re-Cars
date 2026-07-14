@@ -1,488 +1,389 @@
 import TouchFeedback from "@/components/TouchFeedback";
-import MenuLaterale from "@/components/utente/MenuLaterale";
+import { NAV_SPACE } from "@/components/utente/BottomNav";
 import VeicoloSwitcher from "@/components/utente/VeicoloSwitcher";
-import { useVeicoli } from "@/hooks/use-veicoli";
-import { FontAwesome6 } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { apiFetch } from "@/constants/api";
+import { NUM_TAB, useNav } from "@/constants/nav-context";
+import { logoutGlobale, useVeicoli } from "@/hooks/use-veicoli";
+import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
 import {
-  Animated,
-  Easing,
-  Modal,
+  PanResponder,
+  ScrollView,
   Text,
   TouchableOpacity,
-  View,
   useWindowDimensions,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AccountScreen from "./account";
+import CercaVeicoloScreen from "./cerca-veicolo";
+import PrenotazioniScreen from "./prenotazioni";
+import StoricoScreen from "./storico";
 
-/* card disposte in cerchio come nel frontend web (functions-app.js):
-   angoli -90 / -18 / 54 / 126 / 198, raggio 0.8 * metà scena */
-const CARDS = [
-  {
-    angle: -90,
-    icon: "car",
-    label: "INFO\nVEICOLO",
-    accent: "#2b88b8",
-    iconColor: "#60b8e0",
-    route: "/(utente)/info-veicolo",
-  },
-  {
-    angle: -18,
-    icon: "calendar-check",
-    label: "STORICO\nINTERVENTI",
-    accent: "#0f766e",
-    iconColor: "#34d399",
-    route: "/(utente)/storico",
-  },
-  {
-    angle: 54,
-    icon: "star",
-    label: "RECENSIONI",
-    accent: "#8e44ad",
-    iconColor: "#a78bfa",
-    route: "/(utente)/recensioni",
-  },
-  {
-    angle: 126,
-    icon: "wrench",
-    label: "PRENOTA\nAPPUNTAMENTO",
-    accent: "#f39c12",
-    iconColor: "#fbbf24",
-    route: "/(utente)/prenotazioni",
-  },
-  {
-    angle: 198,
-    icon: "triangle-exclamation",
-    label: "SEGNA\nPROBLEMI",
-    accent: "#d14019",
-    iconColor: "#f87171",
-    route: "/(utente)/problemi",
-  },
-] as const;
+/* dettaglio del veicolo attivo mostrato nella sezione info della home
+   (stesso endpoint /veicolo/:id usato da info-veicolo) */
+type InfoAttivo = {
+  anno?: string;
+  alimentazione?: string;
+  bolloAttivo: boolean;
+  rcaAttiva: boolean;
+};
 
+function StatoBadge({ label, attivo }: { label: string; attivo: boolean }) {
+  const colore = attivo ? "#4ade80" : "#f87171";
+  return (
+    <View
+      className="flex-row items-center gap-1.5 rounded-full px-2.5 py-1"
+      style={{
+        backgroundColor: attivo
+          ? "rgba(74,222,128,0.12)"
+          : "rgba(248,113,113,0.12)",
+        borderWidth: 1,
+        borderColor: attivo ? "rgba(74,222,128,0.3)" : "rgba(248,113,113,0.3)",
+      }}
+    >
+      <View
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: 3,
+          backgroundColor: colore,
+        }}
+      />
+      <Text className="text-[10px] font-bold" style={{ color: colore }}>
+        {label}
+      </Text>
+    </View>
+  );
+}
+
+/**
+ * Contenitore delle 5 tab: un unico pager orizzontale (pagingEnabled,
+ * scroll programmatico) così lo scorrimento tra le schermate è continuo
+ * come in Instagram e non si blocca mai. La pagina 0 è la home vera e
+ * propria, le altre riusano le schermate delle sezioni.
+ */
 export default function HomeScreen() {
-  const { width, height } = useWindowDimensions();
-  const { utente, veicoli, veicoloAttivo, seleziona, elimina, logout } =
-    useVeicoli();
+  const { veicoli, veicoloAttivo, seleziona, elimina } = useVeicoli();
+  const { tab, cambiaTab, tabIndex, pagerRef } = useNav();
+  const { width } = useWindowDimensions();
 
-  const [avatarAperto, setAvatarAperto] = useState(false);
+  const [info, setInfo] = useState<InfoAttivo | null>(null);
+  /* contatore notifiche: resta 0 finché non esiste l'endpoint dedicato,
+     il badge rosso compare da solo quando arriveranno valori > 0 */
+  const [notifiche] = useState(0);
 
-  /* dimensioni scena circolare (come .cards-scene responsive del web) */
-  const scene = Math.min(width * 0.92, height - 330, 400);
-  const cardSize = Math.max(76, scene * 0.24);
-  const centerSize = Math.max(58, scene * 0.19);
-  const raggio = (scene / 2) * 0.8;
+  /* al cambio tab il pager scorre alla pagina corrispondente */
+  useEffect(() => {
+    pagerRef.current?.scrollTo({ x: tab * width, animated: true });
+  }, [tab, width, pagerRef]);
 
-  const cardAnims = useRef(CARDS.map(() => new Animated.Value(0))).current;
-  const pulseAnims = useRef(
-    Array.from({ length: 5 }, () => new Animated.Value(0)),
+  /* PanResponder globale del pager, creato una volta sola: legge lo
+     stato corrente dai ref */
+  const tabRef = useRef(tab);
+  tabRef.current = tab;
+  const widthRef = useRef(width);
+  widthRef.current = width;
+  const cambiaTabRef = useRef(cambiaTab);
+  cambiaTabRef.current = cambiaTab;
+
+  const swipePan = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_e, g) =>
+        Math.abs(g.dx) > 12 && Math.abs(g.dx) > Math.abs(g.dy) * 1.5,
+      onPanResponderMove: (_e, g) => {
+        /* il contenuto segue il dito in modo continuo, senza bloccarsi */
+        const max = (NUM_TAB - 1) * widthRef.current;
+        const x = Math.max(
+          0,
+          Math.min(max, tabRef.current * widthRef.current - g.dx),
+        );
+        pagerRef.current?.scrollTo({ x, animated: false });
+      },
+      onPanResponderRelease: (_e, g) => {
+        /* cambio tab al rilascio: basta superare la distanza minima
+           (50px) oppure la velocità minima (0.3) */
+        const dir = g.dx < 0 ? 1 : -1;
+        const dest = tabRef.current + dir;
+        const valido = dest >= 0 && dest < NUM_TAB;
+        if (valido && (Math.abs(g.dx) >= 50 || Math.abs(g.vx) >= 0.3)) {
+          cambiaTabRef.current(dest);
+        } else {
+          pagerRef.current?.scrollTo({
+            x: tabRef.current * widthRef.current,
+            animated: true,
+          });
+        }
+      },
+      onPanResponderTerminate: () => {
+        pagerRef.current?.scrollTo({
+          x: tabRef.current * widthRef.current,
+          animated: true,
+        });
+      },
+    }),
   ).current;
-  const ringAnim = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    /* entrata card a molla, sfalsata */
-    cardAnims.forEach((anim, i) => {
-      Animated.timing(anim, {
-        toValue: 1,
-        duration: 500,
-        delay: 150 + i * 80,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.back(1.6)),
-      }).start();
-    });
+    if (!veicoloAttivo) {
+      setInfo(null);
+      return;
+    }
+    let annullato = false;
 
-    /* onde pulse dal bottone centrale (cards-pulse del web) */
-    const timers = pulseAnims.map((anim, i) =>
-      setTimeout(() => {
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(anim, {
-              toValue: 1,
-              duration: 2000,
-              easing: Easing.out(Easing.quad),
-              useNativeDriver: true,
-            }),
-            Animated.timing(anim, {
-              toValue: 0,
-              duration: 0,
-              useNativeDriver: true,
-            }),
-            Animated.delay(4000),
-          ]),
-        ).start();
-      }, i * 400),
-    );
+    async function carica() {
+      try {
+        const res = await apiFetch(`/veicolo/${veicoloAttivo!.id}`);
+        if (res.status === 401) {
+          await logoutGlobale();
+          return;
+        }
+        if (!res.ok) return;
+        const v = await res.json();
+        if (annullato) return;
+        const dg = v.dati_generici?.[0] ?? {};
+        const ds = v.dati_specifici?.[0] ?? {};
+        setInfo({
+          anno: ds.dataimmatricolazione
+            ? String(new Date(ds.dataimmatricolazione).getFullYear())
+            : undefined,
+          alimentazione: dg.alimentazione,
+          bolloAttivo: !!ds.isbolloattivo,
+          rcaAttiva: !!ds.isinsured,
+        });
+      } catch (err) {
+        console.error("Errore nel caricamento info veicolo", err);
+      }
+    }
+    carica();
+    return () => {
+      annullato = true;
+    };
+  }, [veicoloAttivo]);
 
-    /* anello tratteggiato in rotazione (cards-spin-ring, 20s) */
-    Animated.loop(
-      Animated.timing(ringAnim, {
-        toValue: 1,
-        duration: 20000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }),
-    ).start();
-
-    /* glow del bottone centrale (btn-glow, 3s) */
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 1500,
-          useNativeDriver: false,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0,
-          duration: 1500,
-          useNativeDriver: false,
-        }),
-      ]),
-    ).start();
-
-    return () => timers.forEach(clearTimeout);
-  }, [cardAnims, pulseAnims, ringAnim, glowAnim]);
+  const iconaTipo = veicoloAttivo?.tipo === "motorcycle" ? "motorcycle" : "car";
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
-      {/* header */}
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-orange/15">
-        <MenuLaterale />
-        {/* sul sito il logo riporta alla home: qui siamo già in home,
-            quindi rimbalza soltanto per dare comunque risposta al tocco */}
-        <TouchFeedback scaleTo={0.9} onPress={() => {}}>
-          <Text className="text-xl font-extrabold text-orange tracking-widest">
-            RE|CARS
-          </Text>
-        </TouchFeedback>
-        <TouchFeedback
-          scaleTo={0.82}
-          hitSlop={8}
-          style={{
-            width: 32,
-            height: 32,
-            borderRadius: 16,
-            backgroundColor: "#f97316",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          pressedStyle={{ backgroundColor: "#fb923c" }}
-          onPress={() => setAvatarAperto(true)}
-        >
-          <Text className="text-xs font-bold text-white">
-            {utente?.username?.charAt(0).toUpperCase() ?? "U"}
-          </Text>
-        </TouchFeedback>
-      </View>
-
-      {/* switcher unificato in un unico pill centrale */}
-      <View className="py-3 border-b border-white/5">
-        <VeicoloSwitcher
-          veicoli={veicoli}
-          veicoloAttivo={veicoloAttivo}
-          onSeleziona={seleziona}
-          onAggiungi={() => router.push("/(utente)/cerca-veicolo")}
-          onElimina={elimina}
-        />
-      </View>
-
-      {/* scena circolare */}
-      <View className="flex-1 items-center justify-center">
-        <View style={{ width: scene, height: scene }}>
-          {/* anello tratteggiato rotante */}
-          <Animated.View
-            pointerEvents="none"
-            style={{
-              position: "absolute",
-              top: scene / 2 - raggio,
-              left: scene / 2 - raggio,
-              width: raggio * 2,
-              height: raggio * 2,
-              borderRadius: raggio,
-              borderWidth: 1,
-              borderStyle: "dashed",
-              borderColor: "rgba(249,115,22,0.25)",
-              transform: [
-                {
-                  rotate: ringAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ["0deg", "360deg"],
-                  }),
-                },
-              ],
-            }}
-          />
-
-          {/* onde pulse dal centro */}
-          {pulseAnims.map((anim, i) => (
-            <Animated.View
-              key={i}
-              pointerEvents="none"
-              style={{
-                position: "absolute",
-                top: scene / 2 - centerSize / 2,
-                left: scene / 2 - centerSize / 2,
-                width: centerSize,
-                height: centerSize,
-                borderRadius: centerSize / 2,
-                borderWidth: 2,
-                borderColor: "rgba(249,115,22,0.5)",
-                opacity: anim.interpolate({
-                  inputRange: [0, 0.01, 1],
-                  outputRange: [0, 0.7, 0],
-                }),
-                transform: [
-                  {
-                    scale: anim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [1, 3.2],
-                    }),
-                  },
-                ],
-              }}
-            />
-          ))}
-
-          {/* card in cerchio */}
-          {CARDS.map((card, i) => {
-            const rad = (card.angle * Math.PI) / 180;
-            const x = scene / 2 + Math.cos(rad) * raggio;
-            const y = scene / 2 + Math.sin(rad) * raggio;
-            return (
-              <Animated.View
-                key={card.route}
+    <View className="flex-1 bg-bg" {...swipePan.panHandlers}>
+      <ScrollView
+        ref={pagerRef}
+        horizontal
+        pagingEnabled
+        scrollEnabled={false}
+        showsHorizontalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        scrollEventThrottle={16}
+        onScroll={(e) =>
+          tabIndex.setValue(e.nativeEvent.contentOffset.x / width)
+        }
+        onContentSizeChange={() =>
+          pagerRef.current?.scrollTo({ x: tab * width, animated: false })
+        }
+        style={{ flex: 1 }}
+      >
+        {/* pagina 0: Home */}
+        <View style={{ width }}>
+          <SafeAreaView
+            className="flex-1 bg-bg"
+            edges={["top", "left", "right"]}
+          >
+            {/* header: solo logo centrale e campanella, la home non ha
+                indietro */}
+            <View className="flex-row items-center justify-between px-4 py-3 border-b border-orange/15">
+              <View style={{ width: 36 }} />
+              {/* sul sito il logo riporta alla home: qui siamo già in home,
+                  quindi rimbalza soltanto per dare comunque risposta al tocco */}
+              <TouchFeedback scaleTo={0.9} onPress={() => {}}>
+                <Text className="text-xl font-extrabold text-orange tracking-widest">
+                  RE|CARS
+                </Text>
+              </TouchFeedback>
+              <TouchableOpacity
+                onPress={() => {}}
+                activeOpacity={0.75}
+                hitSlop={8}
+                accessibilityLabel="Notifiche"
                 style={{
-                  position: "absolute",
-                  left: x - cardSize / 2,
-                  top: y - cardSize / 2,
-                  width: cardSize,
-                  height: cardSize,
-                  opacity: cardAnims[i],
-                  transform: [
-                    {
-                      scale: cardAnims[i].interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0.3, 1],
-                      }),
-                    },
-                  ],
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  borderWidth: 1,
+                  borderColor: "rgba(249,115,22,0.5)",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <TouchFeedback
-                  onPress={() => router.push(card.route as any)}
-                  haptic="medium"
-                  scaleTo={0.88}
-                  style={{
-                    flex: 1,
-                    borderRadius: 14,
-                    backgroundColor: "#141445",
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.08)",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 5,
-                    overflow: "hidden",
-                  }}
-                  pressedStyle={{
-                    backgroundColor: "#1b1b58",
-                    borderColor: `${card.accent}99`,
-                  }}
-                >
+                <Ionicons
+                  name="notifications-outline"
+                  size={17}
+                  color="#f97316"
+                />
+                {notifiche > 0 && (
                   <View
                     style={{
-                      width: cardSize * 0.36,
-                      height: cardSize * 0.36,
-                      borderRadius: cardSize * 0.18,
-                      backgroundColor: `${card.accent}22`,
-                      borderWidth: 1.5,
-                      borderColor: `${card.accent}55`,
+                      position: "absolute",
+                      top: -4,
+                      right: -4,
+                      minWidth: 16,
+                      height: 16,
+                      borderRadius: 8,
+                      paddingHorizontal: 3,
+                      backgroundColor: "#e53935",
                       alignItems: "center",
                       justifyContent: "center",
                     }}
                   >
-                    <FontAwesome6
-                      name={card.icon as any}
-                      size={cardSize * 0.16}
-                      color={card.iconColor}
-                    />
+                    <Text className="text-[9px] font-bold text-white">
+                      {notifiche}
+                    </Text>
                   </View>
-                  <Text
-                    style={{
-                      fontSize: 8,
-                      fontWeight: "700",
-                      letterSpacing: 0.5,
-                      lineHeight: 11,
-                      textAlign: "center",
-                      color: "rgba(255,255,255,0.55)",
-                    }}
-                  >
-                    {card.label}
-                  </Text>
-                  <View
-                    style={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      height: 3,
-                      backgroundColor: card.accent,
-                    }}
-                  />
-                </TouchFeedback>
-              </Animated.View>
-            );
-          })}
+                )}
+              </TouchableOpacity>
+            </View>
 
-          {/* bottone CERCA sempre al centro */}
-          <Animated.View
-            style={{
-              position: "absolute",
-              top: scene / 2 - centerSize / 2,
-              left: scene / 2 - centerSize / 2,
-              width: centerSize,
-              height: centerSize,
-              borderRadius: centerSize / 2,
-              borderWidth: 2,
-              borderColor: glowAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: ["rgba(249,115,22,0.4)", "rgba(249,115,22,0.9)"],
-              }),
-              shadowColor: "#f97316",
-              shadowOffset: { width: 0, height: 0 },
-              shadowRadius: 12,
-              shadowOpacity: glowAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0.15, 0.6],
-              }) as any,
-              backgroundColor: "#010130",
-            }}
-          >
-            <TouchFeedback
-              onPress={() => router.push("/(utente)/cerca-veicolo")}
-              haptic="medium"
-              scaleTo={0.85}
-              style={{
-                flex: 1,
-                borderRadius: centerSize / 2,
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 3,
-              }}
-              pressedStyle={{ backgroundColor: "rgba(249,115,22,0.18)" }}
-            >
-              <FontAwesome6
-                name="magnifying-glass"
-                size={centerSize * 0.24}
-                color="#f97316"
+            {/* switcher unificato in un unico pill centrale */}
+            <View className="py-3 border-b border-white/5">
+              <VeicoloSwitcher
+                veicoli={veicoli}
+                veicoloAttivo={veicoloAttivo}
+                onSeleziona={seleziona}
+                onAggiungi={() => cambiaTab(1)}
+                onElimina={elimina}
               />
-              <Text
-                style={{
-                  fontSize: 8,
-                  fontWeight: "700",
-                  letterSpacing: 0.8,
-                  color: "rgba(249,115,22,0.8)",
-                }}
-              >
-                CERCA
-              </Text>
-            </TouchFeedback>
-          </Animated.View>
-        </View>
-      </View>
+            </View>
 
-      {/* avatar dropdown */}
-      <Modal
-        visible={avatarAperto}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setAvatarAperto(false)}
-      >
-        <TouchableOpacity
-          className="flex-1"
-          activeOpacity={1}
-          onPress={() => setAvatarAperto(false)}
-        />
-        <View
-          style={{
-            position: "absolute",
-            top: 90,
-            right: 16,
-            backgroundColor: "#141445",
-            borderRadius: 14,
-            padding: 4,
-            borderWidth: 0.5,
-            borderColor: "rgba(249,115,22,0.2)",
-            minWidth: 190,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.3,
-            shadowRadius: 16,
-          }}
-        >
-          <View
-            style={{
-              padding: 12,
-              borderBottomWidth: 0.5,
-              borderColor: "rgba(255,255,255,0.06)",
-            }}
-          >
-            <Text style={{ fontSize: 11, color: "#a0a8b8" }}>Ciao,</Text>
-            <Text style={{ fontSize: 14, fontWeight: "700", color: "#e8e8ff" }}>
-              {utente?.username ?? "—"}
-            </Text>
-          </View>
-          <TouchFeedback
-            onPress={() => {
-              setAvatarAperto(false);
-              router.push("/(utente)/account");
-            }}
-            scaleTo={0.96}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-              padding: 12,
-              borderRadius: 10,
-            }}
-            pressedStyle={{ backgroundColor: "rgba(249,115,22,0.16)" }}
-          >
-            {({ pressed }) => (
-              <>
-                <FontAwesome6 name="user" size={13} color="#f97316" />
-                <Text
+            {/* contenuto principale: mai nascosto dal pill flottante */}
+            <View
+              className="flex-1 px-4 pt-4"
+              style={{ paddingBottom: NAV_SPACE }}
+            >
+              {veicoloAttivo ? (
+                /* info del veicolo attivo */
+                <View
+                  className="rounded-2xl p-4 gap-3"
                   style={{
-                    fontSize: 13,
-                    color: pressed ? "#f97316" : "#e8e8ff",
+                    backgroundColor: "#141445",
+                    borderWidth: 0.5,
+                    borderColor: "rgba(249,115,22,0.25)",
                   }}
                 >
-                  Il mio account
-                </Text>
-              </>
-            )}
-          </TouchFeedback>
-          <TouchFeedback
-            onPress={() => {
-              setAvatarAperto(false);
-              logout();
-            }}
-            scaleTo={0.96}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-              padding: 12,
-              borderRadius: 10,
-              borderTopWidth: 0.5,
-              borderColor: "rgba(255,255,255,0.06)",
-            }}
-            pressedStyle={{ backgroundColor: "rgba(229,57,53,0.14)" }}
-          >
-            <FontAwesome6 name="right-from-bracket" size={13} color="#e53935" />
-            <Text style={{ fontSize: 13, color: "#e53935" }}>Logout</Text>
-          </TouchFeedback>
+                  <View className="flex-row items-center gap-3">
+                    <View
+                      className="items-center justify-center rounded-2xl"
+                      style={{
+                        width: 52,
+                        height: 52,
+                        backgroundColor: "rgba(249,115,22,0.12)",
+                        borderWidth: 1.5,
+                        borderColor: "rgba(249,115,22,0.35)",
+                      }}
+                    >
+                      <FontAwesome6
+                        name={iconaTipo}
+                        size={22}
+                        color="#f97316"
+                      />
+                    </View>
+                    <View className="flex-1 gap-1">
+                      <Text
+                        className="text-base font-extrabold text-white"
+                        numberOfLines={1}
+                      >
+                        {veicoloAttivo.nome}
+                      </Text>
+                      <View
+                        className="self-start rounded-md px-2 py-0.5"
+                        style={{
+                          backgroundColor: "rgba(249,115,22,0.15)",
+                          borderWidth: 1,
+                          borderColor: "rgba(249,115,22,0.4)",
+                        }}
+                      >
+                        <Text className="text-[10px] font-bold text-orange tracking-widest">
+                          {veicoloAttivo.targa}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  <View className="flex-row flex-wrap gap-1.5">
+                    <View className="bg-white/5 rounded-md px-2 py-1">
+                      <Text className="text-[10px] text-white/50">
+                        Anno{" "}
+                        <Text className="font-bold text-white/80">
+                          {info?.anno ?? "-"}
+                        </Text>
+                      </Text>
+                    </View>
+                    <View className="bg-white/5 rounded-md px-2 py-1">
+                      <Text className="text-[10px] text-white/50">
+                        Alimentazione{" "}
+                        <Text className="font-bold text-white/80">
+                          {info?.alimentazione ?? "-"}
+                        </Text>
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="flex-row flex-wrap gap-2">
+                    <StatoBadge
+                      label={
+                        info?.bolloAttivo ? "Bollo attivo" : "Bollo scaduto"
+                      }
+                      attivo={!!info?.bolloAttivo}
+                    />
+                    <StatoBadge
+                      label={info?.rcaAttiva ? "RCA attiva" : "RCA scaduta"}
+                      attivo={!!info?.rcaAttiva}
+                    />
+                  </View>
+                </View>
+              ) : (
+                /* nessun veicolo: invito ad aggiungere il primo */
+                <View className="items-center gap-2 px-8 pt-6">
+                  <View
+                    className="items-center justify-center"
+                    style={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: 32,
+                      backgroundColor: "rgba(249,115,22,0.1)",
+                      borderWidth: 1,
+                      borderColor: "rgba(249,115,22,0.3)",
+                    }}
+                  >
+                    <Ionicons
+                      name="car-sport-outline"
+                      size={28}
+                      color="#f97316"
+                    />
+                  </View>
+                  <Text className="text-base font-bold text-white text-center mt-1">
+                    Aggiungi il tuo primo veicolo
+                  </Text>
+                  <Text className="text-sm text-muted text-center leading-5">
+                    Cercalo per targa dal tab Cerca della barra qui sotto.
+                  </Text>
+                </View>
+              )}
+            </View>
+          </SafeAreaView>
         </View>
-      </Modal>
-    </SafeAreaView>
+
+        {/* pagine 1-4: le sezioni riusate come tab */}
+        <View style={{ width }}>
+          <CercaVeicoloScreen />
+        </View>
+        <View style={{ width }}>
+          <PrenotazioniScreen />
+        </View>
+        <View style={{ width }}>
+          <StoricoScreen />
+        </View>
+        <View style={{ width }}>
+          <AccountScreen />
+        </View>
+      </ScrollView>
+    </View>
   );
 }

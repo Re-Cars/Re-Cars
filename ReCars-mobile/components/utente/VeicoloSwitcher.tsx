@@ -180,7 +180,11 @@ export default function VeicoloSwitcher({
       <View ref={pillRef} collapsable={false} style={{ alignSelf: "center" }}>
         <Animated.View
           style={{
-            borderRadius: 999,
+            /* liquid glass come la bottom nav: vetro satinato bianco,
+               bordo fisso senza respiro */
+            borderRadius: 20,
+            borderWidth: 0.5,
+            borderColor: "rgba(255,255,255,0.15)",
             shadowColor: "#f97316",
             shadowOffset: { width: 0, height: 0 },
             shadowRadius: 14,
@@ -235,16 +239,13 @@ export default function VeicoloSwitcher({
               flexDirection: "row",
               alignItems: "center",
               gap: 8,
-              backgroundColor: "rgba(249,115,22,0.1)",
-              borderWidth: 1,
-              borderColor: "rgba(249,115,22,0.4)",
-              borderRadius: 999,
+              backgroundColor: "rgba(255,255,255,0.08)",
+              borderRadius: 20,
               paddingHorizontal: 14,
               paddingVertical: 6,
             }}
             pressedStyle={{
-              backgroundColor: "rgba(249,115,22,0.22)",
-              borderColor: "rgba(249,115,22,0.8)",
+              backgroundColor: "rgba(255,255,255,0.16)",
             }}
           >
             <FontAwesome6 name={iconaTipo} size={12} color="#f97316" />
