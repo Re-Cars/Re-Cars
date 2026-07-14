@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { CreatePrenotazioneDto } from './dto/create-prenotazione.dto';
@@ -11,7 +15,6 @@ export class PrenotazioniService {
   ) {}
 
   async crea(utenteId: number, dto: CreatePrenotazioneDto) {
-
     // 1. Controlla officina
     const officina = await this.prisma.officina.findUnique({
       where: { id: dto.officinaId },
@@ -29,7 +32,7 @@ export class PrenotazioniService {
     const dataCompleta = new Date(`${soloData}T${dto.orario}:00`);
     if (isNaN(dataCompleta.getTime())) {
       throw new BadRequestException(
-        `Data o orario non validi. Ricevuti: data='${dto.data}', orario='${dto.orario}'`
+        `Data o orario non validi. Ricevuti: data='${dto.data}', orario='${dto.orario}'`,
       );
     }
 
@@ -41,18 +44,16 @@ export class PrenotazioniService {
     const prenotazione = await this.prisma.prenotazione.create({
       data: {
         id_officina: dto.officinaId,
-        id_utente:   utenteId,
+        id_utente: utenteId,
         dataprenotazione: dataCompleta,
         descrizione,
       },
     });
 
-    // 5. Genera il file .ics
     const icsContent = this.generaIcs(officina, dto.servizio, dataCompleta);
 
-    // 6. Invia email ← era nel posto sbagliato, deve essere dopo il salvataggio
     await this.mailerService.sendMail({
-      to:      utente.email,
+      to: utente.email,
       subject: `Prenotazione confermata — ${officina.nome}`,
       html: `
         <h2>Prenotazione confermata!</h2>
@@ -68,14 +69,38 @@ export class PrenotazioniService {
         </ul>
         <p>Trovi in allegato il file da importare su Google Calendar.</p>
       `,
-      attachments: [{
-        filename:    'appuntamento.ics',
-        content:     icsContent,
-        contentType: 'text/calendar',
-      }],
+      attachments: [
+        {
+          filename: 'appuntamento.ics',
+          content: icsContent,
+          contentType: 'text/calendar',
+        },
+      ],
     });
 
     return prenotazione;
+  }
+
+  async trovaPerUtente(utenteId: number) {
+    // 1. Controlla se l'utente esiste (opzionale, ma garantisce consistenza nei log)
+    const utenteEsiste = await this.prisma.utente.findUnique({
+      where: { id: utenteId },
+    });
+    if (!utenteEsiste) throw new NotFoundException('Utente non trovato');
+
+    // 2. Recupera le prenotazioni ordinate dalla più recente
+    return await this.prisma.prenotazione.findMany({
+      where: {
+        id_utente: utenteId,
+      },
+      include: {
+        // Include i dettagli dell'officina relazionata (es. nome, indirizzo)
+        officina: true,
+      },
+      orderBy: {
+        dataprenotazione: 'desc',
+      },
+    });
   }
 
   // 7. Genera il contenuto del file .ics
@@ -83,7 +108,7 @@ export class PrenotazioniService {
     const pad = (n: number) => String(n).padStart(2, '0');
 
     const formato = (d: Date) =>
-      `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+      `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
 
     const fine = new Date(data.getTime() + 60 * 60 * 1000); // +1 ora
 

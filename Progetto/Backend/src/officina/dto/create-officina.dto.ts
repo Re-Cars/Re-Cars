@@ -1,8 +1,15 @@
-import { IsString, IsEmail, IsOptional, IsNotEmpty, MinLength, IsArray, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsOptional,
+  IsNotEmpty,
+  MinLength,
+  IsArray,
+  IsEnum,
+} from 'class-validator';
 import { tipo_officina } from '@prisma/client';
 
 export class CreateOfficinaDto {
-
   @IsNotEmpty({ message: "L'email è obbligatoria" })
   @IsEmail({}, { message: 'Email non valida' })
   email!: string;

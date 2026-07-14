@@ -6,12 +6,13 @@ import type { Request } from 'express';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
- constructor() {
+  constructor() {
     const secret = process.env.JWT_SECRET;
-    
-    
+
     if (!secret) {
-      throw new Error(`Errore Critico: La variabile d'ambiente JWT_SECRET non è definita!`);
+      throw new Error(
+        `Errore Critico: La variabile d'ambiente JWT_SECRET non è definita!`,
+      );
     }
 
     super({
@@ -25,11 +26,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: secret, 
+      secretOrKey: secret,
     });
   }
 
   async validate(payload: any) {
-      return { sub: payload.sub, email: payload.email, tipo: payload.tipo };
+    return { sub: payload.sub, email: payload.email, tipo: payload.tipo };
   }
 }

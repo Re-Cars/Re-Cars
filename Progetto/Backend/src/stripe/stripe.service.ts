@@ -21,10 +21,12 @@ export class StripeService {
     cancelUrl: string;
   }): Promise<{ url: string | null }> {
     const priceMap: Record<string, string> = {
-      premium:               this.config.get<string>('STRIPE_PRICE_PREMIUM')!,
-      pro:                   this.config.get<string>('STRIPE_PRICE_PRO')!,
-      officina_business:     this.config.get<string>('STRIPE_PRICE_BUSINESS')!,
-      officina_business_pro: this.config.get<string>('STRIPE_PRICE_BUSINESS_PRO')!,
+      premium: this.config.get<string>('STRIPE_PRICE_PREMIUM')!,
+      pro: this.config.get<string>('STRIPE_PRICE_PRO')!,
+      officina_business: this.config.get<string>('STRIPE_PRICE_BUSINESS')!,
+      officina_business_pro: this.config.get<string>(
+        'STRIPE_PRICE_BUSINESS_PRO',
+      )!,
     };
 
     const priceId = priceMap[params.piano];

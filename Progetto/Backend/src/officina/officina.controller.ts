@@ -1,4 +1,16 @@
-import { Controller, Post, Get, Patch, Delete, Body, Param, Query, UseGuards, Res, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Res,
+  Req,
+} from '@nestjs/common';
 import { OfficinaService } from './officina.service';
 import { CreateOfficinaDto } from './dto/create-officina.dto';
 import { LoginOfficinaDto } from './dto/login-officina.dto';
@@ -14,7 +26,8 @@ export class OfficinaController {
     @Body() datiRicevuti: CreateOfficinaDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { access_token, officina } = await this.officinaService.registra(datiRicevuti);
+    const { access_token, officina } =
+      await this.officinaService.registra(datiRicevuti);
     response.cookie('access_token', access_token, {
       httpOnly: true,
       secure: true,
@@ -29,7 +42,8 @@ export class OfficinaController {
     @Body() datiRicevuti: LoginOfficinaDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { access_token, officina } = await this.officinaService.login(datiRicevuti);
+    const { access_token, officina } =
+      await this.officinaService.login(datiRicevuti);
     response.cookie('access_token', access_token, {
       httpOnly: true,
       secure: true,
@@ -52,16 +66,13 @@ export class OfficinaController {
   @UseGuards(JwtAuthGuard)
   @Get('dashboard')
   async dashboard(@Req() req: Request) {
-      const officinaId = Number((req.user as any).sub);
-      return this.officinaService.dashboard(officinaId);
+    const officinaId = Number((req.user as any).sub);
+    return this.officinaService.dashboard(officinaId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('prenotazioni')
-  async prenotazioni(
-    @Req() req: Request,
-    @Query('stato') stato?: string,
-  ) {
+  async prenotazioni(@Req() req: Request, @Query('stato') stato?: string) {
     const officinaId = Number((req.user as any).sub);
     return this.officinaService.tutteLePrenotazioni(officinaId, stato);
   }
@@ -74,7 +85,11 @@ export class OfficinaController {
     @Req() req: Request,
   ) {
     const officinaId = Number((req.user as any).sub);
-    return this.officinaService.aggiornaStatoPrenotazione(+id, stato, officinaId);
+    return this.officinaService.aggiornaStatoPrenotazione(
+      +id,
+      stato,
+      officinaId,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -86,20 +101,14 @@ export class OfficinaController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('profilo')
-  async aggiornaProfilo(
-    @Body() body: any,
-    @Req() req: Request,
-  ) {
+  async aggiornaProfilo(@Body() body: any, @Req() req: Request) {
     const officinaId = Number((req.user as any).sub);
     return this.officinaService.aggiornaProfilo(officinaId, body);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch('abbonamento')
-  async cambiaAbbonamento(
-    @Body('piano') piano: string,
-    @Req() req: Request,
-  ) {
+  async cambiaAbbonamento(@Body('piano') piano: string, @Req() req: Request) {
     const officinaId = Number((req.user as any).sub);
     return this.officinaService.cambiaAbbonamento(officinaId, piano);
   }
@@ -146,6 +155,6 @@ export class OfficinaController {
   @UseGuards(JwtAuthGuard)
   @Get('all') // Senza un percorso esplicito, l'URL diventa http://localhost:3000/officina
   async findAll() {
-  return this.officinaService.findAll();
-}
+    return this.officinaService.findAll();
+  }
 }

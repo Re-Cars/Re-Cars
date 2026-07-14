@@ -493,7 +493,7 @@ function mostraStato(stato) {
     }
 }
 async function caricaPrenotazioniUtente() {
-    const res = await fetch('/api/prenotazioni/utente'); // adatta all'endpoint tuo
+    const res = await fetch(ENDPOINT_PRENOTA); 
     const data = await res.json();
     const container = document.getElementById('prenotazioni-list');
 

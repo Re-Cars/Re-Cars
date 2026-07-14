@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const API = "https://mug-unbalance-random.ngrok-free.dev";
-
+export const API = "https://unvocal-hertz-supply.ngrok-free.dev";
+  
 export type Utente = {
   id: number;
   username?: string;

@@ -10,7 +10,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { StoricoService } from './storico.service';
-import { CreateInterventoDto, UpdateInterventoDto } from './dto/create-intervento.dto';
+import {
+  CreateInterventoDto,
+  UpdateInterventoDto,
+} from './dto/create-intervento.dto';
 // import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // decommentare se hai l'auth guard
 
 @Controller('interventi')
