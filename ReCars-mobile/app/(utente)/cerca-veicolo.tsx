@@ -1,10 +1,10 @@
 import TouchFeedback from "@/components/TouchFeedback";
 import SectionScreen from "@/components/utente/SectionScreen";
 import { apiFetch } from "@/constants/api";
+import { useNav } from "@/constants/nav-context";
 import { logoutGlobale, useVeicoli } from "@/hooks/use-veicoli";
 import { FontAwesome6 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -129,6 +129,7 @@ function StatoRisultato({ label, ok }: { label: string; ok: boolean }) {
 export default function CercaVeicoloScreen() {
   const { utente, veicoli, veicoloAttivo, seleziona, elimina, ricarica } =
     useVeicoli();
+  const { cambiaTab } = useNav();
 
   const [targa, setTarga] = useState("");
   const [loading, setLoading] = useState(false);
@@ -227,7 +228,9 @@ export default function CercaVeicoloScreen() {
       /* come il web: flag consumato dallo switcher della home, che
          parte con l'animazione garage-pop */
       await AsyncStorage.setItem("garage_animation", "true");
-      setTimeout(() => router.replace("/(utente)/home"), 900);
+      /* torna al tab Home: funziona sia quando la schermata è la pagina
+         del pager sia quando è stata aperta come rotta interna */
+      setTimeout(() => cambiaTab(0), 900);
     } catch {
       setMessaggio("Errore di connessione.");
     }

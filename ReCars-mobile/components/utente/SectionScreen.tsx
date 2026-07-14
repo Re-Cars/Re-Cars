@@ -1,15 +1,17 @@
 import TouchFeedback from "@/components/TouchFeedback";
-import MenuLaterale from "@/components/utente/MenuLaterale";
+import { NAV_SPACE } from "@/components/utente/BottomNav";
 import VeicoloSwitcher from "@/components/utente/VeicoloSwitcher";
 import { Veicolo } from "@/constants/api";
-import { FontAwesome6 } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { ReactNode } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Props = {
-  titolo: string;
+  /* nome della sezione, tenuto per i chiamanti anche se l'header non
+     mostra più il percorso di navigazione */
+  titolo?: string;
   children: ReactNode;
   /* se passati, mostra la riga switcher come le pagine web */
   veicoli?: Veicolo[];
@@ -20,13 +22,12 @@ type Props = {
 };
 
 /**
- * Struttura comune delle sezioni utente: header con hamburger + brand,
- * breadcrumb e pill switcher centrale (come header/breadcrumb/home-intro web).
- * Per tornare indietro restano il link Home del breadcrumb, il logo e lo
- * swipe-back nativo dello stack.
+ * Struttura comune delle sezioni utente: header identico alla home
+ * (logo centrale e campanella notifiche) e pill switcher centrale.
+ * Non c'è navigazione indietro esplicita: si torna con lo swipe
+ * orizzontale globale o con la bottom nav.
  */
 export default function SectionScreen({
-  titolo,
   children,
   veicoli,
   veicoloAttivo,
@@ -37,10 +38,9 @@ export default function SectionScreen({
   const Body = scroll ? ScrollView : View;
   return (
     <SafeAreaView className="flex-1 bg-bg">
-      {/* header: hamburger globale come sul sito, dove hamburger9 e
-          sidebar sono presenti in tutte le pagine dell'area utente */}
+      {/* header come la home: solo logo centrale e campanella */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-orange/15">
-        <MenuLaterale />
+        <View style={{ width: 36 }} />
         {/* come sul sito: il logo riporta alla homepage */}
         <TouchFeedback
           onPress={() => router.replace("/(utente)/home")}
@@ -50,31 +50,23 @@ export default function SectionScreen({
             RE|CARS
           </Text>
         </TouchFeedback>
-        <View style={{ width: 30 }} />
-      </View>
-
-      {/* breadcrumb */}
-      <View className="flex-row items-center gap-2 px-4 py-2 border-b border-orange/10">
-        <TouchFeedback
-          onPress={() => router.replace("/(utente)/home")}
-          hitSlop={6}
-          scaleTo={0.92}
+        <TouchableOpacity
+          onPress={() => {}}
+          activeOpacity={0.75}
+          hitSlop={8}
+          accessibilityLabel="Notifiche"
           style={{
-            flexDirection: "row",
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            borderWidth: 1,
+            borderColor: "rgba(249,115,22,0.5)",
             alignItems: "center",
-            gap: 6,
-            paddingHorizontal: 6,
-            paddingVertical: 2,
-            marginLeft: -6,
-            borderRadius: 6,
+            justifyContent: "center",
           }}
-          pressedStyle={{ backgroundColor: "rgba(249,115,22,0.16)" }}
         >
-          <FontAwesome6 name="house" size={9} color="#f97316" />
-          <Text className="text-xs text-orange">Home</Text>
-        </TouchFeedback>
-        <Text className="text-xs text-muted">›</Text>
-        <Text className="text-xs text-muted">{titolo}</Text>
+          <Ionicons name="notifications-outline" size={17} color="#f97316" />
+        </TouchableOpacity>
       </View>
 
       {/* switcher unificato */}
@@ -94,12 +86,13 @@ export default function SectionScreen({
         className="flex-1"
         {...(scroll
           ? {
-              contentContainerStyle: { padding: 16, paddingBottom: 40 },
+              /* il fondo resta libero dal pill di navigazione flottante */
+              contentContainerStyle: { padding: 16, paddingBottom: NAV_SPACE },
               /* senza "handled" il primo tap con tastiera aperta viene
                  consumato solo per chiudere la tastiera (vedi login web/app) */
               keyboardShouldPersistTaps: "handled" as const,
             }
-          : { style: { flex: 1, padding: 16 } })}
+          : { style: { flex: 1, padding: 16, paddingBottom: NAV_SPACE } })}
       >
         {children}
       </Body>
