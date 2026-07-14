@@ -368,9 +368,11 @@ body.landing-body {
     overflow-x: hidden;
     /* padding + margini negativi: danno spazio agli elementi che si
        ingrandiscono in hover (es. freccia indietro) senza spostare il layout,
-       così l'overflow del contenitore non li taglia */
-    padding: 4px 8px 4px 4px;
-    margin: -4px -8px -4px -4px;
+       così l'overflow del contenitore non li taglia. Il lato destro assorbe
+       quasi tutto il padding del contenitore (36px - 32px = 4px) così la
+       scrollbar risulta adiacente al bordo destro del form */
+    padding: 4px 32px 4px 4px;
+    margin: -4px -32px -4px -4px;
 }
 
 .auth-scroll::-webkit-scrollbar {
@@ -700,7 +702,14 @@ input:-webkit-autofill:active {
         margin: 20px;
         padding: 28px 20px;
     }
- 
+
+    /* il padding destro del contenitore qui è 20px: 20px - 16px = 4px
+       di distanza della scrollbar dal bordo */
+    .auth-scroll {
+        padding-right: 16px;
+        margin-right: -16px;
+    }
+
     .landing-title {
         font-size: 2.2rem;
     }
@@ -719,6 +728,12 @@ input:-webkit-autofill:active {
         margin: 12px;
         padding: 24px 16px;
         max-width: calc(100% - 24px);
+    }
+
+    /* padding destro del contenitore 16px: 16px - 12px = 4px dal bordo */
+    .auth-scroll {
+        padding-right: 12px;
+        margin-right: -12px;
     }
 
     .landing-title {
@@ -786,6 +801,9 @@ input:-webkit-autofill:active {
     background: #0e0e0e;
     opacity: 1;
     transition: opacity 1s ease;
+    /* il velo sta sopra .landing-content (z-index 5 > 2): senza questa regola
+       catturerebbe i click destinati al bottone ACCEDI anche a opacità 0 */
+    pointer-events: none;
 }
 .shutter-gate.show-bg::before { opacity: 0; }
 /* lift-up resta invariato */

@@ -16,7 +16,9 @@
 
     <div class="landing-overlay"></div>
 
-    <div class="auth-container">
+    <!-- display:none inline: nascosto fin dal primo render (niente flash prima
+         che il JS carichi); openGarage() lo mostra impostando display:flex -->
+    <div class="auth-container" style="display: none;">
       <div class="auth-scroll">
 
         <div class="auth-nav">
