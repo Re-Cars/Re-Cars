@@ -1,17 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrenotazioneController } from './prenotazione.controller';
-import { PrenotazioneService } from './prenotazione.service';
+import { PrenotazioniController } from './prenotazione.controller';
+import { PrenotazioniService } from './prenotazione.service';
+import { PrismaService } from '../prisma.service';
+import { MailerService } from '@nestjs-modules/mailer';
+
+
 
 describe('PrenotazioneController', () => {
-  let controller: PrenotazioneController;
+  let controller: PrenotazioniController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [PrenotazioneController],
-      providers: [PrenotazioneService],
+      controllers: [PrenotazioniController],
+      providers: [
+        PrenotazioniService, 
+        PrismaService, 
+        {
+          provide: MailerService,
+          useValue: {
+            sendMail: jest.fn().mockResolvedValue(true),
+          },
+        },
+      ],
     }).compile();
 
-    controller = module.get<PrenotazioneController>(PrenotazioneController);
+    controller = module.get<PrenotazioniController>(PrenotazioniController);
   });
 
   it('should be defined', () => {
