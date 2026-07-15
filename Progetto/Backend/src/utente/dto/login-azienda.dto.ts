@@ -1,7 +1,6 @@
 import { IsString, IsNotEmpty, MinLength } from 'class-validator';
 
 export class LoginAziendaDto {
-
   @IsNotEmpty({ message: 'La partita IVA è obbligatoria' })
   @IsString()
   partita_iva!: string;

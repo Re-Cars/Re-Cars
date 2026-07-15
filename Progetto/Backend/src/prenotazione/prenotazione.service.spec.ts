@@ -1,15 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrenotazioneService } from './prenotazione.service';
+import { PrenotazioniService } from './prenotazione.service';
+import { PrismaService } from '../prisma.service';
+import { MailerService } from '@nestjs-modules/mailer';
+
+
 
 describe('PrenotazioneService', () => {
-  let service: PrenotazioneService;
+  let service: PrenotazioniService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PrenotazioneService],
+      providers: [
+        PrenotazioniService, 
+        PrismaService, 
+        {
+          provide: MailerService,
+          useValue: {
+            sendMail: jest.fn().mockResolvedValue(true),
+          },
+        },
+      ],
     }).compile();
 
-    service = module.get<PrenotazioneService>(PrenotazioneService);
+    service = module.get<PrenotazioniService>(PrenotazioniService);
   });
 
   it('should be defined', () => {

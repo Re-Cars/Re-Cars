@@ -16,14 +16,13 @@ import { PrenotazioneModule } from './prenotazione/prenotazione.module';
 import { AppMailerModule } from './mailer.module';
 import { StoricoModule } from './storico_interventi/storico.module';
 
-
 @Module({
   imports: [
-    AppMailerModule, 
+    AppMailerModule,
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     PassportModule,
-    StoricoModule, 
+    StoricoModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
@@ -37,11 +36,6 @@ import { StoricoModule } from './storico_interventi/storico.module';
     PrenotazioneModule,
   ],
   controllers: [AppController, UtenteController, VeicoloController],
-  providers: [
-    AppService,
-    UtenteService,
-    VeicoloService,
-    JwtStrategy,
-  ],
+  providers: [AppService, UtenteService, VeicoloService, JwtStrategy],
 })
 export class AppModule {}

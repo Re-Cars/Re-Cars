@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { PrenotazioniService } from './prenotazione.service';
 import { CreatePrenotazioneDto } from './dto/create-prenotazione.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard'; // Adatta il percorso se necessario
@@ -15,8 +15,15 @@ export class PrenotazioniController {
     @Req() req: Request,
   ) {
     // Estrai l'id dell'utente loggato dal token JWT (sub o id)
-    const utenteId = Number((req.user as any).sub); 
-    
+    const utenteId = Number((req.user as any).sub);
+
     return this.prenotazioniService.crea(utenteId, dto);
+  }
+
+  @UseGuards(JwtAuthGuard) // Rendi l'endpoint protetto se serve l'utente loggato
+  @Get()
+  async Stampa(@Req() req: Request) {
+    const utenteId = Number((req.user as any).sub);
+    return this.prenotazioniService.trovaPerUtente(utenteId);
   }
 }

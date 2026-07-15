@@ -1,8 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class LoginUtenteDto {
-
-  @IsNotEmpty({ message: 'L\'email è obbligatoria' })
+  @IsNotEmpty({ message: "L'email è obbligatoria" })
   @IsEmail({}, { message: 'Email non valida' })
   email!: string;
 

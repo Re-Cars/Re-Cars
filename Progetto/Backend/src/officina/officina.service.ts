@@ -1,4 +1,11 @@
-import { Injectable, UnauthorizedException, ConflictException, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateOfficinaDto } from './dto/create-officina.dto';
@@ -42,7 +49,11 @@ export class OfficinaService {
 
     const { password, ...risultato } = officina;
 
-    const payload = { sub: officina.id, partita_iva: officina.partita_iva, tipo: 'officina' };
+    const payload = {
+      sub: officina.id,
+      partita_iva: officina.partita_iva,
+      tipo: 'officina',
+    };
     return {
       access_token: this.jwtService.sign(payload),
       officina: risultato,
@@ -56,12 +67,20 @@ export class OfficinaService {
 
     if (!officina) throw new UnauthorizedException('Credenziali non valide');
 
-    const passwordValida = await bcrypt.compare(data.password, officina.password);
-    if (!passwordValida) throw new UnauthorizedException('Credenziali non valide');
+    const passwordValida = await bcrypt.compare(
+      data.password,
+      officina.password,
+    );
+    if (!passwordValida)
+      throw new UnauthorizedException('Credenziali non valide');
 
     const { password, ...risultato } = officina;
 
-    const payload = { sub: officina.id, partita_iva: officina.partita_iva, tipo: 'officina' };
+    const payload = {
+      sub: officina.id,
+      partita_iva: officina.partita_iva,
+      tipo: 'officina',
+    };
     return {
       access_token: this.jwtService.sign(payload),
       officina: risultato,
@@ -99,58 +118,63 @@ export class OfficinaService {
     const inizioSettimana = new Date(oggi);
     inizioSettimana.setDate(oggi.getDate() - oggi.getDay() + 1);
 
-    const [prenotazioniOggi, settimanaStats, abbonamento, officina] = await Promise.all([
-
-    this.prisma.prenotazione.findMany({
-      where: {
-        id_officina: officinaId,
-        dataprenotazione: { gte: oggi, lt: domani },
-      },
-      include: {
-        utente: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-            veicolo: {
-              include: {
-                dati_generici: true,
-                dati_specifici: true,
-                storico_intervento: {
-                  orderBy: { data: 'desc' },
-                  take: 5,
+    const [prenotazioniOggi, settimanaStats, abbonamento, officina] =
+      await Promise.all([
+        this.prisma.prenotazione.findMany({
+          where: {
+            id_officina: officinaId,
+            dataprenotazione: { gte: oggi, lt: domani },
+          },
+          include: {
+            utente: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+                veicolo: {
+                  include: {
+                    dati_generici: true,
+                    dati_specifici: true,
+                    storico_intervento: {
+                      orderBy: { data: 'desc' },
+                      take: 5,
+                    },
+                  },
                 },
               },
             },
           },
-        },
-      },
-      orderBy: { dataprenotazione: 'asc' },
-    }),
+          orderBy: { dataprenotazione: 'asc' },
+        }),
 
-      this.prisma.prenotazione.findMany({
-        where: {
-          id_officina: officinaId,
-          dataprenotazione: { gte: inizioSettimana },
-        },
-        select: { stato: true },
-      }),
+        this.prisma.prenotazione.findMany({
+          where: {
+            id_officina: officinaId,
+            dataprenotazione: { gte: inizioSettimana },
+          },
+          select: { stato: true },
+        }),
 
-      this.prisma.abbonamento.findFirst({
-        where: { id_officina: officinaId, stato: 'attivo' },
-        orderBy: { data_inizio: 'desc' },
-      }),
+        this.prisma.abbonamento.findFirst({
+          where: { id_officina: officinaId, stato: 'attivo' },
+          orderBy: { data_inizio: 'desc' },
+        }),
 
-      this.prisma.officina.findUnique({
-        where: { id: officinaId },
-        select: { ponti_disponibili: true },
-      }),
+        this.prisma.officina.findUnique({
+          where: { id: officinaId },
+          select: { ponti_disponibili: true },
+        }),
+      ]);
 
-    ]);
-
-    const oggiConfermate = prenotazioniOggi.filter(p => p.stato === 'confermata').length;
-    const pontiOccupati = prenotazioniOggi.filter(p => p.stato === 'confermata').length;
-    const settimanaAttesa = settimanaStats.filter(p => p.stato === 'in_attesa').length;
+    const oggiConfermate = prenotazioniOggi.filter(
+      (p) => p.stato === 'confermata',
+    ).length;
+    const pontiOccupati = prenotazioniOggi.filter(
+      (p) => p.stato === 'confermata',
+    ).length;
+    const settimanaAttesa = settimanaStats.filter(
+      (p) => p.stato === 'in_attesa',
+    ).length;
 
     return {
       prenotazioniOggi,
@@ -164,13 +188,18 @@ export class OfficinaService {
     };
   }
 
-  async aggiornaStatoPrenotazione(prenotazioneId: number, stato: string, officinaId: number) {
+  async aggiornaStatoPrenotazione(
+    prenotazioneId: number,
+    stato: string,
+    officinaId: number,
+  ) {
     const prenotazione = await this.prisma.prenotazione.findUnique({
       where: { id: prenotazioneId },
     });
 
     if (!prenotazione) throw new NotFoundException('Prenotazione non trovata');
-    if (prenotazione.id_officina !== officinaId) throw new ForbiddenException('Non autorizzato');
+    if (prenotazione.id_officina !== officinaId)
+      throw new ForbiddenException('Non autorizzato');
 
     return this.prisma.prenotazione.update({
       where: { id: prenotazioneId },
@@ -210,7 +239,6 @@ export class OfficinaService {
 
   async statistiche(officinaId: number) {
     const [totale, mese, completate, officina] = await Promise.all([
-
       this.prisma.prenotazione.count({
         where: { id_officina: officinaId },
       }),
@@ -253,10 +281,10 @@ export class OfficinaService {
           },
         },
       }),
-
     ]);
 
-    const tassoCompletamento = totale > 0 ? Math.round((completate / totale) * 100) : 0;
+    const tassoCompletamento =
+      totale > 0 ? Math.round((completate / totale) * 100) : 0;
 
     const mesePrecedente = await this.prisma.prenotazione.count({
       where: {
@@ -284,15 +312,18 @@ export class OfficinaService {
     const campi: any = {};
 
     if (data.nome !== undefined) campi.nome = data.nome;
-    if (data.ragione_sociale !== undefined) campi.ragione_sociale = data.ragione_sociale;
+    if (data.ragione_sociale !== undefined)
+      campi.ragione_sociale = data.ragione_sociale;
     if (data.partita_iva !== undefined) campi.partita_iva = data.partita_iva;
     if (data.codice_sdi !== undefined) campi.codice_sdi = data.codice_sdi;
     if (data.email !== undefined) campi.email = data.email;
     if (data.telefono !== undefined) campi.telefono = data.telefono;
     if (data.indirizzo !== undefined) campi.indirizzo = data.indirizzo;
-    if (data.ponti_disponibili !== undefined) campi.ponti_disponibili = Number(data.ponti_disponibili);
+    if (data.ponti_disponibili !== undefined)
+      campi.ponti_disponibili = Number(data.ponti_disponibili);
     if (data.tipi !== undefined) campi.tipi = data.tipi;
-    if (data.password !== undefined) campi.password = await bcrypt.hash(data.password, 10);
+    if (data.password !== undefined)
+      campi.password = await bcrypt.hash(data.password, 10);
 
     return this.prisma.officina.update({
       where: { id: officinaId },
@@ -341,7 +372,8 @@ export class OfficinaService {
       where: { id_officina: officinaId, stato: 'attivo' },
     });
 
-    if (!abbonamentoAttivo) throw new NotFoundException('Nessun abbonamento attivo');
+    if (!abbonamentoAttivo)
+      throw new NotFoundException('Nessun abbonamento attivo');
 
     return this.prisma.abbonamento.update({
       where: { id: abbonamentoAttivo.id },
@@ -390,7 +422,6 @@ export class OfficinaService {
       orderBy: { dataprenotazione: 'asc' },
     });
   }
-  
 
   async findAll() {
     const officine = await this.prisma.officina.findMany({
@@ -415,7 +446,7 @@ export class OfficinaService {
       indirizzo: o.indirizzo,
       // Se mancano le coordinate sul DB, usa Milano come centro di fallback
       latitude: o.latitudine ?? 45.4642,
-      longitude: o.longitudine ?? 9.1900,
+      longitude: o.longitudine ?? 9.19,
       // Trasforma l'array di enum nella stringa richiesta dal frontend
       categoria: o.tipi.length > 0 ? o.tipi[0] : 'Meccanica',
       specialita: o.tipi.join(', ') || 'Riparazioni Generiche',

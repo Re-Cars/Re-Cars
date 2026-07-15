@@ -1,8 +1,14 @@
-import { IsString, IsEmail, IsOptional, MinLength, IsNotEmpty, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsOptional,
+  MinLength,
+  IsNotEmpty,
+  IsEnum,
+} from 'class-validator';
 import { tipo_utente } from '@prisma/client';
 
 export class CreateUtenteDto {
-
   @IsNotEmpty({ message: 'Il nome utente è obbligatorio' })
   @IsString()
   username!: string;

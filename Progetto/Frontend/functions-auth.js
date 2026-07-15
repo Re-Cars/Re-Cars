@@ -4,6 +4,10 @@
 function openGarage() {
     const gate = document.getElementById('shutter-gate');
     const hint = document.querySelector('.scroll-hint');
+    const authContainer = document.querySelector('.auth-container');
+    // il container parte con display:none inline (anti-flash al caricamento):
+    // va reso visibile prima che la saracinesca si sollevi
+    if (authContainer) authContainer.style.display = 'flex';
     if (gate) {
         if (hint) hint.classList.add('hint-hidden');
         gate.classList.add('lift-up');

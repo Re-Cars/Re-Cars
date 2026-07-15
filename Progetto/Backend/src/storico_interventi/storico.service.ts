@@ -1,6 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service'; // aggiusta il path se diverso
-import { CreateInterventoDto, UpdateInterventoDto } from './dto/create-intervento.dto';
+import {
+  CreateInterventoDto,
+  UpdateInterventoDto,
+} from './dto/create-intervento.dto';
 
 @Injectable()
 export class StoricoService {
@@ -18,13 +21,13 @@ export class StoricoService {
   async create(dto: CreateInterventoDto) {
     return this.prisma.storico_intervento.create({
       data: {
-        id_veicolo:  dto.id_veicolo,
-        data:        new Date(dto.data),
-        categoria:   dto.categoria,
-        nome:        dto.nome,
+        id_veicolo: dto.id_veicolo,
+        data: new Date(dto.data),
+        categoria: dto.categoria,
+        nome: dto.nome,
         descrizione: dto.descrizione ?? null,
-        mediante:    dto.mediante    ?? null,
-        costo:       dto.costo       ?? null,
+        mediante: dto.mediante ?? null,
+        costo: dto.costo ?? null,
       },
     });
   }
@@ -41,12 +44,12 @@ export class StoricoService {
     return this.prisma.storico_intervento.update({
       where: { id },
       data: {
-        ...(dto.data      && { data:      new Date(dto.data) }),
+        ...(dto.data && { data: new Date(dto.data) }),
         ...(dto.categoria && { categoria: dto.categoria }),
-        ...(dto.nome      && { nome:      dto.nome }),
+        ...(dto.nome && { nome: dto.nome }),
         descrizione: dto.descrizione ?? null,
-        mediante:    dto.mediante    ?? null,
-        costo:       dto.costo       ?? null,
+        mediante: dto.mediante ?? null,
+        costo: dto.costo ?? null,
       },
     });
   }

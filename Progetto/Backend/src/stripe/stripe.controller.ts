@@ -1,5 +1,11 @@
 import {
-  Controller, Post, Body, Req, Res, Headers, UseGuards,
+  Controller,
+  Post,
+  Body,
+  Req,
+  Res,
+  Headers,
+  UseGuards,
 } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 import { PrismaService } from '../prisma.service';
@@ -20,27 +26,39 @@ export class StripeController {
     @Req() req: Request,
   ) {
     const user = (req as any).user;
-    const tipo: 'utente' | 'officina' = user.tipo === 'officina' ? 'officina' : 'utente';
+    const tipo: 'utente' | 'officina' =
+      user.tipo === 'officina' ? 'officina' : 'utente';
     const id = Number(user.sub);
 
     let email = '';
     if (tipo === 'utente') {
-      const utente = await this.prisma.utente.findUnique({ where: { id }, select: { email: true } });
+      const utente = await this.prisma.utente.findUnique({
+        where: { id },
+        select: { email: true },
+      });
       email = utente?.email || '';
     } else {
-      const officina = await this.prisma.officina.findUnique({ where: { id }, select: { email: true } });
+      const officina = await this.prisma.officina.findUnique({
+        where: { id },
+        select: { email: true },
+      });
       email = officina?.email || '';
     }
 
-    const baseUrl = body.baseUrl || process.env.FRONTEND_BASE_URL || 'http://127.0.0.1:5500/Frontend';
+    const baseUrl =
+      body.baseUrl ||
+      process.env.FRONTEND_BASE_URL ||
+      'http://127.0.0.1:5500/Frontend';
 
-    const successUrl = tipo === 'officina'
-      ? `${baseUrl}/pagamento-officina.html?session_id={CHECKOUT_SESSION_ID}`
-      : `${baseUrl}/pagamento.html?session_id={CHECKOUT_SESSION_ID}`;
+    const successUrl =
+      tipo === 'officina'
+        ? `${baseUrl}/pagamento-officina.html?session_id={CHECKOUT_SESSION_ID}`
+        : `${baseUrl}/pagamento.html?session_id={CHECKOUT_SESSION_ID}`;
 
-    const cancelUrl = tipo === 'officina'
-      ? `${baseUrl}/abbonamenti-officina.html`
-      : `${baseUrl}/abbonamenti.html`;
+    const cancelUrl =
+      tipo === 'officina'
+        ? `${baseUrl}/abbonamenti-officina.html`
+        : `${baseUrl}/abbonamenti.html`;
 
     const session = await this.stripeService.creaCheckoutSession({
       piano: body.piano,
@@ -73,9 +91,10 @@ export class StripeController {
       const { piano, tipo, id } = session.metadata;
 
       const abbonamentoAttivo = await this.prisma.abbonamento.findFirst({
-        where: tipo === 'utente'
-          ? { id_utente: Number(id), stato: 'attivo' }
-          : { id_officina: Number(id), stato: 'attivo' },
+        where:
+          tipo === 'utente'
+            ? { id_utente: Number(id), stato: 'attivo' }
+            : { id_officina: Number(id), stato: 'attivo' },
       });
 
       if (abbonamentoAttivo) {
@@ -88,7 +107,7 @@ export class StripeController {
       await this.prisma.abbonamento.create({
         data: {
           tipo: tipo === 'utente' ? 'utente' : 'officina',
-          piano: piano as any,
+          piano: piano,
           stato: 'attivo',
           data_inizio: new Date(),
           stripe_subscription_id: session.subscription,
@@ -111,27 +130,29 @@ export class StripeController {
   }
 
   @UseGuards(JwtAuthGuard)
-    @Post('disdici')
-    async disdici(@Req() req: Request) {
+  @Post('disdici')
+  async disdici(@Req() req: Request) {
     const user = (req as any).user;
-    const tipo: 'utente' | 'officina' = user.tipo === 'officina' ? 'officina' : 'utente';
+    const tipo: 'utente' | 'officina' =
+      user.tipo === 'officina' ? 'officina' : 'utente';
     const id = Number(user.sub);
 
     const abbonamentoAttivo = await this.prisma.abbonamento.findFirst({
-        where: tipo === 'utente'
-        ? { id_utente: id, stato: 'attivo' }
-        : { id_officina: id, stato: 'attivo' },
+      where:
+        tipo === 'utente'
+          ? { id_utente: id, stato: 'attivo' }
+          : { id_officina: id, stato: 'attivo' },
     });
 
     if (!abbonamentoAttivo) {
-        return { message: 'Nessun abbonamento attivo' };
+      return { message: 'Nessun abbonamento attivo' };
     }
 
     await this.prisma.abbonamento.update({
-        where: { id: abbonamentoAttivo.id },
-        data: { stato: 'annullato' },
+      where: { id: abbonamentoAttivo.id },
+      data: { stato: 'annullato' },
     });
 
     return { message: 'Abbonamento disdetto' };
-    }
+  }
 }

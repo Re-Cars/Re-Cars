@@ -1,19 +1,25 @@
 // src/storico_interventi/dto/create-intervento.dto.ts
 
-import { IsEnum, IsString, IsNumber, IsOptional, IsDateString } from 'class-validator';
+import {
+  IsEnum,
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export enum CategoriaIntervento {
-  ordinario     = 'ordinario',
+  ordinario = 'ordinario',
   straordinario = 'straordinario',
-  gestione      = 'gestione',
-  annotazioni   = 'annotazioni',
+  gestione = 'gestione',
+  annotazioni = 'annotazioni',
 }
 
 export class CreateInterventoDto {
   @IsNumber()
   @Type(() => Number)
-  id_veicolo!: number;       // ← il ! dice a TS "fidati, arriva dal body"
+  id_veicolo!: number; // ← il ! dice a TS "fidati, arriva dal body"
 
   @IsDateString()
   data!: string;

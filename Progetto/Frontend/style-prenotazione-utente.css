@@ -161,10 +161,10 @@
 }
 
 .main-grid {
-    max-width: 1200px;
+    max-width: 1600px; 
     margin: auto;
     display: grid;
-    grid-template-columns: 350px 1fr;
+    grid-template-columns: 350px 1fr 320px;
     gap: 24px;
     align-items: flex-start;
 }
