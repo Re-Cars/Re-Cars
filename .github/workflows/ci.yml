@@ -2,7 +2,7 @@ name: CI Backend
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, test-ci ]
   pull_request:
     branches: [ main, master ]
 
@@ -27,14 +27,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
-          cache-dependency-path: Progetto/Backend/pnpm-lock.yaml
+
+      # Configurazione della cache con percorso fisso per Linux (Ubuntu)
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store/v3
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('Progetto/Backend/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-workspace
 
       - name: Generate Prisma Client
         run: |
+          mkdir -p prisma
           if [ -f prisma.config.ts ] && [ ! -f prisma/prisma.config.ts ]; then
             cp prisma.config.ts prisma/prisma.config.ts
           fi
