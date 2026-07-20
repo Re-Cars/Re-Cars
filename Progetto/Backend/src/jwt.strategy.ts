@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-// Usiamo 'import type' per evitare l'errore con isolatedModules ed emitDecoratorMetadata
 import type { Request } from 'express';
-
+import { JwtPayload } from './jwt-payload.interface';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
@@ -32,7 +31,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
+  validate(payload: JwtPayload): JwtPayload {
     return { sub: payload.sub, email: payload.email, tipo: payload.tipo };
   }
 }
