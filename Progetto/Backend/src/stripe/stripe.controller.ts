@@ -11,7 +11,31 @@ import { StripeService } from './stripe.service';
 import { PrismaService } from '../prisma.service';
 import { JwtAuthGuard } from '../jwt-auth.guard';
 import type { Request, Response } from 'express';
+import { CurrentUser } from '../current-user.decorator';
+import type { JwtPayload } from '../jwt-payload.interface';
+import { piano_abbonamento } from '@prisma/client';
 
+interface StripeCheckoutSessionMetadata {
+  piano: string;
+  tipo: 'utente' | 'officina';
+  id: string;
+}
+
+interface StripeCheckoutSession {
+  metadata: StripeCheckoutSessionMetadata | null;
+  subscription: string | null;
+}
+
+interface StripeSubscriptionObject {
+  id: string;
+}
+
+interface StripeWebhookEvent {
+  type: string;
+  data: {
+    object: StripeCheckoutSession | StripeSubscriptionObject;
+  };
+}
 @Controller('abbonamento')
 export class StripeController {
   constructor(
@@ -23,9 +47,8 @@ export class StripeController {
   @Post('checkout')
   async checkout(
     @Body() body: { piano: string; baseUrl?: string },
-    @Req() req: Request,
+    @CurrentUser() user: JwtPayload,
   ) {
-    const user = (req as any).user;
     const tipo: 'utente' | 'officina' =
       user.tipo === 'officina' ? 'officina' : 'utente';
     const id = Number(user.sub);
@@ -78,18 +101,23 @@ export class StripeController {
     @Headers('stripe-signature') signature: string,
     @Res() res: Response,
   ) {
-    let event: any;
+    let event: StripeWebhookEvent;
 
     try {
-      event = this.stripeService.costruisciEvento(req.rawBody!, signature);
-    } catch (err: any) {
-      return res.status(400).send(`Webhook Error: ${err.message}`);
+      event = this.stripeService.costruisciEvento(
+        req.rawBody!,
+        signature,
+      ) as StripeWebhookEvent;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Errore sconosciuto';
+      return res.status(400).send(`Webhook Error: ${message}`);
     }
 
     if (event.type === 'checkout.session.completed') {
-      const session = event.data.object;
-      const { piano, tipo, id } = session.metadata;
-
+      const session = event.data.object as StripeCheckoutSession;
+      const metadata = session.metadata as StripeCheckoutSessionMetadata;
+      const { tipo, id } = metadata;
+      const piano = metadata.piano as piano_abbonamento;
       const abbonamentoAttivo = await this.prisma.abbonamento.findFirst({
         where:
           tipo === 'utente'
@@ -110,7 +138,7 @@ export class StripeController {
           piano: piano,
           stato: 'attivo',
           data_inizio: new Date(),
-          stripe_subscription_id: session.subscription,
+          stripe_subscription_id: session.subscription as string,
           ...(tipo === 'utente'
             ? { id_utente: Number(id) }
             : { id_officina: Number(id) }),
@@ -119,7 +147,7 @@ export class StripeController {
     }
 
     if (event.type === 'customer.subscription.deleted') {
-      const subscription = event.data.object;
+      const subscription = event.data.object as StripeSubscriptionObject;
       await this.prisma.abbonamento.updateMany({
         where: { stripe_subscription_id: subscription.id },
         data: { stato: 'annullato' },
@@ -128,11 +156,9 @@ export class StripeController {
 
     res.status(200).json({ received: true });
   }
-
   @UseGuards(JwtAuthGuard)
   @Post('disdici')
-  async disdici(@Req() req: Request) {
-    const user = (req as any).user;
+  async disdici(@CurrentUser() user: JwtPayload) {
     const tipo: 'utente' | 'officina' =
       user.tipo === 'officina' ? 'officina' : 'utente';
     const id = Number(user.sub);

@@ -21,6 +21,9 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "stripe": ["./node_modules/stripe/cjs/stripe.cjs.node.d.ts"]
+    }
   }
 }
