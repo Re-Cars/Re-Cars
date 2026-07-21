@@ -4,8 +4,6 @@ import { OfficinaService } from './officina.service';
 import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt';
 
-
-
 describe('OfficinaController', () => {
   let controller: OfficinaController;
 

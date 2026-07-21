@@ -7,7 +7,6 @@ import {
   Param,
   Body,
   ParseIntPipe,
-  UseGuards,
 } from '@nestjs/common';
 import { StoricoService } from './storico.service';
 import {
@@ -23,6 +22,7 @@ export class StoricoController {
 
   // GET /interventi/veicolo/:id_veicolo
   // Restituisce tutti gli interventi di un veicolo specifico
+
   @Get('veicolo/:id_veicolo')
   findByVeicolo(@Param('id_veicolo', ParseIntPipe) idVeicolo: number) {
     return this.storicoService.findByVeicolo(idVeicolo);

@@ -21,7 +21,7 @@ export class VeicoloController {
   }
   @UseGuards(JwtAuthGuard)
   @Get('cerca/:targa')
-  async cerca(@Param('targa') targa: string) {
+  cerca(@Param('targa') targa: string) {
     return this.veicoloService.cercaSoloDati(targa);
   }
   @UseGuards(JwtAuthGuard)

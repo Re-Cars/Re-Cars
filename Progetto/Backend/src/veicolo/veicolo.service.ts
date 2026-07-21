@@ -8,6 +8,49 @@ import { PrismaService } from '../prisma.service';
 import { CreateVeicoloDto } from './dto/create-veicolo.dto';
 import * as datiMock from '../../data/veicoli.json';
 import { JwtService } from '@nestjs/jwt';
+import { tipo_veicolo } from '@prisma/client';
+
+interface VeicoloMock {
+  LicensePlate: string;
+  TipoVeicolo: string;
+  Description: string;
+  RegistrationYear: string;
+  CarMake: string;
+  CarModel: string;
+  EngineSize: string;
+  FuelType: string;
+  MakeDescription: string;
+  ModelDescription: string;
+  Immobiliser: string;
+  NumberOfDoors: string;
+  Version: string;
+  ABS: string;
+  AirBag: string;
+  Vin: string;
+  KType: string;
+  PowerCV: number;
+  PowerKW: number;
+  PowerFiscal: number;
+  RCA?: {
+    Company?: string;
+    Expiry?: string;
+    ExpiryTimestamp?: number;
+    IsInsured?: boolean;
+  };
+  Bollo?: {
+    Expiry?: string;
+    ExpiryTimestamp?: number;
+    IsActive?: boolean;
+  };
+  Timestamp: number;
+}
+
+interface VeicoliMockData {
+  data: VeicoloMock[];
+  success: boolean;
+  message: string;
+  error: null;
+}
 
 @Injectable()
 export class VeicoloService {
@@ -16,10 +59,10 @@ export class VeicoloService {
     private jwtService: JwtService,
   ) {}
 
-  async cercaSoloDati(targa: string) {
-    const veicoli = (datiMock as any).data;
+  cercaSoloDati(targa: string) {
+    const veicoli = (datiMock as VeicoliMockData).data;
     const trovato = veicoli.find(
-      (v: any) => v.LicensePlate.toUpperCase() === targa.toUpperCase(),
+      (v) => v.LicensePlate.toUpperCase() === targa.toUpperCase(),
     );
     if (!trovato) {
       throw new NotFoundException(`Veicolo con targa ${targa} non trovato`);
@@ -37,9 +80,9 @@ export class VeicoloService {
   }
 
   async cercaESalva(dto: CreateVeicoloDto) {
-    const veicoli = (datiMock as any).data;
+    const veicoli = (datiMock as VeicoliMockData).data;
     const trovato = veicoli.find(
-      (v: any) => v.LicensePlate.toUpperCase() === dto.targa.toUpperCase(),
+      (v) => v.LicensePlate.toUpperCase() === dto.targa.toUpperCase(),
     );
 
     if (!trovato) {
@@ -92,7 +135,7 @@ export class VeicoloService {
 
     await this.prisma.dati_generici.create({
       data: {
-        tipo_veicolo: trovato.TipoVeicolo,
+        tipo_veicolo: trovato.TipoVeicolo as tipo_veicolo,
         cavalli: trovato.PowerCV,
         numporte: trovato.NumberOfDoors || null,
         alimentazione: trovato.FuelType,

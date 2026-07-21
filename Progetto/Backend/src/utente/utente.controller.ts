@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   UseGuards,
-  Req,
   Res,
 } from '@nestjs/common';
 import { UtenteService } from './utente.service';
@@ -15,7 +14,8 @@ import { LoginUtenteDto } from './dto/login-utente.dto';
 import { UpdateUtenteDto } from './dto/update-utente.dto';
 import { LoginAziendaDto } from './dto/login-azienda.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
+
 @Controller('auth')
 export class UtenteController {
   constructor(private readonly utenteService: UtenteService) {}
@@ -72,7 +72,7 @@ export class UtenteController {
   }
 
   @Post('logout')
-  async logout(@Res({ passthrough: true }) response: Response) {
+  logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('access_token', {
       httpOnly: true,
       secure: true,
@@ -92,7 +92,6 @@ export class UtenteController {
   async aggiornaUtente(
     @Param('id') id: string,
     @Body() datiRicevuti: UpdateUtenteDto,
-    @Req() req: Request,
   ) {
     return this.utenteService.aggiornaUtente(+id, datiRicevuti);
   }

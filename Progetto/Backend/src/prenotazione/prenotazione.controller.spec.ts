@@ -4,8 +4,6 @@ import { PrenotazioniService } from './prenotazione.service';
 import { PrismaService } from '../prisma.service';
 import { MailerService } from '@nestjs-modules/mailer';
 
-
-
 describe('PrenotazioneController', () => {
   let controller: PrenotazioniController;
 
@@ -13,8 +11,8 @@ describe('PrenotazioneController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PrenotazioniController],
       providers: [
-        PrenotazioniService, 
-        PrismaService, 
+        PrenotazioniService,
+        PrismaService,
         {
           provide: MailerService,
           useValue: {
