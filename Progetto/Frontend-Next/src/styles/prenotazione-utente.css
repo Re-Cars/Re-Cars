@@ -1,0 +1,428 @@
+        /* ── Mappa reale ─────────────────────────────── */
+#mappa-leaflet {
+    width: 100%;
+    height: 240px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    z-index: 1;
+}
+
+.dark .leaflet-tile {
+    filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9);
+}
+
+/* ── Skeleton loader lista ───────────────────── */
+.skeleton {
+    background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite;
+    border-radius: 10px;
+}
+
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ── Stato errore / vuoto ────────────────────── */
+.stato-box {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.stato-box i {
+    font-size: 2.2rem;
+    color: var(--border);
+}
+
+/* ── Modal prenotazione ──────────────────────── */
+#modal-prenotazione {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-box {
+    background: var(--surface);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 480px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+#modal-feedback {
+    display: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ── Toast ───────────────────────────────────── */
+#toast {
+    display: none;
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    z-index: 9999;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    white-space: nowrap;
+    color: #fff;
+    transition: background 0.2s;
+}
+
+/* ── Slot orari ──────────────────────────────── */
+.slot-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: inherit;
+    font-weight: 600;
+    transition: 0.15s;
+}
+
+.slot-btn.attivo {
+    background: rgba(249,115,22,0.2);
+    border-color: #f97316;
+    color: #f97316;
+}
+
+/* ── Classi strutturali estratte dagli inline ── */
+.btn-theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #f97316;
+    font-size: 1.1rem;
+    padding: 4px 8px;
+}
+
+.section-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.search-container {
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
+}
+
+.search-bar-wrapper {
+    padding: 12px 18px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+}
+
+.search-bar-wrapper input {
+    font-size: 1rem;
+    color: var(--text);
+    background: transparent;
+}
+
+.btn-gps-spec {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+}
+
+.categories-wrapper {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.main-grid {
+    max-width: 1600px; 
+    margin: auto;
+    display: grid;
+    grid-template-columns: 350px 1fr 320px;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.list-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.list-meta #sort-btn {
+    color: #f97316;
+    cursor: pointer;
+}
+
+.skeleton-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-retry {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    margin-top: 4px;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.btn-open-map {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 999;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid rgba(249,115,22,0.5);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+}
+
+.skeleton-detail-box {
+    opacity: 1;
+    transform: none;
+    padding: 24px;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.skeleton-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.detail-box-actual {
+    display: none;
+    opacity: 1;
+    transform: none;
+    padding: 24px;
+    gap: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.btn-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text);
+    font-weight: 800;
+}
+
+.modal-subtitle {
+    margin: 6px 0 0 0;
+    font-size: 0.85rem;
+    color: #f97316;
+    font-weight: 600;
+}
+
+.modal-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+#modal-servizio {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-family: inherit;
+}
+
+#modal-data {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-family: inherit;
+    color-scheme: dark;
+}
+
+.modal-slots-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#modal-note {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-family: inherit;
+    resize: none;
+}
+
+.btn-confirm-booking {
+    padding: 14px;
+    width: 100%;
+    justify-content: center;
+}
+
+/* Utility classes */
+.u-display-none {
+    display: none !important;
+}
+
+/* ----------------------------------------------------
+   RESPONSIVE
+----------------------------------------------------- */
+@media (max-width: 1024px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .left-column {
+        order: 1;
+    }
+
+    .right-column {
+        order: 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-container {
+        padding: 0 16px;
+    }
+
+    .search-bar-wrapper {
+        padding: 10px 14px;
+    }
+
+    .categories-wrapper {
+        gap: 6px;
+        margin-top: 12px;
+    }
+
+    .skeleton-grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modal-box {
+        max-width: 90vw;
+        padding: 20px;
+    }
+
+    #mappa-leaflet {
+        height: 220px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-grid {
+        gap: 16px;
+    }
+
+    .search-bar-wrapper {
+        padding: 8px 12px;
+    }
+
+    .skeleton-grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-box {
+        max-width: 100%;
+        padding: 16px;
+        border-radius: 14px;
+        gap: 14px;
+    }
+
+    #modal-prenotazione {
+        padding: 10px;
+    }
+
+    #mappa-leaflet {
+        height: 200px;
+        min-height: 200px;
+    }
+
+    .modal-slots-container {
+        gap: 6px;
+    }
+
+    .slot-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .btn-open-map {
+        top: 8px;
+        right: 8px;
+        padding: 5px 10px;
+    }
+
+    .detail-box-actual,
+    .skeleton-detail-box {
+        padding: 16px;
+    }
+}

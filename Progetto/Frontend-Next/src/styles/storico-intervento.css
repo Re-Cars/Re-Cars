@@ -1,0 +1,804 @@
+/* ----------------------------------------------------
+   LAYOUT DASHBOARD
+----------------------------------------------------- */
+.iv-dashboard {
+    padding: 18px 15px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 950px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ----------------------------------------------------
+   BARRA STORICO INTERVENTI
+----------------------------------------------------- */
+.iv-section-bar2 {
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border-bottom: 1px solid rgba(249, 115, 22, 0.12);
+    background: rgba(249, 115, 22, 0.06);
+}
+
+.iv-section-bar2 .section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--c-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.count-badge {
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+    border: 1px solid rgba(249, 115, 22, 0.35);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* Bottone aggiungi nella barra */
+.aggiungi-btn {
+    background: rgba(249, 115, 22, 0.15);
+    border: 1px solid rgba(249, 115, 22, 0.4);
+    color: var(--iv-orange);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+    margin-left: auto;
+}
+
+.aggiungi-btn:hover {
+    background: var(--iv-orange);
+    border-color: var(--iv-orange);
+    color: #fff;
+}
+
+.aggiungi-btn:hover i.fa-plus {
+    color: #fff;
+}
+
+/* ----------------------------------------------------
+   FILTRI
+----------------------------------------------------- */
+.filters {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(249, 115, 22, 0.08);
+    border-radius: 0;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    font-size: 12px;
+    color: var(--c-muted);
+    font-weight: 500;
+    margin-right: 4px;
+}
+
+.filter-btn {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(249, 115, 22, 0.2);
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--c-muted);
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-btn .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.filter-btn.active-all {
+    background: rgba(82, 97, 105, 0.1);
+    color: var(--tutti);
+    border-color: rgba(82, 97, 105, 0.3);
+}
+.filter-btn.active-ordinario {
+    background: var(--ordinario-bg);
+    color: var(--ordinario);
+    border-color: var(--ordinario-border);
+}
+.filter-btn.active-straordinario {
+    background: var(--straordinario-bg);
+    color: var(--straordinario);
+    border-color: var(--straordinario-border);
+}
+.filter-btn.active-gestione {
+    background: var(--gestione-bg);
+    color: var(--gestione);
+    border-color: var(--gestione-border);
+}
+.filter-btn.active-annotazioni {
+    background: var(--iv-orange2);
+    color: var(--iv-orange);
+    border-color: rgba(249, 115, 22, 0.35);
+}
+
+/* Filtro per data */
+.filter-date-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--c-muted);
+    border: 1.5px solid rgba(249, 115, 22, 0.2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    background: transparent;
+}
+
+.filter-date-wrap input[type="date"] {
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    color: var(--c-text);
+    outline: none;
+    font-family: inherit;
+    cursor: pointer;
+    width: 120px;
+    padding: 0;
+}
+
+.filter-date-clear {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--c-muted);
+    font-size: 11px;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.filter-date-clear:hover {
+    color: #ef4444;
+}
+
+/* ----------------------------------------------------
+   TABELLA
+----------------------------------------------------- */
+.table-wrap {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.table-head {
+    display: grid;
+    grid-template-columns: 120px 130px 1fr 150px 90px 60px;
+    padding: 10px 18px;
+    background: rgba(249, 115, 22, 0.06);
+    border-bottom: 1px solid rgba(249, 115, 22, 0.12);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    gap: 8px;
+    align-items: center;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 120px 130px 1fr 150px 90px 60px;
+    padding: 12px 18px;
+    border-bottom: 1px solid rgba(249, 115, 22, 0.08);
+    gap: 8px;
+    align-items: center;
+    font-size: 13px;
+    transition: background 0.15s ease;
+    cursor: default;
+    animation: iv-fadeIn 0.3s ease forwards;
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.table-row:hover {
+    background: rgba(249, 115, 22, 0.04);
+}
+
+/* Pallino categoria */
+.cat-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.cat-dot.ordinario     { background: var(--ordinario); }
+.cat-dot.straordinario { background: var(--straordinario); }
+.cat-dot.annotazioni   { background: var(--iv-orange); }
+.cat-dot.gestione      { background: var(--gestione); }
+
+/* Cella data */
+.date-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--c-muted);
+}
+
+/* Badge categoria */
+.cat-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.cat-badge.ordinario {
+    background: var(--ordinario-bg);
+    color: var(--ordinario);
+    border: 1px solid var(--ordinario-border);
+}
+.cat-badge.straordinario {
+    background: var(--straordinario-bg);
+    color: var(--straordinario);
+    border: 1px solid var(--straordinario-border);
+}
+.cat-badge.annotazioni {
+    background: var(--iv-orange2);
+    color: var(--iv-orange);
+    border: 1px solid rgba(249, 115, 22, 0.35);
+}
+.cat-badge.gestione {
+    background: var(--gestione-bg);
+    color: var(--gestione);
+    border: 1px solid var(--gestione-border);
+}
+
+/* Celle contenuto */
+.desc-cell {
+    color: var(--c-text);
+    font-weight: 400;
+}
+
+.desc-sub {
+    font-size: 11px;
+    color: var(--c-muted);
+    margin-top: 2px;
+}
+
+.mediante-cell {
+    color: var(--c-muted);
+    font-size: 12px;
+}
+
+.costo-cell {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--c-text);
+}
+
+.costo-cell.vuoto {
+    color: var(--c-muted);
+    font-weight: 400;
+    font-size: 12px;
+}
+
+/* Bottoni azione */
+.actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.15s;
+}
+
+.edit-btn {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.edit-btn:hover {
+    background: #2b88b8;
+    color: white;
+    border-color: #2b88b8;
+}
+
+.del-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.del-btn:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+}
+
+/* Stato vuoto */
+.empty-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--c-muted);
+    font-size: 13px;
+    display: none;
+}
+
+.empty-state.visible {
+    display: block;
+}
+
+/* ----------------------------------------------------
+   BOTTONE AGGIUNGI FLOTTANTE
+----------------------------------------------------- */
+.add-section {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 4px;
+    gap: 10px;
+    padding: 0 4px 8px;
+}
+
+.btn-aggiungi-label {
+    color: var(--c-muted);
+    font-size: 0.9rem;
+    text-align: right;
+    font-style: italic;
+}
+
+.btn-intervento {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #f97316;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 20px -6px rgba(249, 115, 22, 0.6);
+    transition: 0.3s;
+}
+
+.btn-intervento:hover {
+    background: #ea580c;
+    transform: scale(1.08);
+}
+
+/* ----------------------------------------------------
+   MODAL (NUOVO E MODIFICA)
+----------------------------------------------------- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+.modal {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 28px;
+    width: 480px;
+    max-width: 95vw;
+    border: 1px solid var(--border);
+    transform: translateY(10px);
+    transition: transform 0.2s;
+}
+.modal-overlay.open .modal {
+    transform: translateY(0);
+}
+.modal-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+}
+.form-row {
+    margin-bottom: 14px;
+}
+.form-row label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 6px;
+}
+.form-row input,
+.form-row select,
+.form-row textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--input-bg);
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus {
+    border-color: #f97316;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+.btn-cancel {
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    font-family: inherit;
+    transition: all 0.15s;
+}
+.btn-cancel:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+}
+.btn-save {
+    padding: 9px 24px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    font-family: inherit;
+    transition: all 0.15s;
+}
+.btn-save:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+.btn-preview {
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(249, 115, 22, 0.4);
+    background: rgba(249, 115, 22, 0.08);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--iv-orange);
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.15s;
+}
+.btn-preview:hover {
+    background: rgba(249, 115, 22, 0.15);
+    border-color: var(--iv-orange);
+}
+
+/* ----------------------------------------------------
+   RESPONSIVE
+----------------------------------------------------- */
+@media (max-width: 768px) {
+    .iv-dashboard {
+        padding: 14px 16px 28px;
+        gap: 12px;
+    }
+    .iv-section-bar2 {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 14px;
+    }
+    .filters {
+        padding: 10px 14px;
+        gap: 6px;
+    }
+    .filter-date-wrap {
+        margin-left: 0;
+    }
+    .table-head,
+    .table-row {
+        grid-template-columns: 95px 115px 1fr 110px 80px 52px;
+        padding: 10px 14px;
+        font-size: 12px;
+        gap: 6px;
+    }
+    .cat-badge {
+        font-size: 10px;
+        padding: 2px 8px;
+    }
+}
+
+@media (max-width: 600px) {
+    .table-head > div:nth-child(4),
+    .table-row  > div:nth-child(4) {
+        display: none;
+    }
+    .table-head,
+    .table-row {
+        grid-template-columns: 85px 105px 1fr 75px 50px;
+        padding: 9px 12px;
+        font-size: 11px;
+        gap: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .iv-dashboard {
+        padding: 8px 10px 20px;
+        gap: 8px;
+    }
+    .iv-section-bar2 {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 12px;
+        gap: 8px;
+    }
+    .aggiungi-btn {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+    .filters {
+        flex-wrap: wrap;
+        padding: 8px 10px;
+        gap: 6px;
+    }
+    .filter-btn {
+        flex-shrink: 0;
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+    .filter-date-wrap {
+        flex-shrink: 0;
+        padding: 4px 10px;
+        margin-left: 0;
+    }
+    .filter-date-wrap input[type="date"] {
+        width: 95px;
+    }
+    .table-head > div:nth-child(2),
+    .table-row  > div:nth-child(2) {
+        display: none;
+    }
+    .table-head,
+    .table-row {
+        grid-template-columns: 80px 1fr 72px 46px;
+        padding: 8px 10px;
+        font-size: 11px;
+        gap: 4px;
+    }
+    .date-cell {
+        font-size: 11px;
+        gap: 5px;
+    }
+    .costo-cell {
+        font-size: 11px;
+    }
+    .action-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
+    }
+    .btn-intervento {
+        width: 44px;
+        height: 44px;
+        font-size: 1.3rem;
+    }
+    .modal {
+        padding: 20px 16px;
+        border-radius: 14px;
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ======================================================
+   ================  NUOVE REGOLE AGGIUNTE  ==============
+   Riepilogo spese (mese/anno) + Modal Genera PDF
+   ====================================================== */
+
+/* ----------------------------------------------------
+   RIEPILOGO SPESE (card separata sotto la tabella)
+----------------------------------------------------- */
+.spese-dashboard {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px;
+    flex-wrap: wrap;
+}
+
+.spesa-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: rgba(249, 115, 22, 0.06);
+    border: 1px solid rgba(249, 115, 22, 0.15);
+    flex: 1;
+    min-width: 210px;
+}
+
+.spesa-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.spesa-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.spesa-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.spesa-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--c-text);
+}
+
+/* Bottone genera PDF nella card riepilogo */
+.pdf-btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+    box-shadow: 0 6px 16px -4px rgba(249, 115, 22, 0.5);
+    white-space: nowrap;
+}
+
+.pdf-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px -4px rgba(249, 115, 22, 0.6);
+}
+
+/* ----------------------------------------------------
+   MODAL GENERA PDF
+----------------------------------------------------- */
+.modal-pdf {
+    width: 520px;
+}
+
+.pdf-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pdf-anteprima {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 2px;
+}
+
+.pdf-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--c-text);
+    cursor: pointer;
+    text-transform: none;
+    font-weight: 400;
+    letter-spacing: normal;
+}
+
+.pdf-check input {
+    width: auto;
+    accent-color: #f97316;
+    cursor: pointer;
+}
+
+/* Responsive riepilogo spese */
+@media (max-width: 600px) {
+    .spese-dashboard {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .spesa-box {
+        min-width: 0;
+    }
+    .pdf-btn {
+        justify-content: center;
+    }
+}
