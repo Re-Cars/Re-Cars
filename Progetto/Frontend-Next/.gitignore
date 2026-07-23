@@ -1,4 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# .DS_Store, .env* generici e i log npm/yarn di base sono già coperti dal .gitignore nella root.
 
 # dependencies
 /node_modules
@@ -21,17 +22,15 @@
 /build
 
 # misc
-.DS_Store
 *.pem
 
-# debug
-npm-debug.log*
+# debug (varianti non coperte dal root)
 yarn-debug.log*
-yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files specifici Next.js
+.env.local
+.env.production
 
 # vercel
 .vercel

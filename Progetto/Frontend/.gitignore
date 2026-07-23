@@ -1,0 +1,7 @@
+# Frontend vanilla — no build step, no package.json.
+# node_modules/ è tenuto per sicurezza nel caso in futuro vengano aggiunte dipendenze locali.
+# Le regole di sistema/editor sono già coperte dal .gitignore nella root.
+
+node_modules/
+*.tmp
+*.swp

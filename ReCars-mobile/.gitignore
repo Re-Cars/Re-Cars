@@ -1,4 +1,5 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# .DS_Store e .env*.local sono già coperti dal .gitignore nella root.
 
 # dependencies
 node_modules/
@@ -27,17 +28,17 @@ yarn-debug.*
 yarn-error.*
 
 # macOS
-.DS_Store
 *.pem
-
-# local env files
-.env*.local
 
 # typescript
 *.tsbuildinfo
 
 app-example
 
-# generated native folders
+# generated native folders (contengono anche ios/build e android/build)
 /ios
 /android
+
+# env
+.env
+.env.local
