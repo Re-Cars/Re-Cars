@@ -9,8 +9,8 @@ import { useAuth } from "@/context/AuthContext";
 import { getAvatarSalvato } from "@/lib/storage";
 
 /**
- * Header dell'app: logo RE|CARS animato, toggle dark/light,
- * avatar con dropdown (nome utente, modifica profilo, logout).
+ * Header dell'app: logo RE|CARS a sinistra, toggle dark/light e avatar
+ * con dropdown (Account, Abbonamenti, Logout) a destra.
  */
 export default function Header() {
   const { utente, logout } = useAuth();
@@ -38,8 +38,7 @@ export default function Header() {
 
   return (
     <header className="header">
-      <div className="header-left" />
-      <div className="header-center">
+      <div className="header-left">
         <Link href="/homepage">
           <Image
             src="/Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg"
@@ -53,6 +52,7 @@ export default function Header() {
           </span>
         </Link>
       </div>
+      <div className="header-center" />
       <div className="header-right">
         <button
           type="button"
@@ -60,7 +60,7 @@ export default function Header() {
           aria-label="Cambia tema"
           onClick={() => setTheme(isDark ? "light" : "dark")}
         >
-          <i className={`fa-solid ${mounted && isDark ? "fa-sun" : "fa-moon"}`} />
+          <i className={`ti ${mounted && isDark ? "ti-sun" : "ti-moon"}`} />
         </button>
 
         <div
@@ -74,7 +74,7 @@ export default function Header() {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={avatar} alt="avatar" />
             ) : (
-              <i className="fa-solid fa-user" />
+              <i className="ti ti-user" />
             )}
           </div>
           <div className={`avatar-dropdown${menuAperto ? " open" : ""}`}>
@@ -84,15 +84,20 @@ export default function Header() {
               </p>
             </div>
             <Link href="/account" className="avatar-item">
-              <i className="fa-solid fa-pen" />
-              <span>Modifica profilo</span>
+              <i className="ti ti-user" />
+              <span>Account</span>
             </Link>
+            <Link href="/abbonamenti" className="avatar-item">
+              <i className="ti ti-credit-card" />
+              <span>Abbonamenti</span>
+            </Link>
+            <div className="avatar-sep-logout" />
             <button
               type="button"
               className="avatar-item avatar-item-logout"
               onClick={() => void logout()}
             >
-              <i className="fa-solid fa-right-from-bracket" />
+              <i className="ti ti-logout" />
               <span>Logout</span>
             </button>
           </div>

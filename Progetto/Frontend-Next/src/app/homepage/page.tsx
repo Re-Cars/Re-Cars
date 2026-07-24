@@ -1,113 +1,134 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import Layout from "@/components/Layout";
+import AzioniRapide from "@/components/home/AzioniRapide";
+import GarageSection from "@/components/home/GarageSection";
+import ScadenzeAvvisi from "@/components/home/ScadenzeAvvisi";
+import { useAuth } from "@/context/AuthContext";
+import { ApiError, getVeicoliUtente } from "@/lib/api";
+import type { VeicoloDettaglio } from "@/lib/types";
 
-interface CardCircolare {
-  id: string;
-  angolo: number;
-  href: string;
-  classe: string;
-  icona: string;
-  label: string;
+/** Data ISO a `giorni` da oggi, per scadenze mock sempre significative. */
+function tra(giorni: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + giorni);
+  return d.toISOString().slice(0, 10);
 }
 
-/** Card disposte sul cerchio, stessi angoli di functions-app.js. */
-const CARDS: CardCircolare[] = [
-  { id: "hc1", angolo: -90, href: "/info-veicolo", classe: "card-veicolo", icona: "fa-car", label: "INFO VEICOLO" },
-  { id: "hc2", angolo: -18, href: "/storico-interventi", classe: "card-storicointeventi", icona: "fa-calendar-check", label: "STORICO INTERVENTI" },
-  { id: "hc3", angolo: 54, href: "/recensioni", classe: "card-recensioni", icona: "fa-star", label: "RECENSIONI" },
-  { id: "hc4", angolo: 126, href: "/prenotazioni", classe: "card-prenotazioni", icona: "fa-wrench", label: "PRENOTA APPUNTAMENTO" },
-  { id: "hc5", angolo: 198, href: "/problemi", classe: "card-problemi", icona: "fa-triangle-exclamation", label: "SEGNA PROBLEMI" },
+/**
+ * Fallback quando il backend non è raggiungibile (errore di rete, non
+ * HTTP): la homepage resta navigabile e mostra tutte le fasce di
+ * scadenza (scaduta / entro 30 giorni / entro 90 giorni).
+ */
+const VEICOLI_MOCK: VeicoloDettaglio[] = [
+  {
+    id: -1,
+    targa: "AB123CD",
+    marca: "Fiat",
+    modello: "Panda",
+    dati_generici: [{ tipo_veicolo: "Auto", alimentazione: "Benzina", cavalli: 70 }],
+    dati_specifici: [
+      { dataimmatricolazione: "2019-05-10", datascadenzabollo: tra(-12), isbolloattivo: false, datascadenzarca: tra(20), isinsured: true },
+    ],
+  },
+  {
+    id: -2,
+    targa: "EF456GH",
+    marca: "Volkswagen",
+    modello: "Golf",
+    dati_generici: [{ tipo_veicolo: "Auto", alimentazione: "Diesel", cavalli: 115 }],
+    dati_specifici: [
+      { dataimmatricolazione: "2021-09-02", datascadenzabollo: tra(75), isbolloattivo: true, datascadenzarca: tra(200), isinsured: true },
+    ],
+  },
+  {
+    id: -3,
+    targa: "IL789MN",
+    marca: "Yamaha",
+    modello: "MT-07",
+    dati_generici: [{ tipo_veicolo: "Moto", alimentazione: "Benzina", cavalli: 73 }],
+    dati_specifici: [
+      { dataimmatricolazione: "2023-03-15", datascadenzabollo: tra(300), isbolloattivo: true, datascadenzarca: tra(310), isinsured: true },
+    ],
+  },
+  {
+    id: -4,
+    targa: "OP012QR",
+    marca: "Toyota",
+    modello: "Yaris",
+    dati_generici: [{ tipo_veicolo: "Auto", alimentazione: "Ibrida", cavalli: 92 }],
+    dati_specifici: [
+      { dataimmatricolazione: "2020-01-20", datascadenzabollo: tra(150), isbolloattivo: true, datascadenzarca: tra(5), isinsured: true },
+    ],
+  },
 ];
 
 /**
- * Homepage: card circolari attorno al bottone Cerca centrale con i
- * cerchi pulsanti, più il veicolo switcher fluttuante in alto.
+ * Homepage utente: sezione "Il mio garage" (griglia veicoli espandibile +
+ * card aggiungi con modale ricerca targa), pannello "Scadenze e avvisi"
+ * calcolato su bollo/assicurazione/revisione, e le tre card azione fisse.
  */
 export default function HomePage() {
-  const sceneRef = useRef<HTMLDivElement>(null);
-  const [posizioni, setPosizioni] = useState<Record<string, { left: number; top: number }>>({});
-  const [rivelate, setRivelate] = useState<Set<string>>(new Set());
+  const { utente, gestisci401, caricaVeicoli } = useAuth();
 
-  // calcola la posizione delle card sul cerchio; richiamata al load e al resize
+  const [veicoli, setVeicoli] = useState<VeicoloDettaglio[]>([]);
+  const [garageEspanso, setGarageEspanso] = useState(false);
+  const garageRef = useRef<HTMLDivElement>(null);
+
+  // la homepage lavora sui dettagli completi (scadenze incluse), non sulla
+  // versione compatta del context: fetch dedicata di GET /veicolo/utente/:id
+  const caricaDettagli = useCallback(async () => {
+    if (!utente) return;
+    try {
+      const data = await getVeicoliUtente(utente.id);
+      setVeicoli(data);
+    } catch (err) {
+      if (gestisci401(err)) return;
+      console.error("Errore nel caricamento del garage", err);
+      // errore di rete (backend giù): fallback mock per mantenere la pagina usabile
+      if (!(err instanceof ApiError)) setVeicoli(VEICOLI_MOCK);
+    }
+  }, [utente, gestisci401]);
+
   useEffect(() => {
-    const posiziona = () => {
-      const scene = sceneRef.current;
-      if (!scene) return;
-      const cx = scene.offsetWidth / 2;
-      const cy = scene.offsetHeight / 2;
-      const r = Math.min(cx, cy) * 0.8;
-      const nuove: Record<string, { left: number; top: number }> = {};
-      for (const card of CARDS) {
-        const rad = (card.angolo * Math.PI) / 180;
-        nuove[card.id] = { left: cx + Math.cos(rad) * r, top: cy + Math.sin(rad) * r };
-      }
-      setPosizioni(nuove);
+    void caricaDettagli();
+  }, [caricaDettagli]);
+
+  // dopo un'aggiunta dal modale si riallineano anche i veicoli del context
+  // (switcher/altre pagine usano la lista compatta)
+  const onGarageCambiato = useCallback(async () => {
+    await caricaDettagli();
+    await caricaVeicoli();
+  }, [caricaDettagli, caricaVeicoli]);
+
+  // la voce sidebar "Lista veicoli" porta qui: scroll alla sezione garage
+  // ed espansione della griglia se compressa (evento custom + hash #garage)
+  useEffect(() => {
+    const apriGarage = () => {
+      setGarageEspanso(true);
+      garageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     };
-
-    posiziona();
-    window.addEventListener("resize", posiziona);
-
-    // reveal scaglionato (50ms + 100ms + 80ms per card, come il vanilla)
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    timers.push(
-      setTimeout(() => {
-        posiziona();
-        CARDS.forEach((card, i) => {
-          timers.push(
-            setTimeout(() => {
-              setRivelate((prev) => new Set(prev).add(card.id));
-            }, 100 + i * 80),
-          );
-        });
-      }, 50),
-    );
-
-    return () => {
-      window.removeEventListener("resize", posiziona);
-      timers.forEach(clearTimeout);
-    };
+    if (window.location.hash === "#garage") apriGarage();
+    window.addEventListener("recars:apri-garage", apriGarage);
+    return () => window.removeEventListener("recars:apri-garage", apriGarage);
   }, []);
 
-  const renderCard = (card: CardCircolare) => {
-    const pos = posizioni[card.id];
-    return (
-      <Link
-        key={card.id}
-        href={card.href}
-        className={`home-card ${card.classe}${rivelate.has(card.id) ? " posizionata" : ""}`}
-        style={pos ? { left: `${pos.left}px`, top: `${pos.top}px` } : undefined}
-      >
-        <div className="home-card-icon">
-          <i className={`fa-solid ${card.icona}`} />
-        </div>
-        <span>{card.label}</span>
-      </Link>
-    );
-  };
-
   return (
-    <Layout switcherFloating>
-      <section className="home-cards-section">
-        <div className="cards-scene" ref={sceneRef}>
-          <div className="cards-ring" />
-          <div className="cards-pulse" />
-          <div className="cards-pulse cards-pulse2" />
-          <div className="cards-pulse cards-pulse3" />
-          <div className="cards-pulse cards-pulse4" />
-          <div className="cards-pulse cards-pulse5" />
-
-          {CARDS.map(renderCard)}
-
-          <Link href="/cerca-veicolo" className="cards-center-btn">
-            <i className="fa-solid fa-magnifying-glass" />
-            <span>Cerca</span>
-          </Link>
+    <Layout mostraSwitcher={false}>
+      <main className="hp-main">
+        <div ref={garageRef}>
+          <GarageSection
+            veicoli={veicoli}
+            espanso={garageEspanso}
+            onToggleEspanso={() => setGarageEspanso((v) => !v)}
+            onGarageCambiato={onGarageCambiato}
+          />
         </div>
-      </section>
+        <ScadenzeAvvisi veicoli={veicoli} />
+        <AzioniRapide />
+      </main>
     </Layout>
   );
 }

@@ -70,6 +70,9 @@ export interface RisultatoRicercaVeicolo {
   modello?: string;
   alimentazione?: string;
   cavalli?: number | null;
+  tipo_veicolo?: string;
+  /** Non fornito dal mock backend attuale; opzionale per il box risultato. */
+  anno?: number | null;
   isbolloattivo?: boolean;
   isinsured?: boolean;
 }

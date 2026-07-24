@@ -15,8 +15,16 @@ type StatoMantenimento = "attiva" | "scaduta";
  * Cambia veicolo dallo switcher e i dati si ricaricano.
  */
 export default function InfoVeicoloPage() {
-  const { veicoloAttivo, gestisci401 } = useAuth();
+  const { veicoloAttivo, gestisci401, selezionaVeicolo } = useAuth();
   const [dettaglio, setDettaglio] = useState<VeicoloDettaglio | null>(null);
+
+  // le card garage della homepage passano ?id=: si allinea il veicolo attivo
+  // (letto da window.location per evitare il Suspense richiesto da useSearchParams)
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get("id");
+    const id = raw ? Number.parseInt(raw, 10) : Number.NaN;
+    if (!Number.isNaN(id)) selezionaVeicolo(id);
+  }, [selezionaVeicolo]);
 
   useEffect(() => {
     if (!veicoloAttivo) return;
