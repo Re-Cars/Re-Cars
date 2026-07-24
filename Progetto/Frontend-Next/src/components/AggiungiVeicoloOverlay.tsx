@@ -7,6 +7,7 @@ import { aggiungiVeicolo, ApiError, cercaVeicoloPerTarga } from "@/lib/api";
 import { getStoricoTarghe, rimuoviStoricoTarga, salvaStoricoTarga } from "@/lib/storage";
 import type { RisultatoRicercaVeicolo } from "@/lib/types";
 
+/** Stessa regex targa italiana di functions-app.js (validaTarga). */
 const REGEX_TARGA = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/;
 
 type ValiditaTarga = "vuota" | "valida" | "invalida";
@@ -16,7 +17,7 @@ function validaTarga(valore: string): ValiditaTarga {
   return REGEX_TARGA.test(valore) ? "valida" : "invalida";
 }
 
-interface AggiungiVeicoloModalProps {
+interface AggiungiVeicoloOverlayProps {
   aperto: boolean;
   onChiudi: () => void;
   /** Chiamata dopo un'aggiunta andata a buon fine (ricarica il garage). */
@@ -24,15 +25,17 @@ interface AggiungiVeicoloModalProps {
 }
 
 /**
- * Overlay modale di ricerca targa e aggiunta al garage: validazione live
- * con regex italiana, storico ultime targhe in localStorage, box risultato
- * con dati veicolo e badge bollo/assicurazione.
+ * Overlay riutilizzabile (homepage + lista-veicoli) di ricerca targa e
+ * aggiunta al garage: replica di cerca-veicolo.html — validazione live con
+ * regex italiana e indicatore a destra del campo, stato di caricamento,
+ * storico ultime 5 targhe in localStorage con X di rimozione, box risultato
+ * con dati veicolo e badge bollo/assicurazione, gestione veicolo non trovato.
  */
-export default function AggiungiVeicoloModal({
+export default function AggiungiVeicoloOverlay({
   aperto,
   onChiudi,
   onAggiunto,
-}: AggiungiVeicoloModalProps) {
+}: AggiungiVeicoloOverlayProps) {
   const { utente, gestisci401 } = useAuth();
 
   const [targa, setTarga] = useState("");

@@ -115,11 +115,6 @@ body {
   overflow-x: hidden;
 }
 
-.dark body {
-  background-image: radial-gradient(rgba(249, 115, 22, 0.04) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-
 .footer {
   text-align: center;
   padding: 20px 0;
@@ -1047,7 +1042,7 @@ input:-webkit-autofill:active {
 }
 
 .avatar-item:hover {
-  background: rgba(249, 115, 22, 0.1);
+  background: rgba(249, 115, 22, 0.08);
   color: var(--text-muted);
 }
 
@@ -1056,12 +1051,10 @@ input:-webkit-autofill:active {
   width: 14px;
 }
 
+/* nessun bordo proprio: l'unico separatore è .avatar-sep-logout */
 .avatar-item-logout {
-  border-top: 1px solid rgba(249, 115, 22, 0.15);
-  margin-top: 4px;
-  padding-top: 14px;
   color: #ff6b6b !important;
-  border-radius: 0 0 10px 10px;
+  border-radius: 10px;
 }
 
 .avatar-item-logout i {
@@ -1069,7 +1062,7 @@ input:-webkit-autofill:active {
 }
 
 .avatar-item-logout:hover {
-  background: rgba(255, 107, 107, 0.1) !important;
+  background: rgba(255, 107, 107, 0.06) !important;
 }
 
 .avatar-header {
@@ -1360,16 +1353,6 @@ input:-webkit-autofill:active {
   overflow: hidden;
   border: 0.5px solid rgba(249, 115, 22, 0.3);
   isolation: isolate;
-}
-
-.cerca-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(249, 115, 22, 0.1) 1.5px, transparent 1.5px);
-  background-size: 22px 22px;
-  pointer-events: none;
-  z-index: 0;
 }
 
 .cerca-hero > * {
@@ -2610,15 +2593,6 @@ input:-webkit-autofill:active {
   overflow: hidden;
 }
 
-.ps-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(55, 169, 97, 0.06) 1.5px, transparent 1.5px);
-  background-size: 22px 22px;
-  pointer-events: none;
-}
-
 .ps-icon-wrap {
   position: relative;
   width: 88px;
@@ -3002,7 +2976,7 @@ input:-webkit-autofill:active {
                      INFO VEICOLO
    Nota: le variabili --c-* non sono definite (come nel
    frontend originale): le card risultano trasparenti
-   sullo sfondo puntinato, esattamente come nel vanilla.
+   sullo sfondo piatto della pagina, come nel vanilla.
 -----------------------------------------------------*/
 @keyframes iv-fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes iv-fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -4328,7 +4302,9 @@ input:-webkit-autofill:active {
   transform: rotate(180deg);
 }
 
-/* ---------------- card veicolo ---------------- */
+/* ---------------- card veicolo ----------------
+   Il sollevamento/inclinazione è gestito dal tilt 3D (useTilt, transform
+   inline): il CSS anima solo bordo e sfondo per non entrare in conflitto. */
 .veicolo-card {
   background: var(--surface);
   border: 1px solid var(--border-subtle);
@@ -4338,14 +4314,16 @@ input:-webkit-autofill:active {
   flex-direction: column;
   gap: 12px;
   cursor: pointer;
-  transition: border-color 200ms ease;
+  transition: transform 300ms ease-out, border-color 0.3s ease, background-color 0.3s ease;
 }
 
 .veicolo-card:hover {
   border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  background: var(--surface-hover);
 }
 
 .veicolo-card.attivo {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   border-left: 3px solid var(--accent);
   outline: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   outline-offset: 2px;
@@ -4414,12 +4392,26 @@ input:-webkit-autofill:active {
   color: var(--iv-bad);
 }
 
-/* ---------------- card aggiungi veicolo ---------------- */
+/* ---------------- card aggiungi veicolo ----------------
+   Bordo solido sottile + punto luminoso che percorre il perimetro:
+   ::before con conic-gradient ruotato via custom property animata,
+   mascherato ad anello e contenuto dal border-radius (overflow hidden). */
+@property --ag-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes ag-trace {
+  to { --ag-angle: 360deg; }
+}
+
 .aggiungi-card {
   position: relative;
-  border: 1.5px dashed color-mix(in srgb, var(--accent) 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   border-radius: 16px;
   background: transparent;
+  overflow: hidden;
   min-height: 260px;
   display: flex;
   flex-direction: column;
@@ -4428,31 +4420,38 @@ input:-webkit-autofill:active {
   gap: 12px;
   padding: 20px;
   cursor: pointer;
+  transition: transform 200ms ease, border-color 200ms ease;
 }
 
-/* bordo "trace": una copia più brillante del tratteggio, ritagliata con
-   clip-path che scorre lungo il perimetro */
-.aggiungi-card::after {
+.aggiungi-card:hover {
+  transform: scale(1.02);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.aggiungi-card::before {
   content: "";
   position: absolute;
-  inset: -1.5px;
-  border: 1.5px dashed var(--accent-bright);
+  inset: -1px;
   border-radius: 16px;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--ag-angle),
+    transparent 0%,
+    var(--accent) 10%,
+    var(--accent-bright) 15%,
+    var(--accent) 20%,
+    transparent 30%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
   pointer-events: none;
-  animation: border-trace 3s linear infinite;
-}
-
-@keyframes border-trace {
-  0%   { clip-path: inset(0 0 calc(100% - 4px) 0); }
-  25%  { clip-path: inset(0 0 0 calc(100% - 4px)); }
-  50%  { clip-path: inset(calc(100% - 4px) 0 0 0); }
-  75%  { clip-path: inset(0 calc(100% - 4px) 0 0); }
-  100% { clip-path: inset(0 0 calc(100% - 4px) 0); }
+  animation: ag-trace 4s linear infinite;
 }
 
 .aggiungi-plus {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
@@ -4460,7 +4459,7 @@ input:-webkit-autofill:active {
   align-items: center;
   justify-content: center;
   color: var(--accent);
-  font-size: 24px;
+  font-size: 26px;
   animation: aggiungi-pulse 2s ease-in-out infinite alternate;
 }
 
@@ -4471,8 +4470,8 @@ input:-webkit-autofill:active {
 }
 
 @keyframes aggiungi-pulse {
-  from { transform: scale(1); }
-  to   { transform: scale(1.04); }
+  from { opacity: 0.7; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1.02); }
 }
 
 /* ---------------- modale aggiungi veicolo ---------------- */
@@ -4730,7 +4729,7 @@ input:-webkit-autofill:active {
   background: var(--surface);
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
-  padding: 4px 16px;
+  padding: 8px;
 }
 
 .scadenza-row {
@@ -4738,22 +4737,49 @@ input:-webkit-autofill:active {
   display: flex;
   align-items: center;
   gap: 14px;
+  padding: 0 12px;
+  border-radius: 10px;
   border-bottom: 0.5px solid var(--border-subtle);
+  transition: background-color 150ms ease;
 }
 
 .scadenza-row:last-child { border-bottom: none; }
+
+/* sfondo tintato per urgenza + hover leggermente più chiaro */
+.scadenza-row.rossa { background: rgba(var(--iv-bad-rgb), 0.04); }
+.scadenza-row.arancione { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+
+.scadenza-row:hover { background: var(--surface-hover); }
+.scadenza-row.rossa:hover { background: rgba(var(--iv-bad-rgb), 0.08); }
+.scadenza-row.arancione:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
 
 .scadenza-icona {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
   color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
   flex-shrink: 0;
+}
+
+/* cerchio icona tintato nel colore dell'urgenza della riga */
+.scadenza-row.rossa .scadenza-icona {
+  background: rgba(var(--iv-bad-rgb), 0.15);
+  color: var(--iv-bad);
+}
+
+.scadenza-row.arancione .scadenza-icona {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+
+.scadenza-row.gialla .scadenza-icona {
+  background: color-mix(in srgb, var(--hp-giallo) 15%, transparent);
+  color: var(--hp-giallo);
 }
 
 .scadenza-info {
@@ -4816,6 +4842,8 @@ input:-webkit-autofill:active {
   .azioni-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* Il sollevamento/inclinazione è gestito dal tilt 3D (useTilt, transform
+   inline): il CSS anima solo bordo e sfondo per non entrare in conflitto. */
 .azione-card {
   display: block;
   background: var(--surface);
@@ -4824,7 +4852,8 @@ input:-webkit-autofill:active {
   border-radius: 14px;
   padding: 20px 24px;
   text-decoration: none;
-  transition: border-color 200ms ease, background-color 200ms ease;
+  cursor: pointer;
+  transition: transform 300ms ease-out, border-color 0.3s ease, background-color 0.3s ease;
 }
 
 .azione-card:hover {
@@ -4858,6 +4887,54 @@ input:-webkit-autofill:active {
   margin: 0;
 }
 
+/* ---------------- pagina lista veicoli ---------------- */
+.lv-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.lv-head .lv-head-title {
+  margin: 0;
+}
+
+.lv-counter {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.lv-btn-aggiungi {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 200ms ease;
+}
+
+.lv-btn-aggiungi:hover {
+  background: var(--accent-bright);
+}
+
+.lv-btn-aggiungi i {
+  font-size: 16px;
+}
+
 /* ---------------- header / sidebar (nuova nav) ---------------- */
 .header-left a {
   display: flex;
@@ -4878,8 +4955,9 @@ input:-webkit-autofill:active {
   color: var(--accent);
 }
 
+/* unico separatore del dropdown avatar: segnala il logout come azione distruttiva */
 .avatar-sep-logout {
-  height: 1px;
-  background: rgba(235, 32, 32, 0.4);
+  height: 0;
+  border-top: 0.5px solid rgba(235, 32, 32, 0.2);
   margin: 6px 12px;
 }

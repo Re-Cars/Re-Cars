@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import Layout from "@/components/Layout";
 import {
+  aggiornaStatoPrenotazione,
   creaPrenotazione,
   getOfficineCatalogo,
   getPrenotazioniUtente,
@@ -65,6 +66,50 @@ function normalizzaOfficina(o: OfficinaCatalogo): Officina {
   };
 }
 
+/* ---------- prenotazioni utente: helper ---------- */
+
+const STATO_LABEL: Record<string, string> = {
+  in_attesa: "In attesa",
+  confermata: "Confermata",
+  annullata: "Annullata",
+  completata: "Completata",
+};
+
+const STATO_ICONA: Record<string, string> = {
+  in_attesa: "ti-clock",
+  confermata: "ti-check",
+  annullata: "ti-x",
+  completata: "ti-circle-check",
+};
+
+/** Estrae servizio e note da "Servizio: X - Note: Y" (formato del backend). */
+function parseDescrizione(descrizione?: string | null): { servizio: string; note: string } {
+  if (!descrizione) return { servizio: "Servizio non specificato", note: "" };
+  const match = descrizione.match(/^Servizio:\s*(.*?)(?:\s*-\s*Note:\s*([\s\S]*))?$/);
+  if (!match) return { servizio: descrizione, note: "" };
+  return { servizio: match[1] || "Servizio non specificato", note: match[2] ?? "" };
+}
+
+function formattaDataOra(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return `${d.toLocaleDateString("it-IT")} · ${d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}`;
+}
+
+/** Sequenza degli stati attraversati, per lo storico nell'overlay dettagli. */
+function storicoStati(stato?: string): string[] {
+  switch (stato) {
+    case "confermata":
+      return ["in_attesa", "confermata"];
+    case "completata":
+      return ["in_attesa", "confermata", "completata"];
+    case "annullata":
+      return ["in_attesa", "annullata"];
+    default:
+      return ["in_attesa"];
+  }
+}
+
 function Stelle({ valore }: { valore: number }) {
   return (
     <>
@@ -108,6 +153,10 @@ export default function PrenotazioniPage() {
   const [note, setNote] = useState("");
   const [feedbackModal, setFeedbackModal] = useState<{ testo: string; errore: boolean } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+
+  // overlay dettagli prenotazione
+  const [dettaglioPren, setDettaglioPren] = useState<PrenotazioneUtente | null>(null);
+  const [inAnnullamento, setInAnnullamento] = useState(false);
 
   const mapDivRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Leaflet.Map | null>(null);
@@ -282,6 +331,24 @@ export default function PrenotazioniPage() {
     } catch (err) {
       console.error("Errore durante l'invio della prenotazione:", err);
       setFeedbackModal({ testo: "Impossibile elaborare la prenotazione. Riprova più tardi.", errore: true });
+    }
+  };
+
+  const annullaPrenotazione = async (p: PrenotazioneUtente) => {
+    if (inAnnullamento) return;
+    setInAnnullamento(true);
+    try {
+      await aggiornaStatoPrenotazione(p.id, "annullata");
+      mostraToast("Prenotazione annullata");
+      setDettaglioPren(null);
+      getPrenotazioniUtente()
+        .then(setPrenotazioniUtente)
+        .catch(() => undefined);
+    } catch (err) {
+      console.error("Errore durante l'annullamento della prenotazione:", err);
+      mostraToast("Impossibile annullare la prenotazione");
+    } finally {
+      setInAnnullamento(false);
     }
   };
 
@@ -652,27 +719,40 @@ export default function PrenotazioniPage() {
             )}
           </div>
 
-          {/* Colonna prenotazioni utente */}
+          {/* Colonna prenotazioni utente: card minimali, dettagli nell'overlay */}
           <div className="bookings-column">
             <h3 className="bookings-title"> Le mie Prenotazioni</h3>
-            <div>
+            <div className="pb-lista">
               {prenotazioniUtente === null ? (
                 <div className="stato-box">Caricamento...</div>
               ) : prenotazioniUtente.length === 0 ? (
                 <div className="stato-box">Nessuna prenotazione</div>
               ) : (
-                prenotazioniUtente.map((p, i) => (
-                  <div key={i} className="card booking-card show">
-                    <p className="booking-officina">{p.officina_nome}</p>
-                    <p className="booking-info">
-                      <i className="fa-regular fa-calendar" /> {p.data} · {p.orario}
-                    </p>
-                    <p className="booking-servizio">
-                      <i className="fa-solid fa-wrench" /> {p.servizio}
-                    </p>
-                    <span className={`booking-status status-${p.stato}`}>{p.stato}</span>
-                  </div>
-                ))
+                prenotazioniUtente.map((p) => {
+                  const { servizio: servizioPren } = parseDescrizione(p.descrizione);
+                  const stato = p.stato ?? "in_attesa";
+                  return (
+                    <div
+                      key={p.id}
+                      className="pb-card"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setDettaglioPren(p)}
+                      onKeyDown={(e) => e.key === "Enter" && setDettaglioPren(p)}
+                    >
+                      <span className={`pb-badge pb-badge-${stato}`}>
+                        {STATO_LABEL[stato] ?? stato}
+                      </span>
+                      <p className="pb-officina">{p.officina?.nome ?? "Officina"}</p>
+                      <p className="pb-riga">
+                        <i className="ti ti-calendar" /> {formattaDataOra(p.dataprenotazione)}
+                      </p>
+                      <p className="pb-riga">
+                        <i className="ti ti-tool" /> {servizioPren}
+                      </p>
+                    </div>
+                  );
+                })
               )}
             </div>
           </div>
@@ -783,6 +863,84 @@ export default function PrenotazioniPage() {
           </div>
         </div>
       )}
+
+      {/* Overlay dettagli prenotazione */}
+      {dettaglioPren &&
+        (() => {
+          const { servizio: servizioPren, note: notePren } = parseDescrizione(dettaglioPren.descrizione);
+          const stato = dettaglioPren.stato ?? "in_attesa";
+          const annullabile = stato === "in_attesa" || stato === "confermata";
+          return (
+            <div className="pb-overlay" onClick={() => setDettaglioPren(null)}>
+              <div className="pb-modal" onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  className="pb-modal-close"
+                  aria-label="Chiudi"
+                  onClick={() => setDettaglioPren(null)}
+                >
+                  <i className="ti ti-x" />
+                </button>
+
+                <div className="pb-modal-head">
+                  <h3 className="pb-modal-nome">{dettaglioPren.officina?.nome ?? "Officina"}</h3>
+                  <span className={`pb-badge pb-badge-${stato}`}>{STATO_LABEL[stato] ?? stato}</span>
+                </div>
+
+                <div className="pb-modal-info">
+                  {dettaglioPren.officina?.indirizzo && (
+                    <p className="pb-riga">
+                      <i className="ti ti-map-pin" /> {dettaglioPren.officina.indirizzo}
+                    </p>
+                  )}
+                  <p className="pb-riga">
+                    <i className="ti ti-calendar" /> {formattaDataOra(dettaglioPren.dataprenotazione)}
+                  </p>
+                  <p className="pb-riga">
+                    <i className="ti ti-tool" /> {servizioPren}
+                  </p>
+                  {notePren && (
+                    <p className="pb-riga">
+                      <i className="ti ti-note" /> {notePren}
+                    </p>
+                  )}
+                </div>
+
+                <div className="pb-storico">
+                  <p className="pb-storico-label">Storico stato</p>
+                  {storicoStati(stato).map((s) => (
+                    <div key={s} className="pb-storico-step">
+                      <span className={`pb-storico-icona pb-badge-${s}`}>
+                        <i className={`ti ${STATO_ICONA[s] ?? "ti-clock"}`} />
+                      </span>
+                      <span>{STATO_LABEL[s] ?? s}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {annullabile && (
+                  <div className="pb-modal-btns">
+                    <button
+                      type="button"
+                      className="pb-btn-annulla"
+                      disabled={inAnnullamento}
+                      onClick={() => void annullaPrenotazione(dettaglioPren)}
+                    >
+                      {inAnnullamento ? "Annullamento..." : "Annulla prenotazione"}
+                    </button>
+                    <button
+                      type="button"
+                      className="pb-btn-chiudi"
+                      onClick={() => setDettaglioPren(null)}
+                    >
+                      Chiudi
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
       {toast && (
         <div id="toast" style={{ display: "block", background: "#22c55e" }}>

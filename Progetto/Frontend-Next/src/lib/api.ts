@@ -303,12 +303,22 @@ export function creaPrenotazione(body: NuovaPrenotazioneBody): Promise<unknown> 
   return fetchApi("/prenotazioni", { method: "POST", body: JSON.stringify(body) });
 }
 
+/**
+ * Riga di GET /prenotazioni: record Prisma `prenotazione` con relazione
+ * `officina` inclusa. `descrizione` è costruita dal backend come
+ * "Servizio: X" oppure "Servizio: X - Note: Y" (vedi PrenotazioniService.crea).
+ */
 export interface PrenotazioneUtente {
-  officina_nome?: string;
-  data?: string;
-  orario?: string;
-  servizio?: string;
+  id: number;
+  dataprenotazione: string;
+  descrizione?: string | null;
   stato?: string;
+  id_officina?: number;
+  officina?: {
+    nome?: string;
+    indirizzo?: string;
+    telefono?: string;
+  };
 }
 
 export function getPrenotazioniUtente(): Promise<PrenotazioneUtente[]> {

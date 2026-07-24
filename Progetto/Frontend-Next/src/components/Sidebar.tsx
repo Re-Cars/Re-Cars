@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 
 import { useAuth } from "@/context/AuthContext";
@@ -30,7 +30,7 @@ interface VoceNav {
  */
 const NAV_ITEMS: VoceNav[] = [
   { href: "/homepage", icona: "ti-home", label: "Home" },
-  // "Lista veicoli" ha un handler dedicato: scroll/espansione garage (vedi sotto)
+  { href: "/lista-veicoli", icona: "ti-car", label: "Lista veicoli" },
   { href: "/storico-interventi", icona: "ti-history", label: "Storico interventi", separatorePrima: true },
   { href: "/prenotazioni", icona: "ti-calendar", label: "Prenotazioni" },
   { href: "/info-domande", icona: "ti-help-circle", label: "Info e domande", separatorePrima: true },
@@ -42,19 +42,7 @@ const NAV_ITEMS: VoceNav[] = [
 /** Sidebar a scomparsa con hamburger animato (replica di style-app.css). */
 export default function Sidebar({ aperta, onToggle, onClose }: SidebarProps) {
   const { logout } = useAuth();
-  const router = useRouter();
   const pathname = usePathname();
-
-  // "Lista veicoli": porta alla sezione garage della homepage; se si è già
-  // sulla homepage scrolla alla griglia e la espande via evento custom
-  const vaiAlGarage = () => {
-    onClose();
-    if (pathname === "/homepage") {
-      window.dispatchEvent(new Event("recars:apri-garage"));
-    } else {
-      router.push("/homepage#garage");
-    }
-  };
 
   return (
     <>
@@ -80,19 +68,7 @@ export default function Sidebar({ aperta, onToggle, onClose }: SidebarProps) {
         </div>
 
         <nav className="sidebar-nav">
-          <Link
-            href="/homepage"
-            className={pathname === "/homepage" ? "attiva" : undefined}
-            onClick={onClose}
-          >
-            <i className="ti ti-home" /> Home
-          </Link>
-
-          <button type="button" onClick={vaiAlGarage}>
-            <i className="ti ti-car" /> Lista veicoli
-          </button>
-
-          {NAV_ITEMS.slice(1).map((item) => (
+          {NAV_ITEMS.map((item) => (
             <Fragment key={item.href}>
               {item.separatorePrima && <div className="sidebar-sep" />}
               <Link

@@ -3,19 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import AggiungiVeicoloModal from "./AggiungiVeicoloModal";
+import { AggiungiVeicoloCard, VeicoloCard } from "./VeicoloCard";
+import AggiungiVeicoloOverlay from "@/components/AggiungiVeicoloOverlay";
 import { useAuth } from "@/context/AuthContext";
-import { calcolaSalute, nomeVeicolo, type SaluteVeicolo } from "@/lib/scadenze";
 import type { VeicoloDettaglio } from "@/lib/types";
 
 /** Quante card veicolo restano visibili nella griglia compressa. */
 const VISIBILI_COMPRESSA = 3;
-
-const BADGE_SALUTE: Record<SaluteVeicolo, { icona: string; testo: string }> = {
-  ok: { icona: "ti-circle-check", testo: "In buono stato" },
-  attenzione: { icona: "ti-alert-triangle", testo: "Richiede attenzione" },
-  urgente: { icona: "ti-alert-circle", testo: "Intervento urgente" },
-};
 
 interface GarageSectionProps {
   veicoli: VeicoloDettaglio[];
@@ -25,40 +19,10 @@ interface GarageSectionProps {
   onGarageCambiato: () => Promise<void> | void;
 }
 
-function VeicoloCard({ veicolo, attivo, onClick }: {
-  veicolo: VeicoloDettaglio;
-  attivo: boolean;
-  onClick: () => void;
-}) {
-  const salute = calcolaSalute(veicolo);
-  const badge = BADGE_SALUTE[salute];
-
-  return (
-    <div
-      className={`veicolo-card${attivo ? " attivo" : ""}`}
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => e.key === "Enter" && onClick()}
-    >
-      <div className="veicolo-card-placeholder">
-        <i className="ti ti-car" />
-      </div>
-      <span className="targa-pill">{veicolo.targa}</span>
-      <p className="veicolo-card-nome">{nomeVeicolo(veicolo)}</p>
-      {/* niente chilometraggio: il backend non gestisce il dato (nessun campo km) */}
-      <span className={`badge-salute ${salute}`}>
-        <i className={`ti ${badge.icona}`} />
-        {badge.testo}
-      </span>
-    </div>
-  );
-}
-
 /**
  * "Il mio garage": griglia responsive delle card veicolo (max 3 visibili,
  * il resto in un blocco espandibile animato) + card "Aggiungi un veicolo"
- * che apre il modale di ricerca targa.
+ * che apre l'overlay di ricerca targa.
  */
 export default function GarageSection({
   veicoli,
@@ -80,20 +44,7 @@ export default function GarageSection({
     router.push(`/info-veicolo?id=${v.id}`);
   };
 
-  const cardAggiungi = (
-    <div
-      className="aggiungi-card"
-      role="button"
-      tabIndex={0}
-      onClick={() => setModalAperto(true)}
-      onKeyDown={(e) => e.key === "Enter" && setModalAperto(true)}
-    >
-      <div className="aggiungi-plus">
-        <i className="ti ti-plus" />
-      </div>
-      <span className="aggiungi-label">Aggiungi un veicolo</span>
-    </div>
-  );
+  const cardAggiungi = <AggiungiVeicoloCard onClick={() => setModalAperto(true)} />;
 
   return (
     <section id="garage" className="hp-garage">
@@ -139,7 +90,7 @@ export default function GarageSection({
         </>
       )}
 
-      <AggiungiVeicoloModal
+      <AggiungiVeicoloOverlay
         aperto={modalAperto}
         onChiudi={() => setModalAperto(false)}
         onAggiunto={onGarageCambiato}

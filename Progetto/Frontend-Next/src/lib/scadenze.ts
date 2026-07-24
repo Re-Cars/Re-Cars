@@ -61,9 +61,15 @@ function livelloDaGiorni(giorni: number): LivelloScadenza | null {
   return null;
 }
 
+const RANK_LIVELLO: Record<LivelloScadenza, number> = { rossa: 0, arancione: 1, gialla: 2 };
+
 /**
  * Scadenze entro 90 giorni (o già scadute) di tutti i veicoli,
  * ordinate dalla più urgente alla meno urgente.
+ *
+ * Stessa logica di stato di info-veicolo/page.tsx: bollo "attivo" solo se
+ * `datascadenzabollo && isbolloattivo` (idem assicurazione con `isinsured`)
+ * — un flag false rende la voce scaduta (rossa) anche con data futura.
  */
 export function calcolaScadenze(veicoli: VeicoloDettaglio[]): ScadenzaVeicolo[] {
   const scadenze: ScadenzaVeicolo[] = [];
@@ -73,17 +79,21 @@ export function calcolaScadenze(veicoli: VeicoloDettaglio[]): ScadenzaVeicolo[] 
     if (!ds) continue;
     const nome = nomeVeicolo(v);
 
-    const voci: Array<{ tipo: TipoScadenza; data: string | Date | null | undefined }> = [
-      { tipo: "bollo", data: ds.datascadenzabollo },
-      { tipo: "assicurazione", data: ds.datascadenzarca },
+    const voci: Array<{
+      tipo: TipoScadenza;
+      data: string | Date | null | undefined;
+      attivo?: boolean;
+    }> = [
+      { tipo: "bollo", data: ds.datascadenzabollo, attivo: ds.isbolloattivo },
+      { tipo: "assicurazione", data: ds.datascadenzarca, attivo: ds.isinsured },
       { tipo: "revisione", data: ds.dataimmatricolazione ? prossimaRevisione(ds.dataimmatricolazione) : null },
     ];
 
-    for (const { tipo, data } of voci) {
+    for (const { tipo, data, attivo } of voci) {
       if (!data) continue;
       const giorni = giorniAllaData(data);
       if (giorni === null) continue;
-      const livello = livelloDaGiorni(giorni);
+      const livello = attivo === false ? "rossa" : livelloDaGiorni(giorni);
       if (!livello) continue;
       scadenze.push({
         chiave: `${v.id}-${tipo}`,
@@ -96,7 +106,9 @@ export function calcolaScadenze(veicoli: VeicoloDettaglio[]): ScadenzaVeicolo[] 
     }
   }
 
-  return scadenze.sort((a, b) => a.giorniRimanenti - b.giorniRimanenti);
+  return scadenze.sort(
+    (a, b) => RANK_LIVELLO[a.livello] - RANK_LIVELLO[b.livello] || a.giorniRimanenti - b.giorniRimanenti,
+  );
 }
 
 /**

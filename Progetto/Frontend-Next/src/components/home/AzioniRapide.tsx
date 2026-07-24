@@ -2,16 +2,26 @@
 
 import Link from "next/link";
 
+import { useTilt } from "@/hooks/useTilt";
+
 /**
  * Le tre card azione fisse in fondo alla homepage. Le destinazioni sono
  * volutamente identiche alle voci corrispondenti della Sidebar (vedi
  * commenti su ogni card e in Sidebar.tsx): tenerle allineate a mano.
+ * Tilt 3D condiviso con le card veicolo (stessi parametri, useTilt).
  */
 export default function AzioniRapide() {
+  const tilt = useTilt<HTMLAnchorElement>();
+
   return (
     <section className="azioni-grid">
       {/* Stessa destinazione della voce sidebar "Storico interventi" (/storico-interventi) */}
-      <Link href="/storico-interventi" className="azione-card">
+      <Link
+        href="/storico-interventi"
+        className="azione-card"
+        onMouseMove={tilt.onMouseMove}
+        onMouseLeave={tilt.onMouseLeave}
+      >
         <div className="azione-icona">
           <i className="ti ti-history" />
         </div>
@@ -20,7 +30,12 @@ export default function AzioniRapide() {
       </Link>
 
       {/* Stessa destinazione della voce sidebar "Prenotazioni" (/prenotazioni) */}
-      <Link href="/prenotazioni" className="azione-card">
+      <Link
+        href="/prenotazioni"
+        className="azione-card"
+        onMouseMove={tilt.onMouseMove}
+        onMouseLeave={tilt.onMouseLeave}
+      >
         <div className="azione-icona">
           <i className="ti ti-calendar-event" />
         </div>
@@ -29,7 +44,12 @@ export default function AzioniRapide() {
       </Link>
 
       {/* Stessa destinazione delle card veicolo del garage (/info-veicolo) */}
-      <Link href="/info-veicolo" className="azione-card">
+      <Link
+        href="/info-veicolo"
+        className="azione-card"
+        onMouseMove={tilt.onMouseMove}
+        onMouseLeave={tilt.onMouseLeave}
+      >
         <div className="azione-icona">
           <i className="ti ti-file-description" />
         </div>

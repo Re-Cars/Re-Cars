@@ -44,7 +44,7 @@ export default function ScadenzeAvvisi({ veicoli }: { veicoli: VeicoloDettaglio[
           </div>
         ) : (
           scadenze.map((s) => (
-            <div key={s.chiave} className="scadenza-row">
+            <div key={s.chiave} className={`scadenza-row ${s.livello}`}>
               <div className="scadenza-icona">
                 <i className={`ti ${ICONA_TIPO[s.tipo]}`} />
               </div>

@@ -9,8 +9,9 @@ import { useAuth } from "@/context/AuthContext";
 import { getAvatarSalvato } from "@/lib/storage";
 
 /**
- * Header dell'app: logo RE|CARS a sinistra, toggle dark/light e avatar
- * con dropdown (Account, Abbonamenti, Logout) a destra.
+ * Header dell'app: logo RE|CARS centrato (griglia a tre colonne 1fr auto 1fr),
+ * hamburger flottante a sinistra, toggle dark/light e avatar con dropdown
+ * (Account, Abbonamenti, Logout) a destra.
  */
 export default function Header() {
   const { utente, logout } = useAuth();
@@ -38,7 +39,8 @@ export default function Header() {
 
   return (
     <header className="header">
-      <div className="header-left">
+      <div className="header-left" />
+      <div className="header-center">
         <Link href="/homepage">
           <Image
             src="/Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg"
@@ -52,7 +54,6 @@ export default function Header() {
           </span>
         </Link>
       </div>
-      <div className="header-center" />
       <div className="header-right">
         <button
           type="button"
