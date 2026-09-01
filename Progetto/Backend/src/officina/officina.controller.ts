@@ -14,6 +14,7 @@ import {
 import { OfficinaService } from './officina.service';
 import { CreateOfficinaDto } from './dto/create-officina.dto';
 import { LoginOfficinaDto } from './dto/login-officina.dto';
+import { UpdateOfficinaDto } from './dto/update-officina.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
 import type { Request, Response } from 'express';
 
@@ -101,7 +102,7 @@ export class OfficinaController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('profilo')
-  async aggiornaProfilo(@Body() body: any, @Req() req: Request) {
+  async aggiornaProfilo(@Body() body: UpdateOfficinaDto, @Req() req: Request) {
     const officinaId = Number((req.user as any).sub);
     return this.officinaService.aggiornaProfilo(officinaId, body);
   }

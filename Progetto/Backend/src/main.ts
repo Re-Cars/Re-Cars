@@ -7,8 +7,23 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { rawBody: true });
   app.use(cookieParser());
+  const allowedOrigins: (string | RegExp)[] = [
+    'http://127.0.0.1:5500',
+    'http://localhost:5500',
+    'http://localhost:3000',
+  ];
+
+  if (process.env.FRONTEND_BASE_URL) {
+    try {
+      const url = new URL(process.env.FRONTEND_BASE_URL);
+      allowedOrigins.push(url.origin);
+    } catch {
+      allowedOrigins.push(process.env.FRONTEND_BASE_URL);
+    }
+  }
+
   app.enableCors({
-    origin: ['http://127.0.0.1:5500', 'http://localhost:5500'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -20,6 +35,6 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 bootstrap();

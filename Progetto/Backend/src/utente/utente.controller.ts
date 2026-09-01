@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   UseGuards,
+  ForbiddenException,
   Req,
   Res,
 } from '@nestjs/common';
@@ -83,7 +84,11 @@ export class UtenteController {
 
   @UseGuards(JwtAuthGuard)
   @Get('utente/:id')
-  async getUtentebyID(@Param('id') id: string) {
+  async getUtentebyID(@Param('id') id: string, @Req() req: Request) {
+    const loggedUserId = Number((req.user as any)?.sub);
+    if (loggedUserId !== +id) {
+      throw new ForbiddenException('Non autorizzato ad accedere a questo profilo');
+    }
     return this.utenteService.getUtentebyID(+id);
   }
 
@@ -94,6 +99,10 @@ export class UtenteController {
     @Body() datiRicevuti: UpdateUtenteDto,
     @Req() req: Request,
   ) {
+    const loggedUserId = Number((req.user as any)?.sub);
+    if (loggedUserId !== +id) {
+      throw new ForbiddenException('Non autorizzato a modificare questo profilo');
+    }
     return this.utenteService.aggiornaUtente(+id, datiRicevuti);
   }
 }

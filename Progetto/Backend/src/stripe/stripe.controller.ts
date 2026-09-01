@@ -45,10 +45,25 @@ export class StripeController {
       email = officina?.email || '';
     }
 
-    const baseUrl =
-      body.baseUrl ||
-      process.env.FRONTEND_BASE_URL ||
-      'http://127.0.0.1:5500/Frontend';
+    let baseUrl =
+      process.env.FRONTEND_BASE_URL || 'http://127.0.0.1:5500/Frontend';
+    if (body.baseUrl) {
+      try {
+        const parsed = new URL(body.baseUrl);
+        const configuredUrl = process.env.FRONTEND_BASE_URL
+          ? new URL(process.env.FRONTEND_BASE_URL)
+          : null;
+        if (
+          parsed.hostname === 'localhost' ||
+          parsed.hostname === '127.0.0.1' ||
+          (configuredUrl && parsed.hostname === configuredUrl.hostname)
+        ) {
+          baseUrl = body.baseUrl.replace(/\/+$/, '');
+        }
+      } catch {
+        // Fallback su baseUrl predefinito se formato URL non valido
+      }
+    }
 
     const successUrl =
       tipo === 'officina'

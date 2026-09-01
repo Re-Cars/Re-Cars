@@ -6,38 +6,53 @@ import {
   Body,
   Param,
   UseGuards,
+  Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { VeicoloService } from './veicolo.service';
 import { CreateVeicoloDto } from './dto/create-veicolo.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
+import type { Request } from 'express';
+
 @Controller('veicolo')
 export class VeicoloController {
-  constructor(private readonly veicoloService: VeicoloService) {}
+  constructor(private readonly veicoloService: VeicoloService) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async salva(@Body() dto: CreateVeicoloDto) {
-    return this.veicoloService.cercaESalva(dto);
+  async salva(@Body() dto: CreateVeicoloDto, @Req() req: Request) {
+    const userId = Number((req.user as any)?.sub);
+    return this.veicoloService.cercaESalva(dto, userId);
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('cerca/:targa')
   async cerca(@Param('targa') targa: string) {
     return this.veicoloService.cercaSoloDati(targa);
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('utente/:id')
-  async getVeicoliUtente(@Param('id') id: string) {
+  async getVeicoliUtente(@Param('id') id: string, @Req() req: Request) {
+    const userId = Number((req.user as any)?.sub);
+    if (userId !== +id) {
+      throw new ForbiddenException('Non autorizzato ad accedere ai veicoli di questo utente');
+    }
     return this.veicoloService.getVeicoliByUtente(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getVeicolo(@Param('id') id: string) {
-    return this.veicoloService.getVeicoloById(+id);
+  async getVeicolo(@Param('id') id: string, @Req() req: Request) {
+    const userId = Number((req.user as any)?.sub);
+    const userType = (req.user as any)?.tipo;
+    return this.veicoloService.getVeicoloById(+id, userId, userType);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async elimina(@Param('id') id: string) {
-    return this.veicoloService.eliminaVeicolo(+id);
+  async elimina(@Param('id') id: string, @Req() req: Request) {
+    const userId = Number((req.user as any)?.sub);
+    return this.veicoloService.eliminaVeicolo(+id, userId);
   }
 }
