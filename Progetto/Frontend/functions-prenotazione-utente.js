@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
    ① CONFIGURAZIONE ENDPOINT NESTJS
    ═══════════════════════════════════════════════════════════ */
-const API_BASE          = 'http://localhost:3000'; 
+const API_BASE          = window.API_URL || 'https://re-cars-backend.onrender.com'; 
 const ENDPOINT_OFFICINE = `${API_BASE}/officina/all`; 
 const ENDPOINT_PRENOTA  = `${API_BASE}/prenotazioni`;
 const SLOT_ORARI        = ['08:00','09:00','10:00','11:00','14:00','15:00','16:00','17:00'];

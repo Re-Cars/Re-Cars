@@ -2,7 +2,7 @@
 /                  AGENDA OFFICINA                     /
 -----------------------------------------------------*/
 
-const API = 'http://localhost:3000';
+const API = window.API_URL || 'https://re-cars-backend.onrender.com';
 let officina = null;
 let prenotazioni = [];
 let vistaAttiva = 'settimana';

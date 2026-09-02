@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000';
+const API = window.API_URL || 'https://re-cars-backend.onrender.com';
 
 async function caricaPianoAttivo() {
     try {

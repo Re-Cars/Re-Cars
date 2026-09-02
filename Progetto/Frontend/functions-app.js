@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 async function logout() {
     try {
-        await fetch('http://localhost:3000/auth/logout', {
+        await fetch(`${API_URL}/auth/logout`, {
             method: 'POST',
             credentials: 'include'
         });
@@ -61,7 +61,7 @@ async function caricaVeicoli() {
     const utente = JSON.parse(utenteString);
     const idUtente = utente.id;
     try {
-        const response = await fetch(`http://localhost:3000/veicolo/utente/${idUtente}`, {
+        const response = await fetch(`${API_URL}/veicolo/utente/${idUtente}`, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -185,7 +185,7 @@ async function eliminaVeicolo(id) {
 
     document.getElementById('conferma-elimina-overlay')?.remove();
     try {
-        const response = await fetch(`http://localhost:3000/veicolo/${id}`, {
+        const response = await fetch(`${API_URL}/veicolo/${id}`, {
             method: 'DELETE',
             credentials:'include'
         });
@@ -286,7 +286,7 @@ async function caricaInfoVeicolo() {
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/veicolo/${veicoloAttivo.id}`, {
+        const response = await fetch(`${API_URL}/veicolo/${veicoloAttivo.id}`, {
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
         });
@@ -474,7 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('cerca-loading').classList.add('show');
         document.getElementById('vehicleResult').innerHTML = '';
         try {
-            const response = await fetch(`http://localhost:3000/veicolo/cerca/${plate}`, {
+            const response = await fetch(`${API_URL}/veicolo/cerca/${plate}`, {
                 credentials:'include'
             });
             document.getElementById('cerca-loading').classList.remove('show');
@@ -547,7 +547,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function addVehicle(targa, idUtente) {
     try {
-        const response = await fetch(`http://localhost:3000/veicolo`, {
+        const response = await fetch(`${API_URL}/veicolo`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: 'include',
@@ -624,7 +624,7 @@ async function getUsername() {
 
     const idUtente = utente.id;
     try {
-        const response = await fetch(`http://localhost:3000/auth/utente/${idUtente}`, {
+        const response = await fetch(`${API_URL}/auth/utente/${idUtente}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
             credentials: 'include'

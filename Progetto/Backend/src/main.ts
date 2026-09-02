@@ -11,6 +11,7 @@ async function bootstrap() {
     'http://127.0.0.1:5500',
     'http://localhost:5500',
     'http://localhost:3000',
+    /^https:\/\/.*\.vercel\.app$/,
   ];
 
   if (process.env.FRONTEND_BASE_URL) {

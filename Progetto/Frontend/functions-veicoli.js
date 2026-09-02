@@ -58,7 +58,7 @@ async function renderListaVeicoli() {
 
 async function caricaDettagliVeicolo(id) {
     try {
-        const response = await fetch(`http://localhost:3000/veicolo/${id}`, {
+        const response = await fetch(`${API_URL}/veicolo/${id}`, {
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
         });

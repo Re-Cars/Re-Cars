@@ -2,7 +2,7 @@
  come chiamare dati reali al backend
 ----------------------------------------------------*/
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = window.API_URL || 'https://re-cars-backend.onrender.com';
 
 const tipiIntervento = {
   ordinario:     ['Benzina','Cambio olio','Cambio tergicristalli','Gomme','Batteria','Controllo livelli','Pastiglie freni','Liquido freni','Liquido raffreddamento','Filtri motore','Pulizia iniettori','Tagliando','Altro'],
