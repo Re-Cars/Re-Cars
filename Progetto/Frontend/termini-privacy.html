@@ -11,65 +11,61 @@
     <script src="functions-app.js" defer></script>
 </head>
 <body>
-
-   <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
+<div class="hamburger-overlay" id="hamburger-overlay" onclick="closeMenu()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
+            <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+                <span class="line line4"></span>
+            </div>
         </div>
         <nav class="sidebar-nav">
-      <a href="homepage.html" class="sidebar-home"><i class="fa-solid fa-house"></i> Home</a>
-      <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
-      <a href="veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
-      <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
-      <a href="infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
-      <a href="#"><i class="fa-solid fa-envelope"></i> Contatti</a>
-       <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
-      <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-    </nav>
-  </div>
-
-    <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
-        <span class="line line1"></span>
-        <span class="line line2"></span>
-        <span class="line line3"></span>
-        <span class="line line4"></span>
+            <a href="homepage.html" class="sidebar-home"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+            <a href="veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
+            <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti</a>
+            <a href="info-domande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+            <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
+            <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+            <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
     </div>
 
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
-           <span class="header-brand">RE<span>|</span>CARS</span>
+            <a href="homepage.html">
+                <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+                <span class="header-brand">RE<span>|</span>CARS</span>
+            </a>
         </div>
         <div class="header-right">
-           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
-            <div class="header-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>   -->
-
-               <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
-                    <div class="header-avatar"> 
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <div class="avatar-dropdown" id="avatar-dropdown">
-                            <div class="avatar-header">
-                                <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
-                            </div>                
-                            <a href="account.html" class="avatar-item">
-                            <i class="fa-solid fa-pen"></i>
-                            <span>Modifica profilo</span>
-                        </a>
-                        <a href="landing.html" class="avatar-item avatar-item-logout">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>Logout</span>
-                        </a>
-                    </div>
+            <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar">
+                    <i class="fa-solid fa-user"></i>
                 </div>
-
-            
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                    </div>
+                    <a href="account.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica profilo</span>
+                    </a>
+                    <a href="landing.html" class="avatar-item avatar-item-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </header>
 

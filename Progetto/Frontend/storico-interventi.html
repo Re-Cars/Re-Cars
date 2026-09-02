@@ -146,8 +146,9 @@
                 <div class="table-head">
                     <div>Data</div>
                     <div>Categoria</div>
-                    <div>Descrizione</div>
-                    <div>Fornitore/Mediante</div>
+                    <div>Tipo e Descrizione</div>
+                    <div>Mediante</div>
+                    <div>Città</div>
                     <div>Costo</div>
                     <div></div>
                 </div>
@@ -225,14 +226,21 @@
             </div>
             <div class="form-grid">
                 <div class="form-row">
-                    <label>Fornitore/Mediante (opzionale)</label>
+                    <label>Mediante (opzionale)</label>
                     <input type="text" id="inputMediante" placeholder="es. officina/benzinaio/negozio">
                 </div>
                 <div class="form-row">
+                    <label>Città</label>
+                    <input type="text" id=" " placeholder="es. Trapani">
+                </div> 
+            </div>
+            <div class="form-grid">
+                <div class="form-row">
                     <label>Costo (opzionale)</label>
                     <input type="number" id="inputCosto" placeholder="€ 0.00" step="0.01">
-                </div>
+                </div> 
             </div>
+
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeModal()">Cancella</button>
                 <button class="btn-save" onclick="saveIntervento()">Salva</button>
@@ -273,9 +281,15 @@
             </div>
             <div class="form-grid">
                 <div class="form-row">
-                    <label>Fornitore/Mediante (opzionale)</label>
+                    <label>Mediante (opzionale)</label>
                     <input type="text" id="editMediante" placeholder="es. officina/benzinaio/negozio">
                 </div>
+                <div class="form-row">
+                    <label>Città</label>
+                    <input type="text" id=" " placeholder="es.Trapani">
+                </div>
+            </div>
+           <div class="form-grid">
                 <div class="form-row">
                     <label>Costo (opzionale)</label>
                     <input type="number" id="editCosto" placeholder="€ 0.00" step="0.01">
@@ -335,7 +349,7 @@
                         <span class="dot" style="background:#ef4444"></span> Straordinario
                     </button>
                     <button type="button" class="filter-btn" data-filter="annotazioni" onclick="setPdfFilter('annotazioni', this)">
-                        <span class="dot" style="background:#f8782f"></span> Annotazione problemi
+                        <span class="dot" style="background:#f8782f"></span> Annotazione e problemi
                     </button>
                     <button type="button" class="filter-btn" data-filter="gestione" onclick="setPdfFilter('gestione', this)">
                         <span class="dot" style="background:#22c55e"></span> Spese di gestione

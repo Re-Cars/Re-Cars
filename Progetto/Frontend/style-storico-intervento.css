@@ -192,7 +192,7 @@
 
 .table-head {
     display: grid;
-    grid-template-columns: 120px 130px 1fr 150px 90px 60px;
+    grid-template-columns: 120px 130px 1fr 150px 90px  68px 60px;
     padding: 10px 18px;
     background: rgba(249, 115, 22, 0.06);
     border-bottom: 1px solid rgba(249, 115, 22, 0.12);
@@ -207,7 +207,7 @@
 
 .table-row {
     display: grid;
-    grid-template-columns: 120px 130px 1fr 150px 90px 60px;
+    grid-template-columns: 120px 130px 1fr 150px 90px 68px 60px;
     padding: 12px 18px;
     border-bottom: 1px solid rgba(249, 115, 22, 0.08);
     gap: 8px;
@@ -570,7 +570,7 @@
     }
     .table-head,
     .table-row {
-        grid-template-columns: 95px 115px 1fr 110px 80px 52px;
+        grid-template-columns: 90px 90px 1fr 100px 80px 52px 50px;
         padding: 10px 14px;
         font-size: 12px;
         gap: 6px;
@@ -588,7 +588,7 @@
     }
     .table-head,
     .table-row {
-        grid-template-columns: 85px 105px 1fr 75px 50px;
+        grid-template-columns: 80px 100px 1fr 65px 50px 50px;
         padding: 9px 12px;
         font-size: 11px;
         gap: 5px;

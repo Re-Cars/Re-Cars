@@ -5,10 +5,13 @@
 const API_BASE = 'http://localhost:3000';
 
 const tipiIntervento = {
-  ordinario:     ['Benzina','Cambio olio','Cambio tergicristalli','Gomme','Batteria','Controllo livelli','Pastiglie freni','Liquido freni','Liquido raffreddamento','Filtri motore','Pulizia iniettori','Tagliando','Altro'],
-  straordinario: ['Cinghia distribuzione','Carrozzeria','Riparazioni','Impianto elettrico','Luci','Frizione','Ammortizzatori','Radiatore','Sensori','Compressore clima','Marmitta','Altro'],
-  gestione:      ['Assicurazione','Bollo','Revisione','Multa','Pedaggi','Parcheggio'],
-  annotazioni:   ['Problemi','luci','motore','elettrico','rumori','altro'],
+  /*ordinario:     ['Benzina','Cambio olio','Cambio tergicristalli','Gomme','Batteria','Controllo livelli','Pastiglie freni','Liquido freni','Liquido raffreddamento','Filtri motore','Pulizia iniettori','Altro'],*/
+  ordinario:      ['Benzina','Rifornimento','Cambio', 'Controllo', 'Pulizia','Aggiunta','Altro'],
+  /*straordinario: ['Cinghia distribuzione','Carrozzeria','Riparazioni','Impianto elettrico','Luci','Frizione','Ammortizzatori','Radiatore','Sensori','Compressore clima','Marmitta','Altro'],*/
+  straordinario:   ['Tagliando', 'Revisione', 'Riparazione', 'Controllo', 'Modifica veicolo'], 
+  gestione:      ['Assicurazione','Bollo','Revisione','Tagliando','Multa','Pedaggi','Parcheggio'],
+  /*annotazioni:   ['Problemi','luci','motore','elettrico','rumori','altro'],*/
+  annotazioni:   ['Problemi', 'Altro']
 };
 
 let interventi = [];
@@ -172,11 +175,13 @@ function renderRows() {
       </div>
 
       <div class="desc-cell">
-        <div>${item.nome}</div>
+        <div><b>${item.nome}</b></div>
         ${item.descrizione ? `<div class="desc-sub">${item.descrizione}</div>` : ''}
       </div>
 
       <div class="mediante-cell">${item.mediante || '—'}</div>
+      <div class="citta-cell">${item.citta || '—'}</div>
+
 
       <div class="costo-cell ${item.costo ? '' : 'vuoto'}">
         ${item.costo ? Number(item.costo).toFixed(2) + ' €' : '—'}
