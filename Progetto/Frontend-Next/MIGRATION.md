@@ -10,13 +10,15 @@ storico/FAQ).
 ## Avvio rapido
 
 ```bash
-npm install
-npm run dev        # solo Next → http://localhost:3001
-npm run dev:all    # backend (porta 3000, via pnpm in ../Backend) + Next insieme
-npm run build      # build di produzione
-npm run start      # server di produzione su porta 3001
-npm run lint       # ESLint
+pnpm install
+pnpm dev           # solo Next → http://localhost:3001
+pnpm dev:all       # backend (porta 3000, via pnpm in ../Backend) + Next insieme
+pnpm build         # build di produzione
+pnpm start         # server di produzione su porta 3001
+pnpm lint          # ESLint
 ```
+
+> Package manager: **pnpm** (come `Progetto/Backend`). Vedi `README-DEV.md`.
 
 Porte: backend **3000**, Next **3001**, vanilla su Live Server **5500** — i tre
 servizi convivono senza conflitti (dettagli in `README-DEV.md`). La whitelist

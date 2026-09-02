@@ -166,7 +166,7 @@ locale; da rimuovere manualmente dal DB se necessario.
 
 ```bash
 cd Progetto/Frontend-Next
-npm run dev:all
+pnpm dev:all
 ```
 
 Avvia in parallelo (via `concurrently --kill-others-on-fail`):
@@ -184,7 +184,7 @@ In alternativa, due terminali separati:
 cd Progetto/Backend && pnpm start:dev
 
 # terminale 2
-cd Progetto/Frontend-Next && npm run dev
+cd Progetto/Frontend-Next && pnpm dev
 ```
 
 Frontend: http://localhost:3001 — Backend: http://localhost:3000.

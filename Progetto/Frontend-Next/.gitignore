@@ -11,6 +11,11 @@
 !.yarn/releases
 !.yarn/versions
 
+# package manager: questo progetto usa SOLO pnpm (come Progetto/Backend).
+# pnpm-lock.yaml va committato; il lockfile di npm no, per evitare che
+# torni a convivere un secondo albero di dipendenze dentro node_modules.
+package-lock.json
+
 # testing
 /coverage
 

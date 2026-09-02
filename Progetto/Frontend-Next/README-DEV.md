@@ -16,9 +16,15 @@ variabile d'ambiente `FRONTEND_ORIGIN`.
 
 ```bash
 cd Progetto/Frontend-Next
-npm install        # solo la prima volta
-npm run dev        # → http://localhost:3001
+pnpm install       # solo la prima volta
+pnpm dev           # → http://localhost:3001
 ```
+
+> **Package manager: solo pnpm.** Questo progetto è allineato a `Progetto/Backend`
+> e ha `"packageManager": "pnpm@11.10.0"` in `package.json`. Un `npm install` qui
+> creerebbe un `package-lock.json` (gitignorato) e un secondo albero di dipendenze
+> sovrapposto a quello di pnpm dentro `node_modules`.
+> Fa eccezione `ReCars-mobile/`, che resta su **npm** per scelta (vedi `CLAUDE.md`).
 
 Il backend deve girare a parte (vedi sotto), altrimenti le chiamate API falliscono.
 
@@ -26,7 +32,7 @@ Il backend deve girare a parte (vedi sotto), altrimenti le chiamate API fallisco
 
 ```bash
 cd Progetto/Frontend-Next
-npm run dev:all
+pnpm dev:all
 ```
 
 Usa `concurrently` per avviare in parallelo:
