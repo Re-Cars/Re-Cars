@@ -12,6 +12,16 @@ interface OfficinaPerIcs {
   indirizzo: string;
 }
 
+/** Sanitizza una stringa per evitare XSS nell'HTML delle email */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 @Injectable()
 export class PrenotazioniService {
   constructor(
@@ -57,20 +67,28 @@ export class PrenotazioniService {
 
     const icsContent = this.generaIcs(officina, dto.servizio, dataCompleta);
 
+    const safeUsername = escapeHtml(utente.username);
+    const safeOfficinaNome = escapeHtml(officina.nome);
+    const safeOfficinaIndirizzo = escapeHtml(officina.indirizzo);
+    const safeServizio = escapeHtml(dto.servizio);
+    const safeData = escapeHtml(soloData);
+    const safeOrario = escapeHtml(dto.orario);
+    const safeNote = dto.note ? escapeHtml(dto.note) : undefined;
+
     await this.mailerService.sendMail({
       to: utente.email,
-      subject: `Prenotazione confermata — ${officina.nome}`,
+      subject: `Prenotazione confermata — ${safeOfficinaNome}`,
       html: `
         <h2>Prenotazione confermata!</h2>
-        <p>Ciao <strong>${utente.username}</strong>,</p>
+        <p>Ciao <strong>${safeUsername}</strong>,</p>
         <p>La tua prenotazione è stata registrata con successo.</p>
         <ul>
-          <li><strong>Officina:</strong> ${officina.nome}</li>
-          <li><strong>Indirizzo:</strong> ${officina.indirizzo}</li>
-          <li><strong>Servizio:</strong> ${dto.servizio}</li>
-          <li><strong>Data:</strong> ${soloData}</li>
-          <li><strong>Orario:</strong> ${dto.orario}</li>
-          ${dto.note ? `<li><strong>Note:</strong> ${dto.note}</li>` : ''}
+          <li><strong>Officina:</strong> ${safeOfficinaNome}</li>
+          <li><strong>Indirizzo:</strong> ${safeOfficinaIndirizzo}</li>
+          <li><strong>Servizio:</strong> ${safeServizio}</li>
+          <li><strong>Data:</strong> ${safeData}</li>
+          <li><strong>Orario:</strong> ${safeOrario}</li>
+          ${safeNote ? `<li><strong>Note:</strong> ${safeNote}</li>` : ''}
         </ul>
         <p>Trovi in allegato il file da importare su Google Calendar.</p>
       `,

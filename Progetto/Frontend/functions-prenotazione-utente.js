@@ -48,8 +48,8 @@ async function caricaOfficine() {
             disponibilita: o.disponibilita || 'Immediata',
             indirizzo:     o.indirizzo || 'Indirizzo non specificato',
             telefono:      o.telefono || '',
-            lat:           parseFloat(o.latitude || o.lat || 45.4642),  
-            lng:           parseFloat(o.longitude || o.lng || 9.1900),
+            lat:           parseFloat(o.latitude || o.lat || null),  
+            lng:           parseFloat(o.longitude || o.lng || null),
             servizi:       Array.isArray(o.servizi) ? o.servizi : (o.servizi ? o.servizi.split(',') : ['Riparazione', 'Tagliando']),
         }));
 
@@ -82,7 +82,7 @@ async function geocodificaIndirizzo(indirizzo) {
     } catch (e) {
         console.warn('Geocodifica fallita, uso coordinate di default.', e);
     }
-    return { lat: 45.4642, lng: 9.1900 }; 
+    return { lat: null , lng: null }; 
 }
 
 /* ═══════════════════════════════════════════════════════════
