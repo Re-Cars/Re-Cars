@@ -106,8 +106,11 @@ export class OfficinaController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('profilo')
-  async aggiornaProfilo(@Body() body: UpdateOfficinaDto, @Req() req: Request) {
-    const officinaId = Number((req.user as any).sub);
+  async aggiornaProfilo(
+    @Body() body: UpdateOfficinaDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const officinaId = Number(user.sub);
     return this.officinaService.aggiornaProfilo(officinaId, body);
   }
 

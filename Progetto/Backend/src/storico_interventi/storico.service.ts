@@ -22,7 +22,9 @@ export class StoricoService {
       throw new NotFoundException(`Veicolo con id ${idVeicolo} non trovato`);
     }
     if (userId && userType !== 'officina' && veicolo.id_utente !== userId) {
-      throw new ForbiddenException('Non autorizzato a visualizzare gli interventi di questo veicolo');
+      throw new ForbiddenException(
+        'Non autorizzato a visualizzare gli interventi di questo veicolo',
+      );
     }
 
     return this.prisma.storico_intervento.findMany({
@@ -37,10 +39,14 @@ export class StoricoService {
       where: { id: dto.id_veicolo },
     });
     if (!veicolo) {
-      throw new NotFoundException(`Veicolo con id ${dto.id_veicolo} non trovato`);
+      throw new NotFoundException(
+        `Veicolo con id ${dto.id_veicolo} non trovato`,
+      );
     }
     if (userId && userType !== 'officina' && veicolo.id_utente !== userId) {
-      throw new ForbiddenException('Non autorizzato ad aggiungere interventi a questo veicolo');
+      throw new ForbiddenException(
+        'Non autorizzato ad aggiungere interventi a questo veicolo',
+      );
     }
 
     return this.prisma.storico_intervento.create({
@@ -57,7 +63,12 @@ export class StoricoService {
   }
 
   // ─── PUT aggiorna intervento ─────────────────────────────────────────────────
-  async update(id: number, dto: UpdateInterventoDto, userId?: number, userType?: string) {
+  async update(
+    id: number,
+    dto: UpdateInterventoDto,
+    userId?: number,
+    userType?: string,
+  ) {
     const existing = await this.prisma.storico_intervento.findUnique({
       where: { id },
       include: { veicolo: true },
@@ -65,8 +76,14 @@ export class StoricoService {
     if (!existing) {
       throw new NotFoundException(`Intervento con id ${id} non trovato`);
     }
-    if (userId && userType !== 'officina' && existing.veicolo.id_utente !== userId) {
-      throw new ForbiddenException('Non autorizzato a modificare questo intervento');
+    if (
+      userId &&
+      userType !== 'officina' &&
+      existing.veicolo.id_utente !== userId
+    ) {
+      throw new ForbiddenException(
+        'Non autorizzato a modificare questo intervento',
+      );
     }
 
     return this.prisma.storico_intervento.update({
@@ -91,8 +108,14 @@ export class StoricoService {
     if (!existing) {
       throw new NotFoundException(`Intervento con id ${id} non trovato`);
     }
-    if (userId && userType !== 'officina' && existing.veicolo.id_utente !== userId) {
-      throw new ForbiddenException('Non autorizzato ad eliminare questo intervento');
+    if (
+      userId &&
+      userType !== 'officina' &&
+      existing.veicolo.id_utente !== userId
+    ) {
+      throw new ForbiddenException(
+        'Non autorizzato ad eliminare questo intervento',
+      );
     }
 
     await this.prisma.storico_intervento.delete({ where: { id } });

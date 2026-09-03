@@ -60,7 +60,7 @@ export class VeicoloService {
   ) {}
 
   cercaSoloDati(targa: string) {
-    const veicoli = (datiMock as VeicoliMockData).data;
+    const veicoli = (datiMock as unknown as VeicoliMockData).data;
     const trovato = veicoli.find(
       (v) => v.LicensePlate.toUpperCase() === targa.toUpperCase(),
     );
@@ -80,7 +80,7 @@ export class VeicoloService {
   }
 
   async cercaESalva(dto: CreateVeicoloDto, userId: number) {
-    const veicoli = (datiMock as any).data;
+    const veicoli = (datiMock as unknown as VeicoliMockData).data;
     const trovato = veicoli.find(
       (v) => v.LicensePlate.toUpperCase() === dto.targa.toUpperCase(),
     );
@@ -187,7 +187,9 @@ export class VeicoloService {
       throw new NotFoundException(`Veicolo con id ${id} non trovato`);
 
     if (userId && userType !== 'officina' && veicolo.id_utente !== userId) {
-      throw new ForbiddenException('Non autorizzato ad accedere a questo veicolo');
+      throw new ForbiddenException(
+        'Non autorizzato ad accedere a questo veicolo',
+      );
     }
 
     return veicolo;
@@ -202,7 +204,9 @@ export class VeicoloService {
       throw new ForbiddenException('Non puoi eliminare un veicolo non tuo');
     }
 
-    await this.prisma.storico_intervento.deleteMany({ where: { id_veicolo: id } });
+    await this.prisma.storico_intervento.deleteMany({
+      where: { id_veicolo: id },
+    });
     await this.prisma.dati_generici.deleteMany({ where: { id_veicolo: id } });
     await this.prisma.dati_specifici.deleteMany({ where: { id_veicolo: id } });
     await this.prisma.veicolo.delete({ where: { id } });

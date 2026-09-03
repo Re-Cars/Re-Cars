@@ -16,7 +16,7 @@ import { LoginUtenteDto } from './dto/login-utente.dto';
 import { UpdateUtenteDto } from './dto/update-utente.dto';
 import { LoginAziendaDto } from './dto/login-azienda.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 
 @Controller('auth')
 export class UtenteController {
@@ -86,9 +86,11 @@ export class UtenteController {
   @UseGuards(JwtAuthGuard)
   @Get('utente/:id')
   async getUtentebyID(@Param('id') id: string, @Req() req: Request) {
-    const loggedUserId = Number((req.user as any)?.sub);
+    const loggedUserId = Number(req.user?.sub);
     if (loggedUserId !== +id) {
-      throw new ForbiddenException('Non autorizzato ad accedere a questo profilo');
+      throw new ForbiddenException(
+        'Non autorizzato ad accedere a questo profilo',
+      );
     }
     return this.utenteService.getUtentebyID(+id);
   }
@@ -98,10 +100,13 @@ export class UtenteController {
   async aggiornaUtente(
     @Param('id') id: string,
     @Body() datiRicevuti: UpdateUtenteDto,
+    @Req() req: Request,
   ) {
-    const loggedUserId = Number((req.user as any)?.sub);
+    const loggedUserId = Number(req.user?.sub);
     if (loggedUserId !== +id) {
-      throw new ForbiddenException('Non autorizzato a modificare questo profilo');
+      throw new ForbiddenException(
+        'Non autorizzato a modificare questo profilo',
+      );
     }
     return this.utenteService.aggiornaUtente(+id, datiRicevuti);
   }

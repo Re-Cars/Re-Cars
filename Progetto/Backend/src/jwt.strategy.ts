@@ -24,7 +24,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         (request: RequestWithCookies) => {
           let data: string | null = null;
           if (request && request.cookies) {
-            data = request.cookies['access_token'];
+            const cookies = request.cookies as Record<
+              string,
+              string | undefined
+            >;
+            data = cookies['access_token'] ?? null;
           }
           return data;
         },

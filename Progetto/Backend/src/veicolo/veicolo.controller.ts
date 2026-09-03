@@ -16,12 +16,12 @@ import type { Request } from 'express';
 
 @Controller('veicolo')
 export class VeicoloController {
-  constructor(private readonly veicoloService: VeicoloService) { }
+  constructor(private readonly veicoloService: VeicoloService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
   async salva(@Body() dto: CreateVeicoloDto, @Req() req: Request) {
-    const userId = Number((req.user as any)?.sub);
+    const userId = Number(req.user?.sub);
     return this.veicoloService.cercaESalva(dto, userId);
   }
 
@@ -34,9 +34,11 @@ export class VeicoloController {
   @UseGuards(JwtAuthGuard)
   @Get('utente/:id')
   async getVeicoliUtente(@Param('id') id: string, @Req() req: Request) {
-    const userId = Number((req.user as any)?.sub);
+    const userId = Number(req.user?.sub);
     if (userId !== +id) {
-      throw new ForbiddenException('Non autorizzato ad accedere ai veicoli di questo utente');
+      throw new ForbiddenException(
+        'Non autorizzato ad accedere ai veicoli di questo utente',
+      );
     }
     return this.veicoloService.getVeicoliByUtente(+id);
   }
@@ -44,15 +46,15 @@ export class VeicoloController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getVeicolo(@Param('id') id: string, @Req() req: Request) {
-    const userId = Number((req.user as any)?.sub);
-    const userType = (req.user as any)?.tipo;
+    const userId = Number(req.user?.sub);
+    const userType = req.user?.tipo;
     return this.veicoloService.getVeicoloById(+id, userId, userType);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async elimina(@Param('id') id: string, @Req() req: Request) {
-    const userId = Number((req.user as any)?.sub);
+    const userId = Number(req.user?.sub);
     return this.veicoloService.eliminaVeicolo(+id, userId);
   }
 }

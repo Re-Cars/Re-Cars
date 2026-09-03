@@ -31,8 +31,8 @@ export class StoricoController {
     @Param('id_veicolo', ParseIntPipe) idVeicolo: number,
     @Req() req: Request,
   ) {
-    const userId = Number((req.user as any)?.sub);
-    const userType = (req.user as any)?.tipo;
+    const userId = Number(req.user?.sub);
+    const userType = req.user?.tipo;
     return this.storicoService.findByVeicolo(idVeicolo, userId, userType);
   }
 
@@ -40,8 +40,8 @@ export class StoricoController {
   // Body: { id_veicolo, data, categoria, nome, descrizione?, mediante?, costo? }
   @Post()
   create(@Body() dto: CreateInterventoDto, @Req() req: Request) {
-    const userId = Number((req.user as any)?.sub);
-    const userType = (req.user as any)?.tipo;
+    const userId = Number(req.user?.sub);
+    const userType = req.user?.tipo;
     return this.storicoService.create(dto, userId, userType);
   }
 
@@ -53,16 +53,16 @@ export class StoricoController {
     @Body() dto: UpdateInterventoDto,
     @Req() req: Request,
   ) {
-    const userId = Number((req.user as any)?.sub);
-    const userType = (req.user as any)?.tipo;
+    const userId = Number(req.user?.sub);
+    const userType = req.user?.tipo;
     return this.storicoService.update(id, dto, userId, userType);
   }
 
   // DELETE /interventi/:id
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
-    const userId = Number((req.user as any)?.sub);
-    const userType = (req.user as any)?.tipo;
+    const userId = Number(req.user?.sub);
+    const userType = req.user?.tipo;
     return this.storicoService.remove(id, userId, userType);
   }
 }
