@@ -15,6 +15,7 @@ import { CreateOfficinaDto } from './dto/create-officina.dto';
 import { LoginOfficinaDto } from './dto/login-officina.dto';
 import { UpdateOfficinaDto } from './dto/update-officina.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
+import { authCookieOptions } from '../auth-cookie.util';
 import type { Response } from 'express';
 import { CurrentUser } from '../current-user.decorator';
 import type { JwtPayload } from '../jwt-payload.interface';
@@ -32,12 +33,7 @@ export class OfficinaController {
   ) {
     const { access_token, officina } =
       await this.officinaService.registra(datiRicevuti);
-    response.cookie('access_token', access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 3600000,
-    });
+    response.cookie('access_token', access_token, authCookieOptions(3600000));
     return { officina };
   }
 
@@ -48,22 +44,13 @@ export class OfficinaController {
   ) {
     const { access_token, officina } =
       await this.officinaService.login(datiRicevuti);
-    response.cookie('access_token', access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 3600000,
-    });
+    response.cookie('access_token', access_token, authCookieOptions(3600000));
     return { officina };
   }
 
   @Post('logout')
   logout(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie('access_token', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-    });
+    response.clearCookie('access_token', authCookieOptions());
     return { message: 'Logout effettuato con successo' };
   }
 
@@ -147,11 +134,7 @@ export class OfficinaController {
   ) {
     const officinaId = Number(user.sub);
     await this.officinaService.eliminaProfilo(officinaId);
-    response.clearCookie('access_token', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-    });
+    response.clearCookie('access_token', authCookieOptions());
     return { message: 'Profilo eliminato' };
   }
 

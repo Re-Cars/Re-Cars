@@ -16,6 +16,7 @@ import { LoginUtenteDto } from './dto/login-utente.dto';
 import { UpdateUtenteDto } from './dto/update-utente.dto';
 import { LoginAziendaDto } from './dto/login-azienda.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
+import { authCookieOptions } from '../auth-cookie.util';
 import type { Request, Response } from 'express';
 
 @Controller('auth')
@@ -29,12 +30,7 @@ export class UtenteController {
   ) {
     const { access_token, utente } =
       await this.utenteService.registra(datiRicevuti);
-    response.cookie('access_token', access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 3600000,
-    });
+    response.cookie('access_token', access_token, authCookieOptions(3600000));
     return { utente };
   }
 
@@ -47,12 +43,7 @@ export class UtenteController {
       await this.utenteService.login(datiRicevuti);
 
     // Impostiamo il cookie HttpOnly nel browser
-    response.cookie('access_token', access_token, {
-      httpOnly: true,
-      secure: true, // true solo in HTTPS (produzione)
-      sameSite: 'none',
-      maxAge: 3600000,
-    });
+    response.cookie('access_token', access_token, authCookieOptions(3600000));
 
     return { utente };
   }
@@ -64,22 +55,13 @@ export class UtenteController {
   ) {
     const { access_token, utente } =
       await this.utenteService.loginAzienda(datiRicevuti);
-    response.cookie('access_token', access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 3600000,
-    });
+    response.cookie('access_token', access_token, authCookieOptions(3600000));
     return { utente };
   }
 
   @Post('logout')
   logout(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie('access_token', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-    });
+    response.clearCookie('access_token', authCookieOptions());
     return { message: 'Logout effettuato con successo' };
   }
 
