@@ -2,7 +2,6 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
-  BadRequestException,
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
@@ -11,6 +10,37 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateOfficinaDto } from './dto/create-officina.dto';
 import { LoginOfficinaDto } from './dto/login-officina.dto';
 import * as bcrypt from 'bcrypt';
+import {
+  stato_prenotazione,
+  piano_abbonamento,
+  tipo_officina,
+} from '@prisma/client';
+
+interface AggiornaProfiloOfficinaData {
+  nome?: string;
+  ragione_sociale?: string;
+  partita_iva?: string;
+  codice_sdi?: string;
+  email?: string;
+  telefono?: string;
+  indirizzo?: string;
+  ponti_disponibili?: number | string;
+  tipi?: tipo_officina[];
+  password?: string;
+}
+
+interface CampiAggiornabiliOfficina {
+  nome?: string;
+  ragione_sociale?: string;
+  partita_iva?: string;
+  codice_sdi?: string;
+  email?: string;
+  telefono?: string;
+  indirizzo?: string;
+  ponti_disponibili?: number;
+  tipi?: tipo_officina[];
+  password?: string;
+}
 
 @Injectable()
 export class OfficinaService {
@@ -203,7 +233,7 @@ export class OfficinaService {
 
     return this.prisma.prenotazione.update({
       where: { id: prenotazioneId },
-      data: { stato: stato as any },
+      data: { stato: stato as stato_prenotazione },
     });
   }
 
@@ -211,7 +241,7 @@ export class OfficinaService {
     return this.prisma.prenotazione.findMany({
       where: {
         id_officina: officinaId,
-        ...(stato ? { stato: stato as any } : {}),
+        ...(stato ? { stato: stato as stato_prenotazione } : {}),
       },
       include: {
         utente: {
@@ -308,8 +338,8 @@ export class OfficinaService {
     };
   }
 
-  async aggiornaProfilo(officinaId: number, data: any) {
-    const campi: any = {};
+  async aggiornaProfilo(officinaId: number, data: AggiornaProfiloOfficinaData) {
+    const campi: CampiAggiornabiliOfficina = {};
 
     if (data.nome !== undefined) campi.nome = data.nome;
     if (data.ragione_sociale !== undefined)
@@ -359,7 +389,7 @@ export class OfficinaService {
     return this.prisma.abbonamento.create({
       data: {
         tipo: 'officina',
-        piano: piano as any,
+        piano: piano as piano_abbonamento,
         stato: 'attivo',
         data_inizio: new Date(),
         id_officina: officinaId,
@@ -394,6 +424,7 @@ export class OfficinaService {
       where: { id: officinaId },
     });
   }
+
   async agenda(officinaId: number, anno: number, mese: number) {
     const inizio = new Date(anno, mese - 1, 1);
     const fine = new Date(anno, mese, 1);
@@ -444,13 +475,10 @@ export class OfficinaService {
       email: o.email,
       telefono: o.telefono,
       indirizzo: o.indirizzo,
-      // Se mancano le coordinate sul DB, usa Milano come centro di fallback
       latitude: o.latitudine ?? 45.4642,
       longitude: o.longitudine ?? 9.19,
-      // Trasforma l'array di enum nella stringa richiesta dal frontend
       categoria: o.tipi.length > 0 ? o.tipi[0] : 'Meccanica',
       specialita: o.tipi.join(', ') || 'Riparazioni Generiche',
-      // Dati statici/fittizi non presenti nello schema per la UI
       stelle: 4.5,
       recensioni: 12,
       aperta: true,

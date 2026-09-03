@@ -7,6 +7,11 @@ import { PrismaService } from '../prisma.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { CreatePrenotazioneDto } from './dto/create-prenotazione.dto';
 
+interface OfficinaPerIcs {
+  nome: string;
+  indirizzo: string;
+}
+
 @Injectable()
 export class PrenotazioniService {
   constructor(
@@ -104,7 +109,11 @@ export class PrenotazioniService {
   }
 
   // 7. Genera il contenuto del file .ics
-  private generaIcs(officina: any, servizio: string, data: Date): string {
+  private generaIcs(
+    officina: OfficinaPerIcs,
+    servizio: string,
+    data: Date,
+  ): string {
     const pad = (n: number) => String(n).padStart(2, '0');
 
     const formato = (d: Date) =>

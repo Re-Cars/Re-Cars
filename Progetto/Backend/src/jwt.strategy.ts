@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-// Usiamo 'import type' per evitare l'errore con isolatedModules ed emitDecoratorMetadata
 import type { Request } from 'express';
+import { JwtPayload } from './jwt-payload.interface';
+
+interface RequestWithCookies extends Request {
+  cookies: Record<string, string>;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -17,8 +21,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          let data = null;
+        (request: RequestWithCookies) => {
+          let data: string | null = null;
           if (request && request.cookies) {
             data = request.cookies['access_token'];
           }
@@ -32,7 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
+  validate(payload: JwtPayload): JwtPayload {
     return { sub: payload.sub, email: payload.email, tipo: payload.tipo };
   }
 }

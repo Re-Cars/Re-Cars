@@ -3,8 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaService } from './prisma.service';
 
-
-
 describe('AppController', () => {
   let appController: AppController;
 

@@ -7,6 +7,14 @@ import { UpdateUtenteDto } from './dto/update-utente.dto';
 import { LoginAziendaDto } from './dto/login-azienda.dto';
 import * as bcrypt from 'bcrypt';
 
+interface CampiAggiornabiliUtente {
+  username?: string;
+  email?: string;
+  cellulare?: string;
+  avatar?: string;
+  password?: string;
+}
+
 @Injectable()
 export class UtenteService {
   constructor(
@@ -30,7 +38,7 @@ export class UtenteService {
       },
     });
 
-    const { password, ...risultato } = utente;
+    const { password: _password, ...risultato } = utente;
 
     const payload = { sub: utente.id, email: utente.email, tipo: utente.tipo };
     return {
@@ -53,7 +61,7 @@ export class UtenteService {
       throw new UnauthorizedException('Credenziali non valide');
     }
 
-    const { password, ...risultato } = utente;
+    const { password: _password, ...risultato } = utente;
 
     //  genera e restituisce il token insieme ai dati utente
     const payload = { sub: utente.id, email: utente.email, tipo: utente.tipo };
@@ -76,7 +84,7 @@ export class UtenteService {
     if (!passwordValida)
       throw new UnauthorizedException('Credenziali non valide');
 
-    const { password, ...risultato } = utente;
+    const { password: _password, ...risultato } = utente;
 
     const payload = {
       sub: utente.id,
@@ -108,7 +116,7 @@ export class UtenteService {
   }
 
   async aggiornaUtente(id: number, data: UpdateUtenteDto) {
-    const campiDaAggiornare: any = {};
+    const campiDaAggiornare: CampiAggiornabiliUtente = {};
 
     if (data.username) campiDaAggiornare.username = data.username;
     if (data.email) campiDaAggiornare.email = data.email;

@@ -9,14 +9,15 @@ import {
   Query,
   UseGuards,
   Res,
-  Req,
 } from '@nestjs/common';
 import { OfficinaService } from './officina.service';
 import { CreateOfficinaDto } from './dto/create-officina.dto';
 import { LoginOfficinaDto } from './dto/login-officina.dto';
 import { UpdateOfficinaDto } from './dto/update-officina.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
+import { CurrentUser } from '../current-user.decorator';
+import type { JwtPayload } from '../jwt-payload.interface';
 
 @Controller('officina')
 export class OfficinaController {
@@ -55,7 +56,7 @@ export class OfficinaController {
   }
 
   @Post('logout')
-  async logout(@Res({ passthrough: true }) response: Response) {
+  logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('access_token', {
       httpOnly: true,
       secure: true,
@@ -66,15 +67,18 @@ export class OfficinaController {
 
   @UseGuards(JwtAuthGuard)
   @Get('dashboard')
-  async dashboard(@Req() req: Request) {
-    const officinaId = Number((req.user as any).sub);
+  async dashboard(@CurrentUser() user: JwtPayload) {
+    const officinaId = Number(user.sub);
     return this.officinaService.dashboard(officinaId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('prenotazioni')
-  async prenotazioni(@Req() req: Request, @Query('stato') stato?: string) {
-    const officinaId = Number((req.user as any).sub);
+  async prenotazioni(
+    @CurrentUser() user: JwtPayload,
+    @Query('stato') stato?: string,
+  ) {
+    const officinaId = Number(user.sub);
     return this.officinaService.tutteLePrenotazioni(officinaId, stato);
   }
 
@@ -83,9 +87,9 @@ export class OfficinaController {
   async aggiornaStato(
     @Param('id') id: string,
     @Body('stato') stato: string,
-    @Req() req: Request,
+    @CurrentUser() user: JwtPayload,
   ) {
-    const officinaId = Number((req.user as any).sub);
+    const officinaId = Number(user.sub);
     return this.officinaService.aggiornaStatoPrenotazione(
       +id,
       stato,
@@ -95,8 +99,8 @@ export class OfficinaController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profilo')
-  async profilo(@Req() req: Request) {
-    const officinaId = Number((req.user as any).sub);
+  async profilo(@CurrentUser() user: JwtPayload) {
+    const officinaId = Number(user.sub);
     return this.officinaService.statistiche(officinaId);
   }
 
@@ -109,25 +113,28 @@ export class OfficinaController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('abbonamento')
-  async cambiaAbbonamento(@Body('piano') piano: string, @Req() req: Request) {
-    const officinaId = Number((req.user as any).sub);
+  async cambiaAbbonamento(
+    @Body('piano') piano: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const officinaId = Number(user.sub);
     return this.officinaService.cambiaAbbonamento(officinaId, piano);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('abbonamento')
-  async disdiciAbbonamento(@Req() req: Request) {
-    const officinaId = Number((req.user as any).sub);
+  async disdiciAbbonamento(@CurrentUser() user: JwtPayload) {
+    const officinaId = Number(user.sub);
     return this.officinaService.disdiciAbbonamento(officinaId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('profilo')
   async eliminaProfilo(
-    @Req() req: Request,
+    @CurrentUser() user: JwtPayload,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const officinaId = Number((req.user as any).sub);
+    const officinaId = Number(user.sub);
     await this.officinaService.eliminaProfilo(officinaId);
     response.clearCookie('access_token', {
       httpOnly: true,
@@ -140,11 +147,11 @@ export class OfficinaController {
   @UseGuards(JwtAuthGuard)
   @Get('agenda')
   async agenda(
-    @Req() req: Request,
+    @CurrentUser() user: JwtPayload,
     @Query('anno') anno: string,
     @Query('mese') mese: string,
   ) {
-    const officinaId = Number((req.user as any).sub);
+    const officinaId = Number(user.sub);
     const now = new Date();
     return this.officinaService.agenda(
       officinaId,

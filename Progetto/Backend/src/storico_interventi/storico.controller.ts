@@ -25,6 +25,7 @@ export class StoricoController {
 
   // GET /interventi/veicolo/:id_veicolo
   // Restituisce tutti gli interventi di un veicolo specifico
+
   @Get('veicolo/:id_veicolo')
   findByVeicolo(
     @Param('id_veicolo', ParseIntPipe) idVeicolo: number,
