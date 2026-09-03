@@ -16,9 +16,21 @@ import type {
 /**
  * Layer API centralizzato: nel frontend vanilla la costante
  * `const API = 'http://localhost:3000'` era duplicata in ~12 file.
- * Qui il base URL arriva da NEXT_PUBLIC_API_URL (.env.local).
+ * Qui il base URL arriva da NEXT_PUBLIC_API_URL (.env.local in sviluppo,
+ * Environment Variables di Vercel in produzione). Nessun fallback a
+ * localhost: in produzione localhost non esiste, quindi una var mancante
+ * deve fallire in modo esplicito invece di tentare una chiamata che fallirebbe
+ * silenziosamente (o peggio, colpirebbe la macchina dell'utente) senza dare
+ * un errore comprensibile.
  */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_BASE_URL) {
+  throw new Error(
+    "NEXT_PUBLIC_API_URL non è definita: impostala in .env.local (sviluppo) " +
+      "o nelle Environment Variables del progetto Vercel (produzione).",
+  );
+}
 
 export class ApiError extends Error {
   readonly status: number;
