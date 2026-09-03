@@ -1,28 +1,21 @@
-# Dipendenze
-node_modules/
-dist/
-build/
-.cache/
+# Regole globali valide per tutto il monorepo.
+# Le regole specifiche di ogni sotto-progetto (node_modules, dist, .next, .expo, ecc.)
+# vivono nel .gitignore di quel sotto-progetto, non qui.
 
-# IDE e OS
-.vscode/
-.idea/
+# File di sistema
 .DS_Store
 Thumbs.db
 
-# Log e variabili ambiente
-*.log
+# Editor / IDE
+.vscode/settings.json
+.idea/
+
+# Variabili d'ambiente
 .env
-.env.*
-!.env.example
+.env.local
+.env.production
+.env*.local
 
-# NestJS specifico
-/progetto/backend/dist
-/progetto/backend/node_modules
-
-# Frontend specifico
-/progetto/frontend/dist
-/progetto/frontend/node_modules
-
-# NON ignorare il package-lock.json!
-# (Rimuovilo se era presente nel tuo vecchio file)
+# Log generici
+npm-debug.log*
+yarn-error.log*

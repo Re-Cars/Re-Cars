@@ -1,0 +1,45 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# .DS_Store, .env* generici e i log npm/yarn di base sono già coperti dal .gitignore nella root.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# package manager: questo progetto usa SOLO pnpm (come Progetto/Backend).
+# pnpm-lock.yaml va committato; il lockfile di npm no, per evitare che
+# torni a convivere un secondo albero di dipendenze dentro node_modules.
+package-lock.json
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+*.pem
+
+# debug (varianti non coperte dal root)
+yarn-debug.log*
+.pnpm-debug.log*
+
+# env files specifici Next.js
+.env.local
+.env.production
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

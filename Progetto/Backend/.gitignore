@@ -1,0 +1,7 @@
+# NestJS / Prisma — regole specifiche del backend.
+# .env e le regole di sistema/editor sono già coperte dal .gitignore nella root.
+
+node_modules/
+dist/
+coverage/
+prisma/generated/

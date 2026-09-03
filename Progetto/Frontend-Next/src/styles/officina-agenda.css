@@ -1,0 +1,722 @@
+/* ----------------------------------------------------
+/                  AGENDA OFFICINA                     /
+-----------------------------------------------------*/
+
+.ag-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 0;
+    padding: 0 28px 32px;
+    min-height: calc(100vh - 160px);
+}
+
+.ag-sidebar {
+    padding-right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ingresso scaglionato dei pannelli */
+@keyframes ag-fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.ag-sidebar > * {
+    animation: ag-fadeUp 0.35s ease both;
+}
+
+.ag-sidebar > :nth-child(1) { animation-delay: 0.05s; }
+.ag-sidebar > :nth-child(2) { animation-delay: 0.1s; }
+.ag-sidebar > :nth-child(3) { animation-delay: 0.15s; }
+
+.ag-main {
+    animation: ag-fadeUp 0.35s ease 0.1s both;
+}
+
+/* mini calendario */
+.ag-mini-cal {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 16px;
+    border: 0.5px solid rgba(255, 255, 255, 0.06);
+}
+
+.ag-mini-cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+}
+
+.ag-nav-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: all 0.15s;
+    font-size: 12px;
+}
+
+.ag-nav-btn:hover {
+    background: rgba(249, 115, 22, 0.12);
+    color: #f97316;
+}
+
+.ag-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    text-align: center;
+}
+
+.ag-mini-day-name {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 500;
+    padding: 4px 0;
+}
+
+.ag-mini-day {
+    position: relative;
+    font-size: 11px;
+    padding: 4px 2px 7px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--white);
+    transition: background 0.15s, transform 0.15s;
+}
+
+.ag-mini-day:hover {
+    background: rgba(249, 115, 22, 0.1);
+    transform: scale(1.1);
+}
+
+.ag-mini-day.oggi {
+    background: #f97316;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.ag-mini-day.selezionato {
+    background: rgba(249, 115, 22, 0.2);
+    color: #f97316;
+}
+
+.ag-mini-day.ha-eventi {
+    font-weight: 600;
+    color: #f97316;
+}
+
+/* pallino sotto i giorni con prenotazioni */
+.ag-mini-day.ha-eventi::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #f97316;
+}
+
+.ag-mini-day.altro-mese {
+    color: rgba(160, 168, 184, 0.3);
+}
+
+/* slot oggi */
+.ag-slots-section {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 14px;
+    border: 0.5px solid rgba(255, 255, 255, 0.06);
+}
+
+.ag-slots-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+}
+
+.ag-slot-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.ag-slot-time {
+    font-size: 11px;
+    color: var(--muted);
+    width: 38px;
+    flex-shrink: 0;
+}
+
+.ag-slot-bar {
+    flex: 1;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 10px;
+    font-weight: 500;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.ag-slot-bar:hover {
+    opacity: 0.85;
+    transform: translateX(2px);
+}
+
+.ag-slot-libero {
+    background: rgba(55, 169, 97, 0.1);
+    color: var(--success);
+    border: 0.5px solid rgba(55, 169, 97, 0.3);
+}
+
+.ag-slot-occupato {
+    background: rgba(249, 115, 22, 0.1);
+    color: #f97316;
+    border: 0.5px solid rgba(249, 115, 22, 0.3);
+}
+
+/* legenda */
+.ag-legenda {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 14px;
+    border: 0.5px solid rgba(255, 255, 255, 0.06);
+}
+
+.ag-legenda-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+}
+
+.ag-legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.ag-legenda-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* main area */
+.ag-main {
+    background: var(--surface);
+    border-radius: 14px;
+    border: 0.5px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.ag-main-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+}
+
+.ag-main-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+}
+
+.ag-main-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ag-oggi-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 0.5px solid rgba(249, 115, 22, 0.3);
+    background: rgba(249, 115, 22, 0.08);
+    color: #f97316;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+}
+
+.ag-oggi-btn i {
+    font-size: 11px;
+}
+
+.ag-oggi-btn:hover {
+    background: rgba(249, 115, 22, 0.18);
+    transform: translateY(-1px);
+}
+
+.ag-view-toggle {
+    display: flex;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 3px;
+}
+
+.ag-view-btn {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+}
+
+.ag-view-btn:hover {
+    color: var(--white);
+}
+
+.ag-view-btn.active {
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+    font-weight: 600;
+}
+
+/* vista settimana */
+.ag-week-header {
+    display: grid;
+    grid-template-columns: 52px repeat(7, 1fr);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.ag-week-day-col {
+    padding: 10px 6px;
+    text-align: center;
+    border-right: 0.5px solid rgba(255, 255, 255, 0.04);
+}
+
+.ag-week-day-col:last-child {
+    border-right: none;
+}
+
+.ag-week-day-name {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.ag-week-day-num {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--white);
+    margin-top: 3px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 3px auto 0;
+    border-radius: 50%;
+}
+
+.ag-week-day-num.oggi {
+    background: #f97316;
+    color: var(--white);
+}
+
+.ag-week-grid {
+    display: grid;
+    grid-template-columns: 52px repeat(7, 1fr);
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.ag-week-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ag-week-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ag-week-grid::-webkit-scrollbar-thumb {
+    background: rgba(249, 115, 22, 0.35);
+    border-radius: 10px;
+}
+
+.ag-week-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(249, 115, 22, 0.55);
+}
+
+.ag-time-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.ag-time-slot {
+    height: 64px;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.03);
+    display: flex;
+    align-items: flex-start;
+    padding-top: 4px;
+    padding-right: 8px;
+    justify-content: flex-end;
+}
+
+.ag-time-label {
+    font-size: 10px;
+    color: rgba(160, 168, 184, 0.5);
+}
+
+.ag-day-col {
+    border-right: 0.5px solid rgba(255, 255, 255, 0.04);
+    position: relative;
+}
+
+.ag-day-col:last-child {
+    border-right: none;
+}
+
+/* colonna del giorno corrente evidenziata */
+.ag-day-col.oggi {
+    background: rgba(249, 115, 22, 0.04);
+    box-shadow: inset 2px 0 0 rgba(249, 115, 22, 0.35), inset -2px 0 0 rgba(249, 115, 22, 0.35);
+}
+
+.ag-day-cell {
+    height: 64px;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.03);
+    padding: 4px 3px;
+    display: flex;
+    align-items: stretch;
+}
+
+.ag-event {
+    flex: 1;
+    min-width: 0;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.15s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.ag-event:hover {
+    filter: brightness(1.25);
+    transform: none;
+}
+
+.ag-event-nome {
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 700;
+}
+
+.ag-event-sub {
+    font-size: 10px;
+    opacity: 0.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ----------------------------------------------------
+/              EVENTI GRIGLIA SETTIMANA                /
+-----------------------------------------------------*/
+
+.ag-grid-event {
+    flex: 1;
+    min-width: 0;
+    border-radius: 0 6px 6px 0;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.15s, box-shadow 0.15s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.ag-grid-event:hover {
+    filter: brightness(1.25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.ag-grid-in_attesa {
+    background: rgba(251, 191, 36, 0.32);
+    color: #fbbf24;
+    border-left: 3px solid #fbbf24;
+}
+
+.ag-grid-confermata {
+    background: rgba(55, 169, 97, 0.32);
+    color: #37a961;
+    border-left: 3px solid #37a961;
+}
+
+.ag-grid-completata {
+    background: rgba(160, 168, 184, 0.22);
+    color: var(--muted);
+    border-left: 3px solid var(--muted);
+}
+
+.ag-grid-annullata {
+    background: rgba(229, 57, 53, 0.22);
+    color: var(--error);
+    border-left: 3px solid var(--error);
+}
+
+/* vista mese */
+.ag-month-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.ag-month-day-name {
+    padding: 10px 6px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-right: 0.5px solid rgba(255, 255, 255, 0.04);
+}
+
+.ag-month-day-name:last-child {
+    border-right: none;
+}
+
+.ag-month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.ag-month-cell {
+    min-height: 80px;
+    min-width: 0;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.04);
+    border-right: 0.5px solid rgba(255, 255, 255, 0.04);
+    padding: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    flex-direction: column;
+}
+
+.ag-month-cell:last-child {
+    border-right: none;
+}
+
+.ag-month-cell:hover {
+    background: rgba(249, 115, 22, 0.04);
+}
+
+.ag-month-cell.oggi {
+    background: rgba(249, 115, 22, 0.05);
+}
+
+.ag-month-cell.altro-mese {
+    opacity: 0.3;
+}
+
+.ag-month-cell-num {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 4px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.ag-month-cell.oggi .ag-month-cell-num {
+    background: #f97316;
+    color: var(--white);
+}
+
+.ag-month-event {
+    flex: 1;
+    min-width: 0;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 2px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.15s;
+}
+
+.ag-month-event:hover {
+    filter: brightness(1.15);
+    transform: translateX(2px);
+}
+
+/* stato prenotazione — sfondo colorato (vista mese + pallino legenda) */
+.ag-ev-in_attesa {
+    background: #fbbf24;
+}
+
+.ag-month-event.ag-ev-in_attesa {
+    color: #3a2e05;
+}
+
+.ag-ev-confermata {
+    background: #37a961;
+}
+
+.ag-month-event.ag-ev-confermata {
+    color: #ffffff;
+}
+
+.ag-ev-completata {
+    background: #6b7280;
+}
+
+.ag-month-event.ag-ev-completata {
+    color: #ffffff;
+}
+
+.ag-ev-annullata {
+    background: var(--error);
+}
+
+.ag-month-event.ag-ev-annullata {
+    color: #ffffff;
+}
+
+.ag-month-more {
+    font-size: 10px;
+    color: var(--muted);
+    padding: 2px 4px;
+}
+
+/* responsive */
+@media (max-width: 1024px) {
+    .ag-layout {
+        padding: 0 20px 28px;
+    }
+}
+
+@media (max-width: 768px) {
+    .ag-layout {
+        grid-template-columns: 1fr;
+        padding: 0 16px 24px;
+    }
+
+    .ag-sidebar {
+        padding-right: 0;
+    }
+
+    .ag-week-header,
+    .ag-week-grid {
+        min-width: 640px;
+    }
+
+    .ag-month-header,
+    .ag-month-grid {
+        min-width: 560px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ag-main-header {
+        padding: 12px 14px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .ag-main-header-right {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .ag-view-toggle {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .ag-slots-section,
+    .ag-mini-cal,
+    .ag-legenda {
+        padding: 12px;
+    }
+
+    .ag-event,
+    .ag-grid-event {
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+
+    .ag-slot-row {
+        gap: 6px;
+    }
+
+    .ag-slot-bar {
+        height: 20px;
+        font-size: 9px;
+        padding: 0 6px;
+    }
+
+    .ag-month-cell {
+        min-height: 60px;
+        padding: 4px;
+    }
+}

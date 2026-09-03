@@ -1,0 +1,12 @@
+packages:
+  - '.'
+
+# Script di post-install approvati esplicitamente (pnpm >= 10 li blocca di default).
+# Stessa impostazione usata in Progetto/Backend/pnpm-workspace.yaml.
+allowBuilds:
+  # binari nativi per l'ottimizzazione immagini di next/image
+  sharp: true
+  # napi-postinstall seleziona il binario nativo usato dal resolver di eslint-config-next
+  unrs-resolver: true
+  # dipendenza opzionale: il suo postinstall stampa solo il messaggio di sponsorizzazione
+  core-js: false
