@@ -56,6 +56,10 @@
   /* homepage dashboard: incavo più scuro della surface + giallo scadenze */
   --hp-well: #eeeef6;
   --hp-giallo: #b45309;
+
+  /* identità di tipo veicolo (card garage): stesso valore in light e dark */
+  --type-auto: #2b88b8;
+  --type-moto: #7c6fe0;
 }
 
 /* ----------------------------------------------------
@@ -89,6 +93,10 @@
   /* homepage dashboard: incavo più scuro della surface + giallo scadenze */
   --hp-well: #0d0d38;
   --hp-giallo: #fbbf24;
+
+  /* identità di tipo veicolo (card garage): stesso valore in light e dark */
+  --type-auto: #2b88b8;
+  --type-moto: #7c6fe0;
 }
 
 /* ----------------------------------------------------
@@ -4266,8 +4274,14 @@ input:-webkit-autofill:active {
   opacity: 1;
 }
 
+/* clipping necessario solo mentre la riga cresce/decresce (0fr→1fr):
+   a pannello assestato va tolto, altrimenti taglia il tilt 3D delle card */
 .garage-extra-inner {
   overflow: hidden;
+}
+
+.garage-extra-inner--assestato {
+  overflow: visible;
 }
 
 .garage-extra .garage-grid-extra {
@@ -4329,19 +4343,67 @@ input:-webkit-autofill:active {
   outline-offset: 2px;
 }
 
+/* pannello icona "tipo-aware": la base resta var(--hp-well) (chiaro in light,
+   navy scuro in dark), il colore del tipo è solo una velatura in gradiente */
 .veicolo-card-placeholder {
+  position: relative;
   height: 120px;
   border-radius: 12px;
+  overflow: hidden;
   background: var(--hp-well);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.veicolo-card-placeholder i {
-  font-size: 42px;
-  color: var(--muted);
+.veicolo-card-placeholder.auto {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--type-auto) 38%, transparent),
+    var(--hp-well) 75%
+  );
 }
+
+.veicolo-card-placeholder.moto {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--type-moto) 38%, transparent),
+    var(--hp-well) 75%
+  );
+}
+
+.veicolo-tipo-chip {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: #ffffff;
+}
+
+.veicolo-tipo-chip i {
+  font-size: 14px;
+}
+
+.veicolo-card-placeholder.auto .veicolo-tipo-chip { background: var(--type-auto); }
+.veicolo-card-placeholder.moto .veicolo-tipo-chip { background: var(--type-moto); }
+
+/* watermark decorativo in basso a destra */
+.veicolo-tipo-watermark {
+  position: absolute;
+  right: 8px;
+  bottom: -6px;
+  font-size: 62px;
+  line-height: 1;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.veicolo-card-placeholder.auto .veicolo-tipo-watermark { color: #60b8e0; }
+.veicolo-card-placeholder.moto .veicolo-tipo-watermark { color: #a79bf0; }
 
 .targa-pill {
   align-self: flex-start;
@@ -4474,8 +4536,11 @@ input:-webkit-autofill:active {
   to   { opacity: 1; transform: scale(1.02); }
 }
 
-/* ---------------- modale aggiungi veicolo ---------------- */
-.hp-modal-overlay {
+/* ---------------- modale aggiungi veicolo ----------------
+   Riusa lo stile di /cerca-veicolo (.cerca-hero e derivate, definite più
+   sopra) dentro un overlay a schermo intero; il bordo animato è lo stesso
+   conic-gradient della card "Aggiungi un veicolo" (--ag-angle / ag-trace). */
+.av-overlay {
   position: fixed;
   inset: 0;
   z-index: 500;
@@ -4486,243 +4551,127 @@ input:-webkit-autofill:active {
   padding: 20px;
 }
 
-.hp-modal {
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  background: var(--surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 20px;
-  padding: 32px;
-}
-
-.hp-modal-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.hp-modal-title {
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--text);
-  margin: 0;
-}
-
-.hp-modal-close {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 20px;
-  cursor: pointer;
-  padding: 4px;
-  line-height: 1;
-}
-
-.hp-modal-close:hover {
-  color: var(--text);
-}
-
-.hp-targa-wrap {
+/* wrapper solo per il bordo animato: il box interno scrolla, il bordo no */
+.av-modal-wrap {
   position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.hp-targa-wrap input {
   width: 100%;
-  height: 52px;
-  background: var(--input-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 0 44px;
-  font-size: 16px;
-  font-family: inherit;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text);
-  outline: none;
-  transition: border-color 200ms ease;
+  max-width: 580px;
+  max-height: 90vh;
+  display: flex;
+  border-radius: 20px;
 }
 
-.hp-targa-wrap input:focus {
-  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
-}
-
-.hp-targa-icona {
+.av-modal-wrap::before {
+  content: "";
   position: absolute;
-  left: 14px;
-  font-size: 20px;
-  color: var(--muted);
+  inset: -1px;
+  border-radius: 21px;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--ag-angle),
+    transparent 0%,
+    var(--accent) 10%,
+    var(--accent-bright) 15%,
+    var(--accent) 20%,
+    transparent 30%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
   pointer-events: none;
+  animation: ag-trace 4s linear infinite;
+  z-index: 2;
 }
 
-.hp-targa-valida,
-.hp-targa-invalida {
-  position: absolute;
-  right: 14px;
-  font-size: 20px;
-  pointer-events: none;
+/* stesso trattamento di .cerca-hero: colori fissi, identici in light e dark */
+.av-modal {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  background: #141445;
+  border: 0.5px solid rgba(249, 115, 22, 0.3);
+  border-radius: 20px;
+  padding: 40px 32px 32px;
+  text-align: center;
+  position: relative;
 }
 
-.hp-targa-valida { color: var(--iv-ok); }
-.hp-targa-invalida { color: var(--iv-bad); }
-
-.hp-btn-arancione {
-  width: 100%;
-  margin-top: 12px;
-  background: var(--accent);
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  padding: 14px;
-  font-size: 15px;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background-color 200ms ease;
-}
-
-.hp-btn-arancione:hover { background: var(--accent-bright); }
-.hp-btn-arancione:disabled { opacity: 0.6; cursor: default; }
-
-.hp-modal-errore {
-  margin: 12px 0 0;
-  font-size: 13.5px;
-  color: var(--iv-bad);
-}
-
-.hp-non-trovato {
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 16px;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.hp-non-trovato i { font-size: 22px; }
-
-/* box risultato ricerca */
-.hp-risultato {
-  margin-top: 16px;
-  background: var(--hp-well);
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.hp-risultato-nome {
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--text);
-  margin: 0;
-}
-
-.hp-risultato-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px 16px;
-}
-
-.hp-risultato-campo {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.hp-risultato-label {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.hp-risultato-valore {
-  font-size: 14px;
-  color: var(--text);
-}
-
-.hp-risultato-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.hp-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 12.5px;
-  font-weight: 500;
-}
-
-.hp-badge i { font-size: 15px; }
-
-.hp-badge.ok {
-  background: rgba(var(--iv-ok-rgb), 0.12);
-  color: var(--iv-ok);
-}
-
-.hp-badge.ko {
-  background: rgba(var(--iv-bad-rgb), 0.12);
-  color: var(--iv-bad);
-}
-
-/* targhe recenti */
-.hp-recenti { margin-top: 20px; }
-
-.hp-recenti-label {
-  font-size: 13px;
-  color: var(--muted);
+.av-title {
   margin: 0 0 8px;
 }
 
-.hp-recenti-lista {
+.av-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-.hp-recente-pill {
-  position: relative;
-  display: inline-flex;
+.av-close:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.av-modal .cerca-input-row {
+  margin-bottom: 4px;
+}
+
+.av-modal .btn-info-veicolo:disabled,
+.av-modal .btn-aggiungi-garage:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.av-non-trovato {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 6px;
-  background: var(--hp-well);
-  border: 1px solid var(--border-subtle);
-  border-radius: 20px;
-  padding: 5px 12px;
-  font-size: 13px;
-  letter-spacing: 1px;
-  color: var(--text);
-  cursor: pointer;
-  transition: border-color 200ms ease;
+  padding: 22px 12px 8px;
+  text-align: center;
 }
 
-.hp-recente-pill:hover {
-  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+.av-non-trovato > i {
+  font-size: 2.4rem;
+  color: rgba(255, 255, 255, 0.25);
+  margin-bottom: 2px;
 }
 
-.hp-recente-x {
-  display: none;
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 13px;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
+.av-non-trovato-titolo {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
 }
 
-.hp-recente-pill:hover .hp-recente-x { display: inline-flex; }
-.hp-recente-x:hover { color: var(--iv-bad); }
+.av-non-trovato-sub {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 480px) {
+  .av-modal {
+    padding: 32px 20px 24px;
+  }
+
+  .av-modal .cerca-features {
+    display: none;
+  }
+
+  .av-modal .cerca-input-row {
+    flex-direction: column;
+  }
+}
 
 /* ---------------- scadenze e avvisi ---------------- */
 .scadenze-list {
@@ -4888,10 +4837,11 @@ input:-webkit-autofill:active {
 }
 
 /* ---------------- pagina lista veicoli ---------------- */
+/* contiene solo titolo + contatore: l'unico punto d'ingresso per
+   aggiungere un veicolo è la card in coda alla griglia */
 .lv-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
   margin-bottom: 16px;
@@ -4909,30 +4859,6 @@ input:-webkit-autofill:active {
   padding: 3px 12px;
   font-size: 13px;
   font-weight: 500;
-}
-
-.lv-btn-aggiungi {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--accent);
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  padding: 10px 18px;
-  font-size: 14px;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background-color 200ms ease;
-}
-
-.lv-btn-aggiungi:hover {
-  background: var(--accent-bright);
-}
-
-.lv-btn-aggiungi i {
-  font-size: 16px;
 }
 
 /* ---------------- header / sidebar (nuova nav) ---------------- */

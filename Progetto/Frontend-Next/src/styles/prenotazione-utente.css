@@ -135,16 +135,38 @@
     margin: 0 auto 30px auto;
 }
 
+/* stile "vetro" al posto del riquadro grigio piatto: stessi valori di
+   .cerca-targa-wrap input (globals.css) sul tema scuro; sul tema chiaro il
+   bianco semi-trasparente sparirebbe sullo sfondo, quindi si tiene il
+   vetro ma più opaco, con bordo e ombra al posto del grigio pieno */
 .search-bar-wrapper {
     padding: 12px 18px;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1.5px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.dark .search-bar-wrapper {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.search-bar-wrapper:focus-within {
+    border-color: var(--accent);
 }
 
 .search-bar-wrapper input {
     font-size: 1rem;
     color: var(--text);
     background: transparent;
+}
+
+/* il placeholder globale di .input-group è bianco al 30%: illeggibile sul
+   vetro chiaro, qui segue il testo secondario del tema */
+.search-bar-wrapper input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.75;
 }
 
 .btn-gps-spec {

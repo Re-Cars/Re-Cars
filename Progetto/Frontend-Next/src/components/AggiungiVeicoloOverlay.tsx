@@ -26,10 +26,12 @@ interface AggiungiVeicoloOverlayProps {
 
 /**
  * Overlay riutilizzabile (homepage + lista-veicoli) di ricerca targa e
- * aggiunta al garage: replica di cerca-veicolo.html — validazione live con
- * regex italiana e indicatore a destra del campo, stato di caricamento,
- * storico ultime 5 targhe in localStorage con X di rimozione, box risultato
- * con dati veicolo e badge bollo/assicurazione, gestione veicolo non trovato.
+ * aggiunta al garage. Logica identica a prima; l'aspetto riusa lo stile
+ * della pagina /cerca-veicolo (.cerca-hero, .cerca-targa-wrap,
+ * .cerca-features, .vehicle-result-card, .cerca-storico-tag) più il bordo
+ * animato conic-gradient già usato dalla card "Aggiungi un veicolo"
+ * (--ag-angle / ag-trace), così i due punti d'ingresso alla stessa
+ * funzionalità hanno la stessa identità visiva.
  */
 export default function AggiungiVeicoloOverlay({
   aperto,
@@ -106,120 +108,180 @@ export default function AggiungiVeicoloOverlay({
   if (!aperto) return null;
 
   return (
-    <div className="hp-modal-overlay" onClick={onChiudi}>
-      <div className="hp-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="hp-modal-head">
-          <h3 className="hp-modal-title">Aggiungi un veicolo</h3>
-          <button type="button" className="hp-modal-close" aria-label="Chiudi" onClick={onChiudi}>
+    <div className="av-overlay" onClick={onChiudi}>
+      <div className="av-modal-wrap" onClick={(e) => e.stopPropagation()}>
+        <div className="av-modal">
+          <button type="button" className="av-close" aria-label="Chiudi" onClick={onChiudi}>
             <i className="ti ti-x" />
           </button>
-        </div>
 
-        <form onSubmit={(e) => void cerca(e)}>
-          <div className="hp-targa-wrap">
-            <i className="ti ti-car hp-targa-icona" />
-            <input
-              type="text"
-              placeholder="Es. AA123BB"
-              maxLength={7}
-              value={targa}
-              onChange={(e) => setTarga(e.target.value.toUpperCase())}
-            />
-            {validita === "valida" && <i className="ti ti-check hp-targa-valida" />}
-            {validita === "invalida" && <i className="ti ti-x hp-targa-invalida" />}
-          </div>
+          <h3 className="cerca-hero-title av-title">
+            <i className="ti ti-car" />
+            Aggiungi un veicolo
+          </h3>
+          <p className="cerca-hero-sub">
+            Inserisci la targa: recuperiamo marca, modello e stato dei documenti, poi lo aggiungi
+            al tuo garage con un click.
+          </p>
 
-          <button type="submit" className="hp-btn-arancione" disabled={inRicerca}>
-            {inRicerca ? "Ricerca in corso..." : "Cerca targa"}
-          </button>
-        </form>
-
-        {errore && <p className="hp-modal-errore">{errore}</p>}
-
-        {nonTrovato && (
-          <div className="hp-non-trovato">
-            <i className="ti ti-search-off" />
-            <span>Veicolo non trovato</span>
-          </div>
-        )}
-
-        {risultato && (
-          <div className="hp-risultato">
-            <span className="targa-pill">{risultato.targa}</span>
-            <p className="hp-risultato-nome">
-              {`${risultato.marca ?? ""} ${risultato.modello ?? ""}`.trim() || "Veicolo"}
-            </p>
-            <div className="hp-risultato-grid">
-              <div className="hp-risultato-campo">
-                <span className="hp-risultato-label">Alimentazione</span>
-                <span className="hp-risultato-valore">{risultato.alimentazione ?? "—"}</span>
+          <div className="cerca-features">
+            <div className="cerca-feat">
+              <div className="cerca-feat-icon blu">
+                <i className="ti ti-database" />
               </div>
-              <div className="hp-risultato-campo">
-                <span className="hp-risultato-label">CV</span>
-                <span className="hp-risultato-valore">
-                  {risultato.cavalli ? `${risultato.cavalli} CV` : "—"}
+              <span className="cerca-feat-label">Dati automatici</span>
+            </div>
+            <div className="cerca-feat">
+              <div className="cerca-feat-icon ora">
+                <i className="ti ti-history" />
+              </div>
+              <span className="cerca-feat-label">Storico incluso</span>
+            </div>
+            <div className="cerca-feat">
+              <div className="cerca-feat-icon ver">
+                <i className="ti ti-bolt" />
+              </div>
+              <span className="cerca-feat-label">Verifica istantanea</span>
+            </div>
+          </div>
+
+          <form className="cerca-input-row" onSubmit={(e) => void cerca(e)}>
+            <div className="cerca-targa-wrap">
+              <i className="ti ti-car" />
+              <input
+                type="text"
+                placeholder="Es. AA123BB"
+                maxLength={7}
+                value={targa}
+                className={validita === "valida" ? "valid" : validita === "invalida" ? "invalid" : ""}
+                onChange={(e) => setTarga(e.target.value.toUpperCase())}
+              />
+              <i
+                className={`ti ti-circle-check cerca-valid-icon ok${validita === "valida" ? " show" : ""}`}
+              />
+              <i
+                className={`ti ti-circle-x cerca-valid-icon ko${validita === "invalida" ? " show" : ""}`}
+              />
+            </div>
+            <button type="submit" className="btn-info-veicolo" disabled={inRicerca}>
+              <div className="btn-icon-circle">
+                <i className="ti ti-search" />
+              </div>
+              Cerca
+            </button>
+          </form>
+
+          <div className={`cerca-loading${inRicerca ? " show" : ""}`}>
+            <div className="cerca-dots">
+              <div className="cerca-dot" />
+              <div className="cerca-dot" />
+              <div className="cerca-dot" />
+            </div>
+            <div className="cerca-loading-text">Ricerca in corso...</div>
+          </div>
+
+          <div className="vehicle-result-wrap">
+            {errore && <p className="vehicle-result-error">{errore}</p>}
+
+            {nonTrovato && (
+              <div className="av-non-trovato">
+                <i className="ti ti-car-off" />
+                <span className="av-non-trovato-titolo">Veicolo non trovato</span>
+                <span className="av-non-trovato-sub">
+                  Controlla la targa inserita e riprova.
                 </span>
               </div>
-              <div className="hp-risultato-campo">
-                <span className="hp-risultato-label">Anno</span>
-                <span className="hp-risultato-valore">{risultato.anno ?? "—"}</span>
-              </div>
-              <div className="hp-risultato-campo">
-                <span className="hp-risultato-label">Tipo</span>
-                <span className="hp-risultato-valore">{risultato.tipo_veicolo ?? "—"}</span>
-              </div>
-            </div>
-            <div className="hp-risultato-badges">
-              <span className={`hp-badge ${risultato.isbolloattivo ? "ok" : "ko"}`}>
-                <i className={`ti ${risultato.isbolloattivo ? "ti-circle-check" : "ti-alert-circle"}`} />
-                Bollo {risultato.isbolloattivo ? "attivo" : "scaduto"}
-              </span>
-              <span className={`hp-badge ${risultato.isinsured ? "ok" : "ko"}`}>
-                <i className={`ti ${risultato.isinsured ? "ti-circle-check" : "ti-alert-circle"}`} />
-                Assicurazione {risultato.isinsured ? "attiva" : "scaduta"}
-              </span>
-            </div>
-            <button
-              type="button"
-              className="hp-btn-arancione"
-              disabled={inAggiunta}
-              onClick={() => void aggiungiAlGarage()}
-            >
-              {inAggiunta ? "Aggiunta in corso..." : "Aggiungi al garage"}
-            </button>
-          </div>
-        )}
+            )}
 
-        {storico.length > 0 && (
-          <div className="hp-recenti">
-            <p className="hp-recenti-label">Ricercate di recente</p>
-            <div className="hp-recenti-lista">
-              {storico.map((t) => (
-                <span
-                  key={t}
-                  className="hp-recente-pill"
-                  onClick={() => {
-                    setTarga(t);
-                    void cerca(undefined, t);
-                  }}
-                >
-                  {t}
+            {risultato && (
+              <div className="vehicle-result-card">
+                <div className="vehicle-result-header">
+                  <div className="vehicle-result-targa">{risultato.targa}</div>
+                  <div className="vehicle-result-nome">
+                    {`${risultato.marca ?? ""} ${risultato.modello ?? ""}`.trim() || "Veicolo"}
+                  </div>
+                </div>
+                <div className="vehicle-result-divider" />
+                <div className="vehicle-result-body">
+                  <div className="vehicle-result-field">
+                    <span className="vehicle-result-label">Alimentazione</span>
+                    <span className="vehicle-result-value">{risultato.alimentazione ?? "—"}</span>
+                  </div>
+                  <div className="vehicle-result-field">
+                    <span className="vehicle-result-label">Cavalli</span>
+                    <span className="vehicle-result-value">
+                      {risultato.cavalli ? `${risultato.cavalli} CV` : "—"}
+                    </span>
+                  </div>
+                  <div className="vehicle-result-field">
+                    <span className="vehicle-result-label">Anno</span>
+                    <span className="vehicle-result-value">{risultato.anno ?? "—"}</span>
+                  </div>
+                  <div className="vehicle-result-field">
+                    <span className="vehicle-result-label">Tipo</span>
+                    <span className="vehicle-result-value">{risultato.tipo_veicolo ?? "—"}</span>
+                  </div>
+                  <div className="vehicle-result-field">
+                    <span className="vehicle-result-label">Bollo</span>
+                    <div className={`vehicle-result-status ${risultato.isbolloattivo ? "ok" : "ko"}`}>
+                      <div className={`vehicle-result-dot ${risultato.isbolloattivo ? "ok" : "ko"}`} />
+                      {risultato.isbolloattivo ? "Attivo" : "Scaduto"}
+                    </div>
+                  </div>
+                  <div className="vehicle-result-field">
+                    <span className="vehicle-result-label">Assicurazione</span>
+                    <div className={`vehicle-result-status ${risultato.isinsured ? "ok" : "ko"}`}>
+                      <div className={`vehicle-result-dot ${risultato.isinsured ? "ok" : "ko"}`} />
+                      {risultato.isinsured ? "Attiva" : "Scaduta"}
+                    </div>
+                  </div>
+                </div>
+                <div className="vehicle-result-footer">
                   <button
                     type="button"
-                    className="hp-recente-x"
-                    aria-label={`Rimuovi ${t}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setStorico(rimuoviStoricoTarga(t));
-                    }}
+                    className="btn-aggiungi-garage"
+                    disabled={inAggiunta}
+                    onClick={() => void aggiungiAlGarage()}
                   >
-                    <i className="ti ti-x" />
+                    <div className="btn-icon-circle">
+                      <i className="ti ti-car-garage" />
+                    </div>
+                    {inAggiunta ? "Aggiunta in corso..." : "Aggiungi al garage"}
                   </button>
-                </span>
-              ))}
-            </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+
+          {storico.length > 0 && (
+            <div className="cerca-storico">
+              <div className="cerca-storico-label">Cercate di recente</div>
+              <div className="cerca-storico-tags">
+                {storico.map((t) => (
+                  <span key={t} className="cerca-storico-tag">
+                    <span
+                      onClick={() => {
+                        setTarga(t);
+                        void cerca(undefined, t);
+                      }}
+                    >
+                      {t}
+                    </span>
+                    <div
+                      className="x-circle"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setStorico(rimuoviStoricoTarga(t));
+                      }}
+                    >
+                      <i className="ti ti-x" />
+                    </div>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

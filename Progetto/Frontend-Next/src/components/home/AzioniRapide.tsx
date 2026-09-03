@@ -14,48 +14,55 @@ export default function AzioniRapide() {
   const tilt = useTilt<HTMLAnchorElement>();
 
   return (
-    <section className="azioni-grid">
-      {/* Stessa destinazione della voce sidebar "Storico interventi" (/storico-interventi) */}
-      <Link
-        href="/storico-interventi"
-        className="azione-card"
-        onMouseMove={tilt.onMouseMove}
-        onMouseLeave={tilt.onMouseLeave}
-      >
-        <div className="azione-icona">
-          <i className="ti ti-history" />
-        </div>
-        <p className="azione-titolo">Storico interventi</p>
-        <p className="azione-desc">Consulta e registra gli interventi dei tuoi veicoli</p>
-      </Link>
+    <section className="hp-azioni">
+      <h2 className="hp-section-title">
+        <i className="ti ti-bolt" />
+        Azioni rapide
+      </h2>
 
-      {/* Stessa destinazione della voce sidebar "Prenotazioni" (/prenotazioni) */}
-      <Link
-        href="/prenotazioni"
-        className="azione-card"
-        onMouseMove={tilt.onMouseMove}
-        onMouseLeave={tilt.onMouseLeave}
-      >
-        <div className="azione-icona">
-          <i className="ti ti-calendar-event" />
-        </div>
-        <p className="azione-titolo">Prenota officina</p>
-        <p className="azione-desc">Trova un&apos;officina e fissa un appuntamento</p>
-      </Link>
+      <div className="azioni-grid">
+        {/* Stessa destinazione della voce sidebar "Storico interventi" (/storico-interventi) */}
+        <Link
+          href="/storico-interventi"
+          className="azione-card"
+          onMouseMove={tilt.onMouseMove}
+          onMouseLeave={tilt.onMouseLeave}
+        >
+          <div className="azione-icona">
+            <i className="ti ti-history" />
+          </div>
+          <p className="azione-titolo">Storico interventi</p>
+          <p className="azione-desc">Consulta e registra gli interventi dei tuoi veicoli</p>
+        </Link>
 
-      {/* Stessa destinazione delle card veicolo del garage (/info-veicolo) */}
-      <Link
-        href="/info-veicolo"
-        className="azione-card"
-        onMouseMove={tilt.onMouseMove}
-        onMouseLeave={tilt.onMouseLeave}
-      >
-        <div className="azione-icona">
-          <i className="ti ti-file-description" />
-        </div>
-        <p className="azione-titolo">Scheda tecnica</p>
-        <p className="azione-desc">Dati tecnici e mantenimento del veicolo attivo</p>
-      </Link>
+        {/* Stessa destinazione della voce sidebar "Prenotazioni" (/prenotazioni) */}
+        <Link
+          href="/prenotazioni"
+          className="azione-card"
+          onMouseMove={tilt.onMouseMove}
+          onMouseLeave={tilt.onMouseLeave}
+        >
+          <div className="azione-icona">
+            <i className="ti ti-calendar-event" />
+          </div>
+          <p className="azione-titolo">Prenota officina</p>
+          <p className="azione-desc">Trova un&apos;officina e fissa un appuntamento</p>
+        </Link>
+
+        {/* Stessa destinazione delle card veicolo del garage (/info-veicolo) */}
+        <Link
+          href="/info-veicolo"
+          className="azione-card"
+          onMouseMove={tilt.onMouseMove}
+          onMouseLeave={tilt.onMouseLeave}
+        >
+          <div className="azione-icona">
+            <i className="ti ti-file-description" />
+          </div>
+          <p className="azione-titolo">Scheda tecnica</p>
+          <p className="azione-desc">Dati tecnici e mantenimento del veicolo attivo</p>
+        </Link>
+      </div>
     </section>
   );
 }

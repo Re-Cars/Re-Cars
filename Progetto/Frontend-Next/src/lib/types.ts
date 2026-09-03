@@ -147,7 +147,8 @@ export interface OfficinaCatalogo {
   categoria?: string;
   stelle?: number | string;
   recensioni?: number | string;
-  distanza_km?: number | string;
+  /* nessun distanza_km: GET /officina/all non lo restituisce, la distanza è
+     calcolata lato client da lat/lng (src/lib/geo.ts) */
   aperta?: boolean;
   orario?: string;
   disponibilita?: string;

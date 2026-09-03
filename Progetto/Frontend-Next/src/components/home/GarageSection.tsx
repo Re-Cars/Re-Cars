@@ -1,15 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState, type TransitionEvent } from "react";
 
 import { AggiungiVeicoloCard, VeicoloCard } from "./VeicoloCard";
 import AggiungiVeicoloOverlay from "@/components/AggiungiVeicoloOverlay";
 import { useAuth } from "@/context/AuthContext";
 import type { VeicoloDettaglio } from "@/lib/types";
 
-/** Quante card veicolo restano visibili nella griglia compressa. */
-const VISIBILI_COMPRESSA = 3;
+/**
+ * Quante card veicolo restano visibili nella griglia compressa: 2, perché
+ * il terzo slot è sempre occupato dalla card "Aggiungi un veicolo".
+ */
+const VISIBILI_COMPRESSA = 2;
 
 interface GarageSectionProps {
   veicoli: VeicoloDettaglio[];
@@ -20,9 +23,9 @@ interface GarageSectionProps {
 }
 
 /**
- * "Il mio garage": griglia responsive delle card veicolo (max 3 visibili,
- * il resto in un blocco espandibile animato) + card "Aggiungi un veicolo"
- * che apre l'overlay di ricerca targa.
+ * "Il mio garage": griglia responsive delle card veicolo (2 visibili + card
+ * "Aggiungi un veicolo" sempre in 3ª posizione, il resto in un blocco
+ * espandibile animato).
  */
 export default function GarageSection({
   veicoli,
@@ -33,6 +36,22 @@ export default function GarageSection({
   const router = useRouter();
   const { veicoloAttivo, selezionaVeicolo } = useAuth();
   const [modalAperto, setModalAperto] = useState(false);
+  /**
+   * true solo a pannello extra completamente aperto: serve a togliere
+   * l'overflow:hidden (necessario durante l'animazione grid-template-rows)
+   * che altrimenti taglierebbe il tilt 3D delle card al passaggio del mouse.
+   */
+  const [extraAssestato, setExtraAssestato] = useState(false);
+
+  // in chiusura il clipping deve tornare subito, non a transizione finita
+  useEffect(() => {
+    if (!espanso) setExtraAssestato(false);
+  }, [espanso]);
+
+  const onExtraTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget) return;
+    if (e.propertyName === "grid-template-rows" && espanso) setExtraAssestato(true);
+  };
 
   const visibili = veicoli.slice(0, VISIBILI_COMPRESSA);
   const extra = veicoli.slice(VISIBILI_COMPRESSA);
@@ -43,8 +62,6 @@ export default function GarageSection({
     selezionaVeicolo(v.id);
     router.push(`/info-veicolo?id=${v.id}`);
   };
-
-  const cardAggiungi = <AggiungiVeicoloCard onClick={() => setModalAperto(true)} />;
 
   return (
     <section id="garage" className="hp-garage">
@@ -62,14 +79,17 @@ export default function GarageSection({
             onClick={() => apriVeicolo(v)}
           />
         ))}
-        {/* la card aggiungi chiude sempre la griglia compressa */}
-        {extra.length === 0 && cardAggiungi}
+        {/* posizione fissa e prevedibile: sempre il 3° slot della griglia */}
+        <AggiungiVeicoloCard onClick={() => setModalAperto(true)} />
       </div>
 
       {extra.length > 0 && (
         <>
-          <div className={`garage-extra${espanso ? " open" : ""}`}>
-            <div className="garage-extra-inner">
+          <div
+            className={`garage-extra${espanso ? " open" : ""}`}
+            onTransitionEnd={onExtraTransitionEnd}
+          >
+            <div className={`garage-extra-inner${extraAssestato ? " garage-extra-inner--assestato" : ""}`}>
               <div className="garage-grid garage-grid-extra">
                 {extra.map((v) => (
                   <VeicoloCard
@@ -79,7 +99,6 @@ export default function GarageSection({
                     onClick={() => apriVeicolo(v)}
                   />
                 ))}
-                {cardAggiungi}
               </div>
             </div>
           </div>

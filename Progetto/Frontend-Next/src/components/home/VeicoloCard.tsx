@@ -22,6 +22,11 @@ export function VeicoloCard({ veicolo, attivo, onClick }: VeicoloCardProps) {
   const badge = BADGE_SALUTE[salute];
   const tilt = useTilt<HTMLDivElement>();
 
+  // stesso confronto di info-veicolo/page.tsx: le due pagine restano coerenti
+  const isMoto = (veicolo.dati_generici?.[0]?.tipo_veicolo ?? "").toLowerCase() === "moto";
+  const tipo = isMoto ? "moto" : "auto";
+  const iconaTipo = isMoto ? "ti-motorbike" : "ti-car";
+
   return (
     <div
       className={`veicolo-card${attivo ? " attivo" : ""}`}
@@ -32,8 +37,12 @@ export function VeicoloCard({ veicolo, attivo, onClick }: VeicoloCardProps) {
       onMouseMove={tilt.onMouseMove}
       onMouseLeave={tilt.onMouseLeave}
     >
-      <div className="veicolo-card-placeholder">
-        <i className="ti ti-car" />
+      <div className={`veicolo-card-placeholder ${tipo}`}>
+        <span className="veicolo-tipo-chip">
+          <i className={`ti ${iconaTipo}`} />
+          {isMoto ? "Moto" : "Auto"}
+        </span>
+        <i className={`ti ${iconaTipo} veicolo-tipo-watermark`} />
       </div>
       <span className="targa-pill">{veicolo.targa}</span>
       <p className="veicolo-card-nome">{nomeVeicolo(veicolo)}</p>

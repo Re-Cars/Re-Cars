@@ -5,9 +5,27 @@ import { useEffect, useState, type MouseEvent } from "react";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
 import { getVeicolo } from "@/lib/api";
+import { giorniAllaData } from "@/lib/scadenze";
 import type { VeicoloDettaglio } from "@/lib/types";
 
 type StatoMantenimento = "attiva" | "scaduta";
+
+/**
+ * Stato di un documento (bollo / assicurazione) con la stessa regola di
+ * calcolaScadenze in lib/scadenze.ts — unica fonte di verità, così questa
+ * pagina e "Scadenze e avvisi" della homepage non possono divergere:
+ * conta la data, e un flag esplicitamente `false` forza comunque "scaduta".
+ */
+function statoDaData(
+  data: string | null | undefined,
+  attivo: boolean | null | undefined,
+): StatoMantenimento {
+  if (!data) return "scaduta";
+  const giorni = giorniAllaData(data);
+  if (giorni === null) return "scaduta";
+  if (attivo === false) return "scaduta";
+  return giorni < 0 ? "scaduta" : "attiva";
+}
 
 /**
  * Info veicolo: hero con nome/targa/tipo/anno, caratteristiche tecniche
@@ -49,8 +67,8 @@ export default function InfoVeicoloPage() {
   const isMoto = (dg.tipo_veicolo ?? "").toLowerCase() === "moto";
   const iconaVeicolo = isMoto ? "fa-motorcycle" : "fa-car";
 
-  const statoBollo: StatoMantenimento = ds.datascadenzabollo && ds.isbolloattivo ? "attiva" : "scaduta";
-  const statoRca: StatoMantenimento = ds.datascadenzarca && ds.isinsured ? "attiva" : "scaduta";
+  const statoBollo = statoDaData(ds.datascadenzabollo, ds.isbolloattivo);
+  const statoRca = statoDaData(ds.datascadenzarca, ds.isinsured);
 
   const dataBollo = ds.datascadenzabollo
     ? `scade il ${new Date(ds.datascadenzabollo).toLocaleDateString("it-IT")}`

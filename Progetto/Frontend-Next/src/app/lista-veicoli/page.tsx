@@ -12,8 +12,9 @@ import type { VeicoloDettaglio } from "@/lib/types";
 
 /**
  * Lista veicoli: tutte le card del garage (stessi stili e hover della
- * homepage) in griglia responsive 1→3 colonne, con header (titolo,
- * contatore, bottone aggiungi) e card "Aggiungi un veicolo" in coda.
+ * homepage) in griglia responsive 1→3 colonne, con header (titolo e
+ * contatore) e card "Aggiungi un veicolo" in coda: unico punto d'ingresso
+ * per l'aggiunta, come in GarageSection della homepage.
  */
 export default function ListaVeicoliPage() {
   const router = useRouter();
@@ -61,10 +62,6 @@ export default function ListaVeicoliPage() {
                 {veicoli.length} veicol{veicoli.length === 1 ? "o" : "i"}
               </span>
             </h2>
-            <button type="button" className="lv-btn-aggiungi" onClick={() => setModalAperto(true)}>
-              <i className="ti ti-plus" />
-              Aggiungi veicolo
-            </button>
           </div>
 
           <div className="garage-grid">

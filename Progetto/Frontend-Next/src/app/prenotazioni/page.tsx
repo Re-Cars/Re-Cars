@@ -12,6 +12,7 @@ import {
   getPrenotazioniUtente,
   type PrenotazioneUtente,
 } from "@/lib/api";
+import { distanzaKm, formattaKm } from "@/lib/geo";
 import type { OfficinaCatalogo } from "@/lib/types";
 import "@/styles/prenotazione-utente.css";
 
@@ -31,7 +32,8 @@ interface Officina {
   categoria: string;
   stelle: number;
   recensioni: number;
-  distanza_km: number;
+  /* niente distanza_km: il backend non la restituisce, si calcola a runtime
+     dalle coordinate dell'officina e dalla posizione GPS dell'utente */
   aperta: boolean;
   orario: string;
   disponibilita: string;
@@ -50,7 +52,6 @@ function normalizzaOfficina(o: OfficinaCatalogo): Officina {
     categoria: o.categoria ?? "Meccanica",
     stelle: parseFloat(String(o.stelle ?? 4.5)),
     recensioni: parseInt(String(o.recensioni ?? 12), 10),
-    distanza_km: parseFloat(String(o.distanza_km ?? 0)),
     aperta: o.aperta !== undefined ? o.aperta : true,
     orario: o.orario ?? "08:00 - 18:00",
     disponibilita: o.disponibilita ?? "Immediata",
@@ -144,6 +145,8 @@ export default function PrenotazioniPage() {
   const [sortAsc, setSortAsc] = useState(true);
   const [selezionata, setSelezionata] = useState<Officina | null>(null);
   const [prenotazioniUtente, setPrenotazioniUtente] = useState<PrenotazioneUtente[] | null>(null);
+  /** Posizione GPS dell'utente: null finché non concessa/rilevata. */
+  const [posUtente, setPosUtente] = useState<{ lat: number; lng: number } | null>(null);
 
   // modal prenotazione
   const [modalAperto, setModalAperto] = useState(false);
@@ -189,6 +192,17 @@ export default function PrenotazioniPage() {
       .then(setPrenotazioniUtente)
       .catch(() => setPrenotazioniUtente([]));
   }, [caricaOfficine]);
+
+  // tentativo automatico di geolocalizzazione: se negato o non supportato si
+  // resta senza distanze (nessun "0 km" finto) finché non si preme GPS
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setPosUtente({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => undefined,
+      { timeout: 10000 },
+    );
+  }, []);
 
   /* ---------- mappa Leaflet (import dinamico, client-only) ---------- */
   useEffect(() => {
@@ -263,6 +277,17 @@ export default function PrenotazioniPage() {
     [],
   );
 
+  /* ---------- distanza ---------- */
+  /** Distanza officina-utente in km, null senza posizione GPS. */
+  const distanzaDi = (o: Officina): number | null =>
+    posUtente ? distanzaKm(posUtente.lat, posUtente.lng, o.lat, o.lng) : null;
+
+  /** Etichetta distanza: mai "0 km" quando la posizione non è disponibile. */
+  const etichettaDistanza = (o: Officina, assente: string): string => {
+    const km = distanzaDi(o);
+    return km === null ? assente : formattaKm(km);
+  };
+
   /* ---------- filtri / ordinamento ---------- */
   const categorie = [...new Set(officine.map((o) => o.categoria).filter(Boolean))];
   const q = ricerca.toLowerCase().trim();
@@ -276,7 +301,13 @@ export default function PrenotazioniPage() {
         o.servizi.some((s) => s.toLowerCase().includes(q));
       return matchCat && matchQ;
     })
-    .sort((a, b) => (sortAsc ? a.distanza_km - b.distanza_km : b.distanza_km - a.distanza_km));
+    .sort((a, b) => {
+      // senza posizione non c'è un criterio: si mantiene l'ordine del backend
+      const da = distanzaDi(a);
+      const db = distanzaDi(b);
+      if (da === null || db === null) return 0;
+      return sortAsc ? da - db : db - da;
+    });
 
   /* ---------- GPS ---------- */
   const usaGps = () => {
@@ -287,6 +318,7 @@ export default function PrenotazioniPage() {
     mostraToast("Localizzazione in corso...");
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        setPosUtente({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         mapRef.current?.setView([pos.coords.latitude, pos.coords.longitude], 13, { animate: true });
         mostraToast("Posizione rilevata!");
       },
@@ -490,7 +522,9 @@ export default function PrenotazioniPage() {
                               <strong style={{ color: "var(--text)", marginLeft: 2 }}>{o.stelle}</strong>
                               <span style={{ color: "var(--text-muted)" }}>({o.recensioni})</span>
                             </span>
-                            <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>{o.distanza_km} km</span>
+                            <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>
+                              {etichettaDistanza(o, "Distanza n.d.")}
+                            </span>
                           </div>
                           <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 8 }}>
                             {o.servizi.slice(0, 3).map((s) => (
@@ -606,7 +640,11 @@ export default function PrenotazioniPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
                   {[
                     { icona: "fa-regular fa-clock", label: "Orario", valore: selezionata.orario },
-                    { icona: "fa-solid fa-location-dot", label: "Distanza", valore: `${selezionata.distanza_km} km` },
+                    {
+                      icona: "fa-solid fa-location-dot",
+                      label: "Distanza",
+                      valore: etichettaDistanza(selezionata, "Non disponibile"),
+                    },
                     { icona: "fa-solid fa-hourglass-half", label: "Disponibilità", valore: selezionata.disponibilita },
                   ].map((box) => (
                     <div
