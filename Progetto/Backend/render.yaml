@@ -1,0 +1,63 @@
+# Blueprint Render per il backend NestJS di RE|CARS.
+#
+# NOTA IMPORTANTE: Render individua automaticamente un render.yaml solo se si
+# trova nella root del repository quando si crea una "Blueprint Instance" da
+# GitHub. Questo repo è un monorepo e questo file vive in Progetto/Backend/,
+# quindi in fase di creazione della Blueprint su Render va indicato
+# esplicitamente il percorso "Progetto/Backend/render.yaml" nel campo
+# "Blueprint file path" (oppure, in alternativa più semplice, il servizio si
+# può creare a mano da dashboard con Root Directory = Progetto/Backend senza
+# usare affatto questo file — vedi report finale).
+#
+# "rootDir" sotto è relativo alla root del repository, non alla posizione di
+# questo file: per questo va comunque indicato esplicitamente anche se il
+# file si trova già dentro Progetto/Backend.
+services:
+  - type: web
+    name: recars-backend
+    runtime: node
+    plan: free
+    # Render non ha una region "europe-west" (nome GCP/Vercel, non Render):
+    # la region europea disponibile su Render si chiama "frankfurt".
+    region: frankfurt
+    rootDir: Progetto/Backend
+    buildCommand: pnpm install && pnpm build
+    # Il build compila con outDir "./dist" ma preserva la struttura di src/
+    # (confermato ispezionando l'output di build reale): l'entry point è
+    # dist/src/main.js, NON dist/main.js.
+    startCommand: node dist/src/main.js
+    healthCheckPath: /
+    autoDeploy: true
+    branch: main
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      # Le seguenti vanno valorizzate manualmente in dashboard Render
+      # (Settings -> Environment): sync: false le rende "manual entry",
+      # Render non richiede/non aspetta un valore in questo file.
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: MAIL_USER
+        sync: false
+      - key: MAIL_PASS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: FRONTEND_BASE_URL
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_PREMIUM
+        sync: false
+      - key: STRIPE_PRICE_PRO
+        sync: false
+      - key: STRIPE_PRICE_BUSINESS
+        sync: false
+      - key: STRIPE_PRICE_BUSINESS_PRO
+        sync: false

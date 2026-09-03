@@ -90,13 +90,13 @@ export class StripeController {
 
     const successUrl =
       tipo === 'officina'
-        ? `${baseUrl}/pagamento-officina.html?session_id={CHECKOUT_SESSION_ID}`
-        : `${baseUrl}/pagamento.html?session_id={CHECKOUT_SESSION_ID}`;
+        ? `${baseUrl}/pagamento-officina?session_id={CHECKOUT_SESSION_ID}`
+        : `${baseUrl}/pagamento?session_id={CHECKOUT_SESSION_ID}`;
 
     const cancelUrl =
       tipo === 'officina'
-        ? `${baseUrl}/abbonamenti-officina.html`
-        : `${baseUrl}/abbonamenti.html`;
+        ? `${baseUrl}/abbonamenti-officina`
+        : `${baseUrl}/abbonamenti`;
 
     const session = await this.stripeService.creaCheckoutSession({
       piano: body.piano,
