@@ -2,11 +2,12 @@ import { JwtPayload } from './jwt-payload.interface';
 
 declare global {
   namespace Express {
-    interface User extends JwtPayload { }
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface User extends JwtPayload {}
     interface Request {
       user?: User;
     }
   }
 }
 
-export { };
+export {};

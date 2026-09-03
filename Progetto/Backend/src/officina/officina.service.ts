@@ -4,7 +4,7 @@ import {
   ConflictException,
   NotFoundException,
   ForbiddenException,
-  BadRequestException
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt';
@@ -227,9 +227,11 @@ export class OfficinaService {
     const prenotazione = await this.prisma.prenotazione.findUnique({
       where: { id: prenotazioneId },
     });
-    if (!Object.values(stato_prenotazione).includes(stato as stato_prenotazione)) {
-  throw new BadRequestException(`Stato non valido: ${stato}`);
-}
+    if (
+      !Object.values(stato_prenotazione).includes(stato as stato_prenotazione)
+    ) {
+      throw new BadRequestException(`Stato non valido: ${stato}`);
+    }
     if (!prenotazione) throw new NotFoundException('Prenotazione non trovata');
     if (prenotazione.id_officina !== officinaId)
       throw new ForbiddenException('Non autorizzato');
@@ -382,9 +384,11 @@ export class OfficinaService {
       where: { id_officina: officinaId, stato: 'attivo' },
     });
 
-    if (!Object.values(piano_abbonamento).includes(piano as piano_abbonamento)) {
-  throw new BadRequestException(`Piano non valido: ${piano}`);
-}
+    if (
+      !Object.values(piano_abbonamento).includes(piano as piano_abbonamento)
+    ) {
+      throw new BadRequestException(`Piano non valido: ${piano}`);
+    }
 
     if (abbonamentoAttivo) {
       await this.prisma.abbonamento.update({

@@ -24,7 +24,7 @@ import { Tipo } from '../types/tipo.decorator';
 
 @Controller('officina')
 export class OfficinaController {
-  constructor(private readonly officinaService: OfficinaService) { }
+  constructor(private readonly officinaService: OfficinaService) {}
 
   @Post('register')
   async register(
@@ -154,7 +154,6 @@ export class OfficinaController {
       mese ? Number(mese) : now.getMonth() + 1,
     );
   }
-
 
   @Get('all') // Senza un percorso esplicito, l'URL diventa http://localhost:3000/officina
   async findAll() {
