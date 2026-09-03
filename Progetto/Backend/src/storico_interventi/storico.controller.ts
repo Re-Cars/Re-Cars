@@ -7,16 +7,19 @@ import {
   Param,
   Body,
   ParseIntPipe,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { StoricoService } from './storico.service';
 import {
   CreateInterventoDto,
   UpdateInterventoDto,
 } from './dto/create-intervento.dto';
-// import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // decommentare se hai l'auth guard
+import { JwtAuthGuard } from '../jwt-auth.guard';
+import type { Request } from 'express';
 
 @Controller('interventi')
-// @UseGuards(JwtAuthGuard)  // decommentare per proteggere le route con JWT
+@UseGuards(JwtAuthGuard)
 export class StoricoController {
   constructor(private readonly storicoService: StoricoService) {}
 
@@ -24,15 +27,22 @@ export class StoricoController {
   // Restituisce tutti gli interventi di un veicolo specifico
 
   @Get('veicolo/:id_veicolo')
-  findByVeicolo(@Param('id_veicolo', ParseIntPipe) idVeicolo: number) {
-    return this.storicoService.findByVeicolo(idVeicolo);
+  findByVeicolo(
+    @Param('id_veicolo', ParseIntPipe) idVeicolo: number,
+    @Req() req: Request,
+  ) {
+    const userId = Number(req.user?.sub);
+    const userType = req.user?.tipo;
+    return this.storicoService.findByVeicolo(idVeicolo, userId, userType);
   }
 
   // POST /interventi
   // Body: { id_veicolo, data, categoria, nome, descrizione?, mediante?, costo? }
   @Post()
-  create(@Body() dto: CreateInterventoDto) {
-    return this.storicoService.create(dto);
+  create(@Body() dto: CreateInterventoDto, @Req() req: Request) {
+    const userId = Number(req.user?.sub);
+    const userType = req.user?.tipo;
+    return this.storicoService.create(dto, userId, userType);
   }
 
   // PUT /interventi/:id
@@ -41,13 +51,18 @@ export class StoricoController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateInterventoDto,
+    @Req() req: Request,
   ) {
-    return this.storicoService.update(id, dto);
+    const userId = Number(req.user?.sub);
+    const userType = req.user?.tipo;
+    return this.storicoService.update(id, dto, userId, userType);
   }
 
   // DELETE /interventi/:id
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.storicoService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+    const userId = Number(req.user?.sub);
+    const userType = req.user?.tipo;
+    return this.storicoService.remove(id, userId, userType);
   }
 }

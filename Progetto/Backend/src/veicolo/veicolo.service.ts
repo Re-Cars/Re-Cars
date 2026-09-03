@@ -60,7 +60,7 @@ export class VeicoloService {
   ) {}
 
   cercaSoloDati(targa: string) {
-    const veicoli = (datiMock as VeicoliMockData).data;
+    const veicoli = (datiMock as unknown as VeicoliMockData).data;
     const trovato = veicoli.find(
       (v) => v.LicensePlate.toUpperCase() === targa.toUpperCase(),
     );
@@ -79,8 +79,8 @@ export class VeicoloService {
     };
   }
 
-  async cercaESalva(dto: CreateVeicoloDto) {
-    const veicoli = (datiMock as VeicoliMockData).data;
+  async cercaESalva(dto: CreateVeicoloDto, userId: number) {
+    const veicoli = (datiMock as unknown as VeicoliMockData).data;
     const trovato = veicoli.find(
       (v) => v.LicensePlate.toUpperCase() === dto.targa.toUpperCase(),
     );
@@ -100,11 +100,11 @@ export class VeicoloService {
     }
 
     const count = await this.prisma.veicolo.count({
-      where: { id_utente: dto.id_utente },
+      where: { id_utente: userId },
     });
 
     const abbonamento = await this.prisma.abbonamento.findFirst({
-      where: { id_utente: dto.id_utente, stato: 'attivo' },
+      where: { id_utente: userId, stato: 'attivo' },
       orderBy: { data_inizio: 'desc' },
     });
 
@@ -129,7 +129,7 @@ export class VeicoloService {
         targa: trovato.LicensePlate,
         marca: trovato.CarMake.substring(0, 10),
         modello: trovato.CarModel.substring(0, 12),
-        id_utente: dto.id_utente,
+        id_utente: userId,
       },
     });
 
@@ -175,7 +175,7 @@ export class VeicoloService {
     });
   }
 
-  async getVeicoloById(id: number) {
+  async getVeicoloById(id: number, userId?: number, userType?: string) {
     const veicolo = await this.prisma.veicolo.findUnique({
       where: { id },
       include: {
@@ -185,14 +185,28 @@ export class VeicoloService {
     });
     if (!veicolo)
       throw new NotFoundException(`Veicolo con id ${id} non trovato`);
+
+    if (userId && userType !== 'officina' && veicolo.id_utente !== userId) {
+      throw new ForbiddenException(
+        'Non autorizzato ad accedere a questo veicolo',
+      );
+    }
+
     return veicolo;
   }
 
-  async eliminaVeicolo(id: number) {
+  async eliminaVeicolo(id: number, userId: number) {
     const veicolo = await this.prisma.veicolo.findUnique({ where: { id } });
     if (!veicolo)
       throw new NotFoundException(`Veicolo con id ${id} non trovato`);
 
+    if (veicolo.id_utente !== userId) {
+      throw new ForbiddenException('Non puoi eliminare un veicolo non tuo');
+    }
+
+    await this.prisma.storico_intervento.deleteMany({
+      where: { id_veicolo: id },
+    });
     await this.prisma.dati_generici.deleteMany({ where: { id_veicolo: id } });
     await this.prisma.dati_specifici.deleteMany({ where: { id_veicolo: id } });
     await this.prisma.veicolo.delete({ where: { id } });

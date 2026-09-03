@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
    ① CONFIGURAZIONE ENDPOINT NESTJS
    ═══════════════════════════════════════════════════════════ */
-const API_BASE          = 'http://localhost:3000'; 
+const API_BASE          = window.API_URL || 'https://re-cars-backend.onrender.com'; 
 const ENDPOINT_OFFICINE = `${API_BASE}/officina/all`; 
 const ENDPOINT_PRENOTA  = `${API_BASE}/prenotazioni`;
 const SLOT_ORARI        = ['08:00','09:00','10:00','11:00','14:00','15:00','16:00','17:00'];
@@ -48,8 +48,8 @@ async function caricaOfficine() {
             disponibilita: o.disponibilita || 'Immediata',
             indirizzo:     o.indirizzo || 'Indirizzo non specificato',
             telefono:      o.telefono || '',
-            lat:           parseFloat(o.latitude || o.lat || 45.4642),  
-            lng:           parseFloat(o.longitude || o.lng || 9.1900),
+            lat:           parseFloat(o.latitude || o.lat || null),  
+            lng:           parseFloat(o.longitude || o.lng || null),
             servizi:       Array.isArray(o.servizi) ? o.servizi : (o.servizi ? o.servizi.split(',') : ['Riparazione', 'Tagliando']),
         }));
 
@@ -82,7 +82,7 @@ async function geocodificaIndirizzo(indirizzo) {
     } catch (e) {
         console.warn('Geocodifica fallita, uso coordinate di default.', e);
     }
-    return { lat: 45.4642, lng: 9.1900 }; 
+    return { lat: null , lng: null }; 
 }
 
 /* ═══════════════════════════════════════════════════════════

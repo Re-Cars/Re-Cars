@@ -7,17 +7,26 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { rawBody: true });
   app.use(cookieParser());
+  const allowedOrigins: (string | RegExp)[] = [
+    'http://127.0.0.1:5500',
+    'http://localhost:5500',
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3001',
+    /^https:\/\/.*\.vercel\.app$/,
+  ];
+
+  if (process.env.FRONTEND_BASE_URL) {
+    try {
+      const url = new URL(process.env.FRONTEND_BASE_URL);
+      allowedOrigins.push(url.origin);
+    } catch {
+      allowedOrigins.push(process.env.FRONTEND_BASE_URL);
+    }
+  }
+
   app.enableCors({
-    origin: [
-      // frontend vanilla (Live Server)
-      'http://127.0.0.1:5500',
-      'http://localhost:5500',
-      // frontend Next.js (npm run dev in Progetto/Frontend-Next)
-      'http://localhost:3001',
-      'http://127.0.0.1:3001',
-      // dominio di produzione del frontend Next (impostare FRONTEND_ORIGIN al deploy)
-      ...(process.env.FRONTEND_ORIGIN ? [process.env.FRONTEND_ORIGIN] : []),
-    ],
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -29,6 +38,6 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 void bootstrap();

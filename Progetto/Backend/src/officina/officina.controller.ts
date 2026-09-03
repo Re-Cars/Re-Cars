@@ -13,11 +13,14 @@ import {
 import { OfficinaService } from './officina.service';
 import { CreateOfficinaDto } from './dto/create-officina.dto';
 import { LoginOfficinaDto } from './dto/login-officina.dto';
+import { UpdateOfficinaDto } from './dto/update-officina.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
 import { authCookieOptions } from '../auth-cookie.util';
 import type { Response } from 'express';
 import { CurrentUser } from '../current-user.decorator';
 import type { JwtPayload } from '../jwt-payload.interface';
+import { TipoGuard } from '../types/tipo.guard';
+import { Tipo } from '../types/tipo.decorator';
 
 @Controller('officina')
 export class OfficinaController {
@@ -51,14 +54,16 @@ export class OfficinaController {
     return { message: 'Logout effettuato con successo' };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TipoGuard)
+  @Tipo('officina')
   @Get('dashboard')
   async dashboard(@CurrentUser() user: JwtPayload) {
     const officinaId = Number(user.sub);
     return this.officinaService.dashboard(officinaId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TipoGuard)
+  @Tipo('officina')
   @Get('prenotazioni')
   async prenotazioni(
     @CurrentUser() user: JwtPayload,
@@ -68,7 +73,8 @@ export class OfficinaController {
     return this.officinaService.tutteLePrenotazioni(officinaId, stato);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TipoGuard)
+  @Tipo('officina')
   @Patch('prenotazioni/:id/stato')
   async aggiornaStato(
     @Param('id') id: string,
@@ -83,21 +89,27 @@ export class OfficinaController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TipoGuard)
+  @Tipo('officina')
   @Get('profilo')
   async profilo(@CurrentUser() user: JwtPayload) {
     const officinaId = Number(user.sub);
     return this.officinaService.statistiche(officinaId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TipoGuard)
+  @Tipo('officina')
   @Patch('profilo')
-  async aggiornaProfilo(@Body() body: any, @CurrentUser() user: JwtPayload) {
+  async aggiornaProfilo(
+    @Body() body: UpdateOfficinaDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
     const officinaId = Number(user.sub);
     return this.officinaService.aggiornaProfilo(officinaId, body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TipoGuard)
+  @Tipo('officina')
   @Patch('abbonamento')
   async cambiaAbbonamento(
     @Body('piano') piano: string,
@@ -106,15 +118,15 @@ export class OfficinaController {
     const officinaId = Number(user.sub);
     return this.officinaService.cambiaAbbonamento(officinaId, piano);
   }
-
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TipoGuard)
+  @Tipo('officina')
   @Delete('abbonamento')
   async disdiciAbbonamento(@CurrentUser() user: JwtPayload) {
     const officinaId = Number(user.sub);
     return this.officinaService.disdiciAbbonamento(officinaId);
   }
-
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TipoGuard)
+  @Tipo('officina')
   @Delete('profilo')
   async eliminaProfilo(
     @CurrentUser() user: JwtPayload,
@@ -126,7 +138,8 @@ export class OfficinaController {
     return { message: 'Profilo eliminato' };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TipoGuard)
+  @Tipo('officina')
   @Get('agenda')
   async agenda(
     @CurrentUser() user: JwtPayload,
@@ -142,7 +155,6 @@ export class OfficinaController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('all') // Senza un percorso esplicito, l'URL diventa http://localhost:3000/officina
   async findAll() {
     return this.officinaService.findAll();

@@ -1,4 +1,15 @@
  /* ----------------------------------------------------
+/                   CONFIGURAZIONE API                 /
+-----------------------------------------------------*/
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000'
+    : 'https://re-cars-backend.onrender.com';
+
+window.API_URL = API_URL;
+window.API = API_URL;
+window.API_BASE = API_URL;
+
+ /* ----------------------------------------------------
 /                   LOCALSTORAGE                       /
 -----------------------------------------------------*/
 

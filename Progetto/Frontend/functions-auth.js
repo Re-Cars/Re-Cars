@@ -152,7 +152,7 @@ async function cercaCitta(query) {
         return;
     }
     try {
-        const res = await fetch(`http://localhost:3000/citta?q=${encodeURIComponent(query)}`);
+        const res = await fetch(`${API_URL}/citta?q=${encodeURIComponent(query)}`);
         const citta = await res.json();
         if (!citta.length) {
             dropdown.classList.remove('open');
@@ -189,7 +189,7 @@ async function register() {
     let url, body;
 
     if (regTipo === 'privato') {
-        url = 'http://localhost:3000/auth/register';
+        url = `${API_URL}/auth/register`;
         body = {
             username: document.getElementById('reg-username').value.trim(),
             email: document.getElementById('reg-email').value.trim(),
@@ -197,7 +197,7 @@ async function register() {
             tipo: 'privato',
         };
     } else if (regTipo === 'azienda') {
-        url = 'http://localhost:3000/auth/register';
+        url = `${API_URL}/auth/register`;
         body = {
             username: document.getElementById('reg-az-username').value.trim(),
             email: document.getElementById('reg-az-email').value.trim(),
@@ -208,7 +208,7 @@ async function register() {
             codice_sdi: document.getElementById('reg-az-sdi').value.trim() || null,
         };
     } else {
-        url = 'http://localhost:3000/officina/register';
+        url = `${API_URL}/officina/register`;
         body = {
             email: document.getElementById('reg-of-email').value.trim(),
             password: document.getElementById('reg-of-password').value,
@@ -268,7 +268,7 @@ async function login(tipo) {
         const errore = document.getElementById('login-error');
 
         try {
-            const response = await fetch('http://localhost:3000/auth/login', {
+            const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
@@ -305,8 +305,8 @@ async function login(tipo) {
         }
 
         const url = loginBusinessTipo === 'officina'
-            ? 'http://localhost:3000/officina/login'
-            : 'http://localhost:3000/auth/login/azienda';
+            ? `${API_URL}/officina/login`
+            : `${API_URL}/auth/login/azienda`;
 
         try {
             const response = await fetch(url, {
