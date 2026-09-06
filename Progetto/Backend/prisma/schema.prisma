@@ -109,9 +109,10 @@ model abbonamento {
 }
 
 model citta {
-  sigla    String     @id @db.Char(2)
-  nome     String     @unique @db.VarChar(50)
-  officina officina[]
+  sigla              String               @id @db.Char(2)
+  nome               String               @unique @db.VarChar(50)
+  officina           officina[]
+  storico_intervento storico_intervento[]
 }
 
 model officina {
@@ -185,13 +186,16 @@ model storico_intervento {
   id_veicolo  Int
   data        DateTime             @db.Date
   categoria   categoria_intervento
-  nome        String               @db.VarChar(100)
+  tipo        String               @db.VarChar(100)
   descrizione String?              @db.VarChar(255)
   mediante    String?              @db.VarChar(100)
   costo       Decimal?             @db.Decimal(10, 2)
+  sigla_citta String?              @db.Char(2)
   veicolo     veicolo              @relation(fields: [id_veicolo], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  citta       citta?               @relation(fields: [sigla_citta], references: [sigla], onDelete: NoAction, onUpdate: NoAction, map: "fk_citta_storico")
 
   @@index([id, id_veicolo], map: "idx_storico_id_veicolo")
+  @@index([sigla_citta], map: "idx_storico_sigla_citta")
 }
 
 model prenotazione {
