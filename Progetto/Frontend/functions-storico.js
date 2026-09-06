@@ -1,19 +1,71 @@
-/* ---------------------------------------------------- 
- come chiamare dati reali al backend
-----------------------------------------------------*/
-
 const API_BASE = window.API_URL || 'https://re-cars-backend.onrender.com';
 
 const tipiIntervento = {
-  ordinario:     ['Benzina','Cambio olio','Cambio tergicristalli','Gomme','Batteria','Controllo livelli','Pastiglie freni','Liquido freni','Liquido raffreddamento','Filtri motore','Pulizia iniettori','Tagliando','Altro'],
-  straordinario: ['Cinghia distribuzione','Carrozzeria','Riparazioni','Impianto elettrico','Luci','Frizione','Ammortizzatori','Radiatore','Sensori','Compressore clima','Marmitta','Altro'],
-  gestione:      ['Assicurazione','Bollo','Revisione','Multa','Pedaggi','Parcheggio'],
-  annotazioni:   ['Problemi','luci','motore','elettrico','rumori','altro'],
+  /*ordinario:     ['Benzina','Cambio olio','Cambio tergicristalli','Gomme','Batteria','Controllo livelli','Pastiglie freni','Liquido freni','Liquido raffreddamento','Filtri motore','Pulizia iniettori','Altro'],*/
+  ordinario:      ['Tagliando','Revisione','Ricarica Carburante','Rifornimento','Cambio', 'Controllo', 'Pulizia','Aggiunta','Altro'],
+  /*straordinario: ['Cinghia distribuzione','Carrozzeria','Riparazioni','Impianto elettrico','Luci','Frizione','Ammortizzatori','Radiatore','Sensori','Compressore clima','Marmitta','Altro'],*/
+  straordinario:   ['Tagliando', 'Riparazione', 'Controllo', 'Modifica veicolo', 'Altro'], 
+  gestione:      ['Assicurazione','Bollo','Revisione','Tagliando','Multa','Pedaggi','Parcheggio','Altro'],
+  /*annotazioni:   ['Problemi','luci','motore','elettrico','rumori','altro'],*/
+  annotazioni:   ['Problemi', 'Altro']
 };
+
 
 let interventi = [];
 let currentFilter = 'all';
 let veicoloAttivoInfo = {}; // dati generali veicolo (alimentazione, cilindrata, bollo, assicurazione...) per il PDF
+let cittaCache = []; // ultimi risultati della ricerca città, usati per validare la scelta al salvataggio
+
+/* ----------------------------------------------------
+RICERCA  CITTÀ (per l'autocompletamento nei form)
+Usando l'endpoint esistente GET /citta?q=... (richiede almeno 2 caratteri)
+----------------------------------------------------*/
+async function cercaCitta(query) {
+  if (!query || query.length < 2) return [];
+  try {
+    const res = await fetch(`${API_BASE}/citta?q=${encodeURIComponent(query)}`, {
+      credentials: 'include',
+    });
+    if (!res.ok) throw new Error('Errore ricerca città');
+    return await res.json();
+  } catch (err) {
+    console.error('Errore cercaCitta:', err);
+    return [];
+  }
+}
+
+// Debounce per non interrogare il backend ad ogni singola lettera digitata
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
+async function aggiornaSuggerimentiCitta(inputId) {
+  const input = document.getElementById(inputId);
+  const risultati = await cercaCitta(input.value);
+  cittaCache = risultati; // salvo per la validazione al momento del salvataggio
+
+  const datalist = document.getElementById('citta-datalist');
+  if (datalist) {
+    datalist.innerHTML = risultati.map(c => `<option value="${c.nome}">`).join('');
+  }
+}
+
+const aggiornaSuggerimentiCittaDebounced = debounce(aggiornaSuggerimentiCitta, 300);
+
+/*----------------------------------------------------
+uso UTILITY che converte il nome città digitato dall'utente nella sigla per il backend.
+a cui ritorna o sigla valida (string) o  null (campo lasciato vuoto) o undefined (nome non riconosciuto)
+----------------------------------------------------*/
+function siglaDaNomeCitta(nomeDigitato) {
+  const nome = (nomeDigitato || '').trim();
+  if (!nome) return null;
+  const trovata = cittaCache.find(c => c.nome.toLowerCase() === nome.toLowerCase());
+  return trovata ? trovata.sigla : undefined;
+}
 
 /*---------------------------------------------------
   ---------------- UTILITY
@@ -21,6 +73,17 @@ let veicoloAttivoInfo = {}; // dati generali veicolo (alimentazione, cilindrata,
 function catLabel(cat) {
   if (cat === 'gestione') return 'Spese di gestione';
   return cat.charAt(0).toUpperCase() + cat.slice(1);
+}
+
+// Versione abbreviata, usata solo nei badge dentro le righe della tabella (non nei filtri né nel PDF)
+function catLabelShort(cat) {
+  const abbreviazioni = {
+    ordinario: 'Ord.',
+    straordinario: 'Straord.',
+    annotazioni: 'Ann.',
+    gestione: 'Sp. di gest.',
+  };
+  return abbreviazioni[cat] || catLabel(cat);
 }
 
 function getVeicoloAttivoId() {
@@ -63,8 +126,19 @@ async function caricaInfoVeicolo() {
 }
 
 // Carico i dati generali veicolo appena la pagina è pronta (in aggiunta, non al posto di, caricaInterventi)
+// e collego la ricerca live delle città ai due campi input (nuovo intervento + modifica)
 document.addEventListener('DOMContentLoaded', () => {
   caricaInfoVeicolo();
+
+  const inputCitta = document.getElementById('inputCitta');
+  if (inputCitta) {
+    inputCitta.addEventListener('input', () => aggiornaSuggerimentiCittaDebounced('inputCitta'));
+  }
+
+  const editCitta = document.getElementById('editCitta');
+  if (editCitta) {
+    editCitta.addEventListener('input', () => aggiornaSuggerimentiCittaDebounced('editCitta'));
+  }
 });
 
 // Ricarico anche questi dati quando l'utente cambia veicolo attivo
@@ -163,20 +237,25 @@ function renderRows() {
     <div class="table-row" style="animation-delay:${idx * 0.05}s">
 
     <div class="date-cell">
-      <span class="cat-dot ${item.categoria}"></span>
-      ${item.data.split('-').reverse().join('/')}
+      <div class="date-main">
+        <span class="cat-dot ${item.categoria}"></span>
+        ${item.data.split('-').reverse().join('/')}
+      </div>
+      <div class="date-cat-sub"><span class="cat-badge ${item.categoria}">${catLabelShort(item.categoria)}</span></div>
     </div>
 
       <div>
-        <span class="cat-badge ${item.categoria}">${catLabel(item.categoria)}</span>
+        <span class="cat-badge ${item.categoria}">${catLabelShort(item.categoria)}</span>
       </div>
 
       <div class="desc-cell">
-        <div>${item.nome}</div>
+        <div><b>${item.tipo}</b></div>
         ${item.descrizione ? `<div class="desc-sub">${item.descrizione}</div>` : ''}
       </div>
 
       <div class="mediante-cell">${item.mediante || '—'}</div>
+
+      <div class="citta-cell">${item.citta?.nome || '—'}</div>
 
       <div class="costo-cell ${item.costo ? '' : 'vuoto'}">
         ${item.costo ? Number(item.costo).toFixed(2) + ' €' : '—'}
@@ -249,6 +328,7 @@ function closeModal() {
   document.getElementById('inputNome').innerHTML = '<option value="">Prima seleziona categoria...</option>';
   document.getElementById('inputDescrizione').value = '';
   document.getElementById('inputMediante').value = '';
+  document.getElementById('inputCitta').value = '';
   document.getElementById('inputCosto').value = '';
 }
 
@@ -279,14 +359,23 @@ async function saveIntervento() {
     return;
   }
 
+  const cittaInput = document.getElementById('inputCitta').value;
+  const siglaCitta = siglaDaNomeCitta(cittaInput);
+
+  if (siglaCitta === undefined) {
+    alert('Città non riconosciuta. Selezionane una dai suggerimenti proposti oppure lascia il campo vuoto.');
+    return;
+  }
+
   const payload = {
     id_veicolo:  idVeicolo,
     data,
     categoria:   cat,
-    nome,
+    tipo:        nome,
     descrizione: document.getElementById('inputDescrizione').value || null,
     mediante:    document.getElementById('inputMediante').value    || null,
     costo:       parseFloat(document.getElementById('inputCosto').value) || null,
+    sigla_citta: siglaCitta,
   };
 
   try {
@@ -350,9 +439,10 @@ function openEditModal(id) {
   document.getElementById('editData').value          = item.data;
   document.getElementById('editCategoria').value     = item.categoria;
   updateEditNomi();
-  document.getElementById('editNome').value          = item.nome;
+  document.getElementById('editNome').value          = item.tipo;
   document.getElementById('editDescrizione').value   = item.descrizione || '';
   document.getElementById('editMediante').value      = item.mediante    || '';
+  document.getElementById('editCitta').value         = item.citta?.nome || '';
   document.getElementById('editCosto').value         = item.costo       || '';
 
   document.getElementById('modalEditOverlay').classList.add('open');
@@ -373,13 +463,22 @@ async function saveEdit() {
     return;
   }
 
+  const cittaInput = document.getElementById('editCitta').value;
+  const siglaCitta = siglaDaNomeCitta(cittaInput);
+
+  if (siglaCitta === undefined) {
+    alert('Città non riconosciuta. Selezionane una dai suggerimenti proposti oppure lascia il campo vuoto.');
+    return;
+  }
+
   const payload = {
     data,
     categoria:   cat,
-    nome,
+    tipo:        nome,
     descrizione: document.getElementById('editDescrizione').value || null,
     mediante:    document.getElementById('editMediante').value    || null,
     costo:       parseFloat(document.getElementById('editCosto').value) || null,
+    sigla_citta: siglaCitta,
   };
 
   try {
@@ -824,15 +923,16 @@ function costruisciDocumentoPdf() {
       .map(i => [
         i.data.split('-').reverse().join('/'),
         catLabel(i.categoria),
-        i.nome + (i.descrizione ? ' - ' + i.descrizione : ''),
+        i.tipo + (i.descrizione ? ' - ' + i.descrizione : ''),
         i.mediante || '—',
+        i.citta?.nome || '—',
         i.costo ? Number(i.costo).toFixed(2) + ' €' : '—',
       ]);
 
     doc.autoTable({
       startY: y,
-      head: [['Data', 'Categoria', 'Descrizione', 'Fornitore', 'Costo']],
-      body: bodyCronologia.length ? bodyCronologia : [['—', '—', 'Nessun intervento nel periodo selezionato', '—', '—']],
+      head: [['Data', 'Categoria', 'Descrizione', 'Fornitore', 'Città', 'Costo']],
+      body: bodyCronologia.length ? bodyCronologia : [['—', '—', 'Nessun intervento nel periodo selezionato', '—', '—', '—']],
       theme: 'grid',
       styles: { font: fontBase, fontSize: 9, cellPadding: 3, lineColor: [230, 230, 230], lineWidth: 0.2 },
       headStyles: { fillColor: arancio, textColor: 255, fontStyle: 'bold', halign: 'left' },
