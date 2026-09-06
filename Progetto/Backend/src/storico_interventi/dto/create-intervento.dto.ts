@@ -1,11 +1,10 @@
-// src/storico_interventi/dto/create-intervento.dto.ts
-
 import {
   IsEnum,
   IsString,
   IsNumber,
   IsOptional,
   IsDateString,
+  Length,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -19,16 +18,16 @@ export enum CategoriaIntervento {
 export class CreateInterventoDto {
   @IsNumber()
   @Type(() => Number)
-  id_veicolo!: number; // ← il ! dice a TS "fidati, arriva dal body"
+  id_veicolo!: number; // OBBLIGATORIO
 
   @IsDateString()
-  data!: string;
+  data!: string; // OBBLIGATORIO
 
   @IsEnum(CategoriaIntervento)
-  categoria!: CategoriaIntervento;
+  categoria!: CategoriaIntervento; // OBBLIGATORIO
 
   @IsString()
-  nome!: string;
+  tipo!: string; // OBBLIGATORIO 
 
   @IsOptional()
   @IsString()
@@ -42,6 +41,11 @@ export class CreateInterventoDto {
   @IsNumber()
   @Type(() => Number)
   costo?: number;
+
+  @IsOptional()
+  @IsString()
+  @Length(2, 2)
+  sigla_citta?: string; //  opzionale
 }
 
 export class UpdateInterventoDto {
@@ -55,7 +59,7 @@ export class UpdateInterventoDto {
 
   @IsOptional()
   @IsString()
-  nome?: string;
+  tipo?: string; // 
 
   @IsOptional()
   @IsString()
@@ -69,4 +73,9 @@ export class UpdateInterventoDto {
   @IsNumber()
   @Type(() => Number)
   costo?: number;
+
+  @IsOptional()
+  @IsString()
+  @Length(2, 2)
+  sigla_citta?: string; // NUOVO
 }
