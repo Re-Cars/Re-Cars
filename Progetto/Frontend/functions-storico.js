@@ -17,8 +17,8 @@ let veicoloAttivoInfo = {}; // dati generali veicolo (alimentazione, cilindrata,
 let cittaCache = []; // ultimi risultati della ricerca città, usati per validare la scelta al salvataggio
 
 /* ----------------------------------------------------
-RICERCA  CITTÀ (per l'autocompletamento nei form)
-Usando l'endpoint esistente GET /citta?q=... (richiede almeno 2 caratteri)
+RICERCA LIVE CITTÀ (per l'autocompletamento nei form)
+Usa l'endpoint esistente GET /citta?q=... (richiede almeno 2 caratteri)
 ----------------------------------------------------*/
 async function cercaCitta(query) {
   if (!query || query.length < 2) return [];
@@ -57,8 +57,8 @@ async function aggiornaSuggerimentiCitta(inputId) {
 const aggiornaSuggerimentiCittaDebounced = debounce(aggiornaSuggerimentiCitta, 300);
 
 /*----------------------------------------------------
-uso UTILITY che converte il nome città digitato dall'utente nella sigla per il backend.
-a cui ritorna o sigla valida (string) o  null (campo lasciato vuoto) o undefined (nome non riconosciuto)
+UTILITY: converte il nome città digitato dall'utente nella sigla per il backend.
+Ritorna: sigla valida (string) | null (campo lasciato vuoto) | undefined (nome non riconosciuto)
 ----------------------------------------------------*/
 function siglaDaNomeCitta(nomeDigitato) {
   const nome = (nomeDigitato || '').trim();
@@ -245,7 +245,7 @@ function renderRows() {
     </div>
 
       <div>
-        <span class="cat-badge ${item.categoria}">${catLabelShort(item.categoria)}</span>
+        <span class="cat-badge ${item.categoria}">${catLabel(item.categoria)}</span>
       </div>
 
       <div class="desc-cell">
