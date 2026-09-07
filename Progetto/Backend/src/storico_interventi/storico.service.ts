@@ -30,6 +30,7 @@ export class StoricoService {
     return this.prisma.storico_intervento.findMany({
       where: { id_veicolo: idVeicolo },
       orderBy: { data: 'desc' },
+      include: { citta: true },
     });
   }
 
@@ -54,11 +55,13 @@ export class StoricoService {
         id_veicolo: dto.id_veicolo,
         data: new Date(dto.data),
         categoria: dto.categoria,
-        nome: dto.nome,
+        tipo: dto.tipo,
         descrizione: dto.descrizione ?? null,
         mediante: dto.mediante ?? null,
         costo: dto.costo ?? null,
+        sigla_citta: dto.sigla_citta ?? null,
       },
+      include: { citta: true },
     });
   }
 
@@ -91,11 +94,13 @@ export class StoricoService {
       data: {
         ...(dto.data && { data: new Date(dto.data) }),
         ...(dto.categoria && { categoria: dto.categoria }),
-        ...(dto.nome && { nome: dto.nome }),
+        ...(dto.tipo && { tipo: dto.tipo }),
         descrizione: dto.descrizione ?? null,
         mediante: dto.mediante ?? null,
         costo: dto.costo ?? null,
+        sigla_citta: dto.sigla_citta ?? null,
       },
+      include: { citta: true },
     });
   }
 
