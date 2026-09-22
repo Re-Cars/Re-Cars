@@ -122,7 +122,8 @@
     font-weight: 800;
     margin: 0;
     letter-spacing: 2px;
-    background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);
+    /*background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);*/
+    background: #ededed;
     background-size: 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -504,7 +505,8 @@ body.landing-body {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);
+    /*background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);*/
+    background: #ededed;
     background-size: 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

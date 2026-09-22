@@ -60,6 +60,30 @@
   /* identità di tipo veicolo (card garage): stesso valore in light e dark */
   --type-auto: #2b88b8;
   --type-moto: #7c6fe0;
+
+  /* alias per le card .iv-* (storico interventi / info veicolo):
+     prima non erano definite e le card restavano trasparenti */
+  --c-surface: var(--surface);
+  --c-text: var(--text);
+  --c-muted: var(--muted);
+  --c-strong: var(--white);
+  --c-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --c-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* colori categoria storico interventi (badge .cat-badge, pallini filtro):
+     non erano definite in nessun file caricato — ricostruite dagli stessi
+     colori già usati per i pallini dei filtri in page.tsx (FILTRI[].dot) */
+  --tutti: #526169;
+  --ordinario: #2b88b8;
+  --ordinario-bg: rgba(43, 136, 184, 0.12);
+  --ordinario-border: rgba(43, 136, 184, 0.35);
+  --straordinario: #ef4444;
+  --straordinario-bg: rgba(239, 68, 68, 0.12);
+  --straordinario-border: rgba(239, 68, 68, 0.35);
+  --gestione: #22c55e;
+  --gestione-bg: rgba(34, 197, 94, 0.12);
+  --gestione-border: rgba(34, 197, 94, 0.35);
+  --iv-orange2: rgba(249, 115, 22, 0.15);
 }
 
 /* ----------------------------------------------------
@@ -2982,9 +3006,11 @@ input:-webkit-autofill:active {
 
 /* ----------------------------------------------------
                      INFO VEICOLO
-   Nota: le variabili --c-* non sono definite (come nel
-   frontend originale): le card risultano trasparenti
-   sullo sfondo piatto della pagina, come nel vanilla.
+   Le variabili --c-* usate qui sono definite come alias
+   in :root (--c-surface, --c-text, --c-muted, --c-strong,
+   --c-shadow, --c-shadow-hover), così le card .iv-* hanno
+   sfondo/ombra/bordo coerenti col resto dell'app invece di
+   risultare trasparenti sullo sfondo piatto della pagina.
 -----------------------------------------------------*/
 @keyframes iv-fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes iv-fadeIn { from { opacity: 0; } to { opacity: 1; } }

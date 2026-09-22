@@ -33,13 +33,14 @@
 /                   LAYOUT DASHBOARD                   /
 -----------------------------------------------------*/
 .iv-dashboard {
-    padding: 18px 24px 40px;
+    padding: 18px 30px 15px 24px;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-width: 880px;
-    margin: 0 auto;
     width: 100%;
+    max-width: none;   
+    margin: 0;         
+    box-sizing: border-box;
 }
 
  /* ----------------------------------------------------

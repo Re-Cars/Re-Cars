@@ -31,7 +31,8 @@
     font-weight: 800;
     font-size: 2.5rem;
     letter-spacing: 1px;
-    background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);
+    /*background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);*/
+    background: #ededed;
     background-size: 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -221,7 +222,8 @@
     font-size: 1.8rem;
     flex: 1;
     margin-left: 8px;
-    background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);
+    /*background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);*/
+    background: #ededed;
     background-size: 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

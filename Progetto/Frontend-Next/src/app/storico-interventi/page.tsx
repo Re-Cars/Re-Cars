@@ -1,19 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import Layout from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
 import {
   aggiornaIntervento,
   ApiError,
+  cercaCitta,
   creaIntervento,
   eliminaIntervento,
   getInterventiVeicolo,
   getVeicolo,
 } from "@/lib/api";
 import { catLabel, costruisciDocumentoPdf, type PdfPeriodo } from "@/lib/pdf-report";
-import type { CategoriaIntervento, Intervento, VeicoloDettaglio } from "@/lib/types";
+import type { CategoriaIntervento, Citta, Intervento, VeicoloDettaglio } from "@/lib/types";
 import "@/styles/storico-intervento.css";
 
 const TIPI_INTERVENTO: Record<CategoriaIntervento, string[]> = {
@@ -34,18 +35,20 @@ const FILTRI: { id: string; label: string; dot?: string; classe: string }[] = [
 interface FormIntervento {
   data: string;
   categoria: CategoriaIntervento | "";
-  nome: string;
+  tipo: string;
   descrizione: string;
   mediante: string;
+  citta: string;
   costo: string;
 }
 
 const FORM_VUOTO: FormIntervento = {
   data: "",
   categoria: "",
-  nome: "",
+  tipo: "",
   descrizione: "",
   mediante: "",
+  citta: "",
   costo: "",
 };
 
@@ -57,6 +60,7 @@ export default function StoricoInterventiPage() {
   const { veicoloAttivo, gestisci401 } = useAuth();
   const [interventi, setInterventi] = useState<Intervento[]>([]);
   const [filtro, setFiltro] = useState("all");
+  const [ricerca, setRicerca] = useState("");
   const [dettaglioVeicolo, setDettaglioVeicolo] = useState<VeicoloDettaglio | null>(null);
 
   // modali
@@ -70,6 +74,10 @@ export default function StoricoInterventiPage() {
   const [pdfInfoVeicolo, setPdfInfoVeicolo] = useState(true);
   const [pdfCostoGenerale, setPdfCostoGenerale] = useState(true);
   const [pdfCronologia, setPdfCronologia] = useState(true);
+
+  // autocomplete città (nuovo/modifica)
+  const [suggerimentiCitta, setSuggerimentiCitta] = useState<Citta[]>([]);
+  const debounceCittaRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /* ---------- caricamento (si ripete al cambio veicolo dallo switcher) ---------- */
   const carica = useCallback(async () => {
@@ -90,7 +98,16 @@ export default function StoricoInterventiPage() {
     void carica();
   }, [carica]);
 
-  const filtrati = filtro === "all" ? interventi : interventi.filter((i) => i.categoria === filtro);
+  const testoRicerca = ricerca.trim().toLowerCase();
+  const filtrati = interventi.filter((i) => {
+    if (filtro !== "all" && i.categoria !== filtro) return false;
+    if (!testoRicerca) return true;
+    const campi = [i.tipo, i.descrizione, i.mediante, i.citta?.nome]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return campi.includes(testoRicerca);
+  });
 
   /* ---------- riepilogo spese ---------- */
   const oggi = new Date();
@@ -106,10 +123,37 @@ export default function StoricoInterventiPage() {
     }
   }
 
+  /* ---------- autocomplete città (sostituisce il vecchio cercaCitta + debounce di functions-storico.js) ---------- */
+  const cercaCittaLive = useCallback((query: string) => {
+    if (debounceCittaRef.current) clearTimeout(debounceCittaRef.current);
+    debounceCittaRef.current = setTimeout(async () => {
+      if (!query || query.trim().length < 2) {
+        setSuggerimentiCitta([]);
+        return;
+      }
+      try {
+        const risultati = await cercaCitta(query.trim());
+        setSuggerimentiCitta(risultati);
+      } catch (err) {
+        console.error("Errore ricerca città:", err);
+      }
+    }, 300);
+  }, []);
+
+  // converte il nome digitato nella sigla, usando gli ultimi suggerimenti ricevuti dal backend
+  // (stessa logica di siglaDaNomeCitta in functions-storico.js)
+  const siglaDaCittaSelezionata = (nomeDigitato: string): string | null | undefined => {
+    const nome = nomeDigitato.trim();
+    if (!nome) return null;
+    const trovata = suggerimentiCitta.find((c) => c.nome.toLowerCase() === nome.toLowerCase());
+    return trovata ? trovata.sigla : undefined;
+  };
+
   /* ---------- CRUD ---------- */
   const apriNuovo = () => {
     setIdInModifica(null);
     setForm({ ...FORM_VUOTO, data: new Date().toISOString().split("T")[0] });
+    setSuggerimentiCitta([]);
     setModalNuovo(true);
   };
 
@@ -118,16 +162,18 @@ export default function StoricoInterventiPage() {
     setForm({
       data: item.data,
       categoria: item.categoria,
-      nome: item.nome,
+      tipo: item.tipo,
       descrizione: item.descrizione ?? "",
       mediante: item.mediante ?? "",
+      citta: item.citta?.nome ?? "",
       costo: item.costo ? String(item.costo) : "",
     });
+    setSuggerimentiCitta(item.citta ? [item.citta] : []);
     setModalNuovo(true);
   };
 
   const salva = async () => {
-    if (!form.data || !form.categoria || !form.nome) {
+    if (!form.data || !form.categoria || !form.tipo) {
       alert("Data, categoria e tipo intervento sono obbligatori.");
       return;
     }
@@ -135,12 +181,18 @@ export default function StoricoInterventiPage() {
       alert("Nessun veicolo attivo selezionato.");
       return;
     }
+    const siglaCitta = siglaDaCittaSelezionata(form.citta);
+    if (siglaCitta === undefined) {
+      alert("Città non riconosciuta: selezionane una tra i suggerimenti proposti.");
+      return;
+    }
     const payload = {
       data: form.data,
       categoria: form.categoria,
-      nome: form.nome,
+      tipo: form.tipo,
       descrizione: form.descrizione || null,
       mediante: form.mediante || null,
+      sigla_citta: siglaCitta,
       costo: Number.parseFloat(form.costo) || null,
     };
     try {
@@ -218,6 +270,26 @@ export default function StoricoInterventiPage() {
             </button>
           </div>
 
+          <div className="iv-search">
+            <i className="fa-solid fa-magnifying-glass" />
+            <input
+              type="text"
+              placeholder="Cerca per tipo, descrizione, fornitore o città..."
+              value={ricerca}
+              onChange={(e) => setRicerca(e.target.value)}
+            />
+            {ricerca && (
+              <button
+                type="button"
+                className="iv-search-clear"
+                onClick={() => setRicerca("")}
+                aria-label="Cancella ricerca"
+              >
+                <i className="fa-solid fa-xmark" />
+              </button>
+            )}
+          </div>
+
           <div className="filters">
             <span className="filter-label">
               <b>Filtra:</b>
@@ -239,7 +311,8 @@ export default function StoricoInterventiPage() {
               <div>Data</div>
               <div>Categoria</div>
               <div>Descrizione</div>
-              <div>Fornitore/Mediante</div>
+              <div>Mediante</div>
+              <div>Città</div>
               <div>Costo</div>
               <div />
             </div>
@@ -254,10 +327,11 @@ export default function StoricoInterventiPage() {
                     <span className={`cat-badge ${item.categoria}`}>{catLabel(item.categoria)}</span>
                   </div>
                   <div className="desc-cell">
-                    <div>{item.nome}</div>
+                    <div className="desc-tipo">{item.tipo || "—"}</div>
                     {item.descrizione && <div className="desc-sub">{item.descrizione}</div>}
                   </div>
                   <div className="mediante-cell">{item.mediante ?? "—"}</div>
+                  <div className="citta-cell">{item.citta?.nome ?? "—"}</div>
                   <div className={`costo-cell${item.costo ? "" : " vuoto"}`}>
                     {item.costo ? `${Number(item.costo).toFixed(2)} €` : "—"}
                   </div>
@@ -352,7 +426,7 @@ export default function StoricoInterventiPage() {
                     setForm((f) => ({
                       ...f,
                       categoria: e.target.value as CategoriaIntervento | "",
-                      nome: "",
+                      tipo: "",
                     }))
                   }
                 >
@@ -366,7 +440,7 @@ export default function StoricoInterventiPage() {
             </div>
             <div className="form-row">
               <label>Tipo intervento</label>
-              <select value={form.nome} onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}>
+              <select value={form.tipo} onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value }))}>
                 {form.categoria === "" ? (
                   <option value="">Prima seleziona categoria...</option>
                 ) : (
@@ -392,7 +466,7 @@ export default function StoricoInterventiPage() {
             </div>
             <div className="form-grid">
               <div className="form-row">
-                <label>Fornitore/Mediante (opzionale)</label>
+                <label>Mediante (opzionale)</label>
                 <input
                   type="text"
                   placeholder="es. officina/benzinaio/negozio"
@@ -401,15 +475,30 @@ export default function StoricoInterventiPage() {
                 />
               </div>
               <div className="form-row">
-                <label>Costo (opzionale)</label>
+                <label>Città (opzionale)</label>
                 <input
-                  type="number"
-                  placeholder="€ 0.00"
-                  step="0.01"
-                  value={form.costo}
-                  onChange={(e) => setForm((f) => ({ ...f, costo: e.target.value }))}
+                  type="text"
+                  list="citta-datalist"
+                  autoComplete="off"
+                  placeholder="es. Trapani"
+                  value={form.citta}
+                  onChange={(e) => {
+                    const valore = e.target.value;
+                    setForm((f) => ({ ...f, citta: valore }));
+                    cercaCittaLive(valore);
+                  }}
                 />
               </div>
+            </div>
+            <div className="form-row">
+              <label>Costo (opzionale)</label>
+              <input
+                type="number"
+                placeholder="€ 0.00"
+                step="0.01"
+                value={form.costo}
+                onChange={(e) => setForm((f) => ({ ...f, costo: e.target.value }))}
+              />
             </div>
             <div className="modal-actions">
               <button type="button" className="btn-cancel" onClick={() => setModalNuovo(false)}>
@@ -524,6 +613,13 @@ export default function StoricoInterventiPage() {
           </div>
         </div>
       )}
+
+      {/* per l'autocompletamento città (nuovo + modifica) */}
+      <datalist id="citta-datalist">
+        {suggerimentiCitta.map((c) => (
+          <option key={c.sigla} value={c.nome} />
+        ))}
+      </datalist>
     </Layout>
   );
 }

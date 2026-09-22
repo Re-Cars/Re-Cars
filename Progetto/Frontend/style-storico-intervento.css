@@ -2,12 +2,10 @@
    LAYOUT DASHBOARD
 ----------------------------------------------------- */
 .iv-dashboard {
-    padding: 18px 15px 15px;
+    padding: 18px 30px 15px 24px;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-width: 950px;
-    margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
 }
@@ -18,6 +16,7 @@
 .iv-section-bar2 {
     padding: 12px 18px;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 9px;
     border-bottom: 1px solid rgba(249, 115, 22, 0.12);
@@ -68,6 +67,68 @@
 
 .aggiungi-btn:hover i.fa-plus {
     color: #fff;
+}
+
+/* ----------------------------------------------------
+   RICERCA
+----------------------------------------------------- */
+.search-bar {
+    position: relative;
+    padding: 12px 18px 0;
+    display: flex;
+    align-items: center;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 9px 36px 9px 36px;
+    border: 1.5px solid rgba(249, 115, 22, 0.2);
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--c-text);
+    background: var(--input-bg);
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.search-bar input:focus {
+    border-color: #f97316;
+}
+
+.search-bar input::placeholder {
+    color: var(--c-muted);
+}
+
+.search-icon {
+    position: absolute;
+    left: 30px;
+    font-size: 12px;
+    color: var(--c-muted);
+    pointer-events: none;
+}
+
+.search-clear {
+    position: absolute;
+    right: 26px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--c-muted);
+    font-size: 12px;
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+.search-clear:hover {
+    color: #ef4444;
+}
+
+@media (max-width: 480px) {
+    .search-bar {
+        padding: 10px 12px 0;
+    }
 }
 
 /* ----------------------------------------------------
@@ -858,5 +919,107 @@
     }
     .pdf-btn {
         justify-content: center;
+    }
+}
+
+  /* ================ NUOVO LAYOUT A 3 COLONNE  ============
+   ====================================================== */
+
+.iv-layout {
+    display: grid;
+    grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) minmax(180px, 220px);
+    gap: 16px;
+    align-items: start;
+}
+
+.iv-main-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0; /* evita che la tabella "spinga" fuori il grid */
+}
+
+/* ---------- Sidebar sinistra: riepilogo manutenzione ----------*/
+.riepilogo-manutenzione-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px;
+    box-sizing: border-box;
+}
+
+.riepilogo-manutenzione-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: rgba(249, 115, 22, 0.06);
+    border: 1px solid rgba(249, 115, 22, 0.15);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.riepilogo-manutenzione-data {
+    font-size: 0.78rem;
+    color: var(--c-text);
+    font-weight: 400;
+}
+
+.riepilogo-manutenzione-caption {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    line-height: 1.3;
+}
+
+
+.riepilogo-manutenzione-box .spesa-info {
+    gap: 3px;
+}
+
+/* ---------- Sidebar destra: riepilogo spese adattato a colonna stretta, ---------- */
+.iv-spese-sidebar .spese-dashboard {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px;
+    gap: 12px;
+}
+
+.iv-spese-sidebar .spesa-box {
+    min-width: 0;
+}
+
+.iv-spese-sidebar .pdf-btn {
+    justify-content: center;
+}
+
+/* ---------- Tabella storico: quando è dentro il layout a 3 colonne,---------- */
+@media (min-width: 961px) {
+    .iv-main-col .table-head,
+    .iv-main-col .table-row {
+        grid-template-columns: 95px 105px 1fr 90px 80px 70px 48px;
+        gap: 6px;
+    }
+}
+
+/* Breakpoint intermedio: tra lo stacking (1400px)  */
+@media (max-width: 1400px) and (min-width: 961px) {
+    .iv-main-col .table-head > div:nth-child(4),
+    .iv-main-col .table-row  > div:nth-child(4) {
+        display: none;
+    }
+    .iv-main-col .table-head,
+    .iv-main-col .table-row {
+        grid-template-columns: 90px 100px 1fr 80px 70px 48px;
+    }
+}
+
+/* ---------- Responsive: sotto i 1400px il layout torna a colonna singola. ---------- */
+@media (max-width: 1400px) {
+    .iv-layout {
+        grid-template-columns: 1fr;
     }
 }

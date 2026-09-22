@@ -71,6 +71,61 @@
 }
 
 /* ----------------------------------------------------
+   RICERCA TESTUALE
+----------------------------------------------------- */
+.iv-search {
+    margin: 12px 18px 0;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 24px;
+    transition: border-color 0.15s;
+}
+
+.iv-search:focus-within {
+    border-color: rgba(249, 115, 22, 0.4);
+}
+
+.iv-search > i {
+    color: var(--c-muted);
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.iv-search input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 13px;
+    color: var(--c-text);
+    font-family: inherit;
+}
+
+.iv-search input::placeholder {
+    color: var(--c-muted);
+}
+
+.iv-search-clear {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--c-muted);
+    font-size: 12px;
+    padding: 3px 5px;
+    flex-shrink: 0;
+    transition: color 0.15s;
+}
+
+.iv-search-clear:hover {
+    color: #ef4444;
+}
+
+/* ----------------------------------------------------
    FILTRI
 ----------------------------------------------------- */
 .filters {
@@ -192,7 +247,7 @@
 
 .table-head {
     display: grid;
-    grid-template-columns: 120px 130px 1fr 150px 90px 60px;
+    grid-template-columns: 105px 120px 1fr 110px 100px 80px 55px;
     padding: 10px 18px;
     background: rgba(249, 115, 22, 0.06);
     border-bottom: 1px solid rgba(249, 115, 22, 0.12);
@@ -207,7 +262,7 @@
 
 .table-row {
     display: grid;
-    grid-template-columns: 120px 130px 1fr 150px 90px 60px;
+    grid-template-columns: 105px 120px 1fr 110px 100px 80px 55px;
     padding: 12px 18px;
     border-bottom: 1px solid rgba(249, 115, 22, 0.08);
     gap: 8px;
@@ -249,6 +304,17 @@
     color: var(--c-muted);
 }
 
+/* Riga categoria dentro la cella data: nascosta di default, mostrata solo su mobile (vedi media query 480px) */
+.date-cat-sub {
+    display: none;
+}
+
+.date-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 /* Badge categoria */
 .cat-badge {
     display: inline-flex;
@@ -287,6 +353,11 @@
     font-weight: 400;
 }
 
+.desc-tipo {
+    font-weight: 600;
+    color: var(--c-text);
+}
+
 .desc-sub {
     font-size: 11px;
     color: var(--c-muted);
@@ -294,6 +365,11 @@
 }
 
 .mediante-cell {
+    color: var(--c-muted);
+    font-size: 12px;
+}
+
+.citta-cell {
     color: var(--c-muted);
     font-size: 12px;
 }
@@ -570,7 +646,7 @@
     }
     .table-head,
     .table-row {
-        grid-template-columns: 95px 115px 1fr 110px 80px 52px;
+        grid-template-columns: 90px 105px 1fr 95px 90px 70px 48px;
         padding: 10px 14px;
         font-size: 12px;
         gap: 6px;
@@ -582,16 +658,40 @@
 }
 
 @media (max-width: 600px) {
+    /* Su schermi piccoli nascondo solo Mediante (4): Città resta sempre visibile */
     .table-head > div:nth-child(4),
     .table-row  > div:nth-child(4) {
         display: none;
     }
     .table-head,
     .table-row {
-        grid-template-columns: 85px 105px 1fr 75px 50px;
-        padding: 9px 12px;
+        grid-template-columns: 72px 82px 1fr 60px 46px 54px;
+        padding: 9px 10px;
         font-size: 11px;
-        gap: 5px;
+        gap: 4px;
+    }
+    .citta-cell {
+        font-size: 10.5px;
+    }
+    .costo-cell {
+        font-size: 11px;
+    }
+    .actions {
+        gap: 4px;
+    }
+    .action-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
+    }
+    .aggiungi-btn {
+        font-size: 0.72rem;
+        padding: 5px 11px;
+        gap: 6px;
+    }
+    /* Sotto i 600px il badge categoria è già visibile a fianco della data: il pallino colorato è ridondante */
+    .date-main .cat-dot {
+        display: none;
     }
 }
 
@@ -610,6 +710,8 @@
         margin-left: 0;
         width: 100%;
         justify-content: center;
+        font-size: 0.72rem;
+        padding: 6px 12px;
     }
     .filters {
         flex-wrap: wrap;
@@ -635,22 +737,38 @@
     }
     .table-head,
     .table-row {
-        grid-template-columns: 80px 1fr 72px 46px;
+        grid-template-columns: 60px 1fr 50px 50px 50px;
         padding: 8px 10px;
         font-size: 11px;
         gap: 4px;
     }
+    .citta-cell {
+        font-size: 10px;
+    }
     .date-cell {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
         font-size: 11px;
-        gap: 5px;
+    }
+    /* Su mobile la categoria si sposta qui sotto la data, con lo stesso stile della riga secondaria di Tipo e Descrizione */
+    .date-cat-sub {
+        display: block;
+    }
+    .date-cat-sub .cat-badge {
+        font-size: 9px;
+        padding: 1px 7px;
     }
     .costo-cell {
         font-size: 11px;
     }
+    .actions {
+        gap: 3px;
+    }
     .action-btn {
-        width: 24px;
-        height: 24px;
-        font-size: 10px;
+        width: 22px;
+        height: 22px;
+        font-size: 9px;
     }
     .btn-intervento {
         width: 44px;

@@ -3,12 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReCars — Termini&Privacy police</title>
+    <title>RE|CARS — Termini e Privacy Policy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-app.css">
+    <link rel="stylesheet" href="style-info-veicolo.css">
     <script src="functions-base.js" defer></script>
-    <script src="functions-app.js" defer></script>
+
+    <style>
+            /* ----------------------------------------------------
+    /         TERMINI E PRIVACY (termini-privacy.html)      /
+    -----------------------------------------------------*/
+
+    .tp-content {
+        max-width: 1420px;
+        margin: 0 auto;
+    }
+
+    /* segnaposto dati ancora da compilare */
+    .fill {
+        background: rgba(249, 115, 22, 0.14);
+        color: var(--iv-orange);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-style: italic;
+        font-size: 0.94em;
+    }
+
+    /* switcher Termini / Privacy */
+    .tp-tabs {
+        display: flex;
+        gap: 10px;
+        margin: 8px 0 12px 0;
+        flex-wrap: wrap;
+    }
+
+    .tp-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 20px;
+        border: 1px solid rgba(249, 115, 22, 0.3);
+        background: transparent;
+        color: var(--text-muted);
+        font-family: 'Inter', sans-serif;
+        font-size: var(--font-base);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .tp-tab-btn:hover {
+        border-color: var(--iv-orange);
+        color: var(--iv-orange);
+    }
+
+    .tp-tab-btn.active {
+        background: var(--iv-orange);
+        border-color: var(--iv-orange);
+        color: #ffffff;
+    }
+
+    /* pannelli di contenuto: mostra solo quello attivo */
+    .tp-panel { display: none; }
+    .tp-panel.active { display: block; }
+
+    /* tabelle nelle sezioni legali, tema-aware */
+    .termini_e_privacy table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0 18px 0;
+        font-size: var(--font-sm);
+    }
+
+    .termini_e_privacy th {
+        background: var(--iv-orange);
+        color: #ffffff;
+        text-align: left;
+        padding: 9px 12px;
+        font-weight: 700;
+    }
+
+    .termini_e_privacy td {
+        border-bottom: 1px solid var(--border-table);
+        padding: 9px 12px;
+        color: var(--text);
+        vertical-align: top;
+    }
+
+    .termini_e_privacy tr:last-child td { border-bottom: none; }
+
+    /* la card lampada .section del CSS globale aggiunge già
+        padding 40/30: qui limitiamo lo spazio tra un blocco e
+        l'altro quando si susseguono più .section nello stesso tab */
+    .termini_e_privacy .section + .section {
+        border-top: 1px solid var(--border-subtle);
+        padding-top: 30px;
+    }
+
+    @media (max-width: 768px) {
+        .tp-tab-btn { flex: 1; justify-content: center; padding: 10px 12px; font-size: var(--font-sm); }
+    }
+    </style>
 </head>
 <body>
 
@@ -16,245 +113,410 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/likeAsset1@72x.svg" alt="logo" class="sidebar-logo-img">
+            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="sidebar-logo-img">
             <span class="sidebar-brand">RE<span>|</span>CARS</span>
+            <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+                <span class="line line4"></span>
+            </div>
         </div>
         <nav class="sidebar-nav">
-      <a href="homepage.html" class="sidebar-home"><i class="fa-solid fa-house"></i> Home</a>
-      <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
-      <a href="veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
-      <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti </a>
-      <a href="infoedomande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
-      <a href="#"><i class="fa-solid fa-envelope"></i> Contatti</a>
-       <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
-      <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-    </nav>
-  </div>
-
-    <div class="hamburger9" id="hamburger9" onclick="toggleMenu()">
-        <span class="line line1"></span>
-        <span class="line line2"></span>
-        <span class="line line3"></span>
-        <span class="line line4"></span>
+            <a href="homepage.html" class="sidebar-home"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="account.html" class="sidebar-account"><i class="fa-solid fa-user"></i> Il mio account</a>
+            <a href="veicoli.html" class="sidebar-veicolo"><i class="fa-solid fa-car"></i> Veicolo</a>
+            <a href="abbonamenti.html"><i class="fa-solid fa-credit-card"></i> Abbonamenti</a>
+            <a href="info-domande.html"><i class="fa-solid fa-circle-info"></i> Info e domande utili</a>
+            <a href="#top"><i class="fa-solid fa-envelope"></i> Contatti</a>
+            <a href="termini-privacy.html"><i class="fa-solid fa-file-shield"></i> Termini e privacy policy</a>
+            <a href="landing.html" class="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
     </div>
 
     <header class="header">
         <div class="header-left"></div>
         <div class="header-center">
-            <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
-           <span class="header-brand">RE<span>|</span>CARS</span>
+            <a href="homepage.html">
+                <img src="Img/LOGO/solo-logo-C-e-O/SVG/logotipo.svg" alt="logo" class="header-logo-img">
+                <span class="header-brand">RE<span>|</span>CARS</span>
+            </a>
         </div>
         <div class="header-right">
-           <!-- <span class="header-nickname" id="header-nickname">nickname</span> 
-            <div class="header-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>   -->
-
-               <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
-                    <div class="header-avatar"> 
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <div class="avatar-dropdown" id="avatar-dropdown">
-                            <div class="avatar-header">
-                                <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
-                            </div>                
-                            <a href="account.html" class="avatar-item">
-                            <i class="fa-solid fa-pen"></i>
-                            <span>Modifica profilo</span>
-                        </a>
-                        <a href="landing.html" class="avatar-item avatar-item-logout">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>Logout</span>
-                        </a>
-                    </div>
+            <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:#f97316; font-size:1.1rem; padding:4px 8px;">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+            <div class="header-avatar-wrapper" id="avatar-wrapper" onclick="toggleAvatarMenu()">
+                <div class="header-avatar">
+                    <i class="fa-solid fa-user"></i>
                 </div>
-
-            
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="avatar-header">
+                        <p class="avatar-header-name">Ciao, <span id="avatar-dropdown-name"></span></p>
+                    </div>
+                    <a href="account.html" class="avatar-item">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica profilo</span>
+                    </a>
+                    <a href="landing.html" class="avatar-item avatar-item-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </header>
 
     <div class="breadcrumb">
         <a href="homepage.html"><i class="fa-solid fa-house"></i> Home</a>
         <span>›</span>
-        <span>termini e privacy police</span>
+        <span>Termini e Privacy Policy</span>
     </div>
 
     <section class="page-hero">
-        <h2 class="section-title-page">termini e privacy police</h2>
-        <p>Ultimo aggiornamento: [DATA]</p>
-
+        <h2 class="section-title-page">Termini e Privacy Policy</h2>
+        <p>Ultimo aggiornamento: [gg/mm/aaaa] — Versione [numero]</span></p>
     </section>
 
     <section class="termini_e_privacy">
-     
-    <div class="section">
+    <div class="tp-content">
 
-    <h2>Introduzione</h2>
+        <div class="tp-tabs" role="tablist">
+            <button type="button" class="tp-tab-btn active" data-tab="termini" onclick="toggleLegalTab('termini')" role="tab" aria-selected="true">
+                <i class="fa-solid fa-file-contract"></i> Termini e Condizioni
+            </button>
+            <button type="button" class="tp-tab-btn" data-tab="privacy" onclick="toggleLegalTab('privacy')" role="tab" aria-selected="false">
+                <i class="fa-solid fa-user-shield"></i> Informativa Privacy
+            </button>
+        </div>
 
-    <p>
-    Questa pagina descrive i Termini di Servizio e la Privacy Policy dell'applicazione <strong>YOUdrive / RECARS</strong>.
-    </p>
+        <!-- ==================== TAB: TERMINI E CONDIZIONI ==================== -->
+        <div class="tp-panel active" id="tab-termini">
 
-    <p>
-    L'app consente agli utenti di:
-    </p>
+            <div class="section">
+                <h2>1. Oggetto e accettazione</h2>
+                <p>
+                    I presenti Termini e Condizioni (di seguito, i "Termini") regolano l'utilizzo dell'applicazione
+                    <strong>RE|CARS</strong> (di seguito, il "Servizio"), fornito da
+                    <span class="fill">[Ragione sociale / Nome del titolare]</span>, con sede in
+                    <span class="fill">[indirizzo completo]</span>, <span class="fill">[P.IVA / C.F.]</span>
+                    (di seguito, il "Titolare").
+                </p>
+                <p>La registrazione al Servizio comporta l'accettazione integrale dei presenti Termini. Chi non li accetta non può creare un account né utilizzare le funzionalità del Servizio.</p>
+            </div>
 
-    <ul>
-    <li>Gestire informazioni sui propri veicoli</li>
-    <li>Annotare manutenzioni e interventi</li>
-    <li>Prenotare appuntamenti presso officine o meccanici</li>
-    <li>Pubblicare recensioni sui servizi ricevuti</li>
-    </ul>
+            <div class="section">
+                <h2>2. Descrizione del Servizio</h2>
+                <p>RE|CARS è una piattaforma digitale che consente:</p>
+                <ul>
+                    <li>agli utenti privati/aziende di registrare i propri veicoli, consultarne i dati tecnici e amministrativi, tenere uno storico degli interventi e prenotare appuntamenti presso officine convenzionate;</li>
+                    <li>alle officine di gestire la propria anagrafica, i servizi offerti, l'agenda e le prenotazioni ricevute.</li>
+                </ul>
+                <p>
+                    <strong>Natura di intermediazione.</strong> Il Titolare mette in contatto utenti e officine, ma non è parte del rapporto che si instaura tra loro in relazione ai singoli interventi. Il Titolare non fornisce direttamente servizi di manutenzione o riparazione e non è responsabile della qualità, tempestività o esito degli interventi eseguiti dalle officine, né della veridicità delle informazioni fornite da utenti e officine.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>3. Registrazione e account</h2>
+                <ul>
+                    <li>Per utilizzare il Servizio è necessario creare un account fornendo dati veritieri, aggiornati e completi.</li>
+                    <li>L'utente è responsabile della riservatezza delle proprie credenziali e di ogni attività effettuata tramite il proprio account.</li>
+                    <li>Il Titolare può sospendere o cessare un account in caso di dati falsi, uso improprio della piattaforma o violazione dei presenti Termini.</li>
+                </ul>
+                <p>"Il Servizio è riservato a soggetti maggiorenni"</p>
+            </div>
+
+            <div class="section">
+                <h2>4. Piani di abbonamento</h2>
+                <table>
+                    <tr><th>Profilo</th><th>Piani disponibili</th><th>Determina</th></tr>
+                    <tr>
+                        <td>Utente privato</td>
+                        <td>Base, Premium, Pro</td>
+                        <td>Numero massimo di veicoli registrabili (Base = 1, Premium = 5, Pro = illimitati)</td>
+                    </tr>
+                    <tr>
+                        <td>Officina</td>
+                        <td>Business, Business Pro</td>
+                        <td>[agenda, calendario, prenotazione]</td>
+                    </tr>
+                </table>
+                <p>
+                    I prezzi correnti sono indicati nella pagina <a href="abbonamenti.html">Abbonamenti</a> e possono essere
+                    modificati dal Titolare con un preavviso agli utenti già abbonati non inferiore a
+                    <span> 30 giorni</span>.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>5. Pagamenti</h2>
+                <p>I pagamenti sono elaborati interamente da Stripe tramite Stripe Checkout</p>
+                <ul>
+                    <li>Gli abbonamenti si rinnovano automaticamente alla scadenza del periodo sottoscritto, salvo disdetta.</li>
+                    <li>In caso di mancato pagamento, l'abbonamento può essere sospeso o declassato secondo le regole gestite da Stripe.</li>
+                    <li>In caso di problemi contattare agli enti preposti presenti su <a href="termini-privacy.html">Contatti</a>.</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>6. Recesso e disdetta</h2>
+                <h3>6.1 Diritto di recesso (consumatori)</h3>
+                <p>
+                    Se sei un consumatore e sottoscrivi un abbonamento tramite il Servizio, hai diritto di recedere dal contratto
+                    entro <strong>14 giorni</strong> dalla sottoscrizione, senza necessità di fornire alcuna motivazione, ai sensi
+                    degli artt. 52 e ss. del D.Lgs. 206/2005 (Codice del Consumo).
+                </p>
+                <h3>6.2 Disdetta dell'abbonamento</h3>
+                <p>
+                    È possibile disdire l'abbonamento in qualsiasi momento dall'area
+                    <a href="abbonamenti.html">Abbonamenti</a> del proprio account. La disdetta
+                    <span > ha effetto alla fine del periodo di fatturazione in corso</span>.
+                    A seguito della disdetta non saranno addebitati ulteriori rinnovi.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>7. Obblighi dell'utente e dell'officina</h2>
+                <ul>
+                    <li>Fornire informazioni veritiere, complete e aggiornate (dati veicolo, disponibilità agenda, servizi offerti).</li>
+                    <li>Non utilizzare il Servizio per finalità illecite o contrarie ai presenti Termini.</li>
+                    <li>Non pubblicare recensioni false, offensive, diffamatorie o non riferite a un'esperienza reale.</li>
+                    <li>Rispettare gli appuntamenti prenotati o cancellarli tempestivamente.</li>
+                </ul>
+                <p>Il Titolare può rimuovere contenuti che violino questi obblighi e sospendere gli account responsabili di violazioni reiterate.</p>
+            </div>
+
+            <div class="section">
+                <h2>8. Limitazione di responsabilità</h2>
+                <p>Nei limiti consentiti dalla legge applicabile:</p>
+                <ul>
+                    <li>il Titolare non garantisce la continuità o l'assenza di errori del Servizio;</li>
+                    <li>il Titolare non è responsabile per danni derivanti da interventi eseguiti dalle officine, ritardi o comportamenti di utenti/officine;</li>
+                    <li>il Titolare non è responsabile per l'esattezza dei dati tecnici o delle scadenze (bollo, assicurazione) inseriti dall'utente.</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>9. Proprietà intellettuale</h2>
+                <p>Il Servizio, il marchio RE|CARS, il codice e i contenuti sono di proprietà del Titolare o dei rispettivi licenzianti. I contenuti caricati dagli utenti (es. recensioni) restano di loro proprietà, con licenza non esclusiva al Titolare per la pubblicazione all'interno del Servizio.</p>
+            </div>
+
+            <div class="section">
+                <h2>10. Sospensione e cessazione dell'account</h2>
+                <p>Il Titolare può sospendere o cessare l'accesso al Servizio in caso di violazione dei Termini, utilizzo fraudolento o richiesta dell'autorità competente. L'utente può richiedere la cancellazione del proprio account in qualsiasi momento, fermi restando gli obblighi fiscali di conservazione dei dati (vedi Informativa Privacy, sezione 8).</p>
+            </div>
+
+            <div class="section">
+                <h2>11. Modifiche ai Termini</h2>
+                <p>Il Titolare può modificare i presenti Termini in qualsiasi momento. Le modifiche sostanziali saranno comunicate agli utenti registrati con preavviso ragionevole; l'uso continuato del Servizio dopo l'entrata in vigore costituisce accettazione.</p>
+            </div>
+
+            <div class="section">
+                <h2>12. Legge applicabile e foro competente</h2>
+                <p>
+                    I presenti Termini sono regolati dalla legge italiana. Per le controversie con utenti consumatori è
+                    competente il foro del luogo di residenza o domicilio del consumatore. Per le controversie con officine o
+                    altri utenti professionali è competente in via esclusiva il foro di <span>[Trapani]</span>.
+                    I consumatori UE possono inoltre accedere alla piattaforma ODR: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>13. Contatti</h2>
+                <p>Per domande sui presenti Termini: <span>[email di contatto]</span></p>
+            </div>
+
+        </div>
+
+        <!-- ==================== TAB: INFORMATIVA PRIVACY ==================== -->
+        <div class="tp-panel" id="tab-privacy">
+
+            <div class="section">
+                <h2>1. Titolare del trattamento</h2>
+                <p>
+                    Il Titolare del trattamento dei dati personali raccolti tramite RE|CARS è
+                    <span class="fill">[Ragione sociale / Nome del titolare]</span>, con sede in
+                    <span class="fill">[indirizzo completo]</span>, <span class="fill">[P.IVA / C.F.]</span>,
+                    contattabile all'indirizzo <span class="fill">[email di contatto privacy]</span>.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>2. Ambito di applicazione</h2>
+                <p>Questa informativa si applica sia agli account <strong>utente privato/azienda</strong> sia agli account <strong>officina</strong>.</p>
+            </div>
+
+            <div class="section">
+                <h2>3. Dati trattati</h2>
+                <h3>Utente privato/azienda</h3>
+                <table>
+                    <tr><th>Dato</th><th>Descrizione</th></tr>
+                    <tr><td>Anagrafici e contatto</td><td>Nome, cognome/ragione sociale, email, password (hash), recapiti</td></tr>
+                    <tr><td>Fiscali (profilo azienda)</td><td>Ragione sociale, P.IVA, Codice SDI</td></tr>
+                    <tr><td>Veicolo</td><td>Targa, marca, modello, dati tecnici e amministrativi (assicurazione, bollo)</td></tr>
+                    <tr><td>Storico interventi</td><td>Descrizione, categoria, costo</td></tr>
+                    <tr><td>Prenotazioni e recensioni</td><td>Data, stato, voto, messaggio</td></tr>
+                    <tr><td>Abbonamento</td><td>Piano, stato, id subscription Stripe</td></tr>
+                </table>
+                <h3>Officina</h3>
+                <table>
+                    <tr><th>Dato</th><th>Descrizione</th></tr>
+                    <tr><td>Anagrafici e contatto</td><td>Ragione sociale, email, password (hash), recapiti</td></tr>
+                    <tr><td>Localizzazione</td><td>Indirizzo, comune, coordinate geografiche</td></tr>
+                    <tr><td>Operativi</td><td>Servizi offerti, ponti disponibili, orari</td></tr>
+                    <tr><td>Abbonamento</td><td>Piano, stato, id subscription Stripe</td></tr>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>4. Finalità e basi giuridiche</h2>
+                <table>
+                    <tr><th>Finalità</th><th>Base giuridica</th></tr>
+                    <tr><td>Creazione account, autenticazione</td><td>Esecuzione di un contratto (art. 6.1.b GDPR)</td></tr>
+                    <tr><td>Gestione veicoli e storico interventi</td><td>Esecuzione di un contratto (art. 6.1.b GDPR)</td></tr>
+                    <tr><td>Gestione prenotazioni e agenda officina</td><td>Esecuzione di un contratto (art. 6.1.b GDPR)</td></tr>
+                    <tr><td>Abbonamenti e pagamenti</td><td>Esecuzione di un contratto / obbligo legale</td></tr>
+                    <tr><td>Adempimenti fiscali</td><td>Obbligo legale (art. 6.1.c GDPR)</td></tr>
+                    <tr><td>Sicurezza del Servizio</td><td>Legittimo interesse — prevenzione di frodi e usi impropri</td></tr>
+                    <tr><td>Marketing (eventuale)</td><td>Consenso specifico (art. 6.1.a GDPR)</td></tr>
+                </table>
+                <p>Il conferimento dei dati necessari all'esecuzione del contratto è obbligatorio; quello per marketing è facoltativo e revocabile in ogni momento.</p>
+            </div>
+
+            <div class="section">
+                <h2>5. Comunicazione a terzi</h2>
+                <table>
+                    <tr><th>Soggetto</th><th>Ruolo</th></tr>
+                    <tr><td>Stripe, Inc.</td><td>Pagamenti e abbonamenti. Nessun dato carta trattato dal Servizio.</td></tr>
+                    <tr><td>Provider email (Gmail / Nodemailer)</td><td>Invio email transazionali</td></tr>
+                    <tr><td>Neon</td><td>Hosting database</td></tr>
+                    <tr><td>Render</td><td>Hosting backend</td></tr>
+                </table>
+                <p>I dati non sono mai ceduti a terzi per finalità commerciali proprie di terze parti.</p>
+            </div>
+
+            <div class="section">
+                <h2>6. Trasferimento extra-UE</h2>
+                <p>Alcuni fornitori (in particolare Stripe) potrebbero trattare dati fuori dallo Spazio Economico Europeo, sulla base di <span class="fill">[Clausole Contrattuali Standard / altra garanzia art. 46 GDPR]</span>.</p>
+            </div>
+
+            <div class="section">
+                <h2>7. Conservazione dei dati</h2>
+                <table>
+                    <tr><th>Categoria</th><th>Periodo</th></tr>
+                    <tr><td>Dati account</td><td> per tutta la durata dell'account con possibilità di recupero dati fino ai 14 giorni dalla sua eliminazione</td></tr>
+                    <tr><td>Veicoli e storico interventi</td><td>per tutta la durata dell'account con possibilità di recupero dati fino ai 14 giorni</td></tr>
+                    <tr><td>Dati fiscali</td><td>10 anni, per obbligo di legge</td></tr>
+                    <tr><td>Log tecnici</td><td> 6-12 mesi</td></tr>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>8. Diritti dell'interessato</h2>
+                <p>Accesso, rettifica, cancellazione, limitazione, portabilità, opposizione, revoca del consenso, reclamo al <a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">Garante Privacy</a>. Per esercitarli: <span class="fill">[email dedicata]</span>.</p>
+            </div>
+
+            <div class="section">
+                <h2>9. Sicurezza</h2>
+                <ul>
+                    <li>Password cifrate (hash)</li>
+                    <li>Autenticazione JWT via cookie httpOnly (web) o header Authorization (mobile)</li>
+                    <li>Connessioni HTTPS/TLS</li>
+                    <li>Nessuna gestione diretta dei dati di pagamento (delegata a Stripe, PCI-DSS)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>10. Minori</h2>
+                <p>Il Servizio non è destinato a minori di 18 anni.</p>
+            </div>
+
+            <div class="section">
+                <h2>11. Cookie</h2>
+                <table>
+                    <tr><th>Nome</th><th>Finalità</th><th>Durata</th><th>Parte</th></tr>
+                    <tr>
+                        <td><code>access_token</code></td>
+                        <td>Sessione autenticata (httpOnly, secure, sameSite=none)</td>
+                        <td class="fill">[durata effettiva del JWT]</td>
+                        <td>Prima parte</td>
+                    </tr>
+                </table>
+                <p>Durante il pagamento, Stripe Checkout imposta propri cookie tecnici. L'app mobile salva il token in <code>AsyncStorage</code> con funzione equivalente. Nessun cookie di analytics/profilazione è attualmente in uso.</p>
+            </div>
+
+            <div class="section">
+                <h2>12. Modifiche</h2>
+                <p>Le modifiche sostanziali saranno comunicate agli utenti registrati.</p>
+            </div>
+
+            <div class="section">
+                <h2>13. Contatti</h2>
+                <p>Per domande su questa informativa: <span>[email di contatto]</span></p>
+            </div>
+
+        </div>
 
     </div>
-
-
-    <div class="section">
-
-    <h2>Titolare del Servizio</h2>
-
-    <p>
-    Titolare del trattamento dei dati:
-    </p>
-
-    <div class="highlight">
-    <p><strong>[Nome Azienda / Sviluppatore]</strong></p>
-    <p>Email: [email]</p>
-    <p>Indirizzo: [indirizzo]</p>
-    </div>
-
-    </div>
-
-
-    <div class="section">
-
-    <h2>Dati Raccolti</h2>
-
-    <h3>Dati forniti dall'utente</h3>
-
-    <ul>
-    <li>Nome e cognome</li>
-    <li>Email</li>
-    <li>Numero di telefono (opzionale)</li>
-    <li>Dati del veicolo (marca, modello, targa, chilometraggio)</li>
-    <li>Note e manutenzioni</li>
-    <li>Recensioni pubblicate</li>
-    </ul>
-
-    <h3>Dati tecnici</h3>
-
-    <ul>
-    <li>Indirizzo IP</li>
-    <li>Tipo di dispositivo</li>
-    <li>Sistema operativo</li>
-    <li>Dati di utilizzo dell'app</li>
-    </ul>
-
-    </div>
-
-
-    <div class="section">
-
-    <h2>Finalità del Trattamento</h2>
-
-    <p>I dati vengono utilizzati per:</p>
-
-    <ul>
-    <li>Fornire i servizi dell'app</li>
-    <li>Gestire prenotazioni con officine</li>
-    <li>Consentire la pubblicazione di recensioni</li>
-    <li>Migliorare il servizio</li>
-    <li>Garantire sicurezza della piattaforma</li>
-    </ul>
-
-    </div>
-
-
-    <div class="section">
-
-    <h2>Condivisione dei Dati</h2>
-
-    <p>I dati possono essere condivisi con:</p>
-
-    <ul>
-    <li>Officine coinvolte negli appuntamenti</li>
-    <li>Servizi cloud e hosting</li>
-    <li>Strumenti di analisi delle prestazioni</li>
-    </ul>
-
-    <p>I dati non vengono venduti a terzi.</p>
-
-    </div>
-
-
-    <div class="section">
-
-    <h2>Conservazione dei Dati</h2>
-
-    <p>
-    I dati vengono conservati per il tempo necessario a fornire il servizio o fino alla richiesta di cancellazione dell'utente.
-    </p>
-
-    </div>
-
-
-    <div class="section">
-
-    <h2>Diritti dell'Utente</h2>
-
-    <p>L'utente ha diritto di:</p>
-
-    <ul>
-    <li>Accedere ai propri dati</li>
-    <li>Richiedere la modifica dei dati</li>
-    <li>Richiedere la cancellazione</li>
-    <li>Limitare il trattamento</li>
-    <li>Richiedere la portabilità dei dati</li>
-    </ul>
-
-    <p>
-    Per esercitare questi diritti contattare: <strong>[email]</strong>
-    </p>
-
-    </div>
-
-
-    <div class="section">
-
-    <h2>Termini di Servizio</h2>
-
-    <h3>Utilizzo dell'app</h3>
-
-    <p>
-    L'utente si impegna a utilizzare l'applicazione in modo conforme alle leggi vigenti.
-    </p>
-
-    <h3>Prenotazioni officine</h3>
-
-    <p>
-    L'app funge da piattaforma per facilitare il contatto tra utenti e officine.
-    Il gestore dell'app non è responsabile per i servizi forniti dalle officine.
-    </p>
-
-    <h3>Recensioni</h3>
-
-    <p>
-    Le recensioni rappresentano opinioni personali degli utenti.
-    Contenuti offensivi, falsi o illegali possono essere rimossi.
-    </p>
-
-    <h3>Limitazione di responsabilità</h3>
-
-    <p>
-    L'app è fornita "così com'è" senza garanzia di disponibilità continua o assenza di errori.
-    </p>
-
-    </div>   
     </section>
 
 <footer class="footer" id="footer">
-        <p>© 2025 — YouDrive</p>
+        <p>© 2025 — RE|CARS</p>
 </footer>
 
+<script>
+function toggleAvatarMenu() {
+    document.getElementById('avatar-dropdown')?.classList.toggle('open');
+}
+document.addEventListener('click', (e) => {
+    const wrapper = document.getElementById('avatar-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+        document.getElementById('avatar-dropdown')?.classList.remove('open');
+    }
+});
+
+function applicaAvatarHeader() {
+    const utente = getUtente();
+    const avatar = utente?.avatar;
+    const headerAvatar = document.getElementById('avatar-wrapper')?.querySelector('.header-avatar');
+    if (avatar && headerAvatar) {
+        headerAvatar.innerHTML = `<img src="${avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    }
+}
+
+async function getUsername() {
+    const utente = getUtente();
+    if (!utente) return null;
+    if (!utente.tipo) return utente.nome || utente.ragione_sociale || null;
+    try {
+        const res = await fetch(`${API_URL}/auth/utente/${utente.id}`, {
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+        });
+        if (!res.ok) return null;
+        return (await res.json()).username;
+    } catch {
+        return null;
+    }
+}
+
+function toggleLegalTab(tab) {
+    document.querySelectorAll('.tp-tab-btn').forEach(btn => {
+        const active = btn.dataset.tab === tab;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-selected', active);
+    });
+    document.querySelectorAll('.tp-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === `tab-${tab}`);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    applicaAvatarHeader();
+    const nameEl = document.getElementById('avatar-dropdown-name');
+    if (nameEl) nameEl.textContent = (await getUsername()) ?? '';
+});
+</script>
 </body>
 </html>

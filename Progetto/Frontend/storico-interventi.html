@@ -15,8 +15,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
     <script src="functions-base.js" defer></script>
     <script src="functions-app.js" defer></script>
-    <script src="assets-pdf.js" defer></script>
     <script src="functions-storico.js" defer></script>
+    <script src="assets-pdf.js" defer></script>
+    <script src="functions-pdf.js" defer></script>
 </head>
 
 <body>
@@ -105,6 +106,48 @@
     </section>
 
     <section class="iv-dashboard">
+      <div class="iv-layout">
+
+        <!-- NUOVO: SIDEBAR MANUTENZIONE -->
+        <div class="iv-section-card manutenzione-sidebar" style="animation-delay: 0s;">
+
+            <div class="iv-section-bar2">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="section-title">Riepilogo Manutenzione</span>
+                </div>
+            </div>
+
+             <div class="riepilogo-manutenzione-list">
+                 <div class="riepilogo-manutenzione-box">
+                    <div class="spesa-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                    <div class="spesa-info">
+                        <span class="riepilogo-manutenzione-caption">Data ultima</span>
+                        <span class="spesa-label">Revisione</span>
+                        <span class="riepilogo-manutenzione-data" id="ultimaRevisione">Nessuna revisione registrata</span>
+                    </div>
+                </div>
+                
+                <div class="riepilogo-manutenzione-box">
+                    <div class="spesa-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    <div class="spesa-info">
+                        <span class="riepilogo-manutenzione-caption">Data ultima</span>
+                        <span class="spesa-label">Tagliando</span>
+                        <span class="riepilogo-manutenzione-data" id="ultimoTagliando">Nessun tagliando registrato</span>
+                    </div>
+                </div>
+
+                <div class="riepilogo-manutenzione-box">
+                    <div class="spesa-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                    <div class="spesa-info">
+                        <span class="spesa-label">Ultimo chilometraggio</span>
+                        <span class="riepilogo-manutenzione-data">Con data</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="iv-main-col">
 
         <!-- CARD UNICA: barra + filtri + tabella -->
         <div class="iv-section-card" style="animation-delay: 0.05s;">
@@ -118,6 +161,15 @@
                 <button class="aggiungi-btn" onclick="openModal()">
                     <i class="fa-solid fa-plus"></i>
                     Aggiungi intervento
+                </button>
+            </div>
+
+            <!-- RICERCA -->
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Cerca per tipo, descrizione, fornitore o città..." autocomplete="off">
+                <button class="search-clear" id="searchClearBtn" onclick="clearSearch()" style="display:none;" title="Cancella ricerca">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
@@ -158,8 +210,10 @@
 
         </div>
 
-        <!-- CARD SEPARATA: RIEPILOGO SPESE + GENERA PDF -->
-        <div class="iv-section-card" style="animation-delay: 0.1s;">
+        </div> <!-- /.iv-main-col -->
+
+        <!-- CARD SEPARATA: RIEPILOGO SPESE + GENERA PDF — ora colonna destra -->
+        <div class="iv-section-card iv-spese-sidebar" style="animation-delay: 0.1s;">
 
             <div class="iv-section-bar2">
                 <div style="display:flex; align-items:center; gap:10px;">
@@ -190,6 +244,7 @@
 
         </div>
 
+      </div> <!-- /.iv-layout -->
     </section>
 
     <!-- MODAL NUOVO INTERVENTO -->

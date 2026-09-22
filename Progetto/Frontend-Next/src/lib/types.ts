@@ -170,9 +170,11 @@ export interface Intervento {
   id_veicolo?: number;
   data: string;
   categoria: CategoriaIntervento;
-  nome: string;
+  tipo: string;
   descrizione?: string | null;
   mediante?: string | null;
+  /** Città in cui è avvenuto l'intervento (facoltativa). */
+  citta?: Citta | null;
   costo?: number | string | null;
 }
 
@@ -180,8 +182,9 @@ export interface NuovoInterventoBody {
   id_veicolo: number;
   data: string;
   categoria: CategoriaIntervento;
-  nome: string;
+  tipo: string;
   descrizione: string | null;
   mediante: string | null;
+  sigla_citta: string | null;
   costo: number | null;
 }
