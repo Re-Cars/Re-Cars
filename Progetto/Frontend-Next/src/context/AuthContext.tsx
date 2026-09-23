@@ -51,7 +51,9 @@ function mappaVeicolo(v: VeicoloDettaglio): VeicoloCompatto {
     id: v.id,
     nome: `${v.marca ?? ""} ${v.modello ?? ""}`.trim(),
     targa: v.targa,
-    tipo: v.dati_generici[0]?.tipo_veicolo === "Moto" ? "motorcycle" : "car",
+    // confronto case-insensitive: stesso di VeicoloCard/VeicoloInfoCard,
+    // così lo switcher non può mostrare un'icona diversa dal resto del sito
+    tipo: (v.dati_generici[0]?.tipo_veicolo ?? "").toLowerCase() === "moto" ? "motorcycle" : "car",
   };
 }
 

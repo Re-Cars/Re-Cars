@@ -1,67 +1,34 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState, type TransitionEvent } from "react";
+import { useState } from "react";
 
-import { AggiungiVeicoloCard, VeicoloCard } from "./VeicoloCard";
+import VeicoloInfoCard from "@/components/VeicoloInfoCard";
 import AggiungiVeicoloOverlay from "@/components/AggiungiVeicoloOverlay";
 import { useAuth } from "@/context/AuthContext";
+import { calcolaSalute, nomeVeicolo } from "@/lib/scadenze";
 import type { VeicoloDettaglio } from "@/lib/types";
-
-/**
- * Quante card veicolo restano visibili nella griglia compressa: 2, perché
- * il terzo slot è sempre occupato dalla card "Aggiungi un veicolo".
- */
-const VISIBILI_COMPRESSA = 2;
 
 interface GarageSectionProps {
   veicoli: VeicoloDettaglio[];
-  espanso: boolean;
-  onToggleEspanso: () => void;
   /** Ricarica i veicoli dopo un'aggiunta dal modale. */
   onGarageCambiato: () => Promise<void> | void;
 }
 
 /**
- * "Il mio garage": griglia responsive delle card veicolo (2 visibili + card
- * "Aggiungi un veicolo" sempre in 3ª posizione, il resto in un blocco
- * espandibile animato).
+ * "Il mio garage": rail verticale dei veicoli (stile switcher — chip
+ * compatte con icona tipo-aware, targa e pallino di stato) affiancata alla
+ * scheda tecnica completa del veicolo selezionato (VeicoloInfoCard in
+ * versione compatta, senza il riquadro icona). La card "Aggiungi veicolo"
+ * è sempre la prima voce della rail, mai nascosta né spostata: selezionare
+ * un veicolo aggiorna il veicolo attivo globale (stesso usato da switcher,
+ * storico interventi, prenotazioni), così il pannello di dettaglio resta
+ * sempre coerente col resto del sito.
  */
-export default function GarageSection({
-  veicoli,
-  espanso,
-  onToggleEspanso,
-  onGarageCambiato,
-}: GarageSectionProps) {
-  const router = useRouter();
+export default function GarageSection({ veicoli, onGarageCambiato }: GarageSectionProps) {
   const { veicoloAttivo, selezionaVeicolo } = useAuth();
   const [modalAperto, setModalAperto] = useState(false);
-  /**
-   * true solo a pannello extra completamente aperto: serve a togliere
-   * l'overflow:hidden (necessario durante l'animazione grid-template-rows)
-   * che altrimenti taglierebbe il tilt 3D delle card al passaggio del mouse.
-   */
-  const [extraAssestato, setExtraAssestato] = useState(false);
 
-  // in chiusura il clipping deve tornare subito, non a transizione finita
-  useEffect(() => {
-    if (!espanso) setExtraAssestato(false);
-  }, [espanso]);
-
-  const onExtraTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
-    if (e.target !== e.currentTarget) return;
-    if (e.propertyName === "grid-template-rows" && espanso) setExtraAssestato(true);
-  };
-
-  const visibili = veicoli.slice(0, VISIBILI_COMPRESSA);
-  const extra = veicoli.slice(VISIBILI_COMPRESSA);
-
-  const apriVeicolo = (v: VeicoloDettaglio) => {
-    // la pagina info-veicolo lavora sul veicolo attivo: lo si seleziona
-    // prima di navigare, l'id in query resta come riferimento esplicito
-    selezionaVeicolo(v.id);
-    router.push(`/info-veicolo?id=${v.id}`);
-  };
+  const selezionato = veicoli.find((v) => v.id === veicoloAttivo?.id) ?? veicoli[0] ?? null;
 
   return (
     <section id="garage" className="hp-garage">
@@ -70,44 +37,43 @@ export default function GarageSection({
         Il mio garage
       </h2>
 
-      <div className="garage-grid">
-        {visibili.map((v) => (
-          <VeicoloCard
-            key={v.id}
-            veicolo={v}
-            attivo={veicoloAttivo?.id === v.id}
-            onClick={() => apriVeicolo(v)}
-          />
-        ))}
-        {/* posizione fissa e prevedibile: sempre il 3° slot della griglia */}
-        <AggiungiVeicoloCard onClick={() => setModalAperto(true)} />
-      </div>
-
-      {extra.length > 0 && (
-        <>
-          <div
-            className={`garage-extra${espanso ? " open" : ""}`}
-            onTransitionEnd={onExtraTransitionEnd}
-          >
-            <div className={`garage-extra-inner${extraAssestato ? " garage-extra-inner--assestato" : ""}`}>
-              <div className="garage-grid garage-grid-extra">
-                {extra.map((v) => (
-                  <VeicoloCard
-                    key={v.id}
-                    veicolo={v}
-                    attivo={veicoloAttivo?.id === v.id}
-                    onClick={() => apriVeicolo(v)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-          <button type="button" className="garage-toggle-btn" onClick={onToggleEspanso}>
-            <i className={`ti ti-chevron-down${espanso ? " ruotata" : ""}`} />
-            {espanso ? "Mostra meno" : "Mostra tutti i veicoli"}
+      <div className="garage-rail-layout">
+        <div className="garage-rail">
+          <button type="button" className="garage-rail-add" onClick={() => setModalAperto(true)}>
+            <span className="garage-rail-add-icon">
+              <i className="ti ti-plus" />
+            </span>
+            Aggiungi veicolo
           </button>
-        </>
-      )}
+
+          {veicoli.map((v) => {
+            const isMoto = (v.dati_generici[0]?.tipo_veicolo ?? "").toLowerCase() === "moto";
+            const salute = calcolaSalute(v);
+            const attivo = v.id === selezionato?.id;
+            return (
+              <button
+                key={v.id}
+                type="button"
+                className={`garage-rail-chip${attivo ? " attivo" : ""}`}
+                onClick={() => selezionaVeicolo(v.id)}
+              >
+                <span className={`garage-rail-chip-icon tipo-${isMoto ? "moto" : "auto"}`}>
+                  <i className={`fa-solid ${isMoto ? "fa-motorcycle" : "fa-car"}`} />
+                </span>
+                <span className="garage-rail-chip-info">
+                  <span className="garage-rail-chip-nome">{nomeVeicolo(v)}</span>
+                  <span className="garage-rail-chip-targa">{v.targa}</span>
+                </span>
+                <span className={`garage-rail-chip-dot salute-${salute}`} />
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="garage-rail-detail">
+          <VeicoloInfoCard veicolo={selezionato} compatto />
+        </div>
+      </div>
 
       <AggiungiVeicoloOverlay
         aperto={modalAperto}

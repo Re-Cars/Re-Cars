@@ -1,0 +1,211 @@
+"use client";
+
+import { type MouseEvent } from "react";
+
+import { giorniAllaData } from "@/lib/scadenze";
+import type { VeicoloDettaglio } from "@/lib/types";
+
+type StatoMantenimento = "attiva" | "scaduta";
+
+/**
+ * Stato di un documento (bollo / assicurazione) con la stessa regola di
+ * calcolaScadenze in lib/scadenze.ts — unica fonte di verità, così questa
+ * card e "Scadenze e avvisi" della homepage non possono divergere: conta
+ * la data, e un flag esplicitamente `false` forza comunque "scaduta".
+ */
+function statoDaData(
+  data: string | null | undefined,
+  attivo: boolean | null | undefined,
+): StatoMantenimento {
+  if (!data) return "scaduta";
+  const giorni = giorniAllaData(data);
+  if (giorni === null) return "scaduta";
+  if (attivo === false) return "scaduta";
+  return giorni < 0 ? "scaduta" : "attiva";
+}
+
+interface VeicoloInfoCardProps {
+  veicolo: VeicoloDettaglio | null;
+  /**
+   * Versione compatta per l'uso incorporato (es. accanto alla rail del
+   * garage in homepage): niente riquadro con l'icona auto/moto, paddings e
+   * font ridotti (vedi `.iv-dashboard--compatta` in globals.css). La
+   * pagina /info-veicolo la usa invece a piena dimensione.
+   */
+  compatto?: boolean;
+}
+
+/**
+ * Hero + caratteristiche tecniche + mantenimento del veicolo: contenuto
+ * condiviso tra la pagina /info-veicolo (a piena dimensione) e il pannello
+ * di dettaglio della sezione "Il mio garage" in homepage (compatto), per
+ * evitare che le due viste possano divergere nello stile o nella logica.
+ */
+export default function VeicoloInfoCard({ veicolo, compatto = false }: VeicoloInfoCardProps) {
+  const dg = veicolo?.dati_generici[0] ?? {};
+  const ds = veicolo?.dati_specifici[0] ?? {};
+
+  const nomeVeicolo = `${veicolo?.marca ?? ""} ${veicolo?.modello ?? ""}`.trim() || "Veicolo";
+  const isMoto = (dg.tipo_veicolo ?? "").toLowerCase() === "moto";
+  const iconaVeicolo = isMoto ? "fa-motorcycle" : "fa-car";
+
+  const statoBollo = statoDaData(ds.datascadenzabollo, ds.isbolloattivo);
+  const statoRca = statoDaData(ds.datascadenzarca, ds.isinsured);
+
+  const dataBollo = ds.datascadenzabollo
+    ? `scade il ${new Date(ds.datascadenzabollo).toLocaleDateString("it-IT")}`
+    : "Dato non disponibile";
+  const dataRca = ds.datascadenzarca
+    ? `scade il ${new Date(ds.datascadenzarca).toLocaleDateString("it-IT")}`
+    : "Dato non disponibile";
+
+  // tilt 3D leggero delle card (replica di initInfoVeicoloTilt) — solo a
+  // piena dimensione: nel pannello compatto incorporato è superfluo.
+  const onTilt = compatto
+    ? undefined
+    : (e: MouseEvent<HTMLDivElement>) => {
+        const card = e.currentTarget;
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width;
+        const py = (e.clientY - r.top) / r.height;
+        card.style.transform = `perspective(1200px) rotateX(${(0.5 - py) * 4}deg) rotateY(${(px - 0.5) * 4}deg) translateY(-6px)`;
+      };
+  const resetTilt = compatto
+    ? undefined
+    : (e: MouseEvent<HTMLDivElement>) => {
+        e.currentTarget.style.transform = "";
+      };
+
+  if (compatto && !veicolo) {
+    return (
+      <div className="iv-dashboard iv-dashboard--compatta">
+        <div className="iv-section-card iv-empty-card">
+          <i className="fa-solid fa-car-side" />
+          <span>Aggiungi un veicolo per vedere qui i suoi dati.</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`iv-dashboard${compatto ? " iv-dashboard--compatta" : ""}`}>
+      {/* Hero veicolo */}
+      <div className="iv-section-card iv-hero-card" onMouseMove={onTilt} onMouseLeave={resetTilt}>
+        <div className="iv-section-bar">
+          <i className={`fa-solid ${iconaVeicolo}`} />
+          <span>Veicolo</span>
+        </div>
+        <div className="iv-hero-body">
+          {!compatto && (
+            <div className="iv-hero-icon">
+              <i className={`fa-solid ${iconaVeicolo}`} />
+            </div>
+          )}
+          <div className="iv-hero-info">
+            <div className="iv-hero-name">{nomeVeicolo}</div>
+            <div className="iv-hero-sub">
+              <span className="iv-targa-pill">
+                <i className="fa-solid fa-id-card" /> <span>{veicolo?.targa ?? "-"}</span>
+              </span>
+              <span className="iv-mini-pill">
+                <i className={`fa-solid ${iconaVeicolo}`} /> Tipo <strong>{dg.tipo_veicolo ?? "-"}</strong>
+              </span>
+              <span className="iv-mini-pill">
+                <i className="fa-solid fa-calendar" /> Anno{" "}
+                <strong>
+                  {ds.dataimmatricolazione ? new Date(ds.dataimmatricolazione).getFullYear() : "-"}
+                </strong>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Caratteristiche tecniche */}
+      <div className="iv-section-card" onMouseMove={onTilt} onMouseLeave={resetTilt}>
+        <div className="iv-section-bar">
+          <i className="fa-solid fa-gears" />
+          <span>Caratteristiche tecniche</span>
+        </div>
+        <div className="iv-specs-grid">
+          <div className="iv-spec-tile">
+            <div className="iv-spec-icon">
+              <i className="fa-solid fa-bolt" />
+            </div>
+            <div className="iv-spec-text">
+              <span className="iv-spec-lbl">Alimentazione</span>
+              <span className="iv-spec-val">{dg.alimentazione ?? "-"}</span>
+            </div>
+          </div>
+          <div className="iv-spec-tile">
+            <div className="iv-spec-icon">
+              <i className="fa-solid fa-oil-can" />
+            </div>
+            <div className="iv-spec-text">
+              <span className="iv-spec-lbl">Cilindrata</span>
+              <span className="iv-spec-val">{dg.cilindrata ? `${dg.cilindrata} cc` : "-"}</span>
+            </div>
+          </div>
+          <div className="iv-spec-tile">
+            <div className="iv-spec-icon">
+              <i className="fa-solid fa-gauge-high" />
+            </div>
+            <div className="iv-spec-text">
+              <span className="iv-spec-lbl">Potenza</span>
+              <span className="iv-spec-val">{dg.cavalli ? `${dg.cavalli} CV` : "-"}</span>
+            </div>
+          </div>
+          <div className="iv-spec-tile">
+            <div className="iv-spec-icon">
+              <i className="fa-solid fa-car-side" />
+            </div>
+            <div className="iv-spec-text">
+              <span className="iv-spec-lbl">Marca</span>
+              <span className="iv-spec-val">{veicolo?.marca ?? "-"}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mantenimento */}
+      <div className="iv-section-card" onMouseMove={onTilt} onMouseLeave={resetTilt}>
+        <div className="iv-section-bar">
+          <i className="fa-solid fa-calendar-check" />
+          <span>Mantenimento</span>
+        </div>
+        <div className="iv-maint-grid">
+          <div className={`iv-maint-pill stato-${statoBollo}`}>
+            <div className="iv-maint-left">
+              <div className="iv-maint-icon">
+                <i className="fa-solid fa-receipt" />
+              </div>
+              <div className="iv-maint-info">
+                <span className="iv-maint-title">Bollo</span>
+                <span className="iv-maint-date">{dataBollo}</span>
+              </div>
+            </div>
+            <span className={`iv-badge iv-badge-${statoBollo}`}>
+              <span className="iv-badge-dot" /> {statoBollo === "attiva" ? "Attivo" : "Scaduto"}
+            </span>
+          </div>
+          <div className={`iv-maint-pill stato-${statoRca}`}>
+            <div className="iv-maint-left">
+              <div className="iv-maint-icon">
+                <i className="fa-solid fa-shield-halved" />
+              </div>
+              <div className="iv-maint-info">
+                <span className="iv-maint-title">
+                  Assicurazione · <span>{ds.nomeassicurazione ?? "-"}</span>
+                </span>
+                <span className="iv-maint-date">{dataRca}</span>
+              </div>
+            </div>
+            <span className={`iv-badge iv-badge-${statoRca}`}>
+              <span className="iv-badge-dot" /> {statoRca === "attiva" ? "Attiva" : "Scaduta"}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

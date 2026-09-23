@@ -11,15 +11,15 @@ import { getVeicoliUtente, getVeicolo } from "@/lib/api";
 import type { VeicoloDettaglio } from "@/lib/types";
 
 /**
- * Homepage utente: sezione "Il mio garage" (griglia veicoli espandibile +
- * card aggiungi con modale ricerca targa), pannello "Scadenze e avvisi"
- * calcolato su bollo/assicurazione/revisione, e le tre card azione fisse.
+ * Homepage utente: sezione "Il mio garage" (rail dei veicoli + scheda
+ * tecnica del veicolo selezionato, card aggiungi sempre prima voce),
+ * pannello "Scadenze e avvisi" calcolato su bollo/assicurazione/revisione,
+ * e le tre card azione fisse.
  */
 export default function HomePage() {
   const { utente, gestisci401, caricaVeicoli } = useAuth();
 
   const [veicoli, setVeicoli] = useState<VeicoloDettaglio[]>([]);
-  const [garageEspanso, setGarageEspanso] = useState(false);
   const garageRef = useRef<HTMLDivElement>(null);
 
   // la homepage lavora sui dettagli completi (scadenze incluse): la lista
@@ -51,10 +51,9 @@ export default function HomePage() {
   }, [caricaDettagli, caricaVeicoli]);
 
   // la voce sidebar "Lista veicoli" porta qui: scroll alla sezione garage
-  // ed espansione della griglia se compressa (evento custom + hash #garage)
+  // (evento custom + hash #garage)
   useEffect(() => {
     const apriGarage = () => {
-      setGarageEspanso(true);
       garageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     };
     if (window.location.hash === "#garage") apriGarage();
@@ -66,12 +65,7 @@ export default function HomePage() {
     <Layout mostraSwitcher={false}>
       <main className="hp-main">
         <div ref={garageRef}>
-          <GarageSection
-            veicoli={veicoli}
-            espanso={garageEspanso}
-            onToggleEspanso={() => setGarageEspanso((v) => !v)}
-            onGarageCambiato={onGarageCambiato}
-          />
+          <GarageSection veicoli={veicoli} onGarageCambiato={onGarageCambiato} />
         </div>
         <ScadenzeAvvisi veicoli={veicoli} />
         <AzioniRapide />

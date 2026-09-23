@@ -248,7 +248,11 @@ body {
   z-index: 500;
   left: 304px;
   top: 30px;
-  transition: left 0.3s ease, transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  transition: left 0.3s ease, transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+    background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .sidebar.open .hamburger9 {
@@ -2034,7 +2038,7 @@ input:-webkit-autofill:active {
 
 .acc-section-card {
   background: var(--surface);
-  border: 1px solid rgba(249, 115, 22, 0.2);
+  border: 1px solid var(--border-subtle);
   border-radius: 14px;
   overflow: hidden;
   opacity: 0;
@@ -2982,10 +2986,21 @@ input:-webkit-autofill:active {
 
 /* ----------------------------------------------------
                      INFO VEICOLO
-   Nota: le variabili --c-* non sono definite (come nel
-   frontend originale): le card risultano trasparenti
-   sullo sfondo piatto della pagina, come nel vanilla.
------------------------------------------------------*/
+   Le .iv-section-card (usate anche da Storico interventi, che importa
+   questo stesso set di classi) puntavano a variabili --c-* mai definite
+   da nessuna parte: le card risultavano trasparenti sullo sfondo piatto
+   della pagina invece di avere lo sfondo/ombra delle altre card del sito
+   (veicolo-card, acc-section-card, abb-piano-card). Alias sui token reali
+   del design system, per restare coerenti col resto della dashboard. */
+:root {
+  --c-surface: var(--surface);
+  --c-text: var(--text);
+  --c-muted: var(--muted);
+  --c-strong: var(--white);
+  --c-shadow: 0 14px 32px -18px rgba(0, 0, 0, 0.35);
+  --c-shadow-hover: 0 22px 46px -18px rgba(0, 0, 0, 0.5);
+}
+
 @keyframes iv-fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes iv-fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes iv-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
@@ -3246,6 +3261,41 @@ input:-webkit-autofill:active {
 
 .iv-badge-attiva { background: rgba(var(--iv-ok-rgb), 0.14); color: var(--iv-ok); border: 1px solid rgba(var(--iv-ok-rgb), 0.34); }
 .iv-badge-scaduta { background: rgba(var(--iv-bad-rgb), 0.14); color: var(--iv-bad); border: 1px solid rgba(var(--iv-bad-rgb), 0.34); }
+
+/* Versione compatta di VeicoloInfoCard, incorporata accanto alla rail di
+   "Il mio garage" in homepage: stesse card/colori, solo più strette e
+   senza il riquadro icona auto/moto (omesso via JSX, non via CSS). */
+.iv-dashboard--compatta {
+  max-width: none;
+  padding: 0;
+  gap: 12px;
+}
+
+.iv-dashboard--compatta .iv-hero-body { padding: 16px; gap: 14px; }
+.iv-dashboard--compatta .iv-hero-name { font-size: 1.15rem; }
+.iv-dashboard--compatta .iv-section-bar { padding: 9px 14px; }
+.iv-dashboard--compatta .iv-specs-grid { padding: 12px 14px; gap: 8px; }
+.iv-dashboard--compatta .iv-spec-tile { padding: 9px 11px; gap: 9px; }
+.iv-dashboard--compatta .iv-spec-icon { width: 32px; height: 32px; font-size: 0.82rem; }
+.iv-dashboard--compatta .iv-maint-grid { padding: 12px 14px; grid-template-columns: 1fr; gap: 8px; }
+.iv-dashboard--compatta .iv-maint-pill { padding: 11px 14px; }
+
+.iv-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.iv-empty-card i {
+  font-size: 1.6rem;
+  color: rgba(249, 115, 22, 0.4);
+}
 
 /* ----------------------------------------------------
               AUTH / LANDING (garage + glass)
@@ -4261,59 +4311,192 @@ input:-webkit-autofill:active {
   .garage-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* blocco espandibile dei veicoli oltre il terzo (grid-template-rows 0fr→1fr) */
-.garage-extra {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  transition: grid-template-rows 300ms ease, opacity 300ms ease;
+/* ---------------- "Il mio garage" homepage: rail + scheda affiancata ----------------
+   Sostituisce la vecchia griglia espandibile: una rail verticale di chip
+   (stile switcher-item) affiancata alla scheda tecnica completa del
+   veicolo selezionato (VeicoloInfoCard compatta). La card "Aggiungi
+   veicolo" è sempre la prima voce della rail: non salta mai posizione e
+   non scompare mai, indipendentemente da quanti veicoli ci sono. */
+.garage-rail-layout {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
 }
 
-.garage-extra.open {
-  grid-template-rows: 1fr;
-  opacity: 1;
+@media (max-width: 860px) {
+  .garage-rail-layout {
+    flex-direction: column;
+  }
 }
 
-/* clipping necessario solo mentre la riga cresce/decresce (0fr→1fr):
-   a pannello assestato va tolto, altrimenti taglia il tilt 3D delle card */
-.garage-extra-inner {
-  overflow: hidden;
+.garage-rail {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 420px;
+  overflow-y: auto;
 }
 
-.garage-extra-inner--assestato {
-  overflow: visible;
+@media (max-width: 860px) {
+  .garage-rail {
+    width: 100%;
+    flex-direction: row;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: 4px;
+  }
 }
 
-.garage-extra .garage-grid-extra {
-  padding-top: 16px;
-}
-
-.garage-toggle-btn {
-  margin: 16px auto 0;
+.garage-rail-add {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
-  background: transparent;
-  border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  padding: 10px 18px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  background: var(--bg);
   color: var(--accent);
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 200ms ease;
+  flex-shrink: 0;
+  text-align: left;
 }
 
-.garage-toggle-btn:hover {
-  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+/* stesso bordo animato a gradiente conico della card "Aggiungi un veicolo"
+   (--ag-angle / ag-trace, definiti più sotto in questo file) */
+.garage-rail-add::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 12px;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--ag-angle),
+    transparent 0%,
+    var(--accent) 10%,
+    var(--accent-bright) 15%,
+    var(--accent) 20%,
+    transparent 30%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ag-trace 4s linear infinite;
+  pointer-events: none;
 }
 
-.garage-toggle-btn i {
-  transition: transform 300ms ease;
+.garage-rail-add-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.garage-toggle-btn i.ruotata {
-  transform: rotate(180deg);
+.garage-rail-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.garage-rail-chip:hover {
+  background: var(--surface-hover);
+}
+
+.garage-rail-chip.attivo {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.garage-rail-chip-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+.garage-rail-chip-icon.tipo-auto {
+  background: color-mix(in srgb, var(--type-auto) 25%, transparent);
+  color: #60b8e0;
+}
+
+.garage-rail-chip-icon.tipo-moto {
+  background: color-mix(in srgb, var(--type-moto) 25%, transparent);
+  color: #a79bf0;
+}
+
+.garage-rail-chip-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.garage-rail-chip-nome {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.garage-rail-chip.attivo .garage-rail-chip-nome {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.garage-rail-chip-targa {
+  font-size: 10.5px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+
+.garage-rail-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.garage-rail-chip-dot.salute-ok {
+  background: var(--iv-ok);
+}
+
+.garage-rail-chip-dot.salute-attenzione {
+  background: var(--accent);
+}
+
+.garage-rail-chip-dot.salute-urgente {
+  background: var(--iv-bad);
+}
+
+.garage-rail-detail {
+  flex: 1;
+  min-width: 0;
 }
 
 /* ---------------- card veicolo ----------------

@@ -1,4 +1,27 @@
 /* ----------------------------------------------------
+   TOKEN CATEGORIE
+   Queste variabili non erano definite da nessuna parte: filtri, badge e
+   pallini categoria (tranne "annotazioni", già su --iv-orange) risultavano
+   trasparenti/invisibili. I colori riprendono quelli già usati nei dot
+   inline del componente (FILTRI in storico-interventi/page.tsx), con lo
+   stesso schema tinta/sfondo/bordo delle altre badge del sito (es.
+   .iv-badge-attiva in globals.css).
+----------------------------------------------------- */
+:root {
+    --tutti: var(--muted);
+    --ordinario: #2b88b8;
+    --ordinario-bg: rgba(43, 136, 184, 0.12);
+    --ordinario-border: rgba(43, 136, 184, 0.35);
+    --straordinario: #ef4444;
+    --straordinario-bg: rgba(239, 68, 68, 0.12);
+    --straordinario-border: rgba(239, 68, 68, 0.35);
+    --gestione: #22c55e;
+    --gestione-bg: rgba(34, 197, 94, 0.12);
+    --gestione-border: rgba(34, 197, 94, 0.35);
+    --iv-orange2: rgba(249, 115, 22, 0.14);
+}
+
+/* ----------------------------------------------------
    LAYOUT DASHBOARD
 ----------------------------------------------------- */
 .iv-dashboard {
