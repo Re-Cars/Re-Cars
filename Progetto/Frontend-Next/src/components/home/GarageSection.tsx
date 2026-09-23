@@ -39,12 +39,16 @@ export default function GarageSection({ veicoli, onGarageCambiato }: GarageSecti
 
       <div className="garage-rail-layout">
         <div className="garage-rail">
-          <button type="button" className="garage-rail-add" onClick={() => setModalAperto(true)}>
-            <span className="garage-rail-add-icon">
-              <i className="ti ti-plus" />
-            </span>
-            Aggiungi veicolo
-          </button>
+          {/* stesso stile grafico del bottone "Aggiungi veicolo" del veicolo
+              switcher (bordo animato a gradiente conico + cerchio arancione) */}
+          <div className="switcher-aggiungi-btn-wrap garage-rail-add-wrap">
+            <button type="button" className="switcher-aggiungi-btn" onClick={() => setModalAperto(true)}>
+              <div className="switcher-plus-circle">
+                <i className="fa-solid fa-plus" />
+              </div>
+              Aggiungi veicolo
+            </button>
+          </div>
 
           {veicoli.map((v) => {
             const isMoto = (v.dati_generici[0]?.tipo_veicolo ?? "").toLowerCase() === "moto";

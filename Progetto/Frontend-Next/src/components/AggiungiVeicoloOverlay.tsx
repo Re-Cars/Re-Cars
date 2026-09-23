@@ -25,13 +25,13 @@ interface AggiungiVeicoloOverlayProps {
 }
 
 /**
- * Overlay riutilizzabile (homepage + lista-veicoli) di ricerca targa e
- * aggiunta al garage. Logica identica a prima; l'aspetto riusa lo stile
- * della pagina /cerca-veicolo (.cerca-hero, .cerca-targa-wrap,
- * .cerca-features, .vehicle-result-card, .cerca-storico-tag) più il bordo
- * animato conic-gradient già usato dalla card "Aggiungi un veicolo"
- * (--ag-angle / ag-trace), così i due punti d'ingresso alla stessa
- * funzionalità hanno la stessa identità visiva.
+ * Overlay aperto dalla rail di "Il mio garage" in homepage per cercare una
+ * targa e aggiungerla. L'aspetto riusa lo stile della pagina /cerca-veicolo
+ * (.cerca-hero, .cerca-targa-wrap, .cerca-features, .vehicle-result-card,
+ * .cerca-storico-tag) più lo stesso bordo animato conic-gradient del
+ * bottone "Aggiungi veicolo" del veicolo switcher (--ag-angle / ag-trace),
+ * così i punti d'ingresso alla stessa funzionalità hanno la stessa
+ * identità visiva.
  */
 export default function AggiungiVeicoloOverlay({
   aperto,

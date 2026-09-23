@@ -9,9 +9,9 @@ type StatoMantenimento = "attiva" | "scaduta";
 
 /**
  * Stato di un documento (bollo / assicurazione) con la stessa regola di
- * calcolaScadenze in lib/scadenze.ts — unica fonte di verità, così questa
- * card e "Scadenze e avvisi" della homepage non possono divergere: conta
- * la data, e un flag esplicitamente `false` forza comunque "scaduta".
+ * calcolaSalute in lib/scadenze.ts — unica fonte di verità, così questa
+ * card e i pallini di stato della rail non possono divergere: conta la
+ * data, e un flag esplicitamente `false` forza comunque "scaduta".
  */
 function statoDaData(
   data: string | null | undefined,
@@ -27,10 +27,11 @@ function statoDaData(
 interface VeicoloInfoCardProps {
   veicolo: VeicoloDettaglio | null;
   /**
-   * Versione compatta per l'uso incorporato (es. accanto alla rail del
-   * garage in homepage): niente riquadro con l'icona auto/moto, paddings e
-   * font ridotti (vedi `.iv-dashboard--compatta` in globals.css). La
-   * pagina /info-veicolo la usa invece a piena dimensione.
+   * Versione compatta per l'uso incorporato accanto alla rail di "Il mio
+   * garage" in homepage: un'unica card leggera (nome/targa + mantenimento)
+   * invece delle tre card impilate della pagina intera — niente riquadro
+   * icona auto/moto, niente ripetizione di header per ogni sezione. La
+   * pagina /info-veicolo usa invece la versione completa.
    */
   compatto?: boolean;
 }
@@ -59,36 +60,87 @@ export default function VeicoloInfoCard({ veicolo, compatto = false }: VeicoloIn
     ? `scade il ${new Date(ds.datascadenzarca).toLocaleDateString("it-IT")}`
     : "Dato non disponibile";
 
-  // tilt 3D leggero delle card (replica di initInfoVeicoloTilt) — solo a
-  // piena dimensione: nel pannello compatto incorporato è superfluo.
-  const onTilt = compatto
-    ? undefined
-    : (e: MouseEvent<HTMLDivElement>) => {
-        const card = e.currentTarget;
-        const r = card.getBoundingClientRect();
-        const px = (e.clientX - r.left) / r.width;
-        const py = (e.clientY - r.top) / r.height;
-        card.style.transform = `perspective(1200px) rotateX(${(0.5 - py) * 4}deg) rotateY(${(px - 0.5) * 4}deg) translateY(-6px)`;
-      };
-  const resetTilt = compatto
-    ? undefined
-    : (e: MouseEvent<HTMLDivElement>) => {
-        e.currentTarget.style.transform = "";
-      };
-
-  if (compatto && !veicolo) {
-    return (
+  if (!veicolo) {
+    return compatto ? (
       <div className="iv-dashboard iv-dashboard--compatta">
         <div className="iv-section-card iv-empty-card">
           <i className="fa-solid fa-car-side" />
           <span>Aggiungi un veicolo per vedere qui i suoi dati.</span>
         </div>
       </div>
+    ) : null;
+  }
+
+  if (compatto) {
+    return (
+      <div className="iv-dashboard iv-dashboard--compatta">
+        <div className="iv-section-card iv-compact-card">
+          <div className="iv-compact-top">
+            <span className="iv-hero-name iv-compact-name">{nomeVeicolo}</span>
+            <span className="iv-targa-pill">
+              <i className="fa-solid fa-id-card" /> <span>{veicolo.targa}</span>
+            </span>
+          </div>
+          <div className="iv-hero-sub iv-compact-chips">
+            <span className="iv-mini-pill">
+              <i className={`fa-solid ${iconaVeicolo}`} /> <strong>{dg.tipo_veicolo ?? "-"}</strong>
+            </span>
+            {dg.alimentazione && (
+              <span className="iv-mini-pill">
+                <i className="fa-solid fa-bolt" /> <strong>{dg.alimentazione}</strong>
+              </span>
+            )}
+            {dg.cavalli ? (
+              <span className="iv-mini-pill">
+                <i className="fa-solid fa-gauge-high" /> <strong>{dg.cavalli} CV</strong>
+              </span>
+            ) : null}
+          </div>
+
+          <div className="iv-compact-divider" />
+
+          <div className="iv-compact-maint">
+            <div className={`iv-compact-maint-row stato-${statoBollo}`}>
+              <i className="fa-solid fa-receipt" />
+              <div className="iv-compact-maint-text">
+                <span className="iv-compact-maint-label">Bollo</span>
+                <span className="iv-compact-maint-date">{dataBollo}</span>
+              </div>
+              <span className={`iv-badge iv-badge-${statoBollo}`}>
+                <span className="iv-badge-dot" /> {statoBollo === "attiva" ? "Attivo" : "Scaduto"}
+              </span>
+            </div>
+            <div className={`iv-compact-maint-row stato-${statoRca}`}>
+              <i className="fa-solid fa-shield-halved" />
+              <div className="iv-compact-maint-text">
+                <span className="iv-compact-maint-label">Assicurazione</span>
+                <span className="iv-compact-maint-date">{dataRca}</span>
+              </div>
+              <span className={`iv-badge iv-badge-${statoRca}`}>
+                <span className="iv-badge-dot" /> {statoRca === "attiva" ? "Attiva" : "Scaduta"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
+  // tilt 3D leggero delle card (replica di initInfoVeicoloTilt) — solo
+  // nella versione a piena dimensione: nel pannello compatto è superfluo.
+  const onTilt = (e: MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const r = card.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top) / r.height;
+    card.style.transform = `perspective(1200px) rotateX(${(0.5 - py) * 4}deg) rotateY(${(px - 0.5) * 4}deg) translateY(-6px)`;
+  };
+  const resetTilt = (e: MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.transform = "";
+  };
+
   return (
-    <div className={`iv-dashboard${compatto ? " iv-dashboard--compatta" : ""}`}>
+    <div className="iv-dashboard">
       {/* Hero veicolo */}
       <div className="iv-section-card iv-hero-card" onMouseMove={onTilt} onMouseLeave={resetTilt}>
         <div className="iv-section-bar">
@@ -96,16 +148,14 @@ export default function VeicoloInfoCard({ veicolo, compatto = false }: VeicoloIn
           <span>Veicolo</span>
         </div>
         <div className="iv-hero-body">
-          {!compatto && (
-            <div className="iv-hero-icon">
-              <i className={`fa-solid ${iconaVeicolo}`} />
-            </div>
-          )}
+          <div className="iv-hero-icon">
+            <i className={`fa-solid ${iconaVeicolo}`} />
+          </div>
           <div className="iv-hero-info">
             <div className="iv-hero-name">{nomeVeicolo}</div>
             <div className="iv-hero-sub">
               <span className="iv-targa-pill">
-                <i className="fa-solid fa-id-card" /> <span>{veicolo?.targa ?? "-"}</span>
+                <i className="fa-solid fa-id-card" /> <span>{veicolo.targa}</span>
               </span>
               <span className="iv-mini-pill">
                 <i className={`fa-solid ${iconaVeicolo}`} /> Tipo <strong>{dg.tipo_veicolo ?? "-"}</strong>
@@ -161,7 +211,7 @@ export default function VeicoloInfoCard({ veicolo, compatto = false }: VeicoloIn
             </div>
             <div className="iv-spec-text">
               <span className="iv-spec-lbl">Marca</span>
-              <span className="iv-spec-val">{veicolo?.marca ?? "-"}</span>
+              <span className="iv-spec-val">{veicolo.marca ?? "-"}</span>
             </div>
           </div>
         </div>

@@ -3263,22 +3263,90 @@ input:-webkit-autofill:active {
 .iv-badge-scaduta { background: rgba(var(--iv-bad-rgb), 0.14); color: var(--iv-bad); border: 1px solid rgba(var(--iv-bad-rgb), 0.34); }
 
 /* Versione compatta di VeicoloInfoCard, incorporata accanto alla rail di
-   "Il mio garage" in homepage: stesse card/colori, solo più strette e
-   senza il riquadro icona auto/moto (omesso via JSX, non via CSS). */
+   "Il mio garage" in homepage: un'UNICA card leggera (nome/targa + mini-pill
+   tecniche + mantenimento) invece delle tre card impilate della pagina
+   intera, per non risultare ingombrante/ripetitiva in un pannello stretto.
+   Niente riquadro icona auto/moto (omesso via JSX, non via CSS). */
 .iv-dashboard--compatta {
   max-width: none;
   padding: 0;
+}
+
+.iv-compact-card {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
-.iv-dashboard--compatta .iv-hero-body { padding: 16px; gap: 14px; }
-.iv-dashboard--compatta .iv-hero-name { font-size: 1.15rem; }
-.iv-dashboard--compatta .iv-section-bar { padding: 9px 14px; }
-.iv-dashboard--compatta .iv-specs-grid { padding: 12px 14px; gap: 8px; }
-.iv-dashboard--compatta .iv-spec-tile { padding: 9px 11px; gap: 9px; }
-.iv-dashboard--compatta .iv-spec-icon { width: 32px; height: 32px; font-size: 0.82rem; }
-.iv-dashboard--compatta .iv-maint-grid { padding: 12px 14px; grid-template-columns: 1fr; gap: 8px; }
-.iv-dashboard--compatta .iv-maint-pill { padding: 11px 14px; }
+.iv-compact-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.iv-compact-name {
+  font-size: 1.15rem;
+}
+
+.iv-compact-chips {
+  gap: 8px;
+}
+
+.iv-compact-divider {
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.iv-compact-maint {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.iv-compact-maint-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(249, 115, 22, 0.15);
+  border-left: 3px solid var(--iv-ok);
+  background: rgba(249, 115, 22, 0.03);
+}
+
+.iv-compact-maint-row.stato-scaduta {
+  border-left-color: var(--iv-bad);
+}
+
+.iv-compact-maint-row i {
+  font-size: 0.9rem;
+  color: var(--muted);
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.iv-compact-maint-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.iv-compact-maint-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.iv-compact-maint-date {
+  font-size: 0.68rem;
+  color: var(--muted);
+}
 
 .iv-empty-card {
   display: flex;
@@ -4296,21 +4364,6 @@ input:-webkit-autofill:active {
   scroll-margin-top: 90px;
 }
 
-/* ---------------- griglia garage ---------------- */
-.garage-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-
-@media (min-width: 640px) {
-  .garage-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (min-width: 1024px) {
-  .garage-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
 /* ---------------- "Il mio garage" homepage: rail + scheda affiancata ----------------
    Sostituisce la vecchia griglia espandibile: una rail verticale di chip
    (stile switcher-item) affiancata alla scheda tecnica completa del
@@ -4335,71 +4388,28 @@ input:-webkit-autofill:active {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 420px;
-  overflow-y: auto;
 }
 
 @media (max-width: 860px) {
   .garage-rail {
     width: 100%;
     flex-direction: row;
-    max-height: none;
     overflow-x: auto;
-    overflow-y: visible;
     padding-bottom: 4px;
   }
 }
 
-.garage-rail-add {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1.5px solid transparent;
-  background: var(--bg);
-  color: var(--accent);
-  font-size: 13px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  flex-shrink: 0;
-  text-align: left;
+/* stesso bottone "Aggiungi veicolo" del veicolo switcher (switcher-aggiungi-
+   btn-wrap/-btn/-plus-circle, definite più sopra in questo file): qui va
+   solo adattato a larghezza piena della rail invece che centrato in una
+   dropdown stretta. */
+.garage-rail-add-wrap {
+  align-self: stretch;
 }
 
-/* stesso bordo animato a gradiente conico della card "Aggiungi un veicolo"
-   (--ag-angle / ag-trace, definiti più sotto in questo file) */
-.garage-rail-add::before {
-  content: "";
-  position: absolute;
-  inset: -1.5px;
-  border-radius: 12px;
-  padding: 1.5px;
-  background: conic-gradient(
-    from var(--ag-angle),
-    transparent 0%,
-    var(--accent) 10%,
-    var(--accent-bright) 15%,
-    var(--accent) 20%,
-    transparent 30%
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: ag-trace 4s linear infinite;
-  pointer-events: none;
-}
-
-.garage-rail-add-icon {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  display: flex;
-  align-items: center;
+.garage-rail-add-wrap .switcher-aggiungi-btn {
+  width: 100%;
   justify-content: center;
-  flex-shrink: 0;
 }
 
 .garage-rail-chip {
@@ -4486,12 +4496,22 @@ input:-webkit-autofill:active {
   background: var(--iv-ok);
 }
 
+/* verde = tutto ok, nessun richiamo visivo: solo i pallini che segnalano
+   qualcosa da guardare pulsano leggermente, per non risultare invisibili
+   nella rail senza dover riproporre l'intera sezione "Scadenze e avvisi" */
 .garage-rail-chip-dot.salute-attenzione {
   background: var(--accent);
+  animation: chip-dot-pulse 2s ease-in-out infinite;
 }
 
 .garage-rail-chip-dot.salute-urgente {
   background: var(--iv-bad);
+  animation: chip-dot-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes chip-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.8); }
 }
 
 .garage-rail-detail {
@@ -4499,148 +4519,9 @@ input:-webkit-autofill:active {
   min-width: 0;
 }
 
-/* ---------------- card veicolo ----------------
-   Il sollevamento/inclinazione è gestito dal tilt 3D (useTilt, transform
-   inline): il CSS anima solo bordo e sfondo per non entrare in conflitto. */
-.veicolo-card {
-  background: var(--surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  cursor: pointer;
-  transition: transform 300ms ease-out, border-color 0.3s ease, background-color 0.3s ease;
-}
-
-.veicolo-card:hover {
-  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
-  background: var(--surface-hover);
-}
-
-.veicolo-card.attivo {
-  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
-  border-left: 3px solid var(--accent);
-  outline: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-  outline-offset: 2px;
-}
-
-/* pannello icona "tipo-aware": la base resta var(--hp-well) (chiaro in light,
-   navy scuro in dark), il colore del tipo è solo una velatura in gradiente */
-.veicolo-card-placeholder {
-  position: relative;
-  height: 120px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--hp-well);
-}
-
-.veicolo-card-placeholder.auto {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--type-auto) 38%, transparent),
-    var(--hp-well) 75%
-  );
-}
-
-.veicolo-card-placeholder.moto {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--type-moto) 38%, transparent),
-    var(--hp-well) 75%
-  );
-}
-
-.veicolo-tipo-chip {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  color: #ffffff;
-}
-
-.veicolo-tipo-chip i {
-  font-size: 14px;
-}
-
-.veicolo-card-placeholder.auto .veicolo-tipo-chip { background: var(--type-auto); }
-.veicolo-card-placeholder.moto .veicolo-tipo-chip { background: var(--type-moto); }
-
-/* watermark decorativo in basso a destra */
-.veicolo-tipo-watermark {
-  position: absolute;
-  right: 8px;
-  bottom: -6px;
-  font-size: 62px;
-  line-height: 1;
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-.veicolo-card-placeholder.auto .veicolo-tipo-watermark { color: #60b8e0; }
-.veicolo-card-placeholder.moto .veicolo-tipo-watermark { color: #a79bf0; }
-
-.targa-pill {
-  align-self: flex-start;
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  color: var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-  border-radius: 20px;
-  padding: 4px 12px;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
-.veicolo-card-nome {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text);
-  margin: 0;
-}
-
-.badge-salute {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 12.5px;
-  font-weight: 500;
-}
-
-.badge-salute i {
-  font-size: 15px;
-}
-
-.badge-salute.ok {
-  background: rgba(var(--iv-ok-rgb), 0.12);
-  color: var(--iv-ok);
-}
-
-.badge-salute.attenzione {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  color: var(--accent);
-}
-
-.badge-salute.urgente {
-  background: rgba(var(--iv-bad-rgb), 0.12);
-  color: var(--iv-bad);
-}
-
-/* ---------------- card aggiungi veicolo ----------------
-   Bordo solido sottile + punto luminoso che percorre il perimetro:
-   ::before con conic-gradient ruotato via custom property animata,
-   mascherato ad anello e contenuto dal border-radius (overflow hidden). */
+/* Il segno grafico attorno alla card "Aggiungi un veicolo" (bordo animato a
+   gradiente conico) resta definito qui sotto (--ag-angle / ag-trace) ed è
+   condiviso col bordo del modale AggiungiVeicoloOverlay (.av-modal-wrap). */
 @property --ag-angle {
   syntax: "<angle>";
   initial-value: 0deg;
@@ -4649,74 +4530,6 @@ input:-webkit-autofill:active {
 
 @keyframes ag-trace {
   to { --ag-angle: 360deg; }
-}
-
-.aggiungi-card {
-  position: relative;
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-  border-radius: 16px;
-  background: transparent;
-  overflow: hidden;
-  min-height: 260px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 20px;
-  cursor: pointer;
-  transition: transform 200ms ease, border-color 200ms ease;
-}
-
-.aggiungi-card:hover {
-  transform: scale(1.02);
-  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
-}
-
-.aggiungi-card::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: 16px;
-  padding: 2px;
-  background: conic-gradient(
-    from var(--ag-angle),
-    transparent 0%,
-    var(--accent) 10%,
-    var(--accent-bright) 15%,
-    var(--accent) 20%,
-    transparent 30%
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  animation: ag-trace 4s linear infinite;
-}
-
-.aggiungi-plus {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent);
-  font-size: 26px;
-  animation: aggiungi-pulse 2s ease-in-out infinite alternate;
-}
-
-.aggiungi-label {
-  color: var(--accent);
-  font-size: 14px;
-  animation: aggiungi-pulse 2s ease-in-out infinite alternate;
-}
-
-@keyframes aggiungi-pulse {
-  from { opacity: 0.7; transform: scale(0.98); }
-  to   { opacity: 1; transform: scale(1.02); }
 }
 
 /* ---------------- modale aggiungi veicolo ----------------
@@ -4856,113 +4669,6 @@ input:-webkit-autofill:active {
   }
 }
 
-/* ---------------- scadenze e avvisi ---------------- */
-.scadenze-list {
-  background: var(--surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  padding: 8px;
-}
-
-.scadenza-row {
-  height: 56px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 0 12px;
-  border-radius: 10px;
-  border-bottom: 0.5px solid var(--border-subtle);
-  transition: background-color 150ms ease;
-}
-
-.scadenza-row:last-child { border-bottom: none; }
-
-/* sfondo tintato per urgenza + hover leggermente più chiaro */
-.scadenza-row.rossa { background: rgba(var(--iv-bad-rgb), 0.04); }
-.scadenza-row.arancione { background: color-mix(in srgb, var(--accent) 4%, transparent); }
-
-.scadenza-row:hover { background: var(--surface-hover); }
-.scadenza-row.rossa:hover { background: rgba(var(--iv-bad-rgb), 0.08); }
-.scadenza-row.arancione:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
-
-.scadenza-icona {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
-/* cerchio icona tintato nel colore dell'urgenza della riga */
-.scadenza-row.rossa .scadenza-icona {
-  background: rgba(var(--iv-bad-rgb), 0.15);
-  color: var(--iv-bad);
-}
-
-.scadenza-row.arancione .scadenza-icona {
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  color: var(--accent);
-}
-
-.scadenza-row.gialla .scadenza-icona {
-  background: color-mix(in srgb, var(--hp-giallo) 15%, transparent);
-  color: var(--hp-giallo);
-}
-
-.scadenza-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.scadenza-tipo {
-  font-size: 14.5px;
-  color: var(--text);
-}
-
-.scadenza-veicolo {
-  font-size: 13px;
-  color: var(--muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.scadenza-stato {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13.5px;
-  font-weight: 500;
-  flex-shrink: 0;
-}
-
-.scadenza-stato i { font-size: 16px; }
-
-.scadenza-stato.rossa { color: var(--iv-bad); }
-.scadenza-stato.arancione { color: var(--accent); }
-.scadenza-stato.gialla { color: var(--hp-giallo); }
-
-.scadenze-vuoto {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 20px 4px;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.scadenze-vuoto i {
-  font-size: 20px;
-  color: var(--iv-ok);
-}
-
 /* ---------------- card azione fisse ---------------- */
 .azioni-grid {
   display: grid;
@@ -5017,31 +4723,6 @@ input:-webkit-autofill:active {
   font-size: 13px;
   color: var(--muted);
   margin: 0;
-}
-
-/* ---------------- pagina lista veicoli ---------------- */
-/* contiene solo titolo + contatore: l'unico punto d'ingresso per
-   aggiungere un veicolo è la card in coda alla griglia */
-.lv-head {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.lv-head .lv-head-title {
-  margin: 0;
-}
-
-.lv-counter {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  color: var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-  border-radius: 20px;
-  padding: 3px 12px;
-  font-size: 13px;
-  font-weight: 500;
 }
 
 /* ---------------- header / sidebar (nuova nav) ---------------- */

@@ -1,32 +1,31 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Layout from "@/components/Layout";
 import AzioniRapide from "@/components/home/AzioniRapide";
 import GarageSection from "@/components/home/GarageSection";
-import ScadenzeAvvisi from "@/components/home/ScadenzeAvvisi";
 import { useAuth } from "@/context/AuthContext";
 import { getVeicoliUtente, getVeicolo } from "@/lib/api";
 import type { VeicoloDettaglio } from "@/lib/types";
 
 /**
  * Homepage utente: sezione "Il mio garage" (rail dei veicoli + scheda
- * tecnica del veicolo selezionato, card aggiungi sempre prima voce),
- * pannello "Scadenze e avvisi" calcolato su bollo/assicurazione/revisione,
- * e le tre card azione fisse.
+ * tecnica del veicolo selezionato, card aggiungi sempre prima voce — gli
+ * stessi pallini di stato della rail sostituiscono il vecchio pannello
+ * "Scadenze e avvisi", ridondante con quei pallini e con la scheda) e le
+ * tre card azione fisse.
  */
 export default function HomePage() {
   const { utente, gestisci401, caricaVeicoli } = useAuth();
 
   const [veicoli, setVeicoli] = useState<VeicoloDettaglio[]>([]);
-  const garageRef = useRef<HTMLDivElement>(null);
 
-  // la homepage lavora sui dettagli completi (scadenze incluse): la lista
-  // degli id arriva da GET /veicolo/utente/:id, poi ogni veicolo è ricaricato
-  // con getVeicolo (GET /veicolo/:id) — la STESSA funzione usata da
-  // info-veicolo/page.tsx, così "Scadenze e avvisi" mostra esattamente
-  // gli stessi dati (datascadenzabollo/datascadenzarca/isbolloattivo/isinsured)
+  // la homepage lavora sui dettagli completi: la lista degli id arriva da
+  // GET /veicolo/utente/:id, poi ogni veicolo è ricaricato con getVeicolo
+  // (GET /veicolo/:id) — la STESSA funzione usata da info-veicolo/page.tsx,
+  // così la scheda nel pannello di dettaglio mostra esattamente gli stessi
+  // dati della pagina dedicata.
   const caricaDettagli = useCallback(async () => {
     if (!utente) return;
     try {
@@ -50,24 +49,10 @@ export default function HomePage() {
     await caricaVeicoli();
   }, [caricaDettagli, caricaVeicoli]);
 
-  // la voce sidebar "Lista veicoli" porta qui: scroll alla sezione garage
-  // (evento custom + hash #garage)
-  useEffect(() => {
-    const apriGarage = () => {
-      garageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
-    if (window.location.hash === "#garage") apriGarage();
-    window.addEventListener("recars:apri-garage", apriGarage);
-    return () => window.removeEventListener("recars:apri-garage", apriGarage);
-  }, []);
-
   return (
     <Layout mostraSwitcher={false}>
       <main className="hp-main">
-        <div ref={garageRef}>
-          <GarageSection veicoli={veicoli} onGarageCambiato={onGarageCambiato} />
-        </div>
-        <ScadenzeAvvisi veicoli={veicoli} />
+        <GarageSection veicoli={veicoli} onGarageCambiato={onGarageCambiato} />
         <AzioniRapide />
       </main>
     </Layout>

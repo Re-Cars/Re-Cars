@@ -27,10 +27,11 @@ interface VoceNav {
  * - "Storico interventi" ↔ card "Storico interventi" → /storico-interventi
  * - "Prenotazioni" ↔ card "Prenota officina" → /prenotazioni
  * - le card veicolo e la card "Scheda tecnica" → /info-veicolo
+ * Niente voce dedicata al garage: la rail dei veicoli è già in cima a
+ * "Home", una pagina "Lista veicoli" separata sarebbe ridondante.
  */
 const NAV_ITEMS: VoceNav[] = [
   { href: "/homepage", icona: "ti-home", label: "Home" },
-  { href: "/lista-veicoli", icona: "ti-car", label: "Lista veicoli" },
   { href: "/storico-interventi", icona: "ti-history", label: "Storico interventi", separatorePrima: true },
   { href: "/prenotazioni", icona: "ti-calendar", label: "Prenotazioni" },
   { href: "/info-domande", icona: "ti-help-circle", label: "Info e domande", separatorePrima: true },
