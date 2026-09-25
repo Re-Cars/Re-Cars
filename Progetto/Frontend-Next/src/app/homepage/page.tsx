@@ -86,7 +86,7 @@ export default function HomePage() {
   const selezionato = veicoli.find((v) => v.id === veicoloAttivo?.id) ?? veicoli[0] ?? null;
 
   return (
-    <Layout mostraSwitcher={false}>
+    <Layout>
       <main className="dash">
         <GarageSection
           veicoli={veicoli}

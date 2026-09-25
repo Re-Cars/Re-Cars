@@ -346,7 +346,7 @@ export default function InfoDomandePage() {
   const [aperta, setAperta] = useState<number | null>(null);
 
   return (
-    <Layout breadcrumb="Info e domande" mostraSwitcher={false}>
+    <Layout breadcrumb="Info e domande">
       <h6 className="sotto-title">Info e domande</h6>
       <p className="page-sub">
         Hai bisogno di aiuto per comprendere meglio l&apos;applicazione? Clicca sulle possibili domande

@@ -6,28 +6,23 @@ import { useEffect, useState, type ReactNode } from "react";
 import BreadCrumb from "./BreadCrumb";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import VeicoloSwitcher from "./VeicoloSwitcher";
 import { consumaGarageLimiteRaggiunto } from "@/lib/storage";
 
 interface LayoutProps {
   children: ReactNode;
   /** Etichetta breadcrumb; se assente il breadcrumb non viene mostrato (es. homepage). */
   breadcrumb?: string;
-  /** Mostra il pill veicolo attivo + switcher garage (default true). */
-  mostraSwitcher?: boolean;
-  /** Su homepage il pill fluttua sopra le card circolari. */
-  switcherFloating?: boolean;
 }
 
 /**
- * Layout comune delle pagine autenticate: Sidebar + Header + Breadcrumb +
- * VeicoloSwitcher, più il banner "limite veicoli del piano raggiunto".
+ * Layout comune delle pagine autenticate: Sidebar + Header + Breadcrumb,
+ * più il banner "limite veicoli del piano raggiunto". Il veicolo attivo non
+ * ha più uno switcher globale: le pagine che ne usano uno mostrano
+ * VeicoloPicker nel proprio hero.
  */
 export default function Layout({
   children,
   breadcrumb,
-  mostraSwitcher = true,
-  switcherFloating = false,
 }: LayoutProps) {
   const [sidebarAperta, setSidebarAperta] = useState(false);
   const [bannerLimite, setBannerLimite] = useState(false);
@@ -50,7 +45,6 @@ export default function Layout({
       />
       <Header />
       {breadcrumb && <BreadCrumb pagina={breadcrumb} />}
-      {mostraSwitcher && <VeicoloSwitcher floating={switcherFloating} />}
 
       {bannerLimite && (
         <div className="banner-limite-veicoli">

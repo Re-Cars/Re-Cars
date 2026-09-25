@@ -4,22 +4,21 @@ import { useEffect, useState } from "react";
 
 import Layout from "@/components/Layout";
 import VeicoloInfoCard from "@/components/VeicoloInfoCard";
+import VeicoloPicker from "@/components/VeicoloPicker";
 import { useAuth } from "@/context/AuthContext";
 import { getVeicolo } from "@/lib/api";
 import type { VeicoloDettaglio } from "@/lib/types";
 
 /**
  * Info veicolo: hero con nome/targa/tipo/anno, caratteristiche tecniche e
- * stato mantenimento (bollo, assicurazione) del veicolo attivo. Il
- * contenuto vero e proprio è in VeicoloInfoCard, condiviso con il pannello
- * di dettaglio della sezione "Il mio garage" in homepage. Cambia veicolo
- * dallo switcher e i dati si ricaricano.
+ * stato mantenimento (bollo, assicurazione) del veicolo attivo, contenuto
+ * in VeicoloInfoCard. Si cambia veicolo dal selettore nell'hero.
  */
 export default function InfoVeicoloPage() {
   const { veicoloAttivo, gestisci401, selezionaVeicolo } = useAuth();
   const [dettaglio, setDettaglio] = useState<VeicoloDettaglio | null>(null);
 
-  // le card garage della homepage passano ?id=: si allinea il veicolo attivo
+  // un link con ?id= seleziona quel veicolo come attivo
   // (letto da window.location per evitare il Suspense richiesto da useSearchParams)
   useEffect(() => {
     const raw = new URLSearchParams(window.location.search).get("id");
@@ -44,6 +43,18 @@ export default function InfoVeicoloPage() {
 
   return (
     <Layout breadcrumb="Info Veicolo">
+      <div className="pg" style={{ maxWidth: 880, paddingInline: 24, paddingBottom: 0 }}>
+        <section className="pg-hero">
+          <div className="pg-hero-ttl">
+            <h1>
+              <i className="ti ti-id" />
+              Info veicolo
+            </h1>
+            <p>Dati tecnici e mantenimento del veicolo selezionato.</p>
+          </div>
+          <VeicoloPicker />
+        </section>
+      </div>
       <VeicoloInfoCard veicolo={dettaglio} />
     </Layout>
   );

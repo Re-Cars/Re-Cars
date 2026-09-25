@@ -1,19 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import Layout from "@/components/Layout";
+import VeicoloPicker from "@/components/VeicoloPicker";
 import { useAuth } from "@/context/AuthContext";
 import {
   aggiornaIntervento,
   ApiError,
+  cercaCitta,
   creaIntervento,
   eliminaIntervento,
   getInterventiVeicolo,
   getVeicolo,
 } from "@/lib/api";
 import { catLabel, costruisciDocumentoPdf, type PdfPeriodo } from "@/lib/pdf-report";
-import type { CategoriaIntervento, Intervento, VeicoloDettaglio } from "@/lib/types";
+import type { CategoriaIntervento, Citta, Intervento, VeicoloDettaglio } from "@/lib/types";
 import "@/styles/storico-intervento.css";
 
 const TIPI_INTERVENTO: Record<CategoriaIntervento, string[]> = {
@@ -38,6 +40,8 @@ interface FormIntervento {
   descrizione: string;
   mediante: string;
   costo: string;
+  /** Nome della città (facoltativa), scelto dai suggerimenti di GET /citta. */
+  citta: string;
 }
 
 const FORM_VUOTO: FormIntervento = {
@@ -47,7 +51,20 @@ const FORM_VUOTO: FormIntervento = {
   descrizione: "",
   mediante: "",
   costo: "",
+  citta: "",
 };
+
+const MESI_BREVI = ["G", "F", "M", "A", "M", "G", "L", "A", "S", "O", "N", "D"];
+const NOMI_MESI = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+const COLORE_CATEGORIA: Record<CategoriaIntervento, string> = {
+  ordinario: "#2b88b8",
+  straordinario: "#ef4444",
+  annotazioni: "#f8782f",
+  gestione: "#22c55e",
+};
+
+const euro = (n: number) =>
+  `€ ${n.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 /**
  * Storico interventi del veicolo attivo: tabella con filtri per categoria,
@@ -57,6 +74,10 @@ export default function StoricoInterventiPage() {
   const { veicoloAttivo, gestisci401 } = useAuth();
   const [interventi, setInterventi] = useState<Intervento[]>([]);
   const [filtro, setFiltro] = useState("all");
+  const [ricerca, setRicerca] = useState("");
+  const [annoCosti, setAnnoCosti] = useState(String(new Date().getFullYear()));
+  const [cittaSuggerite, setCittaSuggerite] = useState<Citta[]>([]);
+  const costiRef = useRef<HTMLElement>(null);
   const [dettaglioVeicolo, setDettaglioVeicolo] = useState<VeicoloDettaglio | null>(null);
 
   // modali
@@ -90,7 +111,21 @@ export default function StoricoInterventiPage() {
     void carica();
   }, [carica]);
 
-  const filtrati = filtro === "all" ? interventi : interventi.filter((i) => i.categoria === filtro);
+  // la card "Costi di gestione" della dashboard porta qui con #costi
+  useEffect(() => {
+    if (interventi.length && window.location.hash === "#costi") {
+      costiRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [interventi.length]);
+
+  const q = ricerca.trim().toLowerCase();
+  const filtrati = interventi
+    .filter((i) => filtro === "all" || i.categoria === filtro)
+    .filter(
+      (i) =>
+        !q ||
+        [i.tipo, i.descrizione, i.mediante, i.citta?.nome].some((t) => t?.toLowerCase().includes(q)),
+    );
 
   /* ---------- riepilogo spese ---------- */
   const oggi = new Date();
@@ -122,6 +157,7 @@ export default function StoricoInterventiPage() {
       descrizione: item.descrizione ?? "",
       mediante: item.mediante ?? "",
       costo: item.costo ? String(item.costo) : "",
+      citta: item.citta?.nome ?? "",
     });
     setModalNuovo(true);
   };
@@ -135,6 +171,24 @@ export default function StoricoInterventiPage() {
       alert("Nessun veicolo attivo selezionato.");
       return;
     }
+    // la città è facoltativa, ma se scritta deve essere una di quelle in anagrafica
+    let siglaCitta: string | null = null;
+    const nomeCitta = form.citta.trim().toLowerCase();
+    if (nomeCitta) {
+      let trovata = cittaSuggerite.find((c) => c.nome.toLowerCase() === nomeCitta);
+      if (!trovata && nomeCitta.length >= 2) {
+        try {
+          trovata = (await cercaCitta(nomeCitta)).find((c) => c.nome.toLowerCase() === nomeCitta);
+        } catch {
+          /* gestito sotto come città non valida */
+        }
+      }
+      if (!trovata) {
+        alert("Città non riconosciuta: sceglila dall'elenco dei suggerimenti.");
+        return;
+      }
+      siglaCitta = trovata.sigla;
+    }
     const payload = {
       data: form.data,
       categoria: form.categoria,
@@ -142,7 +196,7 @@ export default function StoricoInterventiPage() {
       descrizione: form.descrizione || null,
       mediante: form.mediante || null,
       costo: Number.parseFloat(form.costo) || null,
-      sigla_citta: null,
+      sigla_citta: siglaCitta,
     };
     try {
       if (idInModifica === null) {
@@ -203,125 +257,269 @@ export default function StoricoInterventiPage() {
 
   const nomiForm = form.categoria ? TIPI_INTERVENTO[form.categoria] : [];
 
+  /* ---------- KPI e costi di gestione ---------- */
+  const annoCorrente = oggi.getFullYear();
+  const interventiAnno = interventi.filter((i) => i.data.startsWith(String(annoCorrente))).length;
+  const totAnnoPrec = interventi
+    .filter((i) => i.data.startsWith(String(annoCorrente - 1)))
+    .reduce((somma, i) => somma + (Number(i.costo) || 0), 0);
+  const variazione = totAnnoPrec > 0 ? Math.round(((totAnno - totAnnoPrec) / totAnnoPrec) * 100) : null;
+  const mediaMese = totAnno / (oggi.getMonth() + 1);
+
+  const costiAnno = interventi.filter((i) => i.data.startsWith(annoCosti) && Number(i.costo) > 0);
+  const perMese = Array.from({ length: 12 }, (_, m) =>
+    costiAnno
+      .filter((i) => Number(i.data.split("-")[1]) - 1 === m)
+      .reduce((somma, i) => somma + Number(i.costo), 0),
+  );
+  const massimoMese = Math.max(...perMese, 1);
+  const totaleCosti = perMese.reduce((a, b) => a + b, 0);
+  const perCategoria = (Object.keys(COLORE_CATEGORIA) as CategoriaIntervento[])
+    .map((c) => ({
+      categoria: c,
+      totale: costiAnno.filter((i) => i.categoria === c).reduce((somma, i) => somma + Number(i.costo), 0),
+    }))
+    .filter((c) => c.totale > 0);
+
+  // gruppi per mese (lista già ordinata per data decrescente dal backend)
+  const gruppi: { chiave: string; etichetta: string; voci: Intervento[] }[] = [];
+  for (const item of filtrati) {
+    const [a, m] = item.data.split("-");
+    const chiave = `${a}-${m}`;
+    let gruppo = gruppi.find((g) => g.chiave === chiave);
+    if (!gruppo) {
+      gruppo = { chiave, etichetta: `${NOMI_MESI[Number(m) - 1]} ${a}`, voci: [] };
+      gruppi.push(gruppo);
+    }
+    gruppo.voci.push(item);
+  }
+
+  const onCittaInput = async (valore: string) => {
+    setForm((f) => ({ ...f, citta: valore }));
+    if (valore.trim().length < 2) {
+      setCittaSuggerite([]);
+      return;
+    }
+    try {
+      setCittaSuggerite(await cercaCitta(valore.trim()));
+    } catch {
+      setCittaSuggerite([]);
+    }
+  };
+
   return (
     <Layout breadcrumb="Storico Interventi">
-      <section className="iv-dashboard">
-        {/* Card: barra + filtri + tabella */}
-        <div className="iv-section-card" style={{ animationDelay: "0.05s" }}>
-          <div className="iv-section-bar2">
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span className="section-title">Storico Interventi</span>
-              <span className="count-badge">{filtrati.length} interventi</span>
-            </div>
-            <button type="button" className="aggiungi-btn" onClick={apriNuovo}>
-              <i className="fa-solid fa-plus" />
+      <main className="pg">
+        <section className="pg-hero">
+          <div className="pg-hero-ttl">
+            <h1>
+              <i className="ti ti-history" />
+              Storico interventi
+            </h1>
+            <p>Manutenzioni, riparazioni e spese del veicolo selezionato.</p>
+          </div>
+          <VeicoloPicker />
+          <div className="pg-hero-cta">
+            <button type="button" className="btn-dash btn-dash-glass" onClick={() => setModalPdf(true)}>
+              <i className="ti ti-file-type-pdf" />
+              Genera PDF
+            </button>
+            <button type="button" className="btn-dash btn-dash-primary" onClick={apriNuovo}>
+              <i className="ti ti-plus" />
               Aggiungi intervento
             </button>
           </div>
+        </section>
 
-          <div className="filters">
-            <span className="filter-label">
-              <b>Filtra:</b>
-            </span>
-            {FILTRI.map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                className={`filter-btn${filtro === f.id ? ` ${f.classe}` : ""}`}
-                onClick={() => setFiltro(f.id)}
-              >
-                {f.dot && <span className="dot" style={{ background: f.dot }} />} {f.label}
-              </button>
-            ))}
+        <div className="pg-kpis">
+          <div className="pg-kpi">
+            <span className="pg-kpi-ic"><i className="ti ti-calendar" /></span>
+            <span className="pg-kpi-txt"><small>Spese questo mese</small><b>{euro(totMese)}</b></span>
           </div>
+          <div className="pg-kpi">
+            <span className="pg-kpi-ic"><i className="ti ti-currency-euro" /></span>
+            <span className="pg-kpi-txt">
+              <small>Spese {annoCorrente}</small>
+              <b>{euro(totAnno)}</b>
+              {variazione !== null && (
+                <em className={`st-var ${variazione > 0 ? "su" : "giu"}`}>
+                  {variazione > 0 ? "+" : ""}
+                  {variazione}% vs {annoCorrente - 1}
+                </em>
+              )}
+            </span>
+          </div>
+          <div className="pg-kpi" style={{ ["--c" as string]: "#60b8e0" }}>
+            <span className="pg-kpi-ic"><i className="ti ti-tool" /></span>
+            <span className="pg-kpi-txt"><small>Interventi {annoCorrente}</small><b>{interventiAnno}</b></span>
+          </div>
+          <div className="pg-kpi" style={{ ["--c" as string]: "var(--iv-ok)" }}>
+            <span className="pg-kpi-ic"><i className="ti ti-gauge" /></span>
+            <span className="pg-kpi-txt"><small>Media al mese</small><b>{euro(mediaMese)}</b></span>
+          </div>
+        </div>
 
-          <div className="table-wrap">
-            <div className="table-head">
-              <div>Data</div>
-              <div>Categoria</div>
-              <div>Descrizione</div>
-              <div>Fornitore/Mediante</div>
-              <div>Costo</div>
-              <div />
+        <div className="st-grid">
+          <section className="pg-card">
+            <div className="pg-card-h">
+              <h2 className="dash-title">
+                <i className="ti ti-list-details" />
+                Interventi
+              </h2>
+              <span className="dash-count">{filtrati.length}</span>
             </div>
-            <div className="table-body">
-              {filtrati.map((item, idx) => (
-                <div key={item.id} className="table-row" style={{ animationDelay: `${idx * 0.05}s` }}>
-                  <div className="date-cell">
-                    <span className={`cat-dot ${item.categoria}`} />
-                    {item.data.split("-").reverse().join("/")}
-                  </div>
-                  <div>
-                    <span className={`cat-badge ${item.categoria}`}>{catLabel(item.categoria)}</span>
-                  </div>
-                  <div className="desc-cell">
-                    <div>{item.tipo}</div>
-                    {item.descrizione && <div className="desc-sub">{item.descrizione}</div>}
-                  </div>
-                  <div className="mediante-cell">{item.mediante ?? "—"}</div>
-                  <div className={`costo-cell${item.costo ? "" : " vuoto"}`}>
-                    {item.costo ? `${Number(item.costo).toFixed(2)} €` : "—"}
-                  </div>
-                  <div className="actions">
-                    <button
-                      type="button"
-                      className="action-btn edit-btn"
-                      title="Modifica"
-                      onClick={() => apriModifica(item)}
-                    >
-                      <i className="fa-solid fa-pen" />
-                    </button>
-                    <button
-                      type="button"
-                      className="action-btn del-btn"
-                      title="Elimina"
-                      onClick={() => void elimina(item.id)}
-                    >
-                      <i className="fa-solid fa-trash" />
-                    </button>
-                  </div>
-                </div>
+            <div className="st-tools">
+              <div className="pg-search">
+                <i className="ti ti-search" />
+                <input
+                  value={ricerca}
+                  onChange={(e) => setRicerca(e.target.value)}
+                  placeholder="Cerca per tipo, descrizione, fornitore o città…"
+                />
+              </div>
+            </div>
+            <div className="st-chips">
+              {FILTRI.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  className={`pg-chip${filtro === f.id ? " on" : ""}`}
+                  style={f.dot ? { ["--c" as string]: f.dot } : undefined}
+                  onClick={() => setFiltro(f.id)}
+                >
+                  {f.dot ? <span className="pg-dot" /> : <i className="ti ti-filter" />}
+                  {f.label}
+                  <small>
+                    {f.id === "all" ? interventi.length : interventi.filter((i) => i.categoria === f.id).length}
+                  </small>
+                </button>
               ))}
             </div>
-            <div className={`empty-state${filtrati.length === 0 ? " visible" : ""}`}>
-              Nessun intervento trovato per questa categoria.
-            </div>
-          </div>
-        </div>
 
-        {/* Card: riepilogo spese + PDF */}
-        <div className="iv-section-card" style={{ animationDelay: "0.1s" }}>
-          <div className="iv-section-bar2">
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span className="section-title">Riepilogo Spese</span>
+            <div className="st-lista">
+              {gruppi.map((g) => {
+                const totGruppo = g.voci.reduce((somma, i) => somma + (Number(i.costo) || 0), 0);
+                return (
+                  <div key={g.chiave}>
+                    <div className="st-mese">
+                      <span>{g.etichetta}</span>
+                      {totGruppo > 0 && <b>{euro(totGruppo)}</b>}
+                    </div>
+                    {g.voci.map((item) => {
+                      const [, mese, giorno] = item.data.split("-");
+                      return (
+                        <article
+                          key={item.id}
+                          className="st-row"
+                          style={{ ["--c" as string]: COLORE_CATEGORIA[item.categoria] }}
+                        >
+                          <div className="st-data">
+                            <b>{giorno}</b>
+                            <span>{NOMI_MESI[Number(mese) - 1].slice(0, 3).toUpperCase()}</span>
+                          </div>
+                          <div className="st-main">
+                            <div className="st-tipo">
+                              {item.tipo}
+                              <span className="st-cat">{catLabel(item.categoria)}</span>
+                            </div>
+                            <div className="st-meta">
+                              {item.descrizione && <span>{item.descrizione}</span>}
+                              {item.mediante && (
+                                <span><i className="ti ti-tool" />{item.mediante}</span>
+                              )}
+                              {item.citta?.nome && (
+                                <span><i className="ti ti-map-pin" />{item.citta.nome}</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="st-costo">{item.costo ? euro(Number(item.costo)) : "—"}</div>
+                          <div className="st-azioni">
+                            <button type="button" className="pg-row-btn" title="Modifica" onClick={() => apriModifica(item)}>
+                              <i className="ti ti-pencil" />
+                            </button>
+                            <button
+                              type="button"
+                              className="pg-row-btn del"
+                              title="Elimina"
+                              onClick={() => void elimina(item.id)}
+                            >
+                              <i className="ti ti-trash" />
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+              {filtrati.length === 0 && (
+                <div className="st-vuoto">
+                  <i className="ti ti-clipboard-list" />
+                  {interventi.length === 0
+                    ? "Nessun intervento registrato per questo veicolo."
+                    : "Nessun intervento corrisponde ai filtri."}
+                </div>
+              )}
             </div>
-          </div>
-          <div className="spese-dashboard">
-            <div className="spesa-box">
-              <div className="spesa-icon">
-                <i className="fa-solid fa-calendar-day" />
+          </section>
+
+          <aside className="st-side">
+            <section id="costi" ref={costiRef} className="pg-card st-costi">
+              <div className="pg-card-h">
+                <h2 className="dash-title">
+                  <i className="ti ti-currency-euro" />
+                  Costi di gestione
+                </h2>
+                <select className="st-anno" value={annoCosti} onChange={(e) => setAnnoCosti(e.target.value)}>
+                  {anniDisponibili.map((a) => (
+                    <option key={a} value={a}>
+                      {a}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="spesa-info">
-                <span className="spesa-label">Spese questo mese</span>
-                <span className="spesa-value">{totMese.toFixed(2)} €</span>
+              <div className="st-costi-tot">
+                <b>{euro(totaleCosti)}</b>
+                <span>nel {annoCosti}{veicoloAttivo ? ` · ${veicoloAttivo.nome}` : ""}</span>
               </div>
-            </div>
-            <div className="spesa-box">
-              <div className="spesa-icon">
-                <i className="fa-solid fa-calendar" />
+              <div className="st-chart" role="img" aria-label={`Spese mensili ${annoCosti}`}>
+                {perMese.map((v, m) => (
+                  <div key={m} title={`${NOMI_MESI[m]}: ${euro(v)}`}>
+                    <i className={v ? "" : "zero"} style={{ height: v ? `${(v / massimoMese) * 100}%` : undefined }} />
+                    <span>{MESI_BREVI[m]}</span>
+                  </div>
+                ))}
               </div>
-              <div className="spesa-info">
-                <span className="spesa-label">Spese quest&apos;anno</span>
-                <span className="spesa-value">{totAnno.toFixed(2)} €</span>
-              </div>
-            </div>
-            <button type="button" className="pdf-btn" onClick={() => setModalPdf(true)}>
-              <i className="fa-solid fa-file-pdf" />
-              Genera PDF
+              {perCategoria.length > 0 && (
+                <div className="st-split">
+                  <div className="st-split-bar">
+                    {perCategoria.map((c) => (
+                      <i key={c.categoria} style={{ flex: c.totale, background: COLORE_CATEGORIA[c.categoria] }} />
+                    ))}
+                  </div>
+                  <div className="st-legenda">
+                    {perCategoria.map((c) => (
+                      <div key={c.categoria}>
+                        <span style={{ ["--c" as string]: COLORE_CATEGORIA[c.categoria] }}>{catLabel(c.categoria)}</span>
+                        <b>{euro(c.totale)}</b>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+
+            <button type="button" className="pg-card st-pdf" onClick={() => setModalPdf(true)}>
+              <span className="pg-kpi-ic"><i className="ti ti-file-type-pdf" /></span>
+              <span className="st-pdf-txt">
+                <b>Report PDF del veicolo</b>
+                <span>Dati tecnici, cronologia e riepilogo costi, per mese o anno.</span>
+              </span>
+              <i className="ti ti-arrow-right" />
             </button>
-          </div>
+          </aside>
         </div>
-      </section>
+      </main>
 
       {/* Modal nuovo/modifica intervento */}
       {modalNuovo && (
@@ -411,6 +609,22 @@ export default function StoricoInterventiPage() {
                   onChange={(e) => setForm((f) => ({ ...f, costo: e.target.value }))}
                 />
               </div>
+            </div>
+            <div className="form-row">
+              <label>Città (opzionale)</label>
+              <input
+                type="text"
+                list="storico-citta"
+                placeholder="es. Trapani"
+                autoComplete="off"
+                value={form.citta}
+                onChange={(e) => void onCittaInput(e.target.value)}
+              />
+              <datalist id="storico-citta">
+                {cittaSuggerite.map((c) => (
+                  <option key={c.sigla} value={c.nome} />
+                ))}
+              </datalist>
             </div>
             <div className="modal-actions">
               <button type="button" className="btn-cancel" onClick={() => setModalNuovo(false)}>

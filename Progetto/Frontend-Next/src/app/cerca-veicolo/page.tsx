@@ -10,7 +10,6 @@ import {
   getStoricoTarghe,
   rimuoviStoricoTarga,
   salvaStoricoTarga,
-  setGarageAnimation,
   setGarageLimiteRaggiunto,
 } from "@/lib/storage";
 import type { RisultatoRicercaVeicolo } from "@/lib/types";
@@ -72,7 +71,6 @@ export default function CercaVeicoloPage() {
     if (!risultato || !utente) return;
     try {
       await aggiungiVeicolo(risultato.targa, utente.id);
-      setGarageAnimation();
       router.push("/homepage");
     } catch (err) {
       if (gestisci401(err)) return;

@@ -385,7 +385,7 @@ export default function PrenotazioniPage() {
   };
 
   return (
-    <Layout breadcrumb="Cerca Officine" mostraSwitcher={false}>
+    <Layout breadcrumb="Cerca Officine">
       <main className="section section-no-top">
         <div className="page-hero">
           <h1 className="section-title-page">

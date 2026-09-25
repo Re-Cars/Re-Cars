@@ -13,7 +13,6 @@ export const STORAGE_KEYS = {
   veicoloAttivoId: "veicoloAttivoId",
   theme: "theme",
   storicoTarghe: "storico_targhe",
-  garageAnimation: "garage_animation",
   garageLimiteRaggiunto: "garage_limite_raggiunto",
 } as const;
 
@@ -125,17 +124,7 @@ export function rimuoviStoricoTarga(targa: string): string[] {
   return storico;
 }
 
-/* ---------- flag one-shot (animazione garage / limite piano) ---------- */
-
-export function setGarageAnimation(): void {
-  setRaw(STORAGE_KEYS.garageAnimation, "true");
-}
-
-export function consumaGarageAnimation(): boolean {
-  const attivo = getRaw(STORAGE_KEYS.garageAnimation) === "true";
-  if (attivo) removeItem(STORAGE_KEYS.garageAnimation);
-  return attivo;
-}
+/* ---------- flag one-shot (limite piano) ---------- */
 
 export function setGarageLimiteRaggiunto(): void {
   setRaw(STORAGE_KEYS.garageLimiteRaggiunto, "true");

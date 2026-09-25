@@ -825,3 +825,341 @@
         justify-content: center;
     }
 }
+/* ====================================================
+   Storico interventi — layout del nuovo stile (pg-*):
+   lista a sinistra, costi di gestione e PDF a destra.
+-----------------------------------------------------*/
+.st-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 390px;
+  gap: 18px;
+  align-items: start;
+}
+
+.st-tools {
+  display: flex;
+  gap: 10px;
+  padding: 0 18px 12px;
+}
+
+.st-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 0 18px 14px;
+}
+
+.st-lista { padding-bottom: 10px; }
+
+.st-mese {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 18px 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.st-mese::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+  order: 1;
+}
+
+.st-mese b {
+  order: 2;
+  color: var(--text);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 12.5px;
+}
+
+.st-row {
+  --c: var(--accent);
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto auto;
+  gap: 14px;
+  align-items: center;
+  margin: 0 12px 8px;
+  padding: 12px 12px 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: color-mix(in srgb, var(--text) 2.5%, transparent);
+  transition: border-color 0.2s ease;
+}
+
+.st-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--c);
+}
+
+.st-row:hover { border-color: color-mix(in srgb, var(--c) 45%, transparent); }
+
+.st-data { text-align: center; }
+
+.st-data b {
+  display: block;
+  font-size: 20px;
+  line-height: 1.05;
+  color: var(--text);
+}
+
+.st-data span {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.st-main { min-width: 0; }
+
+.st-tipo {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.st-cat {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+}
+
+.st-meta {
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--muted);
+  display: flex;
+  gap: 4px 12px;
+  flex-wrap: wrap;
+}
+
+.st-meta span {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  min-width: 0;
+}
+
+.st-costo {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.st-azioni {
+  display: flex;
+  gap: 6px;
+}
+
+.st-vuoto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 16px 26px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.st-vuoto i {
+  font-size: 34px;
+  color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.st-var {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+/* più spesa = rosso, meno spesa = verde */
+.st-var.su { color: var(--iv-bad); }
+.st-var.giu { color: var(--iv-ok); }
+
+.st-side {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: sticky;
+  top: calc(var(--header-h) + 16px);
+  scroll-margin-top: calc(var(--header-h) + 16px);
+}
+
+.st-costi { scroll-margin-top: calc(var(--header-h) + 16px); }
+
+.st-anno {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 99px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--text);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.st-costi-tot {
+  padding: 0 18px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.st-costi-tot b {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.st-costi-tot span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.st-chart {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 6px;
+  align-items: end;
+  height: 150px;
+  padding: 16px 18px 6px;
+}
+
+.st-chart div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  height: 100%;
+}
+
+.st-chart i {
+  width: 100%;
+  min-height: 3px;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 30%, transparent));
+}
+
+.st-chart i.zero {
+  height: 3px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.st-chart span {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.st-split { padding: 12px 18px 18px; }
+
+.st-split-bar {
+  display: flex;
+  height: 12px;
+  border-radius: 99px;
+  overflow: hidden;
+  gap: 3px;
+  margin-bottom: 12px;
+}
+
+.st-legenda {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.st-legenda div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.st-legenda span {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+}
+
+.st-legenda span::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--c);
+}
+
+.st-legenda b { color: var(--text); }
+
+.st-pdf {
+  width: 100%;
+  padding: 16px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: var(--text);
+}
+
+.st-pdf:hover { border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+
+.st-pdf-txt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.st-pdf-txt b { font-size: 14.5px; }
+
+.st-pdf-txt span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.st-pdf > i {
+  color: var(--accent);
+  font-size: 18px;
+}
+
+@media (max-width: 1080px) {
+  .st-grid { grid-template-columns: minmax(0, 1fr); }
+  .st-side { position: static; }
+}
+
+@media (max-width: 640px) {
+  .st-row { grid-template-columns: 44px minmax(0, 1fr); }
+  .st-costo, .st-azioni { grid-column: 2; }
+}
