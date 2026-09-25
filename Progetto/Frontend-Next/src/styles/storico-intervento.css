@@ -988,12 +988,15 @@
   color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
+/* su una riga sua: accanto all'importo non ci sta a 1280px */
 .st-var {
+  display: block;
   font-style: normal;
   font-size: 12px;
   font-weight: 700;
-  margin-left: 6px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* più spesa = rosso, meno spesa = verde */
