@@ -15,6 +15,7 @@ import { StripeModule } from './stripe/stripe.module';
 import { PrenotazioneModule } from './prenotazione/prenotazione.module';
 import { AppMailerModule } from './mailer.module';
 import { StoricoModule } from './storico_interventi/storico.module';
+import { AssistenteModule } from './assistente/assistente.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { StoricoModule } from './storico_interventi/storico.module';
     OfficinaModule,
     StripeModule,
     PrenotazioneModule,
+    AssistenteModule,
   ],
   controllers: [AppController, UtenteController, VeicoloController],
   providers: [AppService, UtenteService, VeicoloService, JwtStrategy],

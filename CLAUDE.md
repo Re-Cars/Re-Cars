@@ -74,6 +74,9 @@ Frontend and mobile have no `.env` files — their API base URL is a hardcoded c
 | `STRIPE_PRICE_BUSINESS` | Stripe Price ID for the officina "business" plan |
 | `STRIPE_PRICE_BUSINESS_PRO` | Stripe Price ID for the officina "business pro" plan |
 | `STRIPE_WEBHOOK_SECRET` | Secret used to verify Stripe webhook signatures |
+| `GEMINI_API_KEY` | Google Gemini API key (free tier) for the in-app assistant — backend only, never in the frontend or the repo |
+| `GEMINI_MODEL` | Optional Gemini model (default `gemini-flash-lite-latest`) |
+| `ASSISTENTE_LIMITE_MINUTO` / `ASSISTENTE_LIMITE_GIORNO` | Optional per-user assistant limits (default 6/min, 50/day) |
 
 ## 4. Architecture notes
 

@@ -31,6 +31,7 @@ Bootstrap details (`src/main.ts`): `NestFactory.create(AppModule, { rawBody: tru
 | `prenotazione` | yes | Depends on `AppMailerModule` for confirmation emails |
 | `storico_interventi` (`StoricoModule`) | yes | |
 | `stripe` (`StripeModule`) | yes | |
+| `assistente` (`AssistenteModule`) | yes | Gemini chat assistant (`GeminiClient`, REST + SSE, reads `GEMINI_API_KEY`/`GEMINI_MODEL`); per-user in-memory rate limit |
 | `PrismaModule` / `PrismaService` | yes | Wraps `@prisma/adapter-pg`, reads `DATABASE_URL` |
 | `AppMailerModule` (`mailer.module.ts`) | yes | Wraps `@nestjs-modules/mailer` + Nodemailer, reads `MAIL_USER`/`MAIL_PASS` |
 
@@ -103,6 +104,9 @@ No global prefix. `AppController` has no `@Controller()` path argument (root).
 - `POST /abbonamento/webhook` — public, verified via Stripe signature (`STRIPE_WEBHOOK_SECRET` + `rawBody`)
 - `POST /abbonamento/disdici` — `JwtAuthGuard` — cancels active subscription **locally only**, does not call Stripe's API to actually cancel it
 
+### `AssistenteController` (`@Controller('assistente')`)
+- `POST /assistente/chat` — `JwtAuthGuard`, users only (`tipo === 'officina'` → 403) — body `{ messaggio, storico?, pagina? }`, answers as Server-Sent Events: `{type:'delta', text}` chunks, then `{type:'done', answer, actions, used_llm}`. Actions are validated against a page whitelist (`assistente.prompt.ts`); the model can only propose, never modify data. 429 + `Retry-After` over `ASSISTENTE_LIMITE_MINUTO`/`ASSISTENTE_LIMITE_GIORNO`. Without `GEMINI_API_KEY`, or on Gemini quota errors, it still answers `done` with a fallback message.
+
 ## Stripe webhooks
 
 `StripeService.costruisciEvento(rawBody, signature)` → `stripe.webhooks.constructEvent(...)`. Returns 400 on signature failure. Handled event types:
@@ -119,6 +123,7 @@ Models: `utente`, `officina`, `citta`, `veicolo`, `dati_generici`, `dati_specifi
 
 ## Testing
 
-- Unit specs exist only for `app`, `officina`, `prenotazione` — and are smoke tests (`should be defined`) except `AppController`'s "Hello World!" check. `utente`, `veicolo`, `stripe`, `storico_interventi` have no specs.
+- Unit specs for `app`, `officina`, `prenotazione` are smoke tests (`should be defined`) except `AppController`'s "Hello World!" check. `utente`, `veicolo`, `stripe`, `storico_interventi` have no specs.
+- `assistente` has real coverage: partial-JSON streaming, action whitelist, rate limit, fallback messages, and an integration spec of `POST /assistente/chat` with a mocked `fetch` (Gemini SSE).
 - One e2e spec (`test/app.e2e-spec.ts`) checks `GET /` only.
 - When touching business logic (plan limits, ownership checks, webhook handling), add real assertions — do not assume existing tests cover regressions.
