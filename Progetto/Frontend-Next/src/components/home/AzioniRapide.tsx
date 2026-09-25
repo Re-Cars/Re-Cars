@@ -47,11 +47,11 @@ export default function AzioniRapide({ speseAnno }: AzioniRapideProps) {
             Costi di gestione
             {speseAnno !== null && (
               <span className="dash-az-kpi">
-                € {speseAnno.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} nel {anno}
+                € {speseAnno.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             )}
           </span>
-          <span className="dash-az-d">Spese per veicolo e per mese, dallo storico</span>
+          <span className="dash-az-d">Spese {anno} per veicolo e per mese</span>
         </span>
         <i className="ti ti-chevron-right dash-az-go" />
       </Link>

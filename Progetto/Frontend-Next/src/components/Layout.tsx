@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 
+import Assistente from "./assistente/Assistente";
 import BreadCrumb from "./BreadCrumb";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
@@ -16,7 +17,8 @@ interface LayoutProps {
 
 /**
  * Layout comune delle pagine autenticate: Sidebar + Header + Breadcrumb,
- * più il banner "limite veicoli del piano raggiunto". Il veicolo attivo non
+ * più il banner "limite veicoli del piano raggiunto" e l'assistente AI
+ * (bottone flottante in basso a destra). Il veicolo attivo non
  * ha più uno switcher globale: le pagine che ne usano uno mostrano
  * VeicoloPicker nel proprio hero.
  */
@@ -62,6 +64,8 @@ export default function Layout({
       )}
 
       {children}
+
+      <Assistente />
     </>
   );
 }

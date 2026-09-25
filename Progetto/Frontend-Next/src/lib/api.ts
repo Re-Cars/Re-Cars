@@ -357,3 +357,67 @@ export function aggiornaIntervento(
 export function eliminaIntervento(id: number): Promise<unknown> {
   return fetchApi(`/interventi/${id}`, { method: "DELETE" });
 }
+
+/* ====================== ASSISTENTE ====================== */
+
+export type AzioneAssistente =
+  | { tipo: "apri_pagina"; etichetta: string; href: string }
+  | { tipo: "chiedi"; etichetta: string; domanda: string };
+
+export type EventoAssistente =
+  | { type: "delta"; text: string }
+  | { type: "done"; answer: string; actions: AzioneAssistente[]; used_llm: boolean };
+
+export interface RichiestaAssistente {
+  messaggio: string;
+  storico: { ruolo: "utente" | "assistente"; testo: string }[];
+  pagina?: string;
+}
+
+/**
+ * POST /assistente/chat: risposta in Server-Sent Events, letta un evento
+ * alla volta. La chiave Gemini sta solo nel backend. Lancia ApiError sui
+ * non-2xx (429 = troppe domande, col messaggio del backend).
+ */
+export async function* chatAssistente(
+  body: RichiestaAssistente,
+  signal?: AbortSignal,
+): AsyncGenerator<EventoAssistente> {
+  const response = await fetch(`${API_BASE_URL}/assistente/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(body),
+    signal,
+  });
+  if (!response.ok || !response.body) {
+    let messaggio: string | null = null;
+    try {
+      messaggio = estraiMessaggio(await response.json());
+    } catch {
+      /* corpo non JSON */
+    }
+    throw new ApiError(response.status, messaggio ?? `Errore ${response.status}`);
+  }
+
+  const lettore = response.body.pipeThrough(new TextDecoderStream()).getReader();
+  let buffer = "";
+  for (;;) {
+    const { value, done } = await lettore.read();
+    if (done) break;
+    buffer += value;
+    let fine: number;
+    while ((fine = buffer.indexOf("\n\n")) >= 0) {
+      const blocco = buffer.slice(0, fine);
+      buffer = buffer.slice(fine + 2);
+      for (const riga of blocco.split("\n")) {
+        if (!riga.startsWith("data:")) continue;
+        try {
+          yield JSON.parse(riga.slice(5).trim()) as EventoAssistente;
+        } catch {
+          /* evento malformato: si ignora */
+        }
+      }
+    }
+  }
+}
