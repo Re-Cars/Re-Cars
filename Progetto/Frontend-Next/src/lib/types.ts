@@ -152,7 +152,8 @@ export interface OfficinaCatalogo {
      calcolata lato client da lat/lng (src/lib/geo.ts) */
   aperta?: boolean;
   orario?: string;
-  disponibilita?: string;
+  /** GET /officina/all oggi manda un booleano (true = disponibile subito). */
+  disponibilita?: string | boolean;
   indirizzo?: string;
   telefono?: string;
   latitude?: number | string;

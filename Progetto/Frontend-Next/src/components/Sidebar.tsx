@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 
+import BrandTitle from "@/components/BrandTitle";
 import { useAuth } from "@/context/AuthContext";
 
 interface SidebarProps {
@@ -57,9 +58,7 @@ export default function Sidebar({ aperta, onToggle, onClose }: SidebarProps) {
             height={40}
             className="sidebar-logo-img"
           />
-          <span className="sidebar-brand">
-            RE<span>|</span>CARS
-          </span>
+          <BrandTitle className="sidebar-brand" />
           <div className={`hamburger9${aperta ? " open" : ""}`} onClick={onToggle}>
             <span className="line line1" />
             <span className="line line2" />

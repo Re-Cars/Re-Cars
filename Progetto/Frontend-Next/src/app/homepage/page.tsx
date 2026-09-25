@@ -42,7 +42,7 @@ export default function HomePage() {
     void caricaDettagli();
   }, [caricaDettagli]);
 
-  // totale speso nell'anno su tutto il garage, per la card "Costi di gestione":
+  // totale speso nell'anno su tutto il garage, per la card "Storico interventi":
   // se una chiamata fallisce la card resta senza cifra, senza bloccare la pagina
   useEffect(() => {
     if (veicoli.length === 0) {
@@ -96,7 +96,7 @@ export default function HomePage() {
           onElimina={onElimina}
         />
         <InfoVeicoloPanel veicolo={selezionato} />
-        <AzioniRapide speseAnno={speseAnno} />
+        <AzioniRapide speseAnno={speseAnno} veicoli={veicoli} onSeleziona={selezionaVeicolo} />
       </main>
     </Layout>
   );

@@ -13,6 +13,24 @@
                     TOKENS — LIGHT
 -----------------------------------------------------*/
 :root {
+  /* profondità: ombre stratificate (niente aloni colorati, che su fondo
+     scuro facevano banding) + filo di luce sul bordo superiore */
+  --elev-1: 0 1px 2px rgba(16, 16, 48, 0.06), 0 4px 10px -2px rgba(16, 16, 48, 0.08), 0 16px 32px -12px rgba(16, 16, 48, 0.16);
+  --elev-2: 0 1px 2px rgba(16, 16, 48, 0.08), 0 8px 18px -6px rgba(16, 16, 48, 0.18), 0 28px 52px -20px rgba(16, 16, 48, 0.32);
+  --edge-hl: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --surface-lit: var(--surface);
+  /* hero scuri (dashboard, pagine, account): luce dall'alto su blu notte */
+  --hero-luce: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0) 45%);
+  --hero-edge: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+
+  /* bottoni tattili: faccia illuminata, spigolo inferiore, ombra corta;
+     premuti scendono di 1px e l'ombra diventa interna */
+  --tt-hl: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  --tt-edge: inset 0 -1.5px 0 rgba(16, 16, 48, 0.1);
+  --tt-drop: 0 1px 1px rgba(16, 16, 48, 0.1), 0 2px 5px -1px rgba(16, 16, 48, 0.16);
+  --tt-drop-hover: 0 2px 2px rgba(16, 16, 48, 0.1), 0 7px 14px -5px rgba(16, 16, 48, 0.28);
+  --tt-press: inset 0 2px 4px rgba(16, 16, 48, 0.2);
+
   --bg: #f8f8fc;
   --text: #1a1a2e;
   --surface: #ffffff;
@@ -68,6 +86,16 @@
                     TOKENS — DARK
 -----------------------------------------------------*/
 .dark {
+  --elev-1: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 14px -4px rgba(0, 0, 0, 0.38), 0 20px 38px -14px rgba(0, 0, 0, 0.55);
+  --elev-2: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 22px -8px rgba(0, 0, 0, 0.5), 0 34px 64px -22px rgba(0, 0, 0, 0.7);
+  --edge-hl: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --surface-lit: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 55%), var(--surface);
+  --tt-hl: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --tt-edge: inset 0 -1.5px 0 rgba(0, 0, 0, 0.35);
+  --tt-drop: 0 1px 1px rgba(0, 0, 0, 0.4), 0 3px 6px -1px rgba(0, 0, 0, 0.45);
+  --tt-drop-hover: 0 2px 2px rgba(0, 0, 0, 0.4), 0 9px 16px -5px rgba(0, 0, 0, 0.6);
+  --tt-press: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+
   --bg: #08082a;
   --text: #e8e8ff;
   --surface: #141445;
@@ -175,14 +203,7 @@ body {
 }
 
 .header-brand {
-  font-weight: 800;
   font-size: clamp(1.5rem, 4.2dvh, 2.2rem);
-  letter-spacing: 1px;
-  background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);
-  background-size: 400%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: anim-colore 8s linear infinite;
 }
 
 .header-center {
@@ -364,16 +385,12 @@ body {
   color: #eb2020 !important;
 }
 
+/* la sidebar è chiara nel tema chiaro: il titolo segue il colore del testo */
 .sidebar-brand {
-  font-weight: 800;
   font-size: 1.8rem;
   flex: 1;
   margin-left: 8px;
-  background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);
-  background-size: 300%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: anim-colore 8s linear infinite;
+  color: var(--text);
 }
 
 .hamburger-overlay {
@@ -3375,45 +3392,81 @@ input:-webkit-autofill:active {
   to { stroke-dashoffset: 0; }
 }
 
-.landing-title {
-  font-size: 3.5rem;
-  font-weight: 800;
+/* Titolo RE|CARS (components/BrandTitle.tsx): lettere bianche, stanghetta
+   arancione. La variante animata fa uscire RE e CARS da dietro la
+   stanghetta: prima la stanghetta, poi RE, poi CARS. */
+.brand-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2em;
   margin: 0;
-  line-height: 1.1;
-  letter-spacing: 2px;
-  background: linear-gradient(90deg, #fff, #ffffff, #fff);
-  background-size: 300%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: anim-colore 8s linear infinite;
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: #fff;
+  white-space: nowrap;
 }
 
-.landing-title.show-title { opacity: 1; transform: translateY(0); }
-
-.landing-title2 {
-  font-size: 3rem;
-  font-weight: 800;
-  margin: 0;
-  letter-spacing: 2px;
-  background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);
-  background-size: 400%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: anim-colore 8s linear infinite;
+.bt-re,
+.bt-cars {
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.08em 0;
 }
 
+/* la spaziatura dopo l'ultima lettera non allarga il lato sinistro della
+   stanghetta né sposta il titolo dal centro */
+.bt-re,
+.bt-cars { margin-right: -0.06em; }
+
+.bt-re > span,
+.bt-cars > span { display: inline-block; }
+
+.bt-bar {
+  flex: none;
+  width: 0.12em;
+  height: 0.92em;
+  border-radius: 0.06em;
+  background: linear-gradient(180deg, #fdba74, #f97316 40%, #ea580c);
+}
+
+.brand-title--anim .bt-bar {
+  transform: scaleY(0);
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.brand-title--anim .bt-re > span {
+  transform: translateX(110%);
+  transition: transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) 0.45s;
+}
+
+.brand-title--anim .bt-cars > span {
+  transform: translateX(-110%);
+  transition: transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) 1.05s;
+}
+
+.brand-title--anim.in .bt-bar,
+.brand-title--anim.in .bt-re > span,
+.brand-title--anim.in .bt-cars > span { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-title--anim .bt-bar,
+  .brand-title--anim .bt-re > span,
+  .brand-title--anim .bt-cars > span { transition: none; }
+}
+
+.landing-brand { font-size: 3.5rem; }
+
+.auth-brand { font-size: 3rem; }
+
+/* niente testo a gradiente: col corsivo il background-clip tagliava la "i" finale di "noi" */
 .landing-subtitle {
   font-size: 1.1rem;
   font-style: italic;
   margin: 0;
-  background: linear-gradient(90deg, #fff, #ffffff, #fff);
-  background-size: 300%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: anim-colore 8s linear infinite;
+  padding: 0 0.15em;
+  color: rgba(255, 255, 255, 0.86);
+  letter-spacing: 0.02em;
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.6s ease, transform 0.6s ease;
@@ -3621,17 +3674,11 @@ input:-webkit-autofill:active {
   font-size: 0.8rem;
 }
 
-.auth-logo,
-.auth-logo h1 {
+.auth-logo {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(90deg, #ffffff, #f97316, #ffffff, #f97316, #ffffff);
-  background-size: 400%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: anim-colore 8s linear infinite;
 }
 
 .auth-logo-img {
@@ -3934,7 +3981,7 @@ input:-webkit-autofill:active {
     margin-right: -16px;
   }
 
-  .landing-title {
+  .landing-brand {
     font-size: 2.2rem;
   }
 
@@ -4176,11 +4223,11 @@ input:-webkit-autofill:active {
     margin-right: -12px;
   }
 
-  .landing-title {
+  .landing-brand {
     font-size: 1.8rem;
   }
 
-  .landing-title2 {
+  .auth-brand {
     font-size: 1.6rem;
   }
 
@@ -4271,10 +4318,10 @@ input:-webkit-autofill:active {
 }
 
 .panel {
-  background: var(--surface);
+  background: var(--surface-lit);
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--edge-hl), var(--elev-1);
 }
 
 .dash-title {
@@ -4578,8 +4625,9 @@ input:-webkit-autofill:active {
   color: #fff;
   padding: clamp(14px, 2.4dvh, 26px) clamp(18px, 2vw, 30px);
   background:
-    radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--accent) 28%, transparent) 0%, transparent 45%),
+    var(--hero-luce),
     linear-gradient(115deg, color-mix(in srgb, var(--tc) 70%, #0b0b30) 0%, #16164a 52%, #0b0b30 100%);
+  box-shadow: var(--hero-edge);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: auto 1fr auto;
@@ -4740,33 +4788,57 @@ input:-webkit-autofill:active {
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
-  transition: box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  box-shadow: var(--tt-hl), var(--tt-edge), var(--tt-drop);
+  transition:
+    transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease,
+    background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .btn-dash i { font-size: 18px; }
-.btn-dash:active { transform: translateY(1px); }
 .btn-dash:disabled { opacity: 0.6; cursor: default; }
 
-.btn-dash-primary {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(249, 115, 22, 0.35);
+.btn-dash:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--tt-hl), var(--tt-edge), var(--tt-drop-hover);
 }
 
-.btn-dash-primary:hover { box-shadow: 0 8px 26px rgba(249, 115, 22, 0.5); }
+/* premuto: scende, perde l'ombra esterna e si "incava" */
+.btn-dash:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: var(--tt-press);
+  filter: brightness(0.94);
+  transition-duration: 0.04s;
+}
+
+/* bottoni pieni: la faccia ha la sua luce e il suo spigolo più scuro */
+.btn-dash-primary,
+.btn-dash-danger {
+  color: #fff;
+  --tt-hl: inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  --tt-edge: inset 0 -2px 0 rgba(0, 0, 0, 0.16);
+  --tt-press: inset 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.btn-dash-primary {
+  background: linear-gradient(180deg, #fb8b3e 0%, #f97316 48%, #ea580c 100%);
+  border-color: #dd5a0b;
+}
 
 .btn-dash-ghost {
-  background: color-mix(in srgb, var(--text) 5%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--text) 7%, transparent),
+    color-mix(in srgb, var(--text) 3%, transparent)
+  );
   color: var(--text);
-  border-color: var(--border-subtle);
+  border-color: color-mix(in srgb, var(--text) 14%, transparent);
 }
 
 .btn-dash-ghost:hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
 
 .btn-dash-danger {
-  background: #dc2626;
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.3);
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+  border-color: #b91c1c;
 }
 
 .dash-info-body {
@@ -5024,16 +5096,23 @@ input:-webkit-autofill:active {
   border-radius: 14px;
   text-decoration: none;
   color: var(--text);
-  background: var(--surface);
+  background: var(--surface-lit);
   border: 1px solid var(--border-subtle);
   border-top: 3px solid var(--accent);
   overflow: hidden;
-  transition: transform 0.25s ease, background-color 0.2s ease;
+  box-shadow: var(--edge-hl), var(--elev-1);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.2s ease;
 }
 
 .dash-az:hover {
   transform: translateY(-2px);
-  background: var(--surface-hover);
+  box-shadow: var(--edge-hl), var(--elev-2);
+}
+
+.dash-az:active {
+  transform: translateY(1px);
+  box-shadow: var(--tt-press);
+  transition-duration: 0.04s;
 }
 
 .dash-az-ic {
@@ -5089,6 +5168,32 @@ input:-webkit-autofill:active {
 .dash-az-go {
   color: var(--muted);
   font-size: 20px;
+}
+
+/* "Prossima scadenza" è un bottone (seleziona il veicolo), non un link */
+button.dash-az {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+button.dash-az:disabled {
+  cursor: default;
+  transform: none;
+  box-shadow: var(--edge-hl), var(--elev-1);
+}
+
+.dash-az.lv-rossa .dash-az-ic,
+.dash-az.lv-arancione .dash-az-ic,
+.dash-az.lv-gialla .dash-az-ic {
+  color: var(--lv);
+  background: color-mix(in srgb, var(--lv) 13%, transparent);
+}
+
+.dash-az-kpi.dash-az-kpi--lv {
+  color: var(--lv);
+  background: color-mix(in srgb, var(--lv) 14%, transparent);
 }
 
 /* ---------------- modali della dashboard (ricerca, eliminazione) ---------------- */
@@ -5308,10 +5413,10 @@ input:-webkit-autofill:active {
   padding: 20px 26px;
   color: #fff;
   background:
-    radial-gradient(90% 160% at 100% 0%, rgba(249, 115, 22, 0.33), transparent 50%),
-    linear-gradient(120deg, #1d1d5c, #141445 55%, #0b0b30);
-  border: 1px solid rgba(249, 115, 22, 0.25);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.12);
+    var(--hero-luce),
+    linear-gradient(120deg, #1f1f63, #141445 55%, #0b0b30);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: var(--hero-edge), var(--elev-2);
   display: flex;
   align-items: center;
   gap: 18px 24px;
@@ -5349,42 +5454,58 @@ input:-webkit-autofill:active {
 
 .pg-hero .btn-dash { height: 44px; border-radius: 13px; }
 
+/* sugli hero scuri: vetro con luce propria (stessi valori in light e dark) */
 .btn-dash-glass {
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.07));
   color: #fff;
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.22);
+  --tt-hl: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  --tt-edge: inset 0 -1.5px 0 rgba(0, 0, 0, 0.25);
+  --tt-drop: 0 1px 1px rgba(0, 0, 0, 0.3), 0 3px 8px -2px rgba(0, 0, 0, 0.4);
+  --tt-drop-hover: 0 2px 2px rgba(0, 0, 0, 0.3), 0 8px 16px -5px rgba(0, 0, 0, 0.5);
+  --tt-press: inset 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
-.btn-dash-glass:hover { background: rgba(255, 255, 255, 0.18); }
+.btn-dash-glass:hover { border-color: rgba(255, 255, 255, 0.35); }
 
 .btn-dash-soft {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 17%, transparent),
+    color-mix(in srgb, var(--accent) 9%, transparent)
+  );
   color: var(--accent);
-  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
-.btn-dash-soft:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+.btn-dash-soft:hover { border-color: color-mix(in srgb, var(--accent) 60%, transparent); }
 
 .btn-dash-danger-o {
-  background: transparent;
+  background: linear-gradient(180deg, rgba(248, 113, 113, 0.1), rgba(248, 113, 113, 0.03));
   color: #f87171;
   border-color: rgba(248, 113, 113, 0.45);
 }
 
-.btn-dash-danger-o:hover { background: rgba(248, 113, 113, 0.1); }
+.btn-dash-danger-o:hover { border-color: rgba(248, 113, 113, 0.75); }
 
-.btn-dash-ok {
+/* stato, non azione: niente rilievo né pressione */
+.btn-dash.btn-dash-ok,
+.btn-dash.btn-dash-ok:hover,
+.btn-dash.btn-dash-ok:active {
   background: rgba(var(--iv-ok-rgb), 0.12);
   color: var(--iv-ok);
   border-color: rgba(var(--iv-ok-rgb), 0.4);
   cursor: default;
+  box-shadow: none;
+  transform: none;
+  filter: none;
 }
 
 .pg-card {
-  background: var(--surface);
+  background: var(--surface-lit);
   border: 1px solid var(--border-subtle);
   border-radius: 18px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--edge-hl), var(--elev-1);
 }
 
 .pg-card-h {
@@ -5411,9 +5532,9 @@ input:-webkit-autofill:active {
   min-width: 0;
   padding: 16px 18px;
   border-radius: 16px;
-  background: var(--surface);
+  background: var(--surface-lit);
   border: 1px solid var(--border-subtle);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--edge-hl), var(--elev-1);
   display: flex;
   gap: 14px;
   align-items: center;
@@ -5745,9 +5866,9 @@ input:-webkit-autofill:active {
   min-width: 0;
   padding: 24px 22px 22px;
   border-radius: 22px;
-  background: var(--surface);
+  background: var(--surface-lit);
   border: 1px solid var(--border-subtle);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--edge-hl), var(--elev-1);
   display: flex;
   flex-direction: column;
   color: var(--text);
@@ -5755,12 +5876,11 @@ input:-webkit-autofill:active {
 
 .abb2-piano.attivo { border-color: color-mix(in srgb, var(--iv-ok) 55%, transparent); }
 
+/* il piano consigliato si stacca dagli altri: più in alto e più ombra */
 .abb2-piano.reco {
   border: 1.5px solid var(--accent);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 14%, transparent), 0 18px 60px rgba(0, 0, 0, 0.35);
-  background:
-    radial-gradient(120% 70% at 100% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%),
-    var(--surface);
+  box-shadow: var(--edge-hl), var(--elev-2);
+  transform: translateY(-6px);
 }
 
 .abb2-ribbon {
@@ -5772,9 +5892,9 @@ input:-webkit-autofill:active {
   letter-spacing: 0.6px;
   padding: 5px 11px;
   border-radius: 99px;
-  background: var(--accent);
+  background: linear-gradient(180deg, #fb8b3e, #ea580c);
   color: #fff;
-  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .abb2-ribbon.ok {
@@ -5895,8 +6015,9 @@ input:-webkit-autofill:active {
 .acc2-prof-top {
   height: 96px;
   background:
-    radial-gradient(90% 160% at 100% 0%, rgba(249, 115, 22, 0.45), transparent 55%),
-    linear-gradient(120deg, #1d1d5c, #141445);
+    var(--hero-luce),
+    linear-gradient(120deg, #1f1f63, #141445 60%, #0b0b30);
+  box-shadow: var(--hero-edge);
 }
 
 .acc2-prof-body {
@@ -6088,10 +6209,10 @@ input:-webkit-autofill:active {
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-  background:
-    radial-gradient(90% 160% at 100% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 60%),
-    color-mix(in srgb, var(--text) 3%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--accent);
+  box-shadow: var(--edge-hl), var(--elev-1);
 }
 
 .acc2-piano-txt {
@@ -6365,14 +6486,24 @@ body:has(.ai-fab) .dash-azioni { --fab-spazio: 76px; }
   cursor: pointer;
   color: #fff;
   font-size: 26px;
-  background: linear-gradient(135deg, #f97316, #c2410c);
-  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.45);
+  background: linear-gradient(180deg, #fb8b3e 0%, #f97316 45%, #ea580c 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.18),
+    0 2px 4px rgba(0, 0, 0, 0.22),
+    0 12px 24px -8px rgba(0, 0, 0, 0.45);
   display: grid;
   place-items: center;
-  transition: transform 0.2s ease, border-radius 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-radius 0.2s ease;
 }
 
-.ai-fab:hover { transform: translateY(-2px) scale(1.03); }
+.ai-fab:hover { transform: translateY(-2px); }
+
+.ai-fab:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.35);
+  transition-duration: 0.04s;
+}
 .ai-fab.aperto { border-radius: 50%; }
 
 .ai-panel {
@@ -6603,12 +6734,15 @@ body:has(.ai-fab) .dash-azioni { --fab-spazio: 76px; }
   flex-shrink: 0;
   border-radius: 12px;
   border: 0;
-  background: var(--accent);
+  background: linear-gradient(180deg, #fb8b3e 0%, #f97316 48%, #ea580c 100%);
   color: #fff;
   font-size: 18px;
   display: grid;
   place-items: center;
   cursor: pointer;
+  --tt-hl: inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  --tt-edge: inset 0 -2px 0 rgba(0, 0, 0, 0.16);
+  --tt-press: inset 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .ai-send:disabled { opacity: 0.5; cursor: default; }
@@ -6618,4 +6752,51 @@ body:has(.ai-fab) .dash-azioni { --fab-spazio: 76px; }
   text-align: center;
   font-size: 10.5px;
   color: var(--muted);
+}
+
+/* =====================================================
+   BOTTONI TATTILI — resto del sito
+   Stesso comportamento di .btn-dash (luce in alto, spigolo in basso,
+   pressione che affonda) per i bottoni delle pagine e degli overlay.
+   Il prefisso :is(button, a) alza la specificità sopra i fogli di
+   pagina (storico, prenotazioni) che definiscono questi bottoni.
+   ===================================================== */
+:is(button, a):is(.btn-save, .btn-cancel, .btn-preview, .btn-annulla, .acc-btn-pill, .acc-btn-pill-danger,
+    .btn-info-veicolo, .btn-aggiungi-garage, .pb-btn-annulla, .pb-btn-chiudi, .pr-mini-btn, .pg-row-btn,
+    .slot-btn, .dash-cerca-btn, .dash-icon-btn, .ai-send) {
+  box-shadow: var(--tt-hl), var(--tt-edge), var(--tt-drop);
+  transition:
+    transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease,
+    background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+:is(button, a):is(.btn-save, .btn-cancel, .btn-preview, .btn-annulla, .acc-btn-pill, .acc-btn-pill-danger,
+    .btn-info-veicolo, .btn-aggiungi-garage, .pb-btn-annulla, .pb-btn-chiudi, .pr-mini-btn, .pg-row-btn,
+    .slot-btn, .dash-cerca-btn, .dash-icon-btn, .ai-send):hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--tt-hl), var(--tt-edge), var(--tt-drop-hover);
+}
+
+:is(button, a):is(.btn-save, .btn-cancel, .btn-preview, .btn-annulla, .acc-btn-pill, .acc-btn-pill-danger,
+    .btn-info-veicolo, .btn-aggiungi-garage, .pb-btn-annulla, .pb-btn-chiudi, .pr-mini-btn, .pg-row-btn,
+    .slot-btn, .dash-cerca-btn, .dash-icon-btn, .ai-send):active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: var(--tt-press);
+  filter: brightness(0.94);
+  transition-duration: 0.04s;
+}
+
+/* bottone pieno arancione dello storico */
+button.btn-save {
+  background: linear-gradient(180deg, #fb8b3e 0%, #f97316 48%, #ea580c 100%);
+  --tt-hl: inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  --tt-edge: inset 0 -2px 0 rgba(0, 0, 0, 0.16);
+  --tt-press: inset 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+/* l'orario scelto resta "premuto" */
+button.slot-btn.attivo,
+button.slot-btn.attivo:hover:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: var(--tt-press);
 }

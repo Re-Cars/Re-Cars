@@ -28,5 +28,5 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   // esclude asset statici, immagini e file di sistema Next
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|Img/).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.svg|Img/).*)"],
 };

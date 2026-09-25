@@ -53,6 +53,8 @@ export default function Assistente() {
   const annullaRef = useRef<AbortController | null>(null);
   const listaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
+  const fabRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => setMessaggi(leggiSessione()), []);
 
@@ -72,8 +74,17 @@ export default function Assistente() {
     const lista = listaRef.current;
     if (lista) lista.scrollTop = lista.scrollHeight;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setAperto(false);
+    // tocco o click fuori dal pannello: si chiude (il FAB gestisce da sé il toggle)
+    const onFuori = (e: PointerEvent) => {
+      const t = e.target as Node;
+      if (!panelRef.current?.contains(t) && !fabRef.current?.contains(t)) setAperto(false);
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onFuori);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onFuori);
+    };
   }, [aperto]);
 
   // chiudere il pannello (o lasciare la pagina) interrompe la risposta in corso
@@ -148,7 +159,7 @@ export default function Assistente() {
   return (
     <>
       {aperto && (
-        <aside className="ai-panel" role="dialog" aria-label="Assistente RE|CARS">
+        <aside ref={panelRef} className="ai-panel" role="dialog" aria-label="Assistente RE|CARS">
           <div className="ai-head">
             <span className="ai-av">
               <i className="ti ti-sparkles" />
@@ -245,6 +256,7 @@ export default function Assistente() {
       )}
 
       <button
+        ref={fabRef}
         type="button"
         className={`ai-fab${aperto ? " aperto" : ""}`}
         aria-label={aperto ? "Chiudi l'assistente" : "Apri l'assistente"}

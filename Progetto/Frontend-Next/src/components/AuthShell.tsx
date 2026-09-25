@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import BrandTitle from "@/components/BrandTitle";
+
 interface AuthShellProps {
   children: ReactNode;
   /** Link in alto a destra (es. "Registrati" dal login e viceversa). */
@@ -43,7 +45,7 @@ export default function AuthShell({ children, toggleHref, toggleLabel, toggleIco
               height={80}
               className="auth-logo-img"
             />
-            <h1 className="landing-title2">RE|CARS</h1>
+            <BrandTitle as="h1" className="auth-brand" />
           </div>
 
           {children}

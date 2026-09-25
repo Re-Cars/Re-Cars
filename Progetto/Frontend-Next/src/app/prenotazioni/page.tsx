@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import Layout from "@/components/Layout";
+import { useSfumaturaScroll } from "@/hooks/useSfumaturaScroll";
 import {
   aggiornaStatoPrenotazione,
   creaPrenotazione,
@@ -54,7 +55,14 @@ function normalizzaOfficina(o: OfficinaCatalogo): Officina {
     recensioni: parseInt(String(o.recensioni ?? 12), 10),
     aperta: o.aperta !== undefined ? o.aperta : true,
     orario: o.orario ?? "08:00 - 18:00",
-    disponibilita: o.disponibilita ?? "Immediata",
+    // il backend manda un booleano: senza questa conversione .toLowerCase()
+    // nella scheda dell'officina faceva crashare la vista "Trova officina"
+    disponibilita:
+      typeof o.disponibilita === "string"
+        ? o.disponibilita
+        : o.disponibilita === false
+          ? "Su richiesta"
+          : "Immediata",
     indirizzo: o.indirizzo ?? "Indirizzo non specificato",
     telefono: o.telefono ?? "",
     lat: parseFloat(String(o.latitude ?? o.lat ?? 45.4642)),
@@ -353,6 +361,11 @@ export default function PrenotazioniPage() {
       return sortAsc ? da - db : db - da;
     });
 
+  // lista a destra: stesso scorrimento con sfumatura del garage in dashboard
+  const [listaRef, sfumaLista] = useSfumaturaScroll<HTMLDivElement>(
+    `${vista}-${prenFiltrate.length}-${visibili.length}-${statoLista}-${prenotazioniUtente === null}`,
+  );
+
   /* ---------- mappa Leaflet (import dinamico, client-only) ---------- */
   useEffect(() => {
     let smontato = false;
@@ -407,12 +420,10 @@ export default function PrenotazioniPage() {
         popupAnchor: [0, grande ? -44 : -34],
       });
 
-    // centra il punto a destra della scheda flottante (in basso a sinistra), non sotto
-    const centraAccanto = (lat: number, lng: number, zoom: number) => {
-      mappa.setView([lat, lng], zoom, { animate: false });
-      const w = mappa.getSize().x;
-      if (w > 700) mappa.panBy([-Math.min(230, w / 5), 60], { animate: false });
-    };
+    // la barra sotto la mappa cambia altezza tra le due viste: Leaflet va
+    // riallineato alle dimensioni reali prima di centrare
+    mappa.invalidateSize({ animate: false });
+    const centra = (lat: number, lng: number, zoom: number) => mappa.setView([lat, lng], zoom, { animate: false });
 
     const punti: [number, number][] = [];
     if (posUtente) {
@@ -437,7 +448,7 @@ export default function PrenotazioniPage() {
         punti.push([o.lat, o.lng]);
       }
       const o = inEvidenza ? officine.find((x) => x.id === inEvidenza.id_officina) : null;
-      if (o) centraAccanto(o.lat, o.lng, 13);
+      if (o) centra(o.lat, o.lng, 13);
       else if (punti.length) mappa.fitBounds(punti, { padding: [40, 40], maxZoom: 13 });
     } else {
       for (const o of visibili) {
@@ -449,7 +460,7 @@ export default function PrenotazioniPage() {
           .on("click", () => setSelezionata(o))
           .addTo(livello);
       }
-      if (selezionata) centraAccanto(selezionata.lat, selezionata.lng, 14);
+      if (selezionata) centra(selezionata.lat, selezionata.lng, 14);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mappaPronta, vista, officine, posUtente, selezionata?.id, inEvidenza?.id, idPrenMostrate, idOfficineMostrate]);
@@ -574,59 +585,67 @@ export default function PrenotazioniPage() {
     );
   };
 
-  const schedaInEvidenza = () => {
+  // barra sotto la mappa (non più sopra): la mappa resta tutta visibile
+  const barraInEvidenza = () => {
     if (!inEvidenza) return null;
     const stato = inEvidenza.stato ?? "in_attesa";
+    const colore = COLORE_STATO[stato] ?? "#f97316";
     const d = new Date(inEvidenza.dataprenotazione);
     const giorni = giorniDa(inEvidenza.dataprenotazione);
     const { servizio: servizioPren } = parseDescrizione(inEvidenza.descrizione);
     const o = officine.find((x) => x.id === inEvidenza.id_officina);
     const km = o ? distanzaDi(o) : null;
-    const quando = `${GIORNI_BREVI[d.getDay()]} ${d.getDate()} ${MESI_BREVI[d.getMonth()].toLowerCase()} alle ${d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}`;
+    const quando = `${GIORNI_BREVI[d.getDay()]} ${d.getDate()} ${MESI_BREVI[d.getMonth()].toLowerCase()}, ${d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}`;
     return (
-      <div className="pr-float">
-        <div className="pr-float-top">
-          <span className="pr-float-lbl">
-            {inEvidenza.id === prossima?.id ? "Prossimo appuntamento" : "Prenotazione selezionata"}
-          </span>
-          <span className="pr-stato" style={{ ["--c" as string]: COLORE_STATO[stato] ?? "#f97316" }}>
-            <i className={`ti ${STATO_ICONA[stato] ?? "ti-clock"}`} />
-            {STATO_LABEL[stato] ?? stato}
-          </span>
+      <div className="pr-bar" style={{ ["--c" as string]: colore }}>
+        <div className="pr-data pr-data--bar">
+          <span>{MESI_BREVI[d.getMonth()]}</span>
+          <b>{String(d.getDate()).padStart(2, "0")}</b>
         </div>
-        {giorni >= 0 ? (
-          <div className="pr-countdown">
-            <b>{giorni === 0 ? "Oggi" : giorni}</b>
-            <span>{giorni === 0 ? quando : `${giorni === 1 ? "giorno" : "giorni"} · ${quando}`}</span>
-          </div>
-        ) : (
-          <div className="pr-countdown passato">
-            <span>{quando}</span>
-          </div>
-        )}
-        <h3>{inEvidenza.officina?.nome ?? "Officina"}</h3>
-        <div className="pr-float-riga">
-          <i className="ti ti-tool" />
-          {servizioPren}
-        </div>
-        {inEvidenza.officina?.indirizzo && (
-          <div className="pr-float-riga">
-            <i className="ti ti-map-pin" />
-            <span className="pr-ellissi">
-              {inEvidenza.officina.indirizzo}
-              {km !== null ? ` · ${formattaKm(km)}` : ""}
+        <div className="pr-bar-main">
+          <div className="pr-bar-top">
+            <span className="pr-bar-lbl">
+              {inEvidenza.id === prossima?.id ? "Prossimo appuntamento" : "Prenotazione selezionata"}
+            </span>
+            <span className="pr-stato" style={{ ["--c" as string]: colore }}>
+              <i className={`ti ${STATO_ICONA[stato] ?? "ti-clock"}`} />
+              {STATO_LABEL[stato] ?? stato}
             </span>
           </div>
-        )}
-        <div className="pr-float-btns">
+          <h3>{inEvidenza.officina?.nome ?? "Officina"}</h3>
+          <div className="pr-bar-info">
+            <span>
+              <i className="ti ti-tool" />
+              {servizioPren}
+            </span>
+            <span>
+              <i className="ti ti-clock" />
+              {quando}
+              {giorni >= 0 && stato !== "annullata" && <b> · {etichettaTra(giorni)}</b>}
+            </span>
+            {inEvidenza.officina?.indirizzo && (
+              <span className="pr-ellissi">
+                <i className="ti ti-map-pin" />
+                {inEvidenza.officina.indirizzo}
+                {km !== null ? ` · ${formattaKm(km)}` : ""}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="pr-bar-btns">
           {giorni >= 0 && stato !== "annullata" && (
-            <button type="button" className="btn-dash btn-dash-ghost" onClick={() => scaricaIcs(inEvidenza, servizioPren)}>
+            <button
+              type="button"
+              className="btn-dash btn-dash-ghost"
+              title="Aggiungi al calendario"
+              onClick={() => scaricaIcs(inEvidenza, servizioPren)}
+            >
               <i className="ti ti-calendar-plus" />
               <span>Calendario</span>
             </button>
           )}
           {inEvidenza.officina?.telefono && (
-            <a className="btn-dash btn-dash-ghost" href={`tel:${inEvidenza.officina.telefono}`}>
+            <a className="btn-dash btn-dash-ghost" href={`tel:${inEvidenza.officina.telefono}`} title="Chiama l'officina">
               <i className="ti ti-phone" />
               <span>Chiama</span>
             </a>
@@ -647,40 +666,46 @@ export default function PrenotazioniPage() {
     );
   };
 
-  const schedaOfficina = () => {
+  const barraOfficina = () => {
     if (!selezionata) return null;
     return (
-      <div className="pr-float">
-        <div className="pr-float-top">
-          <span className="pr-float-lbl">{selezionata.specialita}</span>
-          <span className="pr-stato" style={{ ["--c" as string]: selezionata.aperta ? "var(--iv-ok)" : "var(--iv-bad)" }}>
-            {selezionata.aperta ? "Aperta ora" : "Chiusa"}
-          </span>
+      <div className="pr-bar">
+        <span
+          className="pr-off-av pr-off-av--bar"
+          style={{ background: COLORI_AVATAR[selezionata.nome.charCodeAt(0) % COLORI_AVATAR.length] }}
+        >
+          {selezionata.nome.charAt(0).toUpperCase()}
+        </span>
+        <div className="pr-bar-main">
+          <div className="pr-bar-top">
+            <span className="pr-bar-lbl">{selezionata.specialita}</span>
+            <span
+              className="pr-stato"
+              style={{ ["--c" as string]: selezionata.aperta ? "var(--iv-ok)" : "var(--iv-bad)" }}
+            >
+              {selezionata.aperta ? "Aperta ora" : "Chiusa"}
+            </span>
+          </div>
+          <h3>{selezionata.nome}</h3>
+          <div className="pr-bar-info">
+            <span className="pr-stelle">
+              <Stelle valore={selezionata.stelle} />
+              <b>{selezionata.stelle}</b>
+              <span>({selezionata.recensioni})</span>
+            </span>
+            <span>
+              <i className="ti ti-clock" />
+              {selezionata.orario} · disponibilità {selezionata.disponibilita.toLowerCase()}
+            </span>
+            <span className="pr-ellissi">
+              <i className="ti ti-map-pin" />
+              {selezionata.indirizzo} · {etichettaDistanza(selezionata, "distanza n.d.")}
+            </span>
+          </div>
         </div>
-        <h3>{selezionata.nome}</h3>
-        <div className="pr-stelle">
-          <Stelle valore={selezionata.stelle} />
-          <b>{selezionata.stelle}</b>
-          <span>· {selezionata.recensioni} recensioni</span>
-        </div>
-        <div className="pr-float-riga">
-          <i className="ti ti-map-pin" />
-          <span className="pr-ellissi">
-            {selezionata.indirizzo} · {etichettaDistanza(selezionata, "distanza non disponibile")}
-          </span>
-        </div>
-        <div className="pr-float-riga">
-          <i className="ti ti-clock" />
-          {selezionata.orario} · disponibilità {selezionata.disponibilita.toLowerCase()}
-        </div>
-        <div className="pr-servizi">
-          {selezionata.servizi.slice(0, 6).map((s) => (
-            <span key={s}>{s}</span>
-          ))}
-        </div>
-        <div className="pr-float-btns">
+        <div className="pr-bar-btns">
           {selezionata.telefono && (
-            <a className="btn-dash btn-dash-ghost" href={`tel:${selezionata.telefono}`}>
+            <a className="btn-dash btn-dash-ghost" href={`tel:${selezionata.telefono}`} title="Chiama l'officina">
               <i className="ti ti-phone" />
               <span>Chiama</span>
             </a>
@@ -794,20 +819,22 @@ export default function PrenotazioniPage() {
         )}
 
         <div className="pr-grid">
-          <section className="pr-mapbox">
-            <div ref={mapDivRef} className="pr-map" />
-            {vista === "prenotazioni" ? schedaInEvidenza() : schedaOfficina()}
-            {vista === "prenotazioni" && prenotazioniUtente !== null && tutte.length === 0 && (
-              <div className="pr-vuoto">
-                <i className="ti ti-calendar-plus" />
-                <h2>Nessuna prenotazione, per ora</h2>
-                <p>Quando prenoti un intervento lo trovi qui, con lo stato aggiornato dall&apos;officina.</p>
-                <button type="button" className="btn-dash btn-dash-primary" onClick={() => setVista("officine")}>
-                  <i className="ti ti-map-pin" />
-                  Trova un&apos;officina vicina
-                </button>
-              </div>
-            )}
+          <section className="pg-card pr-mapcard">
+            <div className="pr-mapbox">
+              <div ref={mapDivRef} className="pr-map" />
+              {vista === "prenotazioni" && prenotazioniUtente !== null && tutte.length === 0 && (
+                <div className="pr-vuoto">
+                  <i className="ti ti-calendar-plus" />
+                  <h2>Nessuna prenotazione, per ora</h2>
+                  <p>Quando prenoti un intervento lo trovi qui, con lo stato aggiornato dall&apos;officina.</p>
+                  <button type="button" className="btn-dash btn-dash-primary" onClick={() => setVista("officine")}>
+                    <i className="ti ti-map-pin" />
+                    Trova un&apos;officina vicina
+                  </button>
+                </div>
+              )}
+            </div>
+            {vista === "prenotazioni" ? barraInEvidenza() : barraOfficina()}
           </section>
 
           <aside className="pg-card pr-lista">
@@ -820,7 +847,7 @@ export default function PrenotazioniPage() {
                   </h2>
                   <span className="dash-count">{prenFiltrate.length}</span>
                 </div>
-                <div className="pr-lista-body">
+                <div ref={listaRef} className={`pr-lista-body${sfumaLista ? " sfuma" : ""}`}>
                   {prenotazioniUtente === null && <div className="pr-nores">Caricamento…</div>}
                   {prenProssime.length > 0 && (
                     <>
@@ -856,7 +883,7 @@ export default function PrenotazioniPage() {
                     </button>
                   )}
                 </div>
-                <div className="pr-lista-body">
+                <div ref={listaRef} className={`pr-lista-body${sfumaLista ? " sfuma" : ""}`}>
                   {statoLista === "skeleton" &&
                     [0, 1, 2].map((i) => <div key={i} className="skeleton" style={{ height: 72, borderRadius: 14, marginBottom: 8 }} />)}
                   {statoLista === "errore" && (

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 
+import BrandTitle from "@/components/BrandTitle";
 import { useAuth } from "@/context/AuthContext";
 import { getAvatarSalvato } from "@/lib/storage";
 
@@ -49,9 +50,7 @@ export default function Header() {
             height={50}
             className="header-logo-img"
           />
-          <span className="header-brand">
-            RE<span>|</span>CARS
-          </span>
+          <BrandTitle className="header-brand" />
         </Link>
       </div>
       <div className="header-right">

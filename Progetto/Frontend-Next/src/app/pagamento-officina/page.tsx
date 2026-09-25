@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 
+import BrandTitle from "@/components/BrandTitle";
 import { getProfiloOfficina } from "@/lib/api";
 
 /**
@@ -83,9 +84,7 @@ export default function PagamentoOfficinaPage() {
               height={50}
               className="header-logo-img"
             />
-            <span className="header-brand">
-              RE<span>|</span>CARS
-            </span>
+            <BrandTitle className="header-brand" />
           </Link>
         </div>
         <div className="header-right" />

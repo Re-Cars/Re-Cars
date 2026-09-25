@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import AggiungiVeicoloOverlay from "@/components/AggiungiVeicoloOverlay";
 import CercaVeicoloModal from "@/components/home/CercaVeicoloModal";
 import EliminaVeicoloModal from "@/components/home/EliminaVeicoloModal";
 import VeicoloChip from "@/components/home/VeicoloChip";
+import { useSfumaturaScroll } from "@/hooks/useSfumaturaScroll";
 import type { VeicoloDettaglio } from "@/lib/types";
 
 interface GarageSectionProps {
@@ -33,24 +34,7 @@ export default function GarageSection({
   const [aggiungiAperto, setAggiungiAperto] = useState(false);
   const [cercaAperta, setCercaAperta] = useState(false);
   const [daEliminare, setDaEliminare] = useState<VeicoloDettaglio | null>(null);
-  const listaRef = useRef<HTMLDivElement>(null);
-  const [sfumatura, setSfumatura] = useState(false);
-
-  // sfumatura in basso solo se la lista scorre e non si è già in fondo
-  useEffect(() => {
-    const el = listaRef.current;
-    if (!el) return;
-    const aggiorna = () =>
-      setSfumatura(el.scrollHeight > el.clientHeight + 2 && el.scrollTop + el.clientHeight < el.scrollHeight - 4);
-    aggiorna();
-    el.addEventListener("scroll", aggiorna, { passive: true });
-    const ro = new ResizeObserver(aggiorna);
-    ro.observe(el);
-    return () => {
-      el.removeEventListener("scroll", aggiorna);
-      ro.disconnect();
-    };
-  }, [veicoli.length]);
+  const [listaRef, sfumatura] = useSfumaturaScroll<HTMLDivElement>(veicoli.length);
 
   return (
     <section id="garage" className="panel dash-garage" aria-label="Il mio garage">

@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
@@ -24,6 +25,8 @@ function escapeHtml(str: string): string {
 
 @Injectable()
 export class PrenotazioniService {
+  private readonly logger = new Logger(PrenotazioniService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly mailerService: MailerService, // ← mancava
@@ -75,10 +78,14 @@ export class PrenotazioniService {
     const safeOrario = escapeHtml(dto.orario);
     const safeNote = dto.note ? escapeHtml(dto.note) : undefined;
 
-    await this.mailerService.sendMail({
-      to: utente.email,
-      subject: `Prenotazione confermata — ${safeOfficinaNome}`,
-      html: `
+    // la prenotazione è già salvata: se l'email non parte (SMTP non
+    // configurato, Gmail irraggiungibile) si registra l'errore ma non si
+    // risponde 500, altrimenti l'utente riprova e crea un doppione
+    try {
+      await this.mailerService.sendMail({
+        to: utente.email,
+        subject: `Prenotazione confermata — ${safeOfficinaNome}`,
+        html: `
         <h2>Prenotazione confermata!</h2>
         <p>Ciao <strong>${safeUsername}</strong>,</p>
         <p>La tua prenotazione è stata registrata con successo.</p>
@@ -92,14 +99,21 @@ export class PrenotazioniService {
         </ul>
         <p>Trovi in allegato il file da importare su Google Calendar.</p>
       `,
-      attachments: [
-        {
-          filename: 'appuntamento.ics',
-          content: icsContent,
-          contentType: 'text/calendar',
-        },
-      ],
-    });
+        attachments: [
+          {
+            filename: 'appuntamento.ics',
+            content: icsContent,
+            contentType: 'text/calendar',
+          },
+        ],
+      });
+    } catch (err) {
+      this.logger.warn(
+        `Email di conferma non inviata per la prenotazione ${prenotazione.id}: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
+    }
 
     return prenotazione;
   }

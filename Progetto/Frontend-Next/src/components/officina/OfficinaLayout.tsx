@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
+import BrandTitle from "@/components/BrandTitle";
 import { useAuth } from "@/context/AuthContext";
 import { logoutOfficina } from "@/lib/auth";
 import "@/styles/officina.css";
@@ -78,9 +79,7 @@ export default function OfficinaLayout({ children, briciole = [] }: OfficinaLayo
             height={40}
             className="sidebar-logo-img"
           />
-          <span className="sidebar-brand">
-            RE<span>|</span>CARS
-          </span>
+          <BrandTitle className="sidebar-brand" />
           <div
             className={`hamburger9${sidebarAperta ? " open" : ""}`}
             onClick={() => setSidebarAperta((v) => !v)}
@@ -114,9 +113,7 @@ export default function OfficinaLayout({ children, briciole = [] }: OfficinaLayo
               height={50}
               className="header-logo-img"
             />
-            <span className="header-brand">
-              RE<span>|</span>CARS
-            </span>
+            <BrandTitle className="header-brand" />
           </Link>
         </div>
         <div className="header-right">

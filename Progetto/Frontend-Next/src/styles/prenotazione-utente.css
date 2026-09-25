@@ -687,21 +687,24 @@
 }
 
 /* ====================================================
-   PRENOTAZIONI — nuovo layout (pr-*): hero + toolbar,
-   mappa grande con scheda flottante, lista compatta a
-   destra. Le due viste (mie prenotazioni / trova
-   officina) condividono la stessa struttura.
+   PRENOTAZIONI — layout (pr-*): hero + toolbar, card
+   con mappa grande e barra della selezione sotto (la
+   mappa non ha più nulla sopra), lista compatta a
+   destra con lo stesso scorrimento del garage. Le due
+   viste (mie prenotazioni / trova officina) condividono
+   la stessa struttura.
 -----------------------------------------------------*/
-/* la pagina riempie il viewport: la griglia mappa+lista prende lo spazio rimasto */
+/* la pagina riempie il viewport: la griglia mappa+lista prende lo spazio
+   rimasto, con margine in basso uguale a quello laterale */
 .pren {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding-bottom: clamp(12px, 2dvh, 22px);
+  padding-bottom: clamp(18px, 3.2dvh, 32px);
 }
 
-.pren .pg-hero { padding: 16px 24px; }
+.pren .pg-hero { padding: clamp(12px, 2dvh, 16px) 24px; }
 
 .pr-stats {
   display: flex;
@@ -739,7 +742,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 10px 14px;
-  margin: 14px 0;
+  margin: clamp(10px, 1.8dvh, 16px) 0;
 }
 
 .pr-toolbar .pg-search { flex: 1 1 280px; }
@@ -758,13 +761,17 @@
   min-height: 380px;
 }
 
+.pr-mapcard {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .pr-mapbox {
   position: relative;
-  min-height: 0;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border-subtle));
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.12);
+  flex: 1;
+  min-height: 200px;
   /* i pane di Leaflet hanno z-index 400+: restano confinati qui dentro */
   isolation: isolate;
   background: var(--surface-2);
@@ -812,34 +819,87 @@
   box-shadow: 0 0 0 10px rgba(59, 130, 246, 0.22);
 }
 
-/* scheda flottante sulla mappa: niente esce dai bordi (bottoni in griglia
-   che si restringono, testi con ellissi) */
-.pr-float {
-  position: absolute;
-  z-index: 1001;
-  left: 16px;
-  bottom: 16px;
-  width: min(420px, calc(100% - 32px));
-  max-height: calc(100% - 32px);
-  overflow: auto;
-  padding: 16px 18px;
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border-subtle));
-  backdrop-filter: blur(14px);
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
-  color: var(--text);
-}
-
-.pr-float-top {
-  display: flex;
-  justify-content: space-between;
+/* barra della selezione sotto la mappa: data (o avatar officina), dettagli
+   su una riga ciascuno con ellissi, bottoni che si stringono */
+.pr-bar {
+  --c: var(--accent);
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 16px;
+  padding: clamp(10px, 1.8dvh, 16px) 18px;
+  border-top: 1px solid var(--border-subtle);
 }
 
-.pr-float-lbl {
+.pr-data.pr-data--bar {
+  width: 58px;
+  padding: 8px 0 9px;
+  border-radius: 14px;
+}
+
+.pr-data--bar b { font-size: 24px; }
+
+.pr-off-av.pr-off-av--bar {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  font-size: 22px;
+}
+
+.pr-bar-main { min-width: 0; }
+
+.pr-bar-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pr-bar h3 {
+  margin: 2px 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pr-bar-info {
+  display: flex;
+  gap: 4px 16px;
+  flex-wrap: wrap;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.pr-bar-info > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.pr-bar-info > span > i { color: var(--accent); flex-shrink: 0; }
+.pr-bar-info b { color: var(--c); font-weight: 700; }
+.pr-bar-info .pr-ellissi { display: block; }
+.pr-bar-info .pr-ellissi i { margin-right: 6px; }
+
+.pr-bar-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.pr-bar-btns .btn-dash {
+  height: 40px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+
+.pr-bar-lbl {
   min-width: 0;
   font-size: 11px;
   font-weight: 800;
@@ -851,76 +911,11 @@
   text-overflow: ellipsis;
 }
 
-.pr-float h3 {
-  margin: 8px 0 2px;
-  font-size: 17px;
-  font-weight: 700;
-}
-
-.pr-float-riga {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 5px;
-  font-size: 13px;
-  color: var(--muted);
-  min-width: 0;
-}
-
-.pr-float-riga i {
-  color: var(--accent);
-  flex-shrink: 0;
-}
-
 .pr-ellissi {
   min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.pr-float-btns {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.pr-float-btns .btn-dash {
-  min-width: 0;
-  height: 40px;
-  padding: 0 10px;
-  font-size: 13px;
-}
-
-.pr-float-btns .btn-dash span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.pr-countdown {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.pr-countdown b {
-  font-size: 38px;
-  font-weight: 800;
-  color: var(--accent);
-  line-height: 1;
-}
-
-.pr-countdown span {
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.pr-countdown.passato span {
-  font-size: 13px;
 }
 
 .pr-stato {
@@ -950,21 +945,6 @@
 
 .pr-stelle b { color: var(--text); }
 .pr-stelle span { color: var(--muted); }
-
-.pr-servizi {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-
-.pr-servizi span {
-  font-size: 11.5px;
-  padding: 3px 9px;
-  border-radius: 99px;
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
-}
 
 .pr-vuoto {
   position: absolute;
@@ -1006,13 +986,25 @@
   overflow: hidden;
 }
 
+/* stesso scorrimento della lista "Il mio garage": barra sottile arancione
+   e sfumatura in basso finché c'è altro da vedere (.sfuma) */
 .pr-lista-body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   padding: 0 12px 14px;
   scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--accent) 45%, transparent) transparent;
 }
+
+.pr-lista-body.sfuma {
+  -webkit-mask: linear-gradient(#000 85%, transparent);
+  mask: linear-gradient(#000 85%, transparent);
+}
+
+/* il bottone dell'assistente sta sopra l'angolo in basso a destra della
+   lista: l'ultima riga può scorrere fino a sopra di lui */
+body:has(.ai-fab) .pr-lista-body { padding-bottom: 72px; }
 
 .pr-gruppo {
   display: flex;
@@ -1198,12 +1190,22 @@
   font-size: 13px;
 }
 
+/* una colonna: la pagina scorre e la griglia prende l'altezza del contenuto
+   (con flex: 1 veniva schiacciata a 380px e tagliava la card della mappa) */
 @media (max-width: 1080px) {
   .pr-grid {
     grid-template-columns: minmax(0, 1fr);
-    height: auto;
+    flex: none;
+    min-height: 0;
   }
 
-  .pr-mapbox { height: 480px; }
+  .pr-mapbox { flex: none; height: 420px; }
   .pr-lista { max-height: 520px; }
+}
+
+/* telefono: i bottoni della barra vanno su una riga loro, a tutta larghezza */
+@media (max-width: 700px) {
+  .pr-bar { grid-template-columns: auto minmax(0, 1fr); }
+  .pr-bar-btns { grid-column: 1 / -1; }
+  .pr-bar-btns .btn-dash { flex: 1; min-width: 0; }
 }
