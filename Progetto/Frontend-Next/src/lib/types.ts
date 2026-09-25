@@ -32,7 +32,8 @@ export interface ProfiloUtente extends UtenteLoggato {
 export interface DatiGenerici {
   tipo_veicolo?: string;
   alimentazione?: string;
-  cilindrata?: number | null;
+  /** VarChar(5) nello schema Prisma: arriva come stringa (es. "1242"). */
+  cilindrata?: string | number | null;
   cavalli?: number | null;
 }
 

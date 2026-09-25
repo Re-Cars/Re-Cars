@@ -26,23 +26,13 @@ function statoDaData(
 
 interface VeicoloInfoCardProps {
   veicolo: VeicoloDettaglio | null;
-  /**
-   * Versione compatta per l'uso incorporato accanto alla rail di "Il mio
-   * garage" in homepage: un'unica card leggera (nome/targa + mantenimento)
-   * invece delle tre card impilate della pagina intera — niente riquadro
-   * icona auto/moto, niente ripetizione di header per ogni sezione. La
-   * pagina /info-veicolo usa invece la versione completa.
-   */
-  compatto?: boolean;
 }
 
 /**
- * Hero + caratteristiche tecniche + mantenimento del veicolo: contenuto
- * condiviso tra la pagina /info-veicolo (a piena dimensione) e il pannello
- * di dettaglio della sezione "Il mio garage" in homepage (compatto), per
- * evitare che le due viste possano divergere nello stile o nella logica.
+ * Hero + caratteristiche tecniche + mantenimento del veicolo della pagina
+ * /info-veicolo (la dashboard usa InfoVeicoloPanel).
  */
-export default function VeicoloInfoCard({ veicolo, compatto = false }: VeicoloInfoCardProps) {
+export default function VeicoloInfoCard({ veicolo }: VeicoloInfoCardProps) {
   const dg = veicolo?.dati_generici[0] ?? {};
   const ds = veicolo?.dati_specifici[0] ?? {};
 
@@ -60,74 +50,9 @@ export default function VeicoloInfoCard({ veicolo, compatto = false }: VeicoloIn
     ? `scade il ${new Date(ds.datascadenzarca).toLocaleDateString("it-IT")}`
     : "Dato non disponibile";
 
-  if (!veicolo) {
-    return compatto ? (
-      <div className="iv-dashboard iv-dashboard--compatta">
-        <div className="iv-section-card iv-empty-card">
-          <i className="fa-solid fa-car-side" />
-          <span>Aggiungi un veicolo per vedere qui i suoi dati.</span>
-        </div>
-      </div>
-    ) : null;
-  }
+  if (!veicolo) return null;
 
-  if (compatto) {
-    return (
-      <div className="iv-dashboard iv-dashboard--compatta">
-        <div className="iv-section-card iv-compact-card">
-          <div className="iv-compact-top">
-            <span className="iv-hero-name iv-compact-name">{nomeVeicolo}</span>
-            <span className="iv-targa-pill">
-              <i className="fa-solid fa-id-card" /> <span>{veicolo.targa}</span>
-            </span>
-          </div>
-          <div className="iv-hero-sub iv-compact-chips">
-            <span className="iv-mini-pill">
-              <i className={`fa-solid ${iconaVeicolo}`} /> <strong>{dg.tipo_veicolo ?? "-"}</strong>
-            </span>
-            {dg.alimentazione && (
-              <span className="iv-mini-pill">
-                <i className="fa-solid fa-bolt" /> <strong>{dg.alimentazione}</strong>
-              </span>
-            )}
-            {dg.cavalli ? (
-              <span className="iv-mini-pill">
-                <i className="fa-solid fa-gauge-high" /> <strong>{dg.cavalli} CV</strong>
-              </span>
-            ) : null}
-          </div>
-
-          <div className="iv-compact-divider" />
-
-          <div className="iv-compact-maint">
-            <div className={`iv-compact-maint-row stato-${statoBollo}`}>
-              <i className="fa-solid fa-receipt" />
-              <div className="iv-compact-maint-text">
-                <span className="iv-compact-maint-label">Bollo</span>
-                <span className="iv-compact-maint-date">{dataBollo}</span>
-              </div>
-              <span className={`iv-badge iv-badge-${statoBollo}`}>
-                <span className="iv-badge-dot" /> {statoBollo === "attiva" ? "Attivo" : "Scaduto"}
-              </span>
-            </div>
-            <div className={`iv-compact-maint-row stato-${statoRca}`}>
-              <i className="fa-solid fa-shield-halved" />
-              <div className="iv-compact-maint-text">
-                <span className="iv-compact-maint-label">Assicurazione</span>
-                <span className="iv-compact-maint-date">{dataRca}</span>
-              </div>
-              <span className={`iv-badge iv-badge-${statoRca}`}>
-                <span className="iv-badge-dot" /> {statoRca === "attiva" ? "Attiva" : "Scaduta"}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // tilt 3D leggero delle card (replica di initInfoVeicoloTilt) — solo
-  // nella versione a piena dimensione: nel pannello compatto è superfluo.
+  // tilt 3D leggero delle card (replica di initInfoVeicoloTilt)
   const onTilt = (e: MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
     const r = card.getBoundingClientRect();

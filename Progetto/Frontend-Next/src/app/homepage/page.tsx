@@ -5,27 +5,27 @@ import { useCallback, useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import AzioniRapide from "@/components/home/AzioniRapide";
 import GarageSection from "@/components/home/GarageSection";
+import InfoVeicoloPanel from "@/components/home/InfoVeicoloPanel";
 import { useAuth } from "@/context/AuthContext";
-import { getVeicoliUtente, getVeicolo } from "@/lib/api";
+import { getInterventiVeicolo, getVeicoliUtente, getVeicolo } from "@/lib/api";
 import type { VeicoloDettaglio } from "@/lib/types";
 
 /**
- * Homepage utente: sezione "Il mio garage" (rail dei veicoli + scheda
- * tecnica del veicolo selezionato, card aggiungi sempre prima voce — gli
- * stessi pallini di stato della rail sostituiscono il vecchio pannello
- * "Scadenze e avvisi", ridondante con quei pallini e con la scheda) e le
- * tre card azione fisse.
+ * Dashboard utente a viewport unica: "Il mio garage" (lista scorrevole +
+ * ricerca) a sinistra, scheda del veicolo selezionato a destra con la
+ * stessa altezza, azioni rapide in basso. Sopra i 900px di larghezza la
+ * pagina non scorre (vedi .dash in globals.css).
  */
 export default function HomePage() {
-  const { utente, gestisci401, caricaVeicoli } = useAuth();
+  const { utente, gestisci401, caricaVeicoli, veicoloAttivo, selezionaVeicolo, eliminaVeicoloDalGarage } =
+    useAuth();
 
   const [veicoli, setVeicoli] = useState<VeicoloDettaglio[]>([]);
+  const [speseAnno, setSpeseAnno] = useState<number | null>(null);
 
-  // la homepage lavora sui dettagli completi: la lista degli id arriva da
+  // la dashboard lavora sui dettagli completi: la lista degli id arriva da
   // GET /veicolo/utente/:id, poi ogni veicolo è ricaricato con getVeicolo
-  // (GET /veicolo/:id) — la STESSA funzione usata da info-veicolo/page.tsx,
-  // così la scheda nel pannello di dettaglio mostra esattamente gli stessi
-  // dati della pagina dedicata.
+  // (GET /veicolo/:id), la stessa funzione usata da info-veicolo/page.tsx.
   const caricaDettagli = useCallback(async () => {
     if (!utente) return;
     try {
@@ -42,18 +42,61 @@ export default function HomePage() {
     void caricaDettagli();
   }, [caricaDettagli]);
 
-  // dopo un'aggiunta dal modale si riallineano anche i veicoli del context
-  // (switcher/altre pagine usano la lista compatta)
+  // totale speso nell'anno su tutto il garage, per la card "Costi di gestione":
+  // se una chiamata fallisce la card resta senza cifra, senza bloccare la pagina
+  useEffect(() => {
+    if (veicoli.length === 0) {
+      setSpeseAnno(null);
+      return;
+    }
+    let annullato = false;
+    const anno = String(new Date().getFullYear());
+    Promise.all(veicoli.map((v) => getInterventiVeicolo(v.id)))
+      .then((liste) => {
+        if (annullato) return;
+        const totale = liste
+          .flat()
+          .filter((i) => i.data.startsWith(anno))
+          .reduce((somma, i) => somma + (Number(i.costo) || 0), 0);
+        setSpeseAnno(totale);
+      })
+      .catch((err) => {
+        if (!annullato && !gestisci401(err)) setSpeseAnno(null);
+      });
+    return () => {
+      annullato = true;
+    };
+  }, [veicoli, gestisci401]);
+
+  // dopo un'aggiunta o un'eliminazione si riallineano anche i veicoli del context
   const onGarageCambiato = useCallback(async () => {
     await caricaDettagli();
     await caricaVeicoli();
   }, [caricaDettagli, caricaVeicoli]);
 
+  const onElimina = useCallback(
+    async (id: number) => {
+      const ok = await eliminaVeicoloDalGarage(id);
+      if (ok) await caricaDettagli();
+      return ok;
+    },
+    [eliminaVeicoloDalGarage, caricaDettagli],
+  );
+
+  const selezionato = veicoli.find((v) => v.id === veicoloAttivo?.id) ?? veicoli[0] ?? null;
+
   return (
     <Layout mostraSwitcher={false}>
-      <main className="hp-main">
-        <GarageSection veicoli={veicoli} onGarageCambiato={onGarageCambiato} />
-        <AzioniRapide />
+      <main className="dash">
+        <GarageSection
+          veicoli={veicoli}
+          selezionatoId={selezionato?.id ?? null}
+          onSeleziona={selezionaVeicolo}
+          onGarageCambiato={onGarageCambiato}
+          onElimina={onElimina}
+        />
+        <InfoVeicoloPanel veicolo={selezionato} />
+        <AzioniRapide speseAnno={speseAnno} />
       </main>
     </Layout>
   );
