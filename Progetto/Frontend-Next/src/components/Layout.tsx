@@ -1,13 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import Assistente from "./assistente/Assistente";
 import BreadCrumb from "./BreadCrumb";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { consumaGarageLimiteRaggiunto } from "@/lib/storage";
 
 interface LayoutProps {
   children: ReactNode;
@@ -16,9 +14,9 @@ interface LayoutProps {
 }
 
 /**
- * Layout comune delle pagine autenticate: Sidebar + Header + Breadcrumb,
- * più il banner "limite veicoli del piano raggiunto" e l'assistente AI
- * (bottone flottante in basso a destra). Il veicolo attivo non
+ * Layout comune delle pagine autenticate: Sidebar + Header + Breadcrumb
+ * e l'assistente AI (bottone flottante in basso a destra). Il limite di
+ * veicoli del piano è segnalato dentro "Aggiungi veicolo". Il veicolo attivo non
  * ha più uno switcher globale: le pagine che ne usano uno mostrano
  * VeicoloPicker nel proprio hero.
  */
@@ -27,16 +25,6 @@ export default function Layout({
   breadcrumb,
 }: LayoutProps) {
   const [sidebarAperta, setSidebarAperta] = useState(false);
-  const [bannerLimite, setBannerLimite] = useState(false);
-
-  // flag one-shot impostato da cerca-veicolo quando il backend risponde 403
-  useEffect(() => {
-    if (consumaGarageLimiteRaggiunto()) {
-      setBannerLimite(true);
-      const timer = setTimeout(() => setBannerLimite(false), 6000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
 
   return (
     <>
@@ -47,21 +35,6 @@ export default function Layout({
       />
       <Header />
       {breadcrumb && <BreadCrumb pagina={breadcrumb} />}
-
-      {bannerLimite && (
-        <div className="banner-limite-veicoli">
-          <div className="banner-limite-content">
-            <i className="fa-solid fa-triangle-exclamation" />
-            <span>
-              Hai raggiunto il limite di veicoli del tuo piano.{" "}
-              <Link href="/abbonamenti">Passa a un piano superiore</Link> per aggiungerne altri.
-            </span>
-            <button type="button" onClick={() => setBannerLimite(false)}>
-              <i className="fa-solid fa-xmark" />
-            </button>
-          </div>
-        </div>
-      )}
 
       {children}
 

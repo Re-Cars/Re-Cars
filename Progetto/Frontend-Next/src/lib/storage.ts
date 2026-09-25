@@ -13,7 +13,6 @@ export const STORAGE_KEYS = {
   veicoloAttivoId: "veicoloAttivoId",
   theme: "theme",
   storicoTarghe: "storico_targhe",
-  garageLimiteRaggiunto: "garage_limite_raggiunto",
 } as const;
 
 type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
@@ -122,18 +121,6 @@ export function rimuoviStoricoTarga(targa: string): string[] {
   const storico = getStoricoTarghe().filter((t) => t !== targa);
   setJson(STORAGE_KEYS.storicoTarghe, storico);
   return storico;
-}
-
-/* ---------- flag one-shot (limite piano) ---------- */
-
-export function setGarageLimiteRaggiunto(): void {
-  setRaw(STORAGE_KEYS.garageLimiteRaggiunto, "true");
-}
-
-export function consumaGarageLimiteRaggiunto(): boolean {
-  const attivo = getRaw(STORAGE_KEYS.garageLimiteRaggiunto) === "true";
-  if (attivo) removeItem(STORAGE_KEYS.garageLimiteRaggiunto);
-  return attivo;
 }
 
 export function clearAll(): void {
