@@ -170,18 +170,23 @@ export interface Intervento {
   id_veicolo?: number;
   data: string;
   categoria: CategoriaIntervento;
-  nome: string;
+  /** Tipo di intervento (colonna rinominata da `nome` a `tipo` nello schema Prisma). */
+  tipo: string;
   descrizione?: string | null;
   mediante?: string | null;
   costo?: number | string | null;
+  sigla_citta?: string | null;
+  /** Relazione inclusa da GET/POST/PUT /interventi (include: { citta: true }). */
+  citta?: Citta | null;
 }
 
 export interface NuovoInterventoBody {
   id_veicolo: number;
   data: string;
   categoria: CategoriaIntervento;
-  nome: string;
+  tipo: string;
   descrizione: string | null;
   mediante: string | null;
   costo: number | null;
+  sigla_citta: string | null;
 }

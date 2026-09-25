@@ -34,7 +34,7 @@ const FILTRI: { id: string; label: string; dot?: string; classe: string }[] = [
 interface FormIntervento {
   data: string;
   categoria: CategoriaIntervento | "";
-  nome: string;
+  tipo: string;
   descrizione: string;
   mediante: string;
   costo: string;
@@ -43,7 +43,7 @@ interface FormIntervento {
 const FORM_VUOTO: FormIntervento = {
   data: "",
   categoria: "",
-  nome: "",
+  tipo: "",
   descrizione: "",
   mediante: "",
   costo: "",
@@ -118,7 +118,7 @@ export default function StoricoInterventiPage() {
     setForm({
       data: item.data,
       categoria: item.categoria,
-      nome: item.nome,
+      tipo: item.tipo,
       descrizione: item.descrizione ?? "",
       mediante: item.mediante ?? "",
       costo: item.costo ? String(item.costo) : "",
@@ -127,7 +127,7 @@ export default function StoricoInterventiPage() {
   };
 
   const salva = async () => {
-    if (!form.data || !form.categoria || !form.nome) {
+    if (!form.data || !form.categoria || !form.tipo) {
       alert("Data, categoria e tipo intervento sono obbligatori.");
       return;
     }
@@ -138,10 +138,11 @@ export default function StoricoInterventiPage() {
     const payload = {
       data: form.data,
       categoria: form.categoria,
-      nome: form.nome,
+      tipo: form.tipo,
       descrizione: form.descrizione || null,
       mediante: form.mediante || null,
       costo: Number.parseFloat(form.costo) || null,
+      sigla_citta: null,
     };
     try {
       if (idInModifica === null) {
@@ -254,7 +255,7 @@ export default function StoricoInterventiPage() {
                     <span className={`cat-badge ${item.categoria}`}>{catLabel(item.categoria)}</span>
                   </div>
                   <div className="desc-cell">
-                    <div>{item.nome}</div>
+                    <div>{item.tipo}</div>
                     {item.descrizione && <div className="desc-sub">{item.descrizione}</div>}
                   </div>
                   <div className="mediante-cell">{item.mediante ?? "—"}</div>
@@ -352,7 +353,7 @@ export default function StoricoInterventiPage() {
                     setForm((f) => ({
                       ...f,
                       categoria: e.target.value as CategoriaIntervento | "",
-                      nome: "",
+                      tipo: "",
                     }))
                   }
                 >
@@ -366,7 +367,7 @@ export default function StoricoInterventiPage() {
             </div>
             <div className="form-row">
               <label>Tipo intervento</label>
-              <select value={form.nome} onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}>
+              <select value={form.tipo} onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value }))}>
                 {form.categoria === "" ? (
                   <option value="">Prima seleziona categoria...</option>
                 ) : (
