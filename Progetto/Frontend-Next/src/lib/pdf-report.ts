@@ -287,7 +287,7 @@ export async function costruisciDocumentoPdf(
       .map((i) => [
         i.data.split("-").reverse().join("/"),
         catLabel(i.categoria),
-        i.nome + (i.descrizione ? ` - ${i.descrizione}` : ""),
+        i.tipo + (i.descrizione ? ` - ${i.descrizione}` : ""),
         i.mediante ?? "—",
         i.costo ? `${Number(i.costo).toFixed(2)} €` : "—",
       ]);
