@@ -21,9 +21,7 @@ import {
   STORAGE_KEYS,
 } from "@/lib/storage";
 import type { UtenteLoggato, VeicoloCompatto, VeicoloDettaglio } from "@/lib/types";
-
-/** Effetto one-shot sul bottone del garage (pop dopo aggiunta, shake dopo eliminazione). */
-export type GarageEffetto = "pop" | "delete" | null;
+import { dueRuote } from "@/lib/veicolo";
 
 interface AuthContextValue {
   /** Profilo salvato al login; null finché non idratato o se non loggati. */
@@ -32,13 +30,10 @@ interface AuthContextValue {
   pronto: boolean;
   veicoli: VeicoloCompatto[];
   veicoloAttivo: VeicoloCompatto | null;
-  garageEffetto: GarageEffetto;
   aggiornaUtente: (utente: UtenteLoggato) => void;
   caricaVeicoli: () => Promise<void>;
   selezionaVeicolo: (id: number) => void;
   eliminaVeicoloDalGarage: (id: number) => Promise<boolean>;
-  consumaGarageEffetto: () => void;
-  segnalaGarageEffetto: (effetto: Exclude<GarageEffetto, null>) => void;
   logout: () => Promise<void>;
   /** Gestione centralizzata del 401 (sessione JWT scaduta). */
   gestisci401: (err: unknown) => boolean;
@@ -51,7 +46,9 @@ function mappaVeicolo(v: VeicoloDettaglio): VeicoloCompatto {
     id: v.id,
     nome: `${v.marca ?? ""} ${v.modello ?? ""}`.trim(),
     targa: v.targa,
-    tipo: v.dati_generici[0]?.tipo_veicolo === "Moto" ? "motorcycle" : "car",
+    // confronto case-insensitive: stesso di VeicoloCard/VeicoloInfoCard,
+    // così lo switcher non può mostrare un'icona diversa dal resto del sito
+    tipo: dueRuote(v.dati_generici[0]?.tipo_veicolo) ? "motorcycle" : "car",
   };
 }
 
@@ -61,7 +58,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [pronto, setPronto] = useState(false);
   const [veicoli, setVeicoli] = useState<VeicoloCompatto[]>([]);
   const [veicoloAttivoId, setVeicoloAttivoId] = useState<number | null>(null);
-  const [garageEffetto, setGarageEffetto] = useState<GarageEffetto>(null);
 
   const veicoloAttivo = useMemo(
     () => veicoli.find((v) => v.id === veicoloAttivoId) ?? veicoli[0] ?? null,
@@ -130,7 +126,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       if (getVeicoloAttivoId() === id) removeVeicoloAttivo();
       await caricaVeicoli();
-      setGarageEffetto("delete");
       return true;
     },
     [caricaVeicoli, gestisci401],
@@ -140,12 +135,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     salvaSessione(nuovo);
     setUtente(nuovo);
   }, []);
-
-  const consumaGarageEffetto = useCallback(() => setGarageEffetto(null), []);
-  const segnalaGarageEffetto = useCallback(
-    (effetto: Exclude<GarageEffetto, null>) => setGarageEffetto(effetto),
-    [],
-  );
 
   // idratazione iniziale da localStorage + primo caricamento veicoli
   useEffect(() => {
@@ -176,13 +165,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       pronto,
       veicoli,
       veicoloAttivo,
-      garageEffetto,
       aggiornaUtente,
       caricaVeicoli,
       selezionaVeicolo,
       eliminaVeicoloDalGarage,
-      consumaGarageEffetto,
-      segnalaGarageEffetto,
       logout,
       gestisci401,
     }),
@@ -191,13 +177,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       pronto,
       veicoli,
       veicoloAttivo,
-      garageEffetto,
       aggiornaUtente,
       caricaVeicoli,
       selezionaVeicolo,
       eliminaVeicoloDalGarage,
-      consumaGarageEffetto,
-      segnalaGarageEffetto,
       logout,
       gestisci401,
     ],

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Layout from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
@@ -20,6 +20,10 @@ interface DefinizionePiano {
   suffisso?: string;
   descrizione: string;
   feature: { ok: boolean; label: string }[];
+  /** Icona Tabler: germoglio → diamante → corona, per leggere la progressione dei piani. */
+  icona: string;
+  /** Veicoli ammessi dal piano (null = illimitati). */
+  limiteVeicoli: number | null;
   popolare?: boolean;
   free?: boolean;
 }
@@ -30,6 +34,8 @@ const PIANI: DefinizionePiano[] = [
     nome: "Base",
     prezzo: "Gratis",
     descrizione: "Per iniziare a gestire i tuoi veicoli",
+    icona: "ti-plant-2",
+    limiteVeicoli: 1,
     free: true,
     feature: [
       { ok: true, label: "1 veicolo" },
@@ -46,6 +52,8 @@ const PIANI: DefinizionePiano[] = [
     prezzo: "4,99€",
     suffisso: "/mese",
     descrizione: "Per chi vuole il massimo dalla propria auto",
+    icona: "ti-diamond",
+    limiteVeicoli: 5,
     popolare: true,
     feature: [
       { ok: true, label: "Fino a 5 veicoli" },
@@ -62,6 +70,8 @@ const PIANI: DefinizionePiano[] = [
     prezzo: "9,99€",
     suffisso: "/mese",
     descrizione: "Per chi gestisce più veicoli e vuole tutto",
+    icona: "ti-crown",
+    limiteVeicoli: null,
     feature: [
       { ok: true, label: "Veicoli illimitati" },
       { ok: true, label: "Storico + grafici costi" },
@@ -74,11 +84,11 @@ const PIANI: DefinizionePiano[] = [
 ];
 
 /**
- * Abbonamenti: banner del piano attivo, tre card (Base/Premium/Pro) con
- * tilt 3D, checkout Stripe server-driven e disdetta.
+ * Abbonamenti: hero con piano attivo e veicoli usati rispetto al limite,
+ * tre card (Base/Premium/Pro), checkout Stripe server-driven e disdetta.
  */
 export default function AbbonamentiPage() {
-  const { utente, aggiornaUtente, gestisci401 } = useAuth();
+  const { utente, aggiornaUtente, gestisci401, veicoli } = useAuth();
   const [pianoAttivo, setPianoAttivo] = useState<string>("base");
   const [sottotitolo, setSottotitolo] = useState("Piano gratuito · Nessun rinnovo");
 
@@ -128,106 +138,108 @@ export default function AbbonamentiPage() {
     }
   };
 
-  // tilt 3D delle card (replica di initTiltCards in functions-base.js)
-  const onTilt = (e: MouseEvent<HTMLDivElement>) => {
-    const card = e.currentTarget;
-    const r = card.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width;
-    const py = (e.clientY - r.top) / r.height;
-    card.style.transform = `perspective(1000px) rotateX(${(0.5 - py) * 6}deg) rotateY(${(px - 0.5) * 6}deg) translateY(-10px) scale(1.015)`;
-  };
-
-  const resetTilt = (e: MouseEvent<HTMLDivElement>) => {
-    e.currentTarget.style.transform = "";
-  };
+  const definizioneAttiva = PIANI.find((pn) => pn.id === pianoAttivo) ?? PIANI[0];
+  const limite = definizioneAttiva.limiteVeicoli;
+  const usoPct = limite ? Math.min(100, (veicoli.length / limite) * 100) : 100;
+  // piano consigliato: il primo superiore a quello attivo (niente se già Pro)
+  const indiceAttivo = PIANI.findIndex((pn) => pn.id === pianoAttivo);
+  const consigliato = PIANI[indiceAttivo + 1]?.id ?? null;
 
   return (
     <Layout breadcrumb="Abbonamenti">
-      <section className="abb-dashboard">
-        <div className="abb-piano-attivo">
-          <div className="abb-piano-left">
-            <span className="abb-piano-label">Piano attivo</span>
-            <span className="abb-piano-nome">{NOMI_PIANI[pianoAttivo] ?? pianoAttivo}</span>
-            <span className="abb-piano-sub">{sottotitolo}</span>
+      <main className="pg pg--stretta">
+        <section className="pg-hero">
+          <div className="pg-hero-ttl">
+            <h1>
+              <i className="ti ti-crown" />
+              Abbonamento
+            </h1>
+            <p>Scegli il piano adatto al tuo garage. Puoi cambiare o disdire quando vuoi.</p>
           </div>
-          <span className="abb-piano-stato">
-            <span className="abb-piano-stato-dot" />
-            Attivo
-          </span>
-        </div>
+          <div className="abb2-attuale">
+            <small>Piano attuale</small>
+            <b>
+              {NOMI_PIANI[pianoAttivo] ?? pianoAttivo}
+              <span className="abb2-attivo">Attivo</span>
+            </b>
+            <span>{sottotitolo}</span>
+          </div>
+          <div className="abb2-uso">
+            <span>
+              <b>Veicoli nel garage</b>
+              <b>{limite ? `${veicoli.length} / ${limite}` : `${veicoli.length} · illimitati`}</b>
+            </span>
+            <div className="abb2-uso-bar">
+              <i style={{ width: `${usoPct}%` }} />
+            </div>
+            {limite !== null && veicoli.length >= limite && (
+              <span className="abb2-uso-nota">Hai raggiunto il limite del piano</span>
+            )}
+          </div>
+        </section>
 
-        <div className="abb-section-title">Scegli il tuo piano</div>
-
-        <div className="abb-piani-grid">
+        <div className="abb2-piani">
           {PIANI.map((piano) => {
             const attivo = piano.id === pianoAttivo;
-            const classi = [
-              "abb-piano-card",
-              piano.free ? "free" : "",
-              piano.popolare ? "popolare" : "",
-              attivo ? "attivo" : "",
-            ]
-              .filter(Boolean)
-              .join(" ");
-
+            const reco = piano.id === consigliato;
             return (
-              <div
-                key={piano.id}
-                className={classi}
-                onMouseMove={onTilt}
-                onMouseLeave={resetTilt}
-              >
-                {piano.popolare && <span className="abb-popolare-badge">Più popolare</span>}
-                {attivo && (
-                  <span className="abb-attivo-badge">
-                    <span className="dot" /> Attivo
-                  </span>
-                )}
-                <div className="abb-piano-card-content">
-                  <div>
-                    <div className="abb-piano-card-nome">{piano.nome}</div>
-                    <div className="abb-piano-card-prezzo">
-                      {piano.prezzo}
-                      {piano.suffisso && <span>{piano.suffisso}</span>}
-                    </div>
-                    <div className="abb-piano-card-desc">{piano.descrizione}</div>
-                  </div>
-                  <div className="abb-piano-features">
-                    {piano.feature.map((f) => (
-                      <div key={f.label} className={`abb-feature ${f.ok ? "ok" : "no"}`}>
-                        <i className={`fa-solid ${f.ok ? "fa-check" : "fa-xmark"}`} /> {f.label}
-                      </div>
-                    ))}
-                  </div>
-                  {attivo ? (
-                    <button type="button" className="abb-btn status">
-                      <i className="fa-solid fa-check" /> Piano attuale
-                    </button>
-                  ) : piano.id === "base" ? (
-                    <button type="button" className="abb-btn ghost" onClick={() => void disdici()}>
-                      <i className="fa-solid fa-rotate-left" /> Passa al Base
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="abb-btn cta"
-                      onClick={() => void avviaCheckout(piano.id)}
-                    >
-                      <i className="fa-solid fa-credit-card" /> Abbonati ora
-                    </button>
-                  )}
+              <article key={piano.id} className={`abb2-piano${attivo ? " attivo" : ""}${reco ? " reco" : ""}`}>
+                {attivo && <span className="abb2-ribbon ok">PIANO ATTUALE</span>}
+                {reco && <span className="abb2-ribbon">CONSIGLIATO PER TE</span>}
+                <div className="abb2-ic">
+                  <i className={`ti ${piano.icona}`} />
                 </div>
-              </div>
+                <h3>{piano.nome}</h3>
+                <p className="abb2-desc">{piano.descrizione}</p>
+                <div className="abb2-prezzo">
+                  <b>{piano.prezzo}</b>
+                  {piano.suffisso && <span>{piano.suffisso}</span>}
+                </div>
+                <ul className="abb2-feat">
+                  {piano.feature.map((f) => (
+                    <li key={f.label} className={f.ok ? "si" : "no"}>
+                      <i className={`ti ${f.ok ? "ti-check" : "ti-x"}`} />
+                      {f.label}
+                    </li>
+                  ))}
+                </ul>
+                {attivo ? (
+                  <button type="button" className="btn-dash btn-dash-ok">
+                    <i className="ti ti-circle-check" /> Il tuo piano
+                  </button>
+                ) : piano.id === "base" ? (
+                  <button type="button" className="btn-dash btn-dash-ghost" onClick={() => void disdici()}>
+                    <i className="ti ti-arrow-back-up" /> Passa a Base
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className={`btn-dash ${reco ? "btn-dash-primary" : "btn-dash-soft"}`}
+                    onClick={() => void avviaCheckout(piano.id)}
+                  >
+                    <i className="ti ti-credit-card" /> Passa a {piano.nome}
+                  </button>
+                )}
+              </article>
             );
           })}
         </div>
 
-        <div className="abb-stripe-note">
-          <i className="fa-solid fa-lock" />
-          Il pagamento è gestito in modo sicuro da Stripe. Non conserviamo i dati della tua carta.
-          Disdici in qualsiasi momento.
+        <div className="abb2-trust">
+          <div>
+            <i className="ti ti-lock" />
+            <span><b>Pagamento sicuro con Stripe</b>Non conserviamo i dati della tua carta.</span>
+          </div>
+          <div>
+            <i className="ti ti-calendar-x" />
+            <span><b>Disdici quando vuoi</b>Passando a Base il rinnovo si interrompe.</span>
+          </div>
+          <div>
+            <i className="ti ti-database" />
+            <span><b>I tuoi dati restano tuoi</b>Cambiando piano non perdi lo storico.</span>
+          </div>
         </div>
-      </section>
+      </main>
     </Layout>
   );
 }

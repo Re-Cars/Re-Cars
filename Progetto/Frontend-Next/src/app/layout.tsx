@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 
+import RegistraServiceWorker from "@/components/pwa/RegistraServiceWorker";
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
@@ -13,6 +14,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "RE|CARS",
   description: "Gestione veicoli e prenotazione officine — Tu guida al resto pensiamo noi",
+  applicationName: "RE|CARS",
+  // installata su iPhone: a tutto schermo, barra di stato sopra lo sfondo scuro
+  appleWebApp: { capable: true, title: "RE|CARS", statusBarStyle: "black-translucent" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#141445",
 };
 
 export default function RootLayout({
@@ -40,6 +48,7 @@ export default function RootLayout({
           storageKey="theme"
         >
           <AuthProvider>{children}</AuthProvider>
+          <RegistraServiceWorker />
         </ThemeProvider>
       </body>
     </html>

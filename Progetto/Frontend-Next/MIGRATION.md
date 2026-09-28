@@ -46,15 +46,15 @@ produzione via env `FRONTEND_ORIGIN`.
 | `landing.html` (saracinesca + form nella stessa pagina) | `/` + `/login` + `/registrazione` | la saracinesca si solleva e naviga a `/login`; i form step-wizard sono identici |
 | `homepage.html` | `/homepage` | card circolari, cerchi pulsanti, bottone Cerca, switcher fluttuante |
 | `account.html` | `/account` | profilo, avatar + crop, modifica inline, abbonamento, zona pericolosa |
-| `veicoli.html` | `/veicoli` | badge Bollo/RCA, azioni info/elimina |
-| `cerca-veicolo.html` | `/cerca-veicolo` | validazione targa, storico 5 ricerche, gestione 409/403 |
+| `veicoli.html` | ~~`/veicoli`~~ | rimossa: il garage è nella dashboard `/homepage` |
+| `cerca-veicolo.html` | ~~`/cerca-veicolo`~~ | rimossa: sostituita dall'overlay "Aggiungi veicolo" della dashboard (stessa validazione, storico ricerche e gestione 409/403) |
 | `abbonamenti.html` | `/abbonamenti` | card con tilt 3D, checkout Stripe server-driven, disdetta |
 | `info-veicolo.html` | `/info-veicolo` | si ricarica al cambio veicolo dallo switcher |
 | `pagamento.html` | `/pagamento` | legge `session_id` dall'URL e ricarica il piano dal backend |
 | `prenotazioni.html` | `/prenotazioni` | ricerca officine, filtri categoria, mappa **Leaflet** (npm, import dinamico client-only) + geocodifica Nominatim, GPS, modal prenotazione con slot orari, "Le mie prenotazioni" |
 | `storico-interventi.html` | `/storico-interventi` | CRUD interventi, filtri, riepilogo spese mese/anno, **report PDF** (jsPDF + jspdf-autotable da npm; font Inter e logo in `src/lib/pdf-assets.ts`, generazione in `src/lib/pdf-report.ts`, caricati lazy) |
-| `recensioni.html` | `/recensioni` | mockup UI senza backend, come il vanilla (stelle interattive) |
-| `problemi.html` | `/problemi` | mockup UI senza backend, come il vanilla |
+| `recensioni.html` | ~~`/recensioni`~~ | rimossa: era un mockup senza backend e nessuna pagina ci portava più |
+| `problemi.html` | ~~`/problemi`~~ | rimossa: era un mockup senza backend e nessuna pagina ci portava più |
 | `info-domande.html` | `/info-domande` | FAQ accordion (apertura singola) |
 | `termini-privacy.html` | `/termini-privacy` | contenuto statico |
 | `officina.html` | `/officina` | dashboard: stats, switcher veicoli oggi, prenotazioni con conferma/annulla/completa |
@@ -137,9 +137,9 @@ src/
 │   ├── layout.tsx           # Inter, ThemeProvider, AuthProvider, Font Awesome
 │   ├── globals.css          # design system core (token light/dark + componenti condivisi)
 │   ├── page.tsx             # landing (saracinesca animata)
-│   ├── login/  registrazione/  homepage/  account/  veicoli/
-│   ├── cerca-veicolo/  abbonamenti/  info-veicolo/  pagamento/
-│   ├── prenotazioni/  storico-interventi/  recensioni/  problemi/
+│   ├── login/  registrazione/  homepage/  account/
+│   ├── abbonamenti/  info-veicolo/  pagamento/
+│   ├── prenotazioni/  storico-interventi/
 │   ├── info-domande/  termini-privacy/
 │   ├── officina/  prenotazioni-officina/  officina-agenda/
 │   ├── profilo-officina/  abbonamenti-officina/  pagamento-officina/

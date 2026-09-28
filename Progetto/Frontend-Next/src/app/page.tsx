@@ -3,9 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import BrandTitle from "@/components/BrandTitle";
+
 /**
  * Landing page: saracinesca del garage con sequenza animata
- * (sfondo → logo tracciato → titolo → slogan → bottone ACCEDI).
+ * (sfondo → logo tracciato insieme al titolo → slogan → bottone ACCEDI).
  * "Aprire il garage" (scroll, swipe o click su ACCEDI) solleva la
  * saracinesca e porta alla pagina di login.
  */
@@ -23,7 +25,9 @@ export default function LandingPage() {
   const logoPathRef = useRef<SVGPathElement>(null);
   const apertoRef = useRef(false);
 
-  // sequenza di animazione (tempi identici a functions-auth.js)
+  // sequenza: sfondo → logo tracciato; il titolo parte insieme al logo
+  // (stanghetta, poi RE, poi CARS: tempi in .brand-title--anim), lo slogan
+  // arriva a logo completato, poi bottone ACCEDI e "Scorri"
   useEffect(() => {
     const path = logoPathRef.current;
     if (path) {
@@ -33,7 +37,7 @@ export default function LandingPage() {
       path.style.setProperty("--path-len", `${len}`);
     }
 
-    const T = { bgFade: 800, bgPause: 400, logoDraw: 2200, titleFade: 700, sloganWait: 250, btnWait: 500 };
+    const T = { bgFade: 800, bgPause: 400, titoloDopo: 250, logoDraw: 2200, sloganWait: 150, btnWait: 700 };
     const timers: ReturnType<typeof setTimeout>[] = [];
     let t = 0;
     timers.push(setTimeout(() => setFase((f) => ({ ...f, bg: true })), t));
@@ -44,12 +48,11 @@ export default function LandingPage() {
         timers.push(setTimeout(() => setFase((f) => ({ ...f, logoAnim: true })), 80));
       }, t),
     );
-    t += T.logoDraw;
-    timers.push(setTimeout(() => setFase((f) => ({ ...f, titolo: true })), t));
-    t += T.titleFade + T.sloganWait;
+    timers.push(setTimeout(() => setFase((f) => ({ ...f, titolo: true })), t + T.titoloDopo));
+    t += T.logoDraw + T.sloganWait;
     timers.push(setTimeout(() => setFase((f) => ({ ...f, slogan: true })), t));
-    t += 400;
-    timers.push(setTimeout(() => setFase((f) => ({ ...f, bottone: true })), t + T.btnWait));
+    t += T.btnWait;
+    timers.push(setTimeout(() => setFase((f) => ({ ...f, bottone: true })), t));
 
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -107,7 +110,7 @@ export default function LandingPage() {
                 />
               </svg>
             </div>
-            <h1 className={`landing-title${fase.titolo ? " show-title" : ""}`}>RE|CARS</h1>
+            <BrandTitle as="h1" className="landing-brand" animato visibile={fase.titolo} />
             <p className={`landing-subtitle${fase.slogan ? " show-subtitle" : ""}`}>
               <i>Tu guida al resto pensiamo noi</i>
             </p>

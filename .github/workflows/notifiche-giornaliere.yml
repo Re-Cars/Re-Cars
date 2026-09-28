@@ -1,0 +1,43 @@
+# Ogni mattina chiede al backend di mandare le notifiche push del giorno
+# (scadenze di bollo/assicurazione/revisione e promemoria degli appuntamenti
+# di domani): POST /notifiche/controllo-giornaliero.
+#
+# Serve configurare in GitHub -> Settings -> Secrets and variables -> Actions:
+#   BACKEND_URL            es. https://recars-backend.onrender.com
+#   NOTIFICHE_CRON_SECRET  uguale alla variabile d'ambiente del backend su Render
+# Senza i due secret il job non fa nulla. I job pianificati di GitHub girano
+# solo dal branch principale (main), quindi si attiva dopo il merge; si può
+# lanciare a mano da Actions -> "Notifiche giornaliere" -> Run workflow.
+name: Notifiche giornaliere
+
+on:
+  schedule:
+    # 06:00 UTC = 08:00 in Italia con l'ora legale, 07:00 con l'ora solare
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  controllo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Scadenze e promemoria
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          NOTIFICHE_CRON_SECRET: ${{ secrets.NOTIFICHE_CRON_SECRET }}
+        run: |
+          if [ -z "$BACKEND_URL" ] || [ -z "$NOTIFICHE_CRON_SECRET" ]; then
+            echo "Secret BACKEND_URL / NOTIFICHE_CRON_SECRET non configurati: niente da fare."
+            exit 0
+          fi
+          # il piano gratuito di Render addormenta il servizio: i primi tentativi lo
+          # svegliano. Rilanciare è sicuro, il backend non manda due volte lo stesso avviso.
+          for tentativo in 1 2 3; do
+            if curl -fsS --max-time 120 -X POST "$BACKEND_URL/notifiche/controllo-giornaliero" \
+                 -H "x-cron-secret: $NOTIFICHE_CRON_SECRET"; then
+              exit 0
+            fi
+            echo "Tentativo $tentativo non riuscito, riprovo tra 30 secondi"
+            sleep 30
+          done
+          exit 1

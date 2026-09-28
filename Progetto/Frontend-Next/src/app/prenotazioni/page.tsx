@@ -2,9 +2,11 @@
 
 import type * as Leaflet from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import Layout from "@/components/Layout";
+import Overlay from "@/components/ui/Overlay";
+import { useSfumaturaScroll } from "@/hooks/useSfumaturaScroll";
 import {
   aggiornaStatoPrenotazione,
   creaPrenotazione,
@@ -13,15 +15,16 @@ import {
   type PrenotazioneUtente,
 } from "@/lib/api";
 import { distanzaKm, formattaKm } from "@/lib/geo";
+import { calcolaPercorso, formattaDurata, type Percorso, type Punto } from "@/lib/percorso";
 import type { OfficinaCatalogo } from "@/lib/types";
 import "@/styles/prenotazione-utente.css";
 
 const SLOT_ORARI = ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"];
 const COLORI_AVATAR = ["#f97316", "#ea580c", "#d97706", "#16a34a", "#1e3a8a", "#7c3aed", "#0891b2"];
 const ICONE_CATEGORIA: Record<string, string> = {
-  Meccanica: "fa-screwdriver-wrench",
-  Carrozzeria: "fa-car-burst",
-  Elettrico: "fa-bolt",
+  Meccanica: "ti-tool",
+  Carrozzeria: "ti-car-crash",
+  Elettrico: "ti-bolt",
 };
 
 /** Officina normalizzata come in functions-prenotazione-utente.js. */
@@ -54,7 +57,14 @@ function normalizzaOfficina(o: OfficinaCatalogo): Officina {
     recensioni: parseInt(String(o.recensioni ?? 12), 10),
     aperta: o.aperta !== undefined ? o.aperta : true,
     orario: o.orario ?? "08:00 - 18:00",
-    disponibilita: o.disponibilita ?? "Immediata",
+    // il backend manda un booleano: senza questa conversione .toLowerCase()
+    // nella scheda dell'officina faceva crashare la vista "Trova officina"
+    disponibilita:
+      typeof o.disponibilita === "string"
+        ? o.disponibilita
+        : o.disponibilita === false
+          ? "Su richiesta"
+          : "Immediata",
     indirizzo: o.indirizzo ?? "Indirizzo non specificato",
     telefono: o.telefono ?? "",
     lat: parseFloat(String(o.latitude ?? o.lat ?? 45.4642)),
@@ -74,6 +84,21 @@ const STATO_LABEL: Record<string, string> = {
   confermata: "Confermata",
   annullata: "Annullata",
   completata: "Completata",
+};
+
+const STATO_LABEL_PLURALE: Record<string, string> = {
+  in_attesa: "In attesa",
+  confermata: "Confermate",
+  annullata: "Annullate",
+  completata: "Completate",
+};
+
+/** Colori di stato: ambra in attesa, verde confermata, azzurro completata, rosso annullata. */
+const COLORE_STATO: Record<string, string> = {
+  in_attesa: "#f59e0b",
+  confermata: "#22c55e",
+  completata: "#38a3d1",
+  annullata: "#ef4444",
 };
 
 const STATO_ICONA: Record<string, string> = {
@@ -132,18 +157,81 @@ function Stelle({ valore }: { valore: number }) {
 
 type StatoLista = "skeleton" | "lista" | "vuoto" | "errore";
 
+type Vista = "prenotazioni" | "officine";
+type FiltroStato = "tutte" | "in_attesa" | "confermata" | "completata" | "annullata";
+
+const MESI_BREVI = ["GEN", "FEB", "MAR", "APR", "MAG", "GIU", "LUG", "AGO", "SET", "OTT", "NOV", "DIC"];
+const GIORNI_BREVI = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
+const STATI_FILTRO: FiltroStato[] = ["in_attesa", "confermata", "completata", "annullata"];
+
+/** Giorni interi da oggi alla data (negativi se passata). */
+function giorniDa(iso: string): number {
+  const d = new Date(iso);
+  const oggi = new Date();
+  d.setHours(0, 0, 0, 0);
+  oggi.setHours(0, 0, 0, 0);
+  return Math.round((d.getTime() - oggi.getTime()) / 86_400_000);
+}
+
+function etichettaTra(giorni: number): string {
+  if (giorni === 0) return "oggi";
+  if (giorni === 1) return "domani";
+  return `tra ${giorni} giorni`;
+}
+
+const escapeHtml = (s: string) =>
+  s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] ?? c);
+
+/** File .ics di un appuntamento (durata indicativa di un'ora), scaricato dal browser. */
+function scaricaIcs(p: PrenotazioneUtente, servizio: string) {
+  const inizio = new Date(p.dataprenotazione);
+  const fine = new Date(inizio.getTime() + 60 * 60 * 1000);
+  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const esc = (s: string) => s.replace(/[\\,;]/g, (c) => `\\${c}`).replace(/\n/g, "\\n");
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//RE|CARS//Prenotazioni//IT",
+    "BEGIN:VEVENT",
+    `UID:recars-prenotazione-${p.id}@recars`,
+    `DTSTAMP:${fmt(new Date())}`,
+    `DTSTART:${fmt(inizio)}`,
+    `DTEND:${fmt(fine)}`,
+    `SUMMARY:${esc(`${servizio} · ${p.officina?.nome ?? "Officina"}`)}`,
+    p.officina?.indirizzo ? `LOCATION:${esc(p.officina.indirizzo)}` : "",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ]
+    .filter(Boolean)
+    .join("\r\n");
+  const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `recars-prenotazione-${p.id}.ics`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+const urlIndicazioni = (indirizzo: string) =>
+  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(indirizzo)}`;
+
 /**
- * Cerca Officina: ricerca testuale + GPS, filtri per categoria, lista con
- * rating e distanza, mappa Leaflet/OpenStreetMap, dettaglio con prenotazione
- * (modal servizio/data/slot orario) e lista "Le mie prenotazioni".
+ * Prenotazioni: hero con contatori e le due viste della pagina,
+ * "Le mie prenotazioni" (mappa con gli appuntamenti + prossimo appuntamento
+ * e lista compatta per stato) e "Trova officina" (ricerca, GPS con distanza
+ * reale, mappa + scheda dell'officina selezionata e prenotazione).
  */
 export default function PrenotazioniPage() {
+  const [vista, setVista] = useState<Vista>("prenotazioni");
   const [officine, setOfficine] = useState<Officina[]>([]);
   const [statoLista, setStatoLista] = useState<StatoLista>("skeleton");
   const [ricerca, setRicerca] = useState("");
+  const [ricercaPren, setRicercaPren] = useState("");
+  const [filtroStato, setFiltroStato] = useState<FiltroStato>("tutte");
   const [filtroCategoria, setFiltroCategoria] = useState<string | null>(null);
   const [sortAsc, setSortAsc] = useState(true);
   const [selezionata, setSelezionata] = useState<Officina | null>(null);
+  const [prenSelezionataId, setPrenSelezionataId] = useState<number | null>(null);
   const [prenotazioniUtente, setPrenotazioniUtente] = useState<PrenotazioneUtente[] | null>(null);
   /** Posizione GPS dell'utente: null finché non concessa/rilevata. */
   const [posUtente, setPosUtente] = useState<{ lat: number; lng: number } | null>(null);
@@ -155,6 +243,7 @@ export default function PrenotazioniPage() {
   const [slot, setSlot] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [feedbackModal, setFeedbackModal] = useState<{ testo: string; errore: boolean } | null>(null);
+  const [inPrenotazione, setInPrenotazione] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   // overlay dettagli prenotazione
@@ -163,8 +252,17 @@ export default function PrenotazioniPage() {
 
   const mapDivRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Leaflet.Map | null>(null);
-  const markerRef = useRef<Leaflet.Marker | null>(null);
+  const livelloRef = useRef<Leaflet.LayerGroup | null>(null);
+  const rottaRef = useRef<Leaflet.LayerGroup | null>(null);
+  /** Percorso stradale verso la prenotazione o l'officina selezionata. */
+  const [percorso, setPercorso] = useState<{
+    destinazione: string;
+    stato: "calcolo" | "ok" | "errore";
+    dati?: Percorso;
+  } | null>(null);
+  const percorsoAttivoRef = useRef(false);
   const leafletRef = useRef<typeof Leaflet | null>(null);
+  const [mappaPronta, setMappaPronta] = useState(false);
 
   const mostraToast = (msg: string) => {
     setToast(msg);
@@ -186,12 +284,16 @@ export default function PrenotazioniPage() {
     }
   }, []);
 
-  useEffect(() => {
-    void caricaOfficine();
+  const caricaPrenotazioni = useCallback(() => {
     getPrenotazioniUtente()
       .then(setPrenotazioniUtente)
-      .catch(() => setPrenotazioniUtente([]));
-  }, [caricaOfficine]);
+      .catch(() => setPrenotazioniUtente((p) => p ?? []));
+  }, []);
+
+  useEffect(() => {
+    void caricaOfficine();
+    caricaPrenotazioni();
+  }, [caricaOfficine, caricaPrenotazioni]);
 
   // tentativo automatico di geolocalizzazione: se negato o non supportato si
   // resta senza distanze (nessun "0 km" finto) finché non si preme GPS
@@ -204,83 +306,12 @@ export default function PrenotazioniPage() {
     );
   }, []);
 
-  /* ---------- mappa Leaflet (import dinamico, client-only) ---------- */
-  useEffect(() => {
-    let smontato = false;
-
-    const aggiorna = async () => {
-      if (!selezionata || !mapDivRef.current) return;
-      if (!leafletRef.current) {
-        leafletRef.current = await import("leaflet");
-      }
-      if (smontato) return;
-      const L = leafletRef.current;
-
-      let { lat, lng } = selezionata;
-      if (!lat || !lng) {
-        // geocodifica Nominatim come nel vanilla
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(selezionata.indirizzo)}&limit=1`,
-          );
-          const data: { lat: string; lon: string }[] = await res.json();
-          if (data.length > 0) {
-            lat = parseFloat(data[0].lat);
-            lng = parseFloat(data[0].lon);
-          }
-        } catch {
-          lat = 45.4642;
-          lng = 9.19;
-        }
-      }
-      if (smontato) return;
-
-      if (!mapRef.current) {
-        mapRef.current = L.map(mapDivRef.current, { zoomControl: true, scrollWheelZoom: false }).setView(
-          [lat, lng],
-          14,
-        );
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "© OpenStreetMap contributors",
-          maxZoom: 19,
-        }).addTo(mapRef.current);
-      } else {
-        mapRef.current.setView([lat, lng], 14, { animate: true });
-      }
-
-      markerRef.current?.remove();
-      const icona = L.divIcon({
-        className: "",
-        html: `<div style="width:36px;height:36px;background:#f97316;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1rem;box-shadow:0 0 0 3px rgba(249,115,22,0.3);border:2px solid #fff;">${selezionata.nome.charAt(0)}</div>`,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18],
-        popupAnchor: [0, -20],
-      });
-      markerRef.current = L.marker([lat, lng], { icon: icona })
-        .addTo(mapRef.current)
-        .bindPopup(`<strong>${selezionata.nome}</strong><br><small>${selezionata.indirizzo}</small>`)
-        .openPopup();
-    };
-
-    void aggiorna();
-    return () => {
-      smontato = true;
-    };
-  }, [selezionata]);
-
-  // distruggi la mappa allo smontaggio della pagina
-  useEffect(
-    () => () => {
-      mapRef.current?.remove();
-      mapRef.current = null;
-    },
-    [],
-  );
-
   /* ---------- distanza ---------- */
   /** Distanza officina-utente in km, null senza posizione GPS. */
-  const distanzaDi = (o: Officina): number | null =>
-    posUtente ? distanzaKm(posUtente.lat, posUtente.lng, o.lat, o.lng) : null;
+  const distanzaDi = useCallback(
+    (o: Officina): number | null => (posUtente ? distanzaKm(posUtente.lat, posUtente.lng, o.lat, o.lng) : null),
+    [posUtente],
+  );
 
   /** Etichetta distanza: mai "0 km" quando la posizione non è disponibile. */
   const etichettaDistanza = (o: Officina, assente: string): string => {
@@ -288,7 +319,39 @@ export default function PrenotazioniPage() {
     return km === null ? assente : formattaKm(km);
   };
 
-  /* ---------- filtri / ordinamento ---------- */
+  /* ---------- prenotazioni: ordinamento, filtri, prossimo appuntamento ---------- */
+  const tutte = useMemo(
+    () =>
+      [...(prenotazioniUtente ?? [])].sort(
+        (a, b) => new Date(a.dataprenotazione).getTime() - new Date(b.dataprenotazione).getTime(),
+      ),
+    [prenotazioniUtente],
+  );
+  const contaStato = (s: string) => tutte.filter((p) => (p.stato ?? "in_attesa") === s).length;
+  const future = tutte.filter(
+    (p) => giorniDa(p.dataprenotazione) >= 0 && p.stato !== "annullata" && p.stato !== "completata",
+  );
+  const prossima =
+    future.find((p) => p.stato === "confermata") ?? future.find((p) => p.stato === "in_attesa") ?? null;
+
+  const qPren = ricercaPren.toLowerCase().trim();
+  const prenFiltrate = tutte
+    .filter((p) => filtroStato === "tutte" || (p.stato ?? "in_attesa") === filtroStato)
+    .filter(
+      (p) =>
+        !qPren ||
+        [p.officina?.nome, p.officina?.indirizzo, parseDescrizione(p.descrizione).servizio].some((t) =>
+          t?.toLowerCase().includes(qPren),
+        ),
+    );
+  const prenProssime = prenFiltrate.filter((p) => giorniDa(p.dataprenotazione) >= 0);
+  // le passate dalla più recente
+  const prenPassate = prenFiltrate.filter((p) => giorniDa(p.dataprenotazione) < 0).reverse();
+
+  const inEvidenza =
+    tutte.find((p) => p.id === prenSelezionataId) ?? prossima ?? tutte[tutte.length - 1] ?? null;
+
+  /* ---------- officine: filtri / ordinamento ---------- */
   const categorie = [...new Set(officine.map((o) => o.categoria).filter(Boolean))];
   const q = ricerca.toLowerCase().trim();
   const visibili = officine
@@ -308,6 +371,224 @@ export default function PrenotazioniPage() {
       if (da === null || db === null) return 0;
       return sortAsc ? da - db : db - da;
     });
+
+  // lista a destra: stesso scorrimento con sfumatura del garage in dashboard
+  const [listaRef, sfumaLista] = useSfumaturaScroll<HTMLDivElement>(
+    `${vista}-${prenFiltrate.length}-${visibili.length}-${statoLista}-${prenotazioniUtente === null}`,
+  );
+
+  /* ---------- mappa Leaflet (import dinamico, client-only) ---------- */
+  useEffect(() => {
+    let smontato = false;
+    void (async () => {
+      if (!mapDivRef.current || mapRef.current) return;
+      leafletRef.current ??= await import("leaflet");
+      if (smontato || !mapDivRef.current) return;
+      const L = leafletRef.current;
+      mapRef.current = L.map(mapDivRef.current, { zoomControl: true, scrollWheelZoom: false }).setView(
+        [41.9, 12.5],
+        6,
+      );
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+        maxZoom: 19,
+      }).addTo(mapRef.current);
+      livelloRef.current = L.layerGroup().addTo(mapRef.current);
+      rottaRef.current = L.layerGroup().addTo(mapRef.current);
+      setMappaPronta(true);
+    })();
+    return () => {
+      smontato = true;
+    };
+  }, []);
+
+  // distruggi la mappa allo smontaggio della pagina
+  useEffect(
+    () => () => {
+      mapRef.current?.remove();
+      mapRef.current = null;
+    },
+    [],
+  );
+
+  // la mappa si ridisegna quando cambiano gli id mostrati, non a ogni array ricreato dal render
+  const idPrenMostrate = prenFiltrate.map((p) => p.id).join(",");
+  const idOfficineMostrate = visibili.map((o) => o.id).join(",");
+
+  // pin: appuntamenti (colore dello stato, giorno del mese) oppure officine
+  useEffect(() => {
+    const L = leafletRef.current;
+    const mappa = mapRef.current;
+    const livello = livelloRef.current;
+    if (!mappaPronta || !L || !mappa || !livello) return;
+    livello.clearLayers();
+
+    const pin = (colore: string, testo: string, grande: boolean) =>
+      L.divIcon({
+        className: "",
+        html: `<div class="pr-pin${grande ? " grande" : ""}" style="--c:${colore}"><b>${escapeHtml(testo)}</b></div>`,
+        iconSize: grande ? [44, 44] : [34, 34],
+        iconAnchor: grande ? [22, 44] : [17, 34],
+        popupAnchor: [0, grande ? -44 : -34],
+      });
+
+    // la barra sotto la mappa cambia altezza tra le due viste: Leaflet va
+    // riallineato alle dimensioni reali prima di centrare
+    mappa.invalidateSize({ animate: false });
+    const centra = (lat: number, lng: number, zoom: number) => {
+      // con un percorso sulla mappa l'inquadratura la decide il percorso
+      if (!percorsoAttivoRef.current) mappa.setView([lat, lng], zoom, { animate: false });
+    };
+
+    const punti: [number, number][] = [];
+    if (posUtente) {
+      L.marker([posUtente.lat, posUtente.lng], {
+        icon: L.divIcon({ className: "", html: '<div class="pr-io"></div>', iconSize: [16, 16], iconAnchor: [8, 8] }),
+        title: "La tua posizione",
+      }).addTo(livello);
+    }
+
+    if (vista === "prenotazioni") {
+      for (const p of prenFiltrate) {
+        const o = officine.find((x) => x.id === p.id_officina);
+        if (!o) continue;
+        const stato = p.stato ?? "in_attesa";
+        const grande = p.id === inEvidenza?.id;
+        L.marker([o.lat, o.lng], {
+          icon: pin(COLORE_STATO[stato] ?? "#f97316", String(new Date(p.dataprenotazione).getDate()), grande),
+          zIndexOffset: grande ? 1000 : 0,
+        })
+          .on("click", () => setPrenSelezionataId(p.id))
+          .addTo(livello);
+        punti.push([o.lat, o.lng]);
+      }
+      const o = inEvidenza ? officine.find((x) => x.id === inEvidenza.id_officina) : null;
+      if (o) centra(o.lat, o.lng, 13);
+      else if (punti.length) mappa.fitBounds(punti, { padding: [40, 40], maxZoom: 13 });
+    } else {
+      for (const o of visibili) {
+        const grande = o.id === selezionata?.id;
+        L.marker([o.lat, o.lng], {
+          icon: pin("#f97316", o.nome.charAt(0).toUpperCase(), grande),
+          zIndexOffset: grande ? 1000 : 0,
+        })
+          .on("click", () => setSelezionata(o))
+          .addTo(livello);
+      }
+      if (selezionata) centra(selezionata.lat, selezionata.lng, 14);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mappaPronta, vista, officine, posUtente, selezionata?.id, inEvidenza?.id, idPrenMostrate, idOfficineMostrate]);
+
+  /* ---------- percorso sulla mappa ---------- */
+  const posizioneAttuale = (): Promise<Punto> =>
+    posUtente
+      ? Promise.resolve(posUtente)
+      : new Promise((ok, ko) => {
+          if (!navigator.geolocation) return ko(new Error("GPS non supportato"));
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const punto = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+              setPosUtente(punto);
+              ok(punto);
+            },
+            ko,
+            { timeout: 10000 },
+          );
+        });
+
+  const mostraPercorso = async (destinazione: string, verso: Punto) => {
+    setPercorso({ destinazione, stato: "calcolo" });
+    try {
+      const da = await posizioneAttuale();
+      const dati = await calcolaPercorso(da, verso);
+      setPercorso((p) => (p?.destinazione === destinazione ? { destinazione, stato: "ok", dati } : p));
+    } catch (err) {
+      console.error("Percorso non disponibile:", err);
+      setPercorso((p) => (p?.destinazione === destinazione ? { destinazione, stato: "errore" } : p));
+      mostraToast("Percorso non disponibile: puoi aprirlo in Google Maps");
+    }
+  };
+
+  // il percorso vale per la selezione in cui è stato chiesto
+  const idDestinazione = vista === "prenotazioni" ? `pren-${inEvidenza?.id}` : `off-${selezionata?.id}`;
+  useEffect(() => {
+    setPercorso((p) => (p && p.destinazione !== idDestinazione ? null : p));
+  }, [idDestinazione]);
+
+  // disegno: bordo bianco sotto la linea arancione, inquadratura su tutto il tragitto
+  useEffect(() => {
+    const L = leafletRef.current;
+    const mappa = mapRef.current;
+    const rotta = rottaRef.current;
+    percorsoAttivoRef.current = percorso?.stato === "ok";
+    if (!mappaPronta || !L || !mappa || !rotta) return;
+    rotta.clearLayers();
+    if (percorso?.stato !== "ok" || !percorso.dati) return;
+    const linea = percorso.dati.linea;
+    L.polyline(linea, { color: "#ffffff", weight: 9, opacity: 0.9, lineJoin: "round" }).addTo(rotta);
+    L.polyline(linea, { color: "#f97316", weight: 5, lineJoin: "round" }).addTo(rotta);
+    mappa.invalidateSize({ animate: false });
+    mappa.fitBounds(L.latLngBounds(linea), { padding: [48, 48] });
+  }, [percorso, mappaPronta]);
+
+  /** Bottoni del percorso nella barra sotto la mappa. */
+  const bottoniPercorso = (destinazione: string, verso: Punto | null, indirizzo: string) => {
+    const attivo = percorso?.destinazione === destinazione ? percorso : null;
+    if (!verso || attivo?.stato === "errore") {
+      return (
+        <a className="btn-dash btn-dash-primary" href={urlIndicazioni(indirizzo)} target="_blank" rel="noopener noreferrer">
+          <i className="ti ti-brand-google-maps" />
+          <span>Apri in Maps</span>
+        </a>
+      );
+    }
+    if (attivo?.stato === "ok") {
+      return (
+        <>
+          <button
+            type="button"
+            className="btn-dash btn-dash-ghost pr-btn-ic"
+            title="Nascondi il percorso"
+            aria-label="Nascondi il percorso"
+            onClick={() => setPercorso(null)}
+          >
+            <i className="ti ti-x" />
+          </button>
+          <a
+            className="btn-dash btn-dash-primary"
+            href={urlIndicazioni(indirizzo)}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Navigazione passo passo in Google Maps"
+          >
+            <i className="ti ti-navigation" />
+            <span>Naviga</span>
+          </a>
+        </>
+      );
+    }
+    return (
+      <button
+        type="button"
+        className="btn-dash btn-dash-primary"
+        disabled={attivo?.stato === "calcolo"}
+        onClick={() => void mostraPercorso(destinazione, verso)}
+      >
+        <i className="ti ti-route" />
+        <span>{attivo?.stato === "calcolo" ? "Calcolo…" : "Indicazioni"}</span>
+      </button>
+    );
+  };
+
+  /** Riga "12,4 km · 18 min in auto" quando il percorso è sulla mappa. */
+  const infoPercorso = (destinazione: string) =>
+    percorso?.destinazione === destinazione && percorso.stato === "ok" && percorso.dati ? (
+      <span className="pr-rotta">
+        <i className="ti ti-car" />
+        {formattaKm(percorso.dati.distanzaKm)} · {formattaDurata(percorso.dati.durataMin)} in auto
+      </span>
+    ) : null;
 
   /* ---------- GPS ---------- */
   const usaGps = () => {
@@ -339,14 +620,17 @@ export default function PrenotazioniPage() {
   };
 
   const confermaPrenotazione = async () => {
-    if (!selezionata) return;
+    if (!selezionata || inPrenotazione) return;
     if (!servizio || !dataPren || !slot) {
-      setFeedbackModal({
-        testo: "Errore: Compila tutti i campi obbligatori (Servizio, Data, Orario).",
-        errore: true,
-      });
+      setFeedbackModal({ testo: "Scegli servizio, giorno e orario.", errore: true });
       return;
     }
+    if (new Date(`${dataPren}T${slot}:00`) <= new Date()) {
+      setFeedbackModal({ testo: "Quell'orario è già passato: scegline uno più avanti.", errore: true });
+      return;
+    }
+    setInPrenotazione(true);
+    setFeedbackModal(null);
     try {
       await creaPrenotazione({
         officinaId: selezionata.id,
@@ -357,12 +641,13 @@ export default function PrenotazioniPage() {
       });
       mostraToast("Prenotazione confermata con successo!");
       setModalAperto(false);
-      getPrenotazioniUtente()
-        .then(setPrenotazioniUtente)
-        .catch(() => undefined);
+      caricaPrenotazioni();
+      setVista("prenotazioni");
     } catch (err) {
       console.error("Errore durante l'invio della prenotazione:", err);
       setFeedbackModal({ testo: "Impossibile elaborare la prenotazione. Riprova più tardi.", errore: true });
+    } finally {
+      setInPrenotazione(false);
     }
   };
 
@@ -373,9 +658,7 @@ export default function PrenotazioniPage() {
       await aggiornaStatoPrenotazione(p.id, "annullata");
       mostraToast("Prenotazione annullata");
       setDettaglioPren(null);
-      getPrenotazioniUtente()
-        .then(setPrenotazioniUtente)
-        .catch(() => undefined);
+      caricaPrenotazioni();
     } catch (err) {
       console.error("Errore durante l'annullamento della prenotazione:", err);
       mostraToast("Impossibile annullare la prenotazione");
@@ -384,522 +667,497 @@ export default function PrenotazioniPage() {
     }
   };
 
-  return (
-    <Layout breadcrumb="Cerca Officine" mostraSwitcher={false}>
-      <main className="section section-no-top">
-        <div className="page-hero">
-          <h1 className="section-title-page">
-            <i className="fa-solid fa-magnifying-glass" /> Cerca Officina
-          </h1>
-          <p className="section-subtitle">Trova la migliore officina vicino a te</p>
+  /* ---------- sottoviste ---------- */
+  const rigaPrenotazione = (p: PrenotazioneUtente) => {
+    const stato = p.stato ?? "in_attesa";
+    const d = new Date(p.dataprenotazione);
+    const giorni = giorniDa(p.dataprenotazione);
+    const { servizio: servizioPren } = parseDescrizione(p.descrizione);
+    const ora = d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+    return (
+      <article
+        key={p.id}
+        className={`pr-row${giorni < 0 ? " passata" : ""}${p.id === inEvidenza?.id ? " attiva" : ""}`}
+        style={{ ["--c" as string]: COLORE_STATO[stato] ?? "#f97316" }}
+        role="button"
+        tabIndex={0}
+        onClick={() => setPrenSelezionataId(p.id)}
+        onKeyDown={(e) => e.key === "Enter" && setPrenSelezionataId(p.id)}
+      >
+        <div className="pr-data">
+          <span>{MESI_BREVI[d.getMonth()]}</span>
+          <b>{String(d.getDate()).padStart(2, "0")}</b>
         </div>
-
-        <div className="search-container">
-          <div className="input-group search-bar-wrapper">
-            <i className="fa-solid fa-magnifying-glass" style={{ color: "var(--text-muted)" }} />
-            <input
-              type="text"
-              placeholder="Tipo di servizio, nome officina..."
-              value={ricerca}
-              onChange={(e) => setRicerca(e.target.value)}
-            />
-            <button type="button" className="btn-info-veicolo btn-gps-spec" onClick={usaGps}>
-              <i className="fa-solid fa-location-crosshairs" /> GPS
-            </button>
+        <div className="pr-main">
+          <div className="pr-nome">{p.officina?.nome ?? "Officina"}</div>
+          <div className="pr-sub">
+            {servizioPren} · {ora}
           </div>
-
-          <div className="categories-wrapper">
-            {categorie.map((cat) => {
-              const attivo = filtroCategoria === cat;
-              return (
-                <span
-                  key={cat}
-                  className="cerca-storico-tag"
-                  style={{
-                    cursor: "pointer",
-                    background: attivo ? "rgba(249,115,22,0.25)" : undefined,
-                    color: attivo ? "#f97316" : undefined,
-                  }}
-                  onClick={() => setFiltroCategoria(attivo ? null : cat)}
-                >
-                  <i className={`fa-solid ${ICONE_CATEGORIA[cat] ?? "fa-wrench"}`} /> {cat}
-                </span>
-              );
-            })}
+          <div className="pr-meta">
+            <span className="pr-stato">
+              <i className={`ti ${STATO_ICONA[stato] ?? "ti-clock"}`} />
+              {STATO_LABEL[stato] ?? stato}
+            </span>
+            {giorni >= 0 && stato !== "annullata" && <span className="pr-tra">{etichettaTra(giorni)}</span>}
           </div>
         </div>
+        <button
+          type="button"
+          className="pr-mini-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            setDettaglioPren(p);
+          }}
+        >
+          Dettagli
+        </button>
+      </article>
+    );
+  };
 
-        <div className="main-grid">
-          {/* Colonna sinistra: lista */}
-          <div className="left-column">
-            <div className="list-meta">
-              <span>
-                {visibili.length} risultat{visibili.length === 1 ? "o" : "i"}
+  // barra sotto la mappa (non più sopra): la mappa resta tutta visibile
+  const barraInEvidenza = () => {
+    if (!inEvidenza) return null;
+    const stato = inEvidenza.stato ?? "in_attesa";
+    const colore = COLORE_STATO[stato] ?? "#f97316";
+    const d = new Date(inEvidenza.dataprenotazione);
+    const giorni = giorniDa(inEvidenza.dataprenotazione);
+    const { servizio: servizioPren } = parseDescrizione(inEvidenza.descrizione);
+    const o = officine.find((x) => x.id === inEvidenza.id_officina);
+    const km = o ? distanzaDi(o) : null;
+    const quando = `${GIORNI_BREVI[d.getDay()]} ${d.getDate()} ${MESI_BREVI[d.getMonth()].toLowerCase()}, ${d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}`;
+    return (
+      <div className="pr-bar" style={{ ["--c" as string]: colore }}>
+        <div className="pr-data pr-data--bar">
+          <span>{MESI_BREVI[d.getMonth()]}</span>
+          <b>{String(d.getDate()).padStart(2, "0")}</b>
+        </div>
+        <div className="pr-bar-main">
+          <div className="pr-bar-top">
+            <span className="pr-bar-lbl">
+              {inEvidenza.id === prossima?.id ? "Prossimo appuntamento" : "Prenotazione selezionata"}
+            </span>
+            <span className="pr-stato" style={{ ["--c" as string]: colore }}>
+              <i className={`ti ${STATO_ICONA[stato] ?? "ti-clock"}`} />
+              {STATO_LABEL[stato] ?? stato}
+            </span>
+          </div>
+          <h3>{inEvidenza.officina?.nome ?? "Officina"}</h3>
+          <div className="pr-bar-info">
+            <span>
+              <i className="ti ti-tool" />
+              {servizioPren}
+            </span>
+            <span>
+              <i className="ti ti-clock" />
+              {quando}
+              {giorni >= 0 && stato !== "annullata" && <b> · {etichettaTra(giorni)}</b>}
+            </span>
+            {inEvidenza.officina?.indirizzo && (
+              <span className="pr-ellissi">
+                <i className="ti ti-map-pin" />
+                {inEvidenza.officina.indirizzo}
+                {km !== null ? ` · ${formattaKm(km)}` : ""}
               </span>
-              <span onClick={() => setSortAsc((v) => !v)} style={{ cursor: "pointer" }}>
-                {sortAsc ? "Più vicine" : "Più lontane"}{" "}
-                <i className={`fa-solid fa-chevron-${sortAsc ? "down" : "up"}`} />
+            )}
+            {infoPercorso(`pren-${inEvidenza.id}`)}
+          </div>
+        </div>
+        <div className="pr-bar-btns">
+          {giorni >= 0 && stato !== "annullata" && (
+            <button
+              type="button"
+              className="btn-dash btn-dash-ghost"
+              title="Aggiungi al calendario"
+              onClick={() => scaricaIcs(inEvidenza, servizioPren)}
+            >
+              <i className="ti ti-calendar-plus" />
+              <span>Calendario</span>
+            </button>
+          )}
+          {inEvidenza.officina?.telefono && (
+            <a className="btn-dash btn-dash-ghost" href={`tel:${inEvidenza.officina.telefono}`} title="Chiama l'officina">
+              <i className="ti ti-phone" />
+              <span>Chiama</span>
+            </a>
+          )}
+          {inEvidenza.officina?.indirizzo &&
+            bottoniPercorso(`pren-${inEvidenza.id}`, o ? { lat: o.lat, lng: o.lng } : null, inEvidenza.officina.indirizzo)}
+        </div>
+      </div>
+    );
+  };
+
+  const barraOfficina = () => {
+    if (!selezionata) return null;
+    return (
+      <div className="pr-bar">
+        <span
+          className="pr-off-av pr-off-av--bar"
+          style={{ background: COLORI_AVATAR[selezionata.nome.charCodeAt(0) % COLORI_AVATAR.length] }}
+        >
+          {selezionata.nome.charAt(0).toUpperCase()}
+        </span>
+        <div className="pr-bar-main">
+          <div className="pr-bar-top">
+            <span className="pr-bar-lbl">{selezionata.specialita}</span>
+            <span
+              className="pr-stato"
+              style={{ ["--c" as string]: selezionata.aperta ? "var(--iv-ok)" : "var(--iv-bad)" }}
+            >
+              {selezionata.aperta ? "Aperta ora" : "Chiusa"}
+            </span>
+          </div>
+          <h3>{selezionata.nome}</h3>
+          <div className="pr-bar-info">
+            <span className="pr-stelle">
+              <Stelle valore={selezionata.stelle} />
+              <b>{selezionata.stelle}</b>
+              <span>({selezionata.recensioni})</span>
+            </span>
+            <span>
+              <i className="ti ti-clock" />
+              {selezionata.orario} · disponibilità {selezionata.disponibilita.toLowerCase()}
+            </span>
+            <span className="pr-ellissi">
+              <i className="ti ti-map-pin" />
+              {selezionata.indirizzo} · {etichettaDistanza(selezionata, "distanza n.d.")}
+            </span>
+            {infoPercorso(`off-${selezionata.id}`)}
+          </div>
+        </div>
+        <div className="pr-bar-btns">
+          {selezionata.telefono && (
+            <a className="btn-dash btn-dash-ghost" href={`tel:${selezionata.telefono}`} title="Chiama l'officina">
+              <i className="ti ti-phone" />
+              <span>Chiama</span>
+            </a>
+          )}
+          {percorso?.destinazione === `off-${selezionata.id}` && percorso.stato === "ok" ? (
+            bottoniPercorso(`off-${selezionata.id}`, selezionata, selezionata.indirizzo)
+          ) : (
+            <button
+              type="button"
+              className="btn-dash btn-dash-ghost"
+              title="Percorso sulla mappa"
+              disabled={percorso?.destinazione === `off-${selezionata.id}` && percorso.stato === "calcolo"}
+              onClick={() => void mostraPercorso(`off-${selezionata.id}`, selezionata)}
+            >
+              <i className="ti ti-route" />
+              <span>Percorso</span>
+            </button>
+          )}
+          <button type="button" className="btn-dash btn-dash-primary" onClick={apriModal}>
+            <i className="ti ti-calendar-plus" />
+            <span>Prenota</span>
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <Layout breadcrumb="Prenotazioni">
+      <main className="pg pren">
+        <section className="pg-hero">
+          <div className="pg-hero-ttl">
+            <h1>
+              <i className="ti ti-calendar-event" />
+              {vista === "prenotazioni" ? "Le mie prenotazioni" : "Trova officina"}
+            </h1>
+            <div className="pr-stats">
+              <span style={{ ["--c" as string]: "var(--accent)" }}>
+                <b>{future.length}</b> in programma
+              </span>
+              <span style={{ ["--c" as string]: COLORE_STATO.in_attesa }}>
+                <b>{contaStato("in_attesa")}</b> in attesa di conferma
+              </span>
+              <span style={{ ["--c" as string]: COLORE_STATO.completata }}>
+                <b>{contaStato("completata")}</b> completate
               </span>
             </div>
-
-            {statoLista === "lista" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {visibili.map((o) => {
-                  const attiva = selezionata?.id === o.id;
-                  const colore = COLORI_AVATAR[o.nome.charCodeAt(0) % COLORI_AVATAR.length];
-                  return (
-                    <div
-                      key={o.id}
-                      className="vehicle-result-card"
-                      style={{
-                        marginTop: 0,
-                        cursor: "pointer",
-                        transition: "0.2s",
-                        background: attiva ? "rgba(249,115,22,0.08)" : "var(--surface)",
-                        border: `1px solid ${attiva ? "rgba(249,115,22,0.4)" : "var(--border)"}`,
-                      }}
-                      onClick={() => setSelezionata(o)}
-                    >
-                      <div style={{ padding: 16, display: "flex", gap: 14 }}>
-                        <div
-                          style={{
-                            width: 45,
-                            height: 45,
-                            background: colore,
-                            borderRadius: 10,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "#fff",
-                            fontWeight: 800,
-                            fontSize: "1.2rem",
-                            flexShrink: 0,
-                          }}
-                        >
-                          {o.nome.charAt(0).toUpperCase()}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 4 }}>
-                            <h3
-                              style={{
-                                margin: 0,
-                                fontSize: "0.95rem",
-                                color: "var(--text)",
-                                fontWeight: 700,
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                              }}
-                            >
-                              {o.nome}
-                            </h3>
-                            <span
-                              style={{
-                                background: o.aperta ? "rgba(74,222,128,0.15)" : "rgba(248,113,113,0.15)",
-                                color: o.aperta ? "#22c55e" : "#f87171",
-                                fontSize: "0.7rem",
-                                padding: "2px 6px",
-                                borderRadius: 4,
-                                fontWeight: 700,
-                              }}
-                            >
-                              • {o.aperta ? "Aperta" : "Chiusa"}
-                            </span>
-                          </div>
-                          <p style={{ margin: "2px 0 6px 0", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                            {o.specialita}
-                          </p>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              fontSize: "0.75rem",
-                            }}
-                          >
-                            <span style={{ color: "#fbbf24" }}>
-                              <Stelle valore={o.stelle} />
-                              <strong style={{ color: "var(--text)", marginLeft: 2 }}>{o.stelle}</strong>
-                              <span style={{ color: "var(--text-muted)" }}>({o.recensioni})</span>
-                            </span>
-                            <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>
-                              {etichettaDistanza(o, "Distanza n.d.")}
-                            </span>
-                          </div>
-                          <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 8 }}>
-                            {o.servizi.slice(0, 3).map((s) => (
-                              <span
-                                key={s}
-                                style={{
-                                  fontSize: "0.65rem",
-                                  background: "var(--surface-2)",
-                                  padding: "2px 6px",
-                                  borderRadius: 4,
-                                  color: "var(--text)",
-                                }}
-                              >
-                                {s}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {statoLista === "skeleton" && (
-              <div className="skeleton-list-container" style={{ display: "flex" }}>
-                <div className="skeleton" style={{ height: 90 }} />
-                <div className="skeleton" style={{ height: 90 }} />
-                <div className="skeleton" style={{ height: 90 }} />
-              </div>
-            )}
-
-            {(statoLista === "vuoto" || (statoLista === "lista" && visibili.length === 0)) && (
-              <div className="stato-box">
-                <i className="fa-solid fa-magnifying-glass" />
-                <p style={{ margin: 0 }}>Nessuna officina trovata</p>
-              </div>
-            )}
-
-            {statoLista === "errore" && (
-              <div className="stato-box">
-                <i className="fa-solid fa-triangle-exclamation" style={{ color: "#f87171" }} />
-                <p style={{ margin: 0, color: "#f87171" }}>Impossibile caricare le officine</p>
-                <button type="button" className="btn-info-veicolo btn-retry" onClick={() => void caricaOfficine()}>
-                  <i className="fa-solid fa-rotate-right" /> Riprova
-                </button>
-              </div>
+          </div>
+          <div className="pg-hero-cta">
+            {vista === "prenotazioni" ? (
+              <button type="button" className="btn-dash btn-dash-primary" onClick={() => setVista("officine")}>
+                <i className="ti ti-plus" />
+                Nuova prenotazione
+              </button>
+            ) : (
+              <button type="button" className="btn-dash btn-dash-glass" onClick={() => setVista("prenotazioni")}>
+                <i className="ti ti-list-details" />
+                Le mie prenotazioni
+              </button>
             )}
           </div>
+        </section>
 
-          {/* Colonna destra: mappa + dettaglio */}
-          <div className="right-column">
-            <div style={{ position: "relative" }}>
-              <div id="mappa-leaflet" ref={mapDivRef} />
+        {vista === "prenotazioni" ? (
+          <div className="pr-toolbar">
+            <div className="pg-search">
+              <i className="ti ti-search" />
+              <input
+                value={ricercaPren}
+                onChange={(e) => setRicercaPren(e.target.value)}
+                placeholder="Cerca officina, servizio o indirizzo…"
+              />
+            </div>
+            <div className="pr-chips">
               <button
                 type="button"
-                className="btn-open-map"
-                onClick={() => {
-                  if (!selezionata) return;
-                  window.open(
-                    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selezionata.indirizzo)}`,
-                    "_blank",
-                  );
-                }}
+                className={`pg-chip${filtroStato === "tutte" ? " on" : ""}`}
+                onClick={() => setFiltroStato("tutte")}
               >
-                <i className="fa-solid fa-arrow-up-right-from-square" style={{ color: "#f97316" }} /> Apri Mappa
+                <i className="ti ti-filter" />
+                Tutte <small>{tutte.length}</small>
               </button>
+              {STATI_FILTRO.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  className={`pg-chip${filtroStato === s ? " on" : ""}`}
+                  style={{ ["--c" as string]: COLORE_STATO[s] }}
+                  onClick={() => setFiltroStato(s)}
+                >
+                  <span className="pg-dot" />
+                  {STATO_LABEL_PLURALE[s]} <small>{contaStato(s)}</small>
+                </button>
+              ))}
             </div>
-
-            {selezionata ? (
-              <div className="card show detail-box-actual" style={{ display: "flex" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <div>
-                    <h2 style={{ margin: 0, fontSize: "1.4rem", color: "var(--text)", fontWeight: 800 }}>
-                      {selezionata.nome}
-                    </h2>
-                    <p style={{ margin: "4px 0 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                      {selezionata.specialita}
-                    </p>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                        marginTop: 6,
-                        fontSize: "0.85rem",
-                        color: "#fbbf24",
-                      }}
-                    >
-                      <Stelle valore={selezionata.stelle} />
-                      <strong style={{ color: "var(--text)", marginLeft: 2 }}>{selezionata.stelle}</strong>
-                      <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>
-                        · {selezionata.recensioni} recensioni
-                      </span>
-                    </div>
-                  </div>
-                  <span
-                    style={{
-                      background: selezionata.aperta ? "rgba(74,222,128,0.12)" : "rgba(248,113,113,0.12)",
-                      color: selezionata.aperta ? "#22c55e" : "#f87171",
-                      border: `1px solid ${selezionata.aperta ? "rgba(74,222,128,0.2)" : "rgba(248,113,113,0.2)"}`,
-                      fontSize: "0.75rem",
-                      padding: "4px 10px",
-                      borderRadius: 6,
-                      fontWeight: 700,
-                    }}
-                  >
-                    {selezionata.aperta ? "Aperta ora" : "Chiusa"}
-                  </span>
-                </div>
-
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
-                  {[
-                    { icona: "fa-regular fa-clock", label: "Orario", valore: selezionata.orario },
-                    {
-                      icona: "fa-solid fa-location-dot",
-                      label: "Distanza",
-                      valore: etichettaDistanza(selezionata, "Non disponibile"),
-                    },
-                    { icona: "fa-solid fa-hourglass-half", label: "Disponibilità", valore: selezionata.disponibilita },
-                  ].map((box) => (
-                    <div
-                      key={box.label}
-                      style={{
-                        background: "var(--surface-2)",
-                        border: "1px solid var(--border)",
-                        borderRadius: 12,
-                        padding: 12,
-                        textAlign: "center",
-                      }}
-                    >
-                      <i className={box.icona} style={{ color: "#f97316", fontSize: "1.1rem", marginBottom: 6 }} />
-                      <span
-                        style={{
-                          display: "block",
-                          fontSize: "0.6rem",
-                          color: "var(--text-muted)",
-                          textTransform: "uppercase",
-                          fontWeight: 700,
-                          letterSpacing: 0.5,
-                        }}
-                      >
-                        {box.label}
-                      </span>
-                      <span style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "var(--text)", marginTop: 2 }}>
-                        {box.valore}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div>
-                  <h4
-                    style={{
-                      margin: "0 0 10px 0",
-                      fontSize: "0.75rem",
-                      textTransform: "uppercase",
-                      color: "var(--text-muted)",
-                      letterSpacing: 0.5,
-                      fontWeight: 700,
-                    }}
-                  >
-                    Servizi Offerti
-                  </h4>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    {selezionata.servizi.map((s) => (
-                      <span
-                        key={s}
-                        style={{
-                          fontSize: "0.75rem",
-                          background: "rgba(249,115,22,0.1)",
-                          border: "1px solid rgba(249,115,22,0.2)",
-                          padding: "4px 10px",
-                          borderRadius: 6,
-                          color: "var(--text)",
-                        }}
-                      >
-                        <i className="fa-solid fa-check" style={{ color: "#f97316", marginRight: 4 }} />
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", gap: 10, marginTop: 5 }}>
-                  <button
-                    type="button"
-                    className="btn-aggiungi-garage"
-                    style={{ flex: 1, padding: 14 }}
-                    onClick={apriModal}
-                  >
-                    <i className="fa-solid fa-calendar-check" /> Prenota Appuntamento
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-landing"
-                    title="Chiama"
-                    style={{
-                      background: "var(--surface-2)",
-                      border: "1px solid var(--border)",
-                      width: 48,
-                      height: 48,
-                      padding: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: 12,
-                    }}
-                    onClick={() => {
-                      if (selezionata.telefono) window.location.href = `tel:${selezionata.telefono}`;
-                    }}
-                  >
-                    <i className="fa-solid fa-phone" style={{ color: "#f97316" }} />
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="card show skeleton-detail-box" style={{ display: "flex" }}>
-                <div className="skeleton" style={{ height: 28, width: "60%" }} />
-                <div className="skeleton" style={{ height: 16, width: "40%" }} />
-                <div className="skeleton-grid-3">
-                  <div className="skeleton" style={{ height: 70, borderRadius: 12 }} />
-                  <div className="skeleton" style={{ height: 70, borderRadius: 12 }} />
-                  <div className="skeleton" style={{ height: 70, borderRadius: 12 }} />
-                </div>
-                <div className="skeleton" style={{ height: 40 }} />
-                <div className="skeleton" style={{ height: 48, borderRadius: 12 }} />
-              </div>
-            )}
           </div>
+        ) : (
+          <div className="pr-toolbar">
+            <div className="pg-search">
+              <i className="ti ti-search" />
+              <input
+                value={ricerca}
+                onChange={(e) => setRicerca(e.target.value)}
+                placeholder="Tipo di servizio, nome officina…"
+              />
+            </div>
+            <div className="pr-chips">
+              <button type="button" className="pg-chip" onClick={usaGps}>
+                <i className="ti ti-current-location" />
+                {posUtente ? "Aggiorna posizione" : "Usa la mia posizione"}
+              </button>
+              {categorie.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  className={`pg-chip${filtroCategoria === cat ? " on" : ""}`}
+                  onClick={() => setFiltroCategoria(filtroCategoria === cat ? null : cat)}
+                >
+                  <i className={`ti ${ICONE_CATEGORIA[cat] ?? "ti-tool"}`} />
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
-          {/* Colonna prenotazioni utente: card minimali, dettagli nell'overlay */}
-          <div className="bookings-column">
-            <h3 className="bookings-title"> Le mie Prenotazioni</h3>
-            <div className="pb-lista">
-              {prenotazioniUtente === null ? (
-                <div className="stato-box">Caricamento...</div>
-              ) : prenotazioniUtente.length === 0 ? (
-                <div className="stato-box">Nessuna prenotazione</div>
-              ) : (
-                prenotazioniUtente.map((p) => {
-                  const { servizio: servizioPren } = parseDescrizione(p.descrizione);
-                  const stato = p.stato ?? "in_attesa";
-                  return (
-                    <div
-                      key={p.id}
-                      className="pb-card"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setDettaglioPren(p)}
-                      onKeyDown={(e) => e.key === "Enter" && setDettaglioPren(p)}
-                    >
-                      <span className={`pb-badge pb-badge-${stato}`}>
-                        {STATO_LABEL[stato] ?? stato}
-                      </span>
-                      <p className="pb-officina">{p.officina?.nome ?? "Officina"}</p>
-                      <p className="pb-riga">
-                        <i className="ti ti-calendar" /> {formattaDataOra(p.dataprenotazione)}
-                      </p>
-                      <p className="pb-riga">
-                        <i className="ti ti-tool" /> {servizioPren}
-                      </p>
-                    </div>
-                  );
-                })
+        <div className="pr-grid">
+          <section className="pg-card pr-mapcard">
+            <div className="pr-mapbox">
+              <div ref={mapDivRef} className="pr-map" />
+              {vista === "prenotazioni" && prenotazioniUtente !== null && tutte.length === 0 && (
+                <div className="pr-vuoto">
+                  <i className="ti ti-calendar-plus" />
+                  <h2>Nessuna prenotazione, per ora</h2>
+                  <p>Quando prenoti un intervento lo trovi qui, con lo stato aggiornato dall&apos;officina.</p>
+                  <button type="button" className="btn-dash btn-dash-primary" onClick={() => setVista("officine")}>
+                    <i className="ti ti-map-pin" />
+                    Trova un&apos;officina vicina
+                  </button>
+                </div>
               )}
             </div>
-          </div>
+            {vista === "prenotazioni" ? barraInEvidenza() : barraOfficina()}
+          </section>
+
+          <aside className="pg-card pr-lista">
+            {vista === "prenotazioni" ? (
+              <>
+                <div className="pg-card-h">
+                  <h2 className="dash-title">
+                    <i className="ti ti-list-details" />
+                    Prenotazioni
+                  </h2>
+                  <span className="dash-count">{prenFiltrate.length}</span>
+                </div>
+                <div ref={listaRef} className={`pr-lista-body${sfumaLista ? " sfuma" : ""}`}>
+                  {prenotazioniUtente === null && <div className="pr-nores">Caricamento…</div>}
+                  {prenProssime.length > 0 && (
+                    <>
+                      <div className="pr-gruppo">Prossime · {prenProssime.length}</div>
+                      {prenProssime.map(rigaPrenotazione)}
+                    </>
+                  )}
+                  {prenPassate.length > 0 && (
+                    <>
+                      <div className="pr-gruppo">Passate · {prenPassate.length}</div>
+                      {prenPassate.map(rigaPrenotazione)}
+                    </>
+                  )}
+                  {prenotazioniUtente !== null && prenFiltrate.length === 0 && (
+                    <div className="pr-nores">
+                      {tutte.length === 0 ? "Ancora nessuna prenotazione." : "Nessuna prenotazione corrisponde ai filtri."}
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="pg-card-h">
+                  <h2 className="dash-title">
+                    <i className="ti ti-building-store" />
+                    Officine
+                  </h2>
+                  <span className="dash-count">{visibili.length}</span>
+                  {posUtente && (
+                    <button type="button" className="pr-ordina" onClick={() => setSortAsc((v) => !v)}>
+                      <i className={`ti ${sortAsc ? "ti-sort-ascending" : "ti-sort-descending"}`} />
+                      {sortAsc ? "Più vicine" : "Più lontane"}
+                    </button>
+                  )}
+                </div>
+                <div ref={listaRef} className={`pr-lista-body${sfumaLista ? " sfuma" : ""}`}>
+                  {statoLista === "skeleton" &&
+                    [0, 1, 2].map((i) => <div key={i} className="skeleton" style={{ height: 72, borderRadius: 14, marginBottom: 8 }} />)}
+                  {statoLista === "errore" && (
+                    <div className="pr-nores">
+                      Impossibile caricare le officine.{" "}
+                      <button type="button" className="pr-mini-btn" onClick={() => void caricaOfficine()}>
+                        Riprova
+                      </button>
+                    </div>
+                  )}
+                  {(statoLista === "vuoto" || (statoLista === "lista" && visibili.length === 0)) && (
+                    <div className="pr-nores">Nessuna officina trovata.</div>
+                  )}
+                  {statoLista === "lista" &&
+                    visibili.map((o) => (
+                      <article
+                        key={o.id}
+                        className={`pr-off${selezionata?.id === o.id ? " attiva" : ""}`}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setSelezionata(o)}
+                        onKeyDown={(e) => e.key === "Enter" && setSelezionata(o)}
+                      >
+                        <span className="pr-off-av" style={{ background: COLORI_AVATAR[o.nome.charCodeAt(0) % COLORI_AVATAR.length] }}>
+                          {o.nome.charAt(0).toUpperCase()}
+                        </span>
+                        <div className="pr-main">
+                          <div className="pr-nome">{o.nome}</div>
+                          <div className="pr-sub">{o.specialita}</div>
+                          <div className="pr-meta">
+                            <span className="pr-stelline">
+                              <i className="ti ti-star-filled" />
+                              {o.stelle} ({o.recensioni})
+                            </span>
+                            <span className="pr-km">{etichettaDistanza(o, "distanza n.d.")}</span>
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                </div>
+              </>
+            )}
+          </aside>
         </div>
       </main>
 
       {/* Modal prenotazione */}
-      {modalAperto && (
-        <div
-          id="modal-prenotazione"
-          style={{ display: "flex" }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setModalAperto(false);
-          }}
+      {modalAperto && selezionata && (
+        <Overlay
+          onChiudi={() => setModalAperto(false)}
+          titolo="Prenota appuntamento"
+          icona="ti-calendar-plus"
+          larghezza={600}
+          bloccato={inPrenotazione}
+          sottotitolo={
+            <>
+              <b>{selezionata.nome}</b> · {selezionata.indirizzo}
+            </>
+          }
+          piede={
+            <>
+              <span className="ov-nota">
+                <i className="ti ti-info-circle" />
+                L&apos;officina conferma la richiesta: lo stato lo vedi in &quot;Le mie prenotazioni&quot;.
+              </span>
+              <button
+                type="button"
+                className="btn-dash btn-dash-ghost"
+                disabled={inPrenotazione}
+                onClick={() => setModalAperto(false)}
+              >
+                Annulla
+              </button>
+              <button
+                type="button"
+                className="btn-dash btn-dash-primary"
+                disabled={inPrenotazione}
+                onClick={() => void confermaPrenotazione()}
+              >
+                <i className="ti ti-check" />
+                {inPrenotazione ? "Invio…" : "Conferma"}
+              </button>
+            </>
+          }
         >
-          <div className="modal-box">
-            <button type="button" className="btn-modal-close" onClick={() => setModalAperto(false)}>
-              <i className="fa-solid fa-xmark" />
-            </button>
+          {feedbackModal && (
+            <p className="ov-err" role="alert">
+              <i className="ti ti-alert-circle" />
+              {feedbackModal.testo}
+            </p>
+          )}
+          <div className="ov-grp">Servizio</div>
+          <div className="ov-seg chips pr-servizi-scelta">
+            {selezionata.servizi.map((s) => (
+              <button key={s} type="button" className={servizio === s ? "on" : ""} onClick={() => setServizio(s)}>
+                {s}
+              </button>
+            ))}
+          </div>
 
-            <div>
-              <h2 className="modal-title">
-                <i className="fa-solid fa-calendar-check" style={{ color: "#f97316", marginRight: 8 }} />
-                Prenota Appuntamento
-              </h2>
-              <p className="modal-subtitle">{selezionata?.nome}</p>
+          <div className="ov-grp">Quando</div>
+          <div className="ov-grid">
+            <div className="ov-f">
+              <label htmlFor="pr-data">Giorno</label>
+              <input
+                id="pr-data"
+                className="ov-in"
+                type="date"
+                value={dataPren}
+                min={new Date().toISOString().split("T")[0]}
+                onChange={(e) => setDataPren(e.target.value)}
+              />
             </div>
-
-            <div>
-              <label className="modal-label">Servizio</label>
-              <div className="input-group" style={{ border: "1px solid var(--border)" }}>
-                <i className="fa-solid fa-screwdriver-wrench" />
-                <select value={servizio} onChange={(e) => setServizio(e.target.value)}>
-                  <option value="">Seleziona un servizio...</option>
-                  {selezionata?.servizi.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="modal-label">Data</label>
-              <div className="input-group" style={{ border: "1px solid var(--border)" }}>
-                <i className="fa-regular fa-calendar" />
-                <input
-                  type="date"
-                  value={dataPren}
-                  min={new Date().toISOString().split("T")[0]}
-                  onChange={(e) => setDataPren(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="modal-label">Orario</label>
-              <div className="modal-slots-container">
+            <div className="ov-f" style={{ gridColumn: "span 3" }}>
+              <span className="ov-lbl">Orario</span>
+              <div className="ov-seg slot">
                 {SLOT_ORARI.map((orario) => (
-                  <button
-                    key={orario}
-                    type="button"
-                    className={`slot-btn${slot === orario ? " attivo" : ""}`}
-                    onClick={() => setSlot(orario)}
-                  >
+                  <button key={orario} type="button" className={slot === orario ? "on" : ""} onClick={() => setSlot(orario)}>
                     {orario}
                   </button>
                 ))}
               </div>
             </div>
-
-            <div>
-              <label className="modal-label">Note (opzionale)</label>
-              <div className="input-group input-group-textarea" style={{ border: "1px solid var(--border)" }}>
-                <i className="fa-regular fa-comment" />
-                <textarea
-                  rows={2}
-                  placeholder="Es. portare a freddo, problema ai freni..."
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {feedbackModal && (
-              <div
-                style={{
-                  display: "block",
-                  padding: "10px 12px",
-                  borderRadius: 10,
-                  fontSize: "0.85rem",
-                  background: feedbackModal.errore ? "rgba(239,68,68,0.15)" : "rgba(34,197,94,0.15)",
-                  color: feedbackModal.errore ? "#f87171" : "#4ade80",
-                }}
-              >
-                {feedbackModal.testo}
-              </div>
-            )}
-
-            <button
-              type="button"
-              className="btn-aggiungi-garage btn-confirm-booking"
-              onClick={() => void confermaPrenotazione()}
-            >
-              <i className="fa-solid fa-check" /> Conferma Prenotazione
-            </button>
           </div>
-        </div>
+
+          <div className="ov-grp">
+            Note <span>· facoltative</span>
+          </div>
+          <textarea
+            className="ov-in pr-note"
+            rows={2}
+            maxLength={200}
+            placeholder="Es. portare a freddo, problema ai freni…"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+        </Overlay>
       )}
 
       {/* Overlay dettagli prenotazione */}
@@ -909,74 +1167,66 @@ export default function PrenotazioniPage() {
           const stato = dettaglioPren.stato ?? "in_attesa";
           const annullabile = stato === "in_attesa" || stato === "confermata";
           return (
-            <div className="pb-overlay" onClick={() => setDettaglioPren(null)}>
-              <div className="pb-modal" onClick={(e) => e.stopPropagation()}>
-                <button
-                  type="button"
-                  className="pb-modal-close"
-                  aria-label="Chiudi"
-                  onClick={() => setDettaglioPren(null)}
-                >
-                  <i className="ti ti-x" />
-                </button>
-
-                <div className="pb-modal-head">
-                  <h3 className="pb-modal-nome">{dettaglioPren.officina?.nome ?? "Officina"}</h3>
-                  <span className={`pb-badge pb-badge-${stato}`}>{STATO_LABEL[stato] ?? stato}</span>
-                </div>
-
-                <div className="pb-modal-info">
-                  {dettaglioPren.officina?.indirizzo && (
-                    <p className="pb-riga">
-                      <i className="ti ti-map-pin" /> {dettaglioPren.officina.indirizzo}
-                    </p>
-                  )}
-                  <p className="pb-riga">
-                    <i className="ti ti-calendar" /> {formattaDataOra(dettaglioPren.dataprenotazione)}
-                  </p>
-                  <p className="pb-riga">
-                    <i className="ti ti-tool" /> {servizioPren}
-                  </p>
-                  {notePren && (
-                    <p className="pb-riga">
-                      <i className="ti ti-note" /> {notePren}
-                    </p>
-                  )}
-                </div>
-
-                <div className="pb-storico">
-                  <p className="pb-storico-label">Storico stato</p>
-                  {storicoStati(stato).map((s) => (
-                    <div key={s} className="pb-storico-step">
-                      <span className={`pb-storico-icona pb-badge-${s}`}>
-                        <i className={`ti ${STATO_ICONA[s] ?? "ti-clock"}`} />
-                      </span>
-                      <span>{STATO_LABEL[s] ?? s}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {annullabile && (
-                  <div className="pb-modal-btns">
+            <Overlay
+              onChiudi={() => setDettaglioPren(null)}
+              titolo={dettaglioPren.officina?.nome ?? "Officina"}
+              icona="ti-calendar-event"
+              larghezza={480}
+              bloccato={inAnnullamento}
+              sottotitolo={
+                <span className="pr-stato" style={{ ["--c" as string]: COLORE_STATO[stato] ?? "#f97316" }}>
+                  <i className={`ti ${STATO_ICONA[stato] ?? "ti-clock"}`} />
+                  {STATO_LABEL[stato] ?? stato}
+                </span>
+              }
+              piede={
+                <>
+                  <span className="ov-nota" />
+                  {annullabile && (
                     <button
                       type="button"
-                      className="pb-btn-annulla"
+                      className="btn-dash btn-dash-danger-o"
                       disabled={inAnnullamento}
                       onClick={() => void annullaPrenotazione(dettaglioPren)}
                     >
-                      {inAnnullamento ? "Annullamento..." : "Annulla prenotazione"}
+                      <i className="ti ti-calendar-x" />
+                      {inAnnullamento ? "Annullamento…" : "Annulla prenotazione"}
                     </button>
-                    <button
-                      type="button"
-                      className="pb-btn-chiudi"
-                      onClick={() => setDettaglioPren(null)}
-                    >
-                      Chiudi
-                    </button>
-                  </div>
+                  )}
+                  <button type="button" className="btn-dash btn-dash-ghost" onClick={() => setDettaglioPren(null)}>
+                    Chiudi
+                  </button>
+                </>
+              }
+            >
+              <div className="pr-det">
+                {dettaglioPren.officina?.indirizzo && (
+                  <p>
+                    <i className="ti ti-map-pin" /> {dettaglioPren.officina.indirizzo}
+                  </p>
+                )}
+                <p>
+                  <i className="ti ti-calendar" /> {formattaDataOra(dettaglioPren.dataprenotazione)}
+                </p>
+                <p>
+                  <i className="ti ti-tool" /> {servizioPren}
+                </p>
+                {notePren && (
+                  <p>
+                    <i className="ti ti-note" /> {notePren}
+                  </p>
                 )}
               </div>
-            </div>
+              <div className="ov-grp">Storico stato</div>
+              <ol className="pr-timeline">
+                {storicoStati(stato).map((s) => (
+                  <li key={s} style={{ ["--c" as string]: COLORE_STATO[s] ?? "#f97316" }}>
+                    <i className={`ti ${STATO_ICONA[s] ?? "ti-clock"}`} />
+                    {STATO_LABEL[s] ?? s}
+                  </li>
+                ))}
+              </ol>
+            </Overlay>
           );
         })()}
 

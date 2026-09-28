@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { PrenotazioniService } from './prenotazione.service';
 import { CreatePrenotazioneDto } from './dto/create-prenotazione.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard'; // Adatta il percorso se necessario
@@ -26,5 +35,23 @@ export class PrenotazioniController {
   async Stampa(@CurrentUser() user: JwtPayload) {
     const utenteId = Number(user.sub);
     return this.prenotazioniService.trovaPerUtente(utenteId);
+  }
+
+  /**
+   * L'utente può solo annullare una sua prenotazione ancora aperta
+   * (in attesa o confermata); gli altri cambi di stato li fa l'officina.
+   */
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/stato')
+  async aggiornaStato(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('stato') stato: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.prenotazioniService.annullaDaUtente(
+      id,
+      Number(user.sub),
+      stato,
+    );
   }
 }

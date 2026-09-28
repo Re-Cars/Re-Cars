@@ -289,22 +289,23 @@ export async function costruisciDocumentoPdf(
         catLabel(i.categoria),
         i.tipo + (i.descrizione ? ` - ${i.descrizione}` : ""),
         i.mediante ?? "—",
+        i.citta?.nome ?? "—",
         i.costo ? `${Number(i.costo).toFixed(2)} €` : "—",
       ]);
 
     autoTable(doc, {
       startY: y,
-      head: [["Data", "Categoria", "Descrizione", "Fornitore", "Costo"]],
+      head: [["Data", "Categoria", "Descrizione", "Fornitore", "Città", "Costo"]],
       body: bodyCronologia.length
         ? bodyCronologia
-        : [["—", "—", "Nessun intervento nel periodo selezionato", "—", "—"]],
+        : [["—", "—", "Nessun intervento nel periodo selezionato", "—", "—", "—"]],
       theme: "grid",
       styles: { font: fontBase, fontSize: 9, cellPadding: 3, lineColor: [230, 230, 230], lineWidth: 0.2 },
       headStyles: { fillColor: arancio, textColor: 255, fontStyle: "bold", halign: "left" },
       bodyStyles: { textColor: grigioTesto },
       alternateRowStyles: { fillColor: [255, 255, 255] },
       margin: { left: margineSx, right: 210 - margineDx },
-      columnStyles: { 2: { cellWidth: 60 } },
+      columnStyles: { 2: { cellWidth: 52 } },
     });
   }
 

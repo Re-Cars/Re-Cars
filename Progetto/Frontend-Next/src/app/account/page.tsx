@@ -7,8 +7,16 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 
 import Layout from "@/components/Layout";
+import SezioneAppNotifiche from "@/components/pwa/SezioneAppNotifiche";
+import Overlay from "@/components/ui/Overlay";
 import { useAuth } from "@/context/AuthContext";
-import { aggiornaUtente as apiAggiornaUtente, ApiError, eliminaAccount, getProfiloUtente } from "@/lib/api";
+import {
+  aggiornaUtente as apiAggiornaUtente,
+  ApiError,
+  eliminaAccount,
+  getPrenotazioniUtente,
+  getProfiloUtente,
+} from "@/lib/api";
 import { clearAll, setAvatarSalvato } from "@/lib/storage";
 import type { ProfiloUtente } from "@/lib/types";
 
@@ -18,21 +26,21 @@ const CONFIG_CAMPI: Record<
   CampoModificabile,
   { icona: string; titolo: string; placeholder: string; type: string }
 > = {
-  username: { icona: "fa-user", titolo: "Cambia username", placeholder: "Nuovo username", type: "text" },
-  email: { icona: "fa-envelope", titolo: "Cambia email", placeholder: "Nuova email", type: "email" },
-  cellulare: { icona: "fa-phone", titolo: "Numero di telefono", placeholder: "Es. 3331234567", type: "tel" },
-  password: { icona: "fa-key", titolo: "Cambia password", placeholder: "Nuova password", type: "password" },
+  username: { icona: "ti-user", titolo: "Cambia username", placeholder: "Nuovo username", type: "text" },
+  email: { icona: "ti-mail", titolo: "Cambia email", placeholder: "Nuova email", type: "email" },
+  cellulare: { icona: "ti-phone", titolo: "Numero di telefono", placeholder: "Es. 3331234567", type: "tel" },
+  password: { icona: "ti-key", titolo: "Cambia password", placeholder: "Nuova password", type: "password" },
 };
 
 const NOMI_PIANI: Record<string, string> = { base: "Base", premium: "Premium", pro: "Pro" };
 
 /**
- * Il mio account: profilo con avatar (upload + crop), dati account con
- * modifica inline, abbonamento attivo e zona pericolosa.
+ * Il mio account: card profilo (avatar con upload + crop, piano, contatori)
+ * e, a fianco, dati account, sicurezza, abbonamento e zona pericolosa.
  */
 export default function AccountPage() {
   const router = useRouter();
-  const { utente, aggiornaUtente, gestisci401 } = useAuth();
+  const { utente, aggiornaUtente, gestisci401, veicoli, logout } = useAuth();
 
   const [profilo, setProfilo] = useState<ProfiloUtente | null>(null);
   const [campoInModifica, setCampoInModifica] = useState<CampoModificabile | null>(null);
@@ -40,6 +48,7 @@ export default function AccountPage() {
   const [erroreCampo, setErroreCampo] = useState("");
   const [confermaElimina, setConfermaElimina] = useState(false);
   const [immagineDaRitagliare, setImmagineDaRitagliare] = useState<string | null>(null);
+  const [numPrenotazioni, setNumPrenotazioni] = useState<number | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cropperImgRef = useRef<HTMLImageElement>(null);
@@ -59,6 +68,13 @@ export default function AccountPage() {
   useEffect(() => {
     void caricaProfilo();
   }, [caricaProfilo]);
+
+  // solo per il contatore nel profilo: un errore qui non blocca la pagina
+  useEffect(() => {
+    getPrenotazioniUtente()
+      .then((lista) => setNumPrenotazioni(lista.length))
+      .catch(() => setNumPrenotazioni(null));
+  }, []);
 
   // inizializza Cropper.js quando si apre l'overlay di ritaglio
   useEffect(() => {
@@ -163,250 +179,253 @@ export default function AccountPage() {
 
   return (
     <Layout breadcrumb="Il mio account">
-      <section className="acc-dashboard">
-        {/* Profilo */}
-        <div className="acc-section-card">
-          <div className="acc-section-bar">
-            <i className="fa-solid fa-user" />
-            <span>Profilo</span>
-          </div>
-          <div className="acc-section-body">
-            <div className="acc-avatar-row">
-              <div className="acc-avatar-big">
-                {profilo?.avatar ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={profilo.avatar} alt="avatar" />
-                ) : (
-                  <i className="fa-solid fa-user" />
-                )}
-                <button
-                  type="button"
-                  className="acc-avatar-edit"
-                  title="Cambia immagine"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <i className="fa-solid fa-camera" />
-                  <div className="acc-avatar-plus-badge">
-                    <i className="fa-solid fa-plus" />
-                  </div>
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={onFileSelezionato}
-                />
-              </div>
-              <div className="acc-avatar-info">
-                <p className="acc-avatar-name">{profilo?.username ?? "-"}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Dati account */}
-        <div className="acc-section-card">
-          <div className="acc-section-bar">
-            <i className="fa-solid fa-id-card" />
-            <span>Dati account</span>
-          </div>
-          <div className="acc-section-body">
-            <div className="acc-field-row">
-              <div className="acc-field-lbl">
-                <span>Username</span>
-                <span>{profilo?.username ?? "-"}</span>
-              </div>
-              <button type="button" className="acc-btn-pill" onClick={() => apriModifica("username")}>
-                <div className="acc-icon-circle">
-                  <i className="fa-solid fa-pen" />
-                </div>
-                Modifica
-              </button>
-            </div>
-            <div className="acc-field-row">
-              <div className="acc-field-lbl">
-                <span>Email</span>
-                <span>{profilo?.email ?? "-"}</span>
-              </div>
-              <button type="button" className="acc-btn-pill" onClick={() => apriModifica("email")}>
-                <div className="acc-icon-circle">
-                  <i className="fa-solid fa-pen" />
-                </div>
-                Modifica
-              </button>
-            </div>
-            <div className="acc-field-row">
-              <div className="acc-field-lbl">
-                <span>Telefono</span>
-                <span>{profilo?.cellulare ?? "Non impostato"}</span>
-              </div>
-              <button type="button" className="acc-btn-pill" onClick={() => apriModifica("cellulare")}>
-                <div className="acc-icon-circle">
-                  <i className={`fa-solid ${profilo?.cellulare ? "fa-pen" : "fa-plus"}`} />
-                </div>
-                {profilo?.cellulare ? "Modifica" : "Aggiungi"}
-              </button>
-            </div>
-            <div className="acc-field-row">
-              <div className="acc-field-lbl">
-                <span>Password</span>
-                <span>••••••••</span>
-              </div>
-              <button type="button" className="acc-btn-pill" onClick={() => apriModifica("password")}>
-                <div className="acc-icon-circle">
-                  <i className="fa-solid fa-key" />
-                </div>
-                Cambia
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Abbonamento */}
-        <div className="acc-section-card">
-          <div className="acc-section-bar">
-            <i className="fa-solid fa-credit-card" />
-            <span>Abbonamento</span>
-          </div>
-          <div className="acc-section-body">
-            <div className="acc-piano-row">
-              <div className="acc-piano-info">
-                <span className="acc-piano-label">Piano attivo</span>
-                <span className="acc-piano-nome">{NOMI_PIANI[piano] ?? piano}</span>
-                <span className="acc-piano-sub">{sottotitoloPiano}</span>
-              </div>
-              <span className="acc-piano-stato">
-                <span className="acc-piano-stato-dot" />
-                Attivo
-              </span>
-            </div>
-            <Link href="/abbonamenti" className="acc-btn-pill acc-btn-gestisci">
-              <div className="acc-icon-circle">
-                <i className="fa-solid fa-arrow-right" />
-              </div>
-              Gestisci abbonamento
-            </Link>
-          </div>
-        </div>
-
-        {/* Zona pericolosa */}
-        <div className="acc-section-card acc-danger-card">
-          <div className="acc-section-bar acc-danger-bar">
-            <i className="fa-solid fa-triangle-exclamation" />
-            <span>Zona pericolosa</span>
-          </div>
-          <div className="acc-section-body">
-            <div className="acc-danger-row">
-              <div className="acc-danger-text">
-                <p>Elimina account</p>
-                <p>Questa azione è irreversibile. Tutti i tuoi dati verranno eliminati permanentemente.</p>
-              </div>
+      <main className="pg pg--stretta acc2">
+        <aside className="pg-card acc2-prof">
+          <div className="acc2-prof-top" />
+          <div className="acc2-prof-body">
+            <div className="acc2-avatar">
+              {profilo?.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={profilo.avatar} alt="avatar" />
+              ) : (
+                <span>{(profilo?.username ?? utente?.username ?? "?").charAt(0).toUpperCase()}</span>
+              )}
               <button
                 type="button"
-                className="acc-btn-pill-danger"
-                onClick={() => setConfermaElimina(true)}
+                className="acc2-cam"
+                title="Cambia immagine"
+                onClick={() => fileInputRef.current?.click()}
               >
-                <div className="acc-icon-circle-danger">
-                  <i className="fa-solid fa-trash" />
-                </div>
-                Elimina
+                <i className="ti ti-camera" />
               </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={onFileSelezionato}
+              />
             </div>
+            <h2>{profilo?.username ?? "-"}</h2>
+            <div className="acc2-mail">{profilo?.email ?? ""}</div>
+            <div className="acc2-badges">
+              <span className="acc2-badge">
+                <i className="ti ti-crown" />
+                {NOMI_PIANI[piano] ?? piano}
+              </span>
+              {profilo?.tipo && (
+                <span className="acc2-badge grigio">
+                  <i className={`ti ${profilo.tipo === "azienda" ? "ti-building" : "ti-user"}`} />
+                  {profilo.tipo === "azienda" ? "Azienda" : "Privato"}
+                </span>
+              )}
+            </div>
+            <div className="acc2-stats">
+              <div>
+                <b>{veicoli.length}</b>
+                <span>veicoli</span>
+              </div>
+              <div>
+                <b>{numPrenotazioni ?? "—"}</b>
+                <span>prenotazioni</span>
+              </div>
+            </div>
+            <button type="button" className="btn-dash btn-dash-ghost acc2-esci" onClick={() => void logout()}>
+              <i className="ti ti-logout" /> Esci
+            </button>
           </div>
+        </aside>
+
+        <div className="acc2-stack">
+          <section className="pg-card">
+            <div className="pg-card-h">
+              <h2 className="dash-title">
+                <i className="ti ti-id" />
+                Dati account
+              </h2>
+            </div>
+            <div className="acc2-rows">
+              {(
+                [
+                  { campo: "username", icona: "ti-user", label: "Username", valore: profilo?.username ?? "-" },
+                  { campo: "email", icona: "ti-mail", label: "Email", valore: profilo?.email ?? "-" },
+                  { campo: "cellulare", icona: "ti-phone", label: "Telefono", valore: profilo?.cellulare ?? "Non impostato" },
+                ] as const
+              ).map((r) => {
+                const aggiungi = r.campo === "cellulare" && !profilo?.cellulare;
+                return (
+                  <div key={r.campo} className="acc2-row">
+                    <span className="acc2-ic"><i className={`ti ${r.icona}`} /></span>
+                    <span className="acc2-txt">
+                      <small>{r.label}</small>
+                      <b>{r.valore}</b>
+                    </span>
+                    <button type="button" className="btn-dash btn-dash-soft" onClick={() => apriModifica(r.campo)}>
+                      <i className={`ti ${aggiungi ? "ti-plus" : "ti-pencil"}`} /> {aggiungi ? "Aggiungi" : "Modifica"}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="pg-card">
+            <div className="pg-card-h">
+              <h2 className="dash-title">
+                <i className="ti ti-lock" />
+                Sicurezza
+              </h2>
+            </div>
+            <div className="acc2-rows">
+              <div className="acc2-row">
+                <span className="acc2-ic"><i className="ti ti-key" /></span>
+                <span className="acc2-txt">
+                  <small>Password</small>
+                  <b>••••••••</b>
+                </span>
+                <button type="button" className="btn-dash btn-dash-soft" onClick={() => apriModifica("password")}>
+                  <i className="ti ti-pencil" /> Cambia
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section className="pg-card">
+            <div className="pg-card-h">
+              <h2 className="dash-title">
+                <i className="ti ti-crown" />
+                Abbonamento
+              </h2>
+            </div>
+            <div className="acc2-piano">
+              <div className="acc2-piano-txt">
+                <b>
+                  {NOMI_PIANI[piano] ?? piano}
+                  <span className="abb2-attivo">Attivo</span>
+                </b>
+                <span>{sottotitoloPiano}</span>
+              </div>
+              <Link href="/abbonamenti" className="btn-dash btn-dash-primary">
+                <i className="ti ti-arrow-right" /> Gestisci piano
+              </Link>
+            </div>
+          </section>
+
+          <SezioneAppNotifiche />
+
+          <section className="pg-card acc2-danger">
+            <div className="pg-card-h">
+              <h2 className="dash-title">
+                <i className="ti ti-alert-triangle" />
+                Zona pericolosa
+              </h2>
+            </div>
+            <div className="acc2-rows">
+              <div className="acc2-row">
+                <span className="acc2-ic"><i className="ti ti-trash" /></span>
+                <span className="acc2-txt">
+                  <b>Elimina account</b>
+                  <small className="acc2-nota">Cancella per sempre profilo, veicoli, storico e prenotazioni.</small>
+                </span>
+                <button type="button" className="btn-dash btn-dash-danger-o" onClick={() => setConfermaElimina(true)}>
+                  <i className="ti ti-trash" /> Elimina
+                </button>
+              </div>
+            </div>
+          </section>
         </div>
-      </section>
+      </main>
 
       {/* Overlay modifica campo */}
       {campoInModifica && (
-        <div className="modifica-campo-overlay" onClick={() => setCampoInModifica(null)}>
-          <div className="modifica-campo-box" onClick={(e) => e.stopPropagation()}>
-            <p className="modifica-campo-title">
-              <i className={`fa-solid ${CONFIG_CAMPI[campoInModifica].icona}`} />{" "}
-              {CONFIG_CAMPI[campoInModifica].titolo}
-            </p>
-            <input
-              type={CONFIG_CAMPI[campoInModifica].type}
-              placeholder={CONFIG_CAMPI[campoInModifica].placeholder}
-              value={valoreCampo}
-              autoFocus
-              onChange={(e) => setValoreCampo(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") void salvaModifica();
-              }}
-            />
-            <p className="modifica-campo-error">{erroreCampo}</p>
-            <div className="modifica-campo-btns">
-              <button type="button" className="btn-annulla" onClick={() => setCampoInModifica(null)}>
+        <Overlay
+          onChiudi={() => setCampoInModifica(null)}
+          titolo={CONFIG_CAMPI[campoInModifica].titolo}
+          icona={CONFIG_CAMPI[campoInModifica].icona}
+          larghezza={440}
+          piede={
+            <>
+              <span className="ov-nota" />
+              <button type="button" className="btn-dash btn-dash-ghost" onClick={() => setCampoInModifica(null)}>
                 Annulla
               </button>
-              <button type="button" className="acc-btn-pill" onClick={() => void salvaModifica()}>
-                <div className="acc-icon-circle">
-                  <i className="fa-solid fa-check" />
-                </div>
+              <button type="button" className="btn-dash btn-dash-primary" onClick={() => void salvaModifica()}>
+                <i className="ti ti-check" />
                 Salva
               </button>
-            </div>
-          </div>
-        </div>
+            </>
+          }
+        >
+          {erroreCampo && (
+            <p className="ov-err" role="alert">
+              <i className="ti ti-alert-circle" />
+              {erroreCampo}
+            </p>
+          )}
+          <input
+            className="ov-in acc2-campo"
+            type={CONFIG_CAMPI[campoInModifica].type}
+            placeholder={CONFIG_CAMPI[campoInModifica].placeholder}
+            aria-label={CONFIG_CAMPI[campoInModifica].titolo}
+            value={valoreCampo}
+            autoFocus
+            onChange={(e) => setValoreCampo(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") void salvaModifica();
+            }}
+          />
+        </Overlay>
       )}
 
       {/* Overlay conferma eliminazione account */}
       {confermaElimina && (
-        <div className="conferma-account-overlay" onClick={() => setConfermaElimina(false)}>
-          <div className="conferma-account-box" onClick={(e) => e.stopPropagation()}>
-            <div className="conferma-account-icon">
-              <i className="fa-solid fa-triangle-exclamation" />
-            </div>
-            <p className="conferma-account-title">Elimina account</p>
-            <p className="conferma-account-sub">
-              Questa azione è irreversibile. Tutti i tuoi dati, veicoli e prenotazioni verranno
-              eliminati permanentemente.
-            </p>
-            <div className="conferma-account-btns">
-              <button type="button" className="btn-annulla" onClick={() => setConfermaElimina(false)}>
+        <Overlay
+          onChiudi={() => setConfermaElimina(false)}
+          titolo="Eliminare l'account?"
+          icona="ti-alert-triangle"
+          larghezza={460}
+          sottotitolo="L'operazione non è reversibile: verranno eliminati anche veicoli, storico e prenotazioni."
+          piede={
+            <>
+              <span className="ov-nota" />
+              <button type="button" className="btn-dash btn-dash-ghost" onClick={() => setConfermaElimina(false)}>
                 Annulla
               </button>
-              <button
-                type="button"
-                className="acc-btn-pill-danger"
-                onClick={() => void confermaEliminaAccount()}
-              >
-                <div className="acc-icon-circle-danger">
-                  <i className="fa-solid fa-trash" />
-                </div>
-                Elimina
+              <button type="button" className="btn-dash btn-dash-danger" onClick={() => void confermaEliminaAccount()}>
+                <i className="ti ti-trash" />
+                Elimina account
               </button>
-            </div>
-          </div>
-        </div>
+            </>
+          }
+        />
       )}
 
       {/* Overlay cropper avatar */}
       {immagineDaRitagliare && (
-        <div className="cropper-overlay">
-          <div className="cropper-box">
-            <p className="cropper-title">
-              <i className="fa-solid fa-crop-simple" /> Ritaglia la tua foto
-            </p>
-            <div className="cropper-area">
-              {/* immagine sorgente per Cropper.js, non gestibile con next/image */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img ref={cropperImgRef} src={immagineDaRitagliare} alt="Da ritagliare" />
-            </div>
-            <div className="cropper-btns">
-              <button type="button" className="btn-annulla" onClick={() => setImmagineDaRitagliare(null)}>
+        <Overlay
+          onChiudi={() => setImmagineDaRitagliare(null)}
+          titolo="Ritaglia la tua foto"
+          icona="ti-crop"
+          larghezza={480}
+          piede={
+            <>
+              <span className="ov-nota" />
+              <button type="button" className="btn-dash btn-dash-ghost" onClick={() => setImmagineDaRitagliare(null)}>
                 Annulla
               </button>
-              <button type="button" className="acc-btn-pill" onClick={() => void confermaCrop()}>
-                <div className="acc-icon-circle">
-                  <i className="fa-solid fa-check" />
-                </div>
+              <button type="button" className="btn-dash btn-dash-primary" onClick={() => void confermaCrop()}>
+                <i className="ti ti-check" />
                 Applica
               </button>
-            </div>
+            </>
+          }
+        >
+          <div className="cropper-area">
+            {/* immagine sorgente per Cropper.js, non gestibile con next/image */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img ref={cropperImgRef} src={immagineDaRitagliare} alt="Da ritagliare" />
           </div>
-        </div>
+        </Overlay>
       )}
     </Layout>
   );

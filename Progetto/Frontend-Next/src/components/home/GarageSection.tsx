@@ -1,118 +1,102 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState, type TransitionEvent } from "react";
+import { useState } from "react";
 
-import { AggiungiVeicoloCard, VeicoloCard } from "./VeicoloCard";
 import AggiungiVeicoloOverlay from "@/components/AggiungiVeicoloOverlay";
-import { useAuth } from "@/context/AuthContext";
+import IconaGarage from "@/components/IconaGarage";
+import CercaVeicoloModal from "@/components/home/CercaVeicoloModal";
+import EliminaVeicoloModal from "@/components/home/EliminaVeicoloModal";
+import VeicoloChip from "@/components/home/VeicoloChip";
+import { useSfumaturaScroll } from "@/hooks/useSfumaturaScroll";
 import type { VeicoloDettaglio } from "@/lib/types";
-
-/**
- * Quante card veicolo restano visibili nella griglia compressa: 2, perché
- * il terzo slot è sempre occupato dalla card "Aggiungi un veicolo".
- */
-const VISIBILI_COMPRESSA = 2;
 
 interface GarageSectionProps {
   veicoli: VeicoloDettaglio[];
-  espanso: boolean;
-  onToggleEspanso: () => void;
-  /** Ricarica i veicoli dopo un'aggiunta dal modale. */
+  selezionatoId: number | null;
+  onSeleziona: (id: number) => void;
+  /** Ricarica i veicoli dopo un'aggiunta o un'eliminazione. */
   onGarageCambiato: () => Promise<void> | void;
+  onElimina: (id: number) => Promise<boolean>;
 }
 
 /**
- * "Il mio garage": griglia responsive delle card veicolo (2 visibili + card
- * "Aggiungi un veicolo" sempre in 3ª posizione, il resto in un blocco
- * espandibile animato).
+ * "Il mio garage" in dashboard: bottone "Aggiungi veicolo" sempre in cima,
+ * lista di tutti i veicoli con scorrimento interno sempre attivo e, in
+ * fondo, "Cerca veicolo" che apre la ricerca nel garage (solo ricerca: per
+ * aggiungere si usa il bottone in cima).
  */
 export default function GarageSection({
   veicoli,
-  espanso,
-  onToggleEspanso,
+  selezionatoId,
+  onSeleziona,
   onGarageCambiato,
+  onElimina,
 }: GarageSectionProps) {
-  const router = useRouter();
-  const { veicoloAttivo, selezionaVeicolo } = useAuth();
-  const [modalAperto, setModalAperto] = useState(false);
-  /**
-   * true solo a pannello extra completamente aperto: serve a togliere
-   * l'overflow:hidden (necessario durante l'animazione grid-template-rows)
-   * che altrimenti taglierebbe il tilt 3D delle card al passaggio del mouse.
-   */
-  const [extraAssestato, setExtraAssestato] = useState(false);
-
-  // in chiusura il clipping deve tornare subito, non a transizione finita
-  useEffect(() => {
-    if (!espanso) setExtraAssestato(false);
-  }, [espanso]);
-
-  const onExtraTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
-    if (e.target !== e.currentTarget) return;
-    if (e.propertyName === "grid-template-rows" && espanso) setExtraAssestato(true);
-  };
-
-  const visibili = veicoli.slice(0, VISIBILI_COMPRESSA);
-  const extra = veicoli.slice(VISIBILI_COMPRESSA);
-
-  const apriVeicolo = (v: VeicoloDettaglio) => {
-    // la pagina info-veicolo lavora sul veicolo attivo: lo si seleziona
-    // prima di navigare, l'id in query resta come riferimento esplicito
-    selezionaVeicolo(v.id);
-    router.push(`/info-veicolo?id=${v.id}`);
-  };
+  const [aggiungiAperto, setAggiungiAperto] = useState(false);
+  const [cercaAperta, setCercaAperta] = useState(false);
+  const [daEliminare, setDaEliminare] = useState<VeicoloDettaglio | null>(null);
+  const [listaRef, sfumatura] = useSfumaturaScroll<HTMLDivElement>(veicoli.length);
 
   return (
-    <section id="garage" className="hp-garage">
-      <h2 className="hp-section-title">
-        <i className="ti ti-car" />
-        Il mio garage
-      </h2>
-
-      <div className="garage-grid">
-        {visibili.map((v) => (
-          <VeicoloCard
-            key={v.id}
-            veicolo={v}
-            attivo={veicoloAttivo?.id === v.id}
-            onClick={() => apriVeicolo(v)}
-          />
-        ))}
-        {/* posizione fissa e prevedibile: sempre il 3° slot della griglia */}
-        <AggiungiVeicoloCard onClick={() => setModalAperto(true)} />
+    <section id="garage" className="panel dash-garage" aria-label="Il mio garage">
+      <div className="dash-garage-head">
+        <h2 className="dash-title">
+          <IconaGarage />
+          Il mio garage
+        </h2>
+        <span className="dash-count">{veicoli.length}</span>
       </div>
 
-      {extra.length > 0 && (
-        <>
-          <div
-            className={`garage-extra${espanso ? " open" : ""}`}
-            onTransitionEnd={onExtraTransitionEnd}
-          >
-            <div className={`garage-extra-inner${extraAssestato ? " garage-extra-inner--assestato" : ""}`}>
-              <div className="garage-grid garage-grid-extra">
-                {extra.map((v) => (
-                  <VeicoloCard
-                    key={v.id}
-                    veicolo={v}
-                    attivo={veicoloAttivo?.id === v.id}
-                    onClick={() => apriVeicolo(v)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-          <button type="button" className="garage-toggle-btn" onClick={onToggleEspanso}>
-            <i className={`ti ti-chevron-down${espanso ? " ruotata" : ""}`} />
-            {espanso ? "Mostra meno" : "Mostra tutti i veicoli"}
-          </button>
-        </>
+      <button type="button" className="dash-add-btn" onClick={() => setAggiungiAperto(true)}>
+        <span className="dash-add-plus">
+          <i className="ti ti-plus" />
+        </span>
+        Aggiungi veicolo
+      </button>
+
+      <div ref={listaRef} className={`dash-garage-list${sfumatura ? " sfuma" : ""}`}>
+        {veicoli.map((v) => (
+          <VeicoloChip
+            key={v.id}
+            veicolo={v}
+            attivo={v.id === selezionatoId}
+            onSeleziona={() => onSeleziona(v.id)}
+            onElimina={() => setDaEliminare(v)}
+          />
+        ))}
+        {veicoli.length === 0 && <p className="dash-garage-vuoto">Il garage è vuoto.</p>}
+      </div>
+
+      {veicoli.length > 0 && (
+        <button type="button" className="dash-cerca-btn" onClick={() => setCercaAperta(true)}>
+          <i className="ti ti-search" />
+          Cerca veicolo
+        </button>
       )}
 
       <AggiungiVeicoloOverlay
-        aperto={modalAperto}
-        onChiudi={() => setModalAperto(false)}
+        aperto={aggiungiAperto}
+        onChiudi={() => setAggiungiAperto(false)}
         onAggiunto={onGarageCambiato}
+      />
+      <CercaVeicoloModal
+        aperta={cercaAperta}
+        veicoli={veicoli}
+        selezionatoId={selezionatoId}
+        onChiudi={() => setCercaAperta(false)}
+        onSeleziona={(id) => {
+          onSeleziona(id);
+          setCercaAperta(false);
+        }}
+      />
+      <EliminaVeicoloModal
+        veicolo={daEliminare}
+        onChiudi={() => setDaEliminare(null)}
+        onConferma={async (id) => {
+          const ok = await onElimina(id);
+          if (ok) setDaEliminare(null);
+          return ok;
+        }}
       />
     </section>
   );

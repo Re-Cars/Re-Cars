@@ -16,6 +16,7 @@ import {
   piano_abbonamento,
   tipo_officina,
 } from '@prisma/client';
+import { NotificheService } from '../notifiche/notifiche.service';
 
 interface AggiornaProfiloOfficinaData {
   nome?: string;
@@ -48,6 +49,7 @@ export class OfficinaService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private notifiche: NotificheService,
   ) {}
 
   async registra(data: CreateOfficinaDto) {
@@ -236,10 +238,15 @@ export class OfficinaService {
     if (prenotazione.id_officina !== officinaId)
       throw new ForbiddenException('Non autorizzato');
 
-    return this.prisma.prenotazione.update({
+    const aggiornata = await this.prisma.prenotazione.update({
       where: { id: prenotazioneId },
       data: { stato: stato as stato_prenotazione },
     });
+    if (prenotazione.stato !== aggiornata.stato) {
+      // senza await: la notifica all'utente non rallenta la risposta
+      void this.notifiche.avvisaCambioStato(prenotazioneId, stato);
+    }
+    return aggiornata;
   }
 
   async tutteLePrenotazioni(officinaId: number, stato?: string) {

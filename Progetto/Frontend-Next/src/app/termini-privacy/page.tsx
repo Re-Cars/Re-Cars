@@ -5,7 +5,7 @@ import Layout from "@/components/Layout";
 /** Termini di servizio e privacy policy (contenuto statico dal vanilla). */
 export default function TerminiPrivacyPage() {
   return (
-    <Layout breadcrumb="Termini e privacy" mostraSwitcher={false}>
+    <Layout breadcrumb="Termini e privacy">
       <section className="page-hero">
         <h2 className="section-title-page">termini e privacy police</h2>
         <p>Ultimo aggiornamento: [DATA]</p>

@@ -1,32 +1,31 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Layout from "@/components/Layout";
 import AzioniRapide from "@/components/home/AzioniRapide";
 import GarageSection from "@/components/home/GarageSection";
-import ScadenzeAvvisi from "@/components/home/ScadenzeAvvisi";
+import InfoVeicoloPanel from "@/components/home/InfoVeicoloPanel";
 import { useAuth } from "@/context/AuthContext";
-import { getVeicoliUtente, getVeicolo } from "@/lib/api";
+import { getInterventiVeicolo, getVeicoliUtente, getVeicolo } from "@/lib/api";
 import type { VeicoloDettaglio } from "@/lib/types";
 
 /**
- * Homepage utente: sezione "Il mio garage" (griglia veicoli espandibile +
- * card aggiungi con modale ricerca targa), pannello "Scadenze e avvisi"
- * calcolato su bollo/assicurazione/revisione, e le tre card azione fisse.
+ * Dashboard utente a viewport unica: "Il mio garage" (lista scorrevole +
+ * ricerca) a sinistra, scheda del veicolo selezionato a destra con la
+ * stessa altezza, azioni rapide in basso. Sopra i 900px di larghezza la
+ * pagina non scorre (vedi .dash in globals.css).
  */
 export default function HomePage() {
-  const { utente, gestisci401, caricaVeicoli } = useAuth();
+  const { utente, gestisci401, caricaVeicoli, veicoloAttivo, selezionaVeicolo, eliminaVeicoloDalGarage } =
+    useAuth();
 
   const [veicoli, setVeicoli] = useState<VeicoloDettaglio[]>([]);
-  const [garageEspanso, setGarageEspanso] = useState(false);
-  const garageRef = useRef<HTMLDivElement>(null);
+  const [speseAnno, setSpeseAnno] = useState<number | null>(null);
 
-  // la homepage lavora sui dettagli completi (scadenze incluse): la lista
-  // degli id arriva da GET /veicolo/utente/:id, poi ogni veicolo è ricaricato
-  // con getVeicolo (GET /veicolo/:id) — la STESSA funzione usata da
-  // info-veicolo/page.tsx, così "Scadenze e avvisi" mostra esattamente
-  // gli stessi dati (datascadenzabollo/datascadenzarca/isbolloattivo/isinsured)
+  // la dashboard lavora sui dettagli completi: la lista degli id arriva da
+  // GET /veicolo/utente/:id, poi ogni veicolo è ricaricato con getVeicolo
+  // (GET /veicolo/:id), la stessa funzione usata da info-veicolo/page.tsx.
   const caricaDettagli = useCallback(async () => {
     if (!utente) return;
     try {
@@ -43,38 +42,61 @@ export default function HomePage() {
     void caricaDettagli();
   }, [caricaDettagli]);
 
-  // dopo un'aggiunta dal modale si riallineano anche i veicoli del context
-  // (switcher/altre pagine usano la lista compatta)
+  // totale speso nell'anno su tutto il garage, per la card "Storico interventi":
+  // se una chiamata fallisce la card resta senza cifra, senza bloccare la pagina
+  useEffect(() => {
+    if (veicoli.length === 0) {
+      setSpeseAnno(null);
+      return;
+    }
+    let annullato = false;
+    const anno = String(new Date().getFullYear());
+    Promise.all(veicoli.map((v) => getInterventiVeicolo(v.id)))
+      .then((liste) => {
+        if (annullato) return;
+        const totale = liste
+          .flat()
+          .filter((i) => i.data.startsWith(anno))
+          .reduce((somma, i) => somma + (Number(i.costo) || 0), 0);
+        setSpeseAnno(totale);
+      })
+      .catch((err) => {
+        if (!annullato && !gestisci401(err)) setSpeseAnno(null);
+      });
+    return () => {
+      annullato = true;
+    };
+  }, [veicoli, gestisci401]);
+
+  // dopo un'aggiunta o un'eliminazione si riallineano anche i veicoli del context
   const onGarageCambiato = useCallback(async () => {
     await caricaDettagli();
     await caricaVeicoli();
   }, [caricaDettagli, caricaVeicoli]);
 
-  // la voce sidebar "Lista veicoli" porta qui: scroll alla sezione garage
-  // ed espansione della griglia se compressa (evento custom + hash #garage)
-  useEffect(() => {
-    const apriGarage = () => {
-      setGarageEspanso(true);
-      garageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
-    if (window.location.hash === "#garage") apriGarage();
-    window.addEventListener("recars:apri-garage", apriGarage);
-    return () => window.removeEventListener("recars:apri-garage", apriGarage);
-  }, []);
+  const onElimina = useCallback(
+    async (id: number) => {
+      const ok = await eliminaVeicoloDalGarage(id);
+      if (ok) await caricaDettagli();
+      return ok;
+    },
+    [eliminaVeicoloDalGarage, caricaDettagli],
+  );
+
+  const selezionato = veicoli.find((v) => v.id === veicoloAttivo?.id) ?? veicoli[0] ?? null;
 
   return (
-    <Layout mostraSwitcher={false}>
-      <main className="hp-main">
-        <div ref={garageRef}>
-          <GarageSection
-            veicoli={veicoli}
-            espanso={garageEspanso}
-            onToggleEspanso={() => setGarageEspanso((v) => !v)}
-            onGarageCambiato={onGarageCambiato}
-          />
-        </div>
-        <ScadenzeAvvisi veicoli={veicoli} />
-        <AzioniRapide />
+    <Layout>
+      <main className="dash">
+        <GarageSection
+          veicoli={veicoli}
+          selezionatoId={selezionato?.id ?? null}
+          onSeleziona={selezionaVeicolo}
+          onGarageCambiato={onGarageCambiato}
+          onElimina={onElimina}
+        />
+        <InfoVeicoloPanel veicolo={selezionato} />
+        <AzioniRapide speseAnno={speseAnno} veicolo={selezionato} />
       </main>
     </Layout>
   );

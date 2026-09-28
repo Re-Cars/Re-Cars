@@ -42,31 +42,6 @@
 }
 
 /* ── Modal prenotazione ──────────────────────── */
-#modal-prenotazione {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.65);
-    z-index: 9000;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.modal-box {
-    background: var(--surface);
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    width: 100%;
-    max-width: 480px;
-    padding: 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-}
 
 #modal-feedback {
     display: none;
@@ -95,24 +70,6 @@
 }
 
 /* ── Slot orari ──────────────────────────────── */
-.slot-btn {
-    padding: 8px 14px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--surface-2);
-    color: var(--text);
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-family: inherit;
-    font-weight: 600;
-    transition: 0.15s;
-}
-
-.slot-btn.attivo {
-    background: rgba(249,115,22,0.2);
-    border-color: #f97316;
-    color: #f97316;
-}
 
 /* ── Classi strutturali estratte dagli inline ── */
 .btn-theme-toggle {
@@ -270,41 +227,6 @@
     border: 1px solid var(--border);
 }
 
-.btn-modal-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 1.2rem;
-}
-
-.modal-title {
-    margin: 0;
-    font-size: 1.2rem;
-    color: var(--text);
-    font-weight: 800;
-}
-
-.modal-subtitle {
-    margin: 6px 0 0 0;
-    font-size: 0.85rem;
-    color: #f97316;
-    font-weight: 600;
-}
-
-.modal-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: block;
-    margin-bottom: 8px;
-}
-
 #modal-servizio {
     flex: 1;
     background: none;
@@ -326,12 +248,6 @@
     color-scheme: dark;
 }
 
-.modal-slots-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
 #modal-note {
     flex: 1;
     background: none;
@@ -343,248 +259,7 @@
     resize: none;
 }
 
-.btn-confirm-booking {
-    padding: 14px;
-    width: 100%;
-    justify-content: center;
-}
-
 /* ── Le mie prenotazioni: card minimali + overlay dettagli ── */
-.pb-lista {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.pb-card {
-    position: relative;
-    background: var(--surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: 14px;
-    padding: 16px 18px;
-    cursor: pointer;
-    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.3s ease,
-        background-color 0.3s ease;
-}
-
-.pb-card:hover {
-    transform: translateY(-4px);
-    border-color: color-mix(in srgb, var(--accent) 50%, transparent);
-    background: var(--surface-hover);
-}
-
-.pb-officina {
-    margin: 0 0 8px;
-    padding-right: 90px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.pb-riga {
-    margin: 4px 0 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.82rem;
-    color: var(--text-muted);
-}
-
-.pb-riga i {
-    color: var(--accent);
-    font-size: 0.95rem;
-    flex-shrink: 0;
-}
-
-.pb-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 20px;
-    white-space: nowrap;
-}
-
-.pb-badge-in_attesa {
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
-    color: var(--accent);
-    border: 0.5px solid color-mix(in srgb, var(--accent) 35%, transparent);
-}
-
-.pb-badge-confermata {
-    background: rgba(var(--iv-ok-rgb), 0.12);
-    color: var(--iv-ok);
-    border: 0.5px solid rgba(var(--iv-ok-rgb), 0.35);
-}
-
-.pb-badge-annullata {
-    background: rgba(var(--iv-bad-rgb), 0.12);
-    color: var(--iv-bad);
-    border: 0.5px solid rgba(var(--iv-bad-rgb), 0.35);
-}
-
-.pb-badge-completata {
-    background: color-mix(in srgb, var(--text-muted) 15%, transparent);
-    color: var(--text-muted);
-    border: 0.5px solid color-mix(in srgb, var(--text-muted) 35%, transparent);
-}
-
-.pb-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9000;
-    padding: 20px;
-}
-
-.pb-modal {
-    position: relative;
-    width: 100%;
-    max-width: 560px;
-    max-height: 90vh;
-    overflow-y: auto;
-    background: var(--surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: 20px;
-    padding: 28px;
-}
-
-.pb-modal-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 4px;
-    line-height: 1;
-}
-
-.pb-modal-close:hover {
-    color: var(--text);
-}
-
-.pb-modal-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-    padding-right: 32px;
-}
-
-.pb-modal-nome {
-    margin: 0;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--text);
-}
-
-.pb-modal-head .pb-badge {
-    position: static;
-}
-
-.pb-modal-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    margin-bottom: 18px;
-}
-
-.pb-modal-info .pb-riga {
-    font-size: 0.88rem;
-}
-
-.pb-storico {
-    border-top: 0.5px solid var(--border-subtle);
-    padding-top: 14px;
-    margin-bottom: 18px;
-}
-
-.pb-storico-label {
-    margin: 0 0 10px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: var(--text-muted);
-}
-
-.pb-storico-step {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 4px 0;
-    font-size: 0.85rem;
-    color: var(--text);
-}
-
-.pb-storico-icona {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    flex-shrink: 0;
-}
-
-.pb-modal-btns {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-}
-
-.pb-btn-annulla {
-    background: rgba(var(--iv-bad-rgb), 0.1);
-    color: var(--iv-bad);
-    border: none;
-    border-radius: 10px;
-    padding: 11px 18px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-    transition: background-color 150ms ease;
-}
-
-.pb-btn-annulla:hover {
-    background: rgba(var(--iv-bad-rgb), 0.18);
-}
-
-.pb-btn-annulla:disabled {
-    opacity: 0.6;
-    cursor: default;
-}
-
-.pb-btn-chiudi {
-    background: transparent;
-    color: var(--text-muted);
-    border: 1px solid var(--border-subtle);
-    border-radius: 10px;
-    padding: 11px 18px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-    transition: border-color 150ms ease, color 150ms ease;
-}
-
-.pb-btn-chiudi:hover {
-    border-color: color-mix(in srgb, var(--accent) 50%, transparent);
-    color: var(--text);
-}
 
 /* Utility classes */
 .u-display-none {
@@ -626,11 +301,6 @@
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .modal-box {
-        max-width: 90vw;
-        padding: 20px;
-    }
-
     #mappa-leaflet {
         height: 220px;
     }
@@ -649,29 +319,9 @@
         grid-template-columns: 1fr;
     }
 
-    .modal-box {
-        max-width: 100%;
-        padding: 16px;
-        border-radius: 14px;
-        gap: 14px;
-    }
-
-    #modal-prenotazione {
-        padding: 10px;
-    }
-
     #mappa-leaflet {
         height: 200px;
         min-height: 200px;
-    }
-
-    .modal-slots-container {
-        gap: 6px;
-    }
-
-    .slot-btn {
-        padding: 6px 10px;
-        font-size: 0.8rem;
     }
 
     .btn-open-map {
@@ -685,3 +335,612 @@
         padding: 16px;
     }
 }
+
+/* ====================================================
+   PRENOTAZIONI — layout (pr-*): hero + toolbar, card
+   con mappa grande e barra della selezione sotto (la
+   mappa non ha più nulla sopra), lista compatta a
+   destra con lo stesso scorrimento del garage. Le due
+   viste (mie prenotazioni / trova officina) condividono
+   la stessa struttura.
+-----------------------------------------------------*/
+/* la pagina riempie il viewport: la griglia mappa+lista prende lo spazio
+   rimasto, con margine in basso uguale a quello laterale */
+.pren {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-bottom: clamp(18px, 3.2dvh, 32px);
+}
+
+.pren .pg-hero { padding: clamp(10px, 1.8dvh, 16px) 24px; }
+
+/* titolo e contatori sulla stessa riga: l'hero resta basso e la mappa ha
+   più spazio */
+.pren .pg-hero-ttl {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+}
+
+.pren .pr-stats { margin-top: 0; }
+
+/* schermo intero senza scroll della pagina (come la dashboard): lo spazio
+   lo assorbono mappa e lista, che scorrono al loro interno */
+@media (min-width: 1081px) {
+  body:has(.pren) {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .pren .pr-grid { min-height: 0; }
+  .pren .pr-mapbox { min-height: 120px; }
+}
+
+.pr-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.pr-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 6px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  opacity: 0.95;
+}
+
+.pr-stats b {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 22%, transparent);
+}
+
+.pr-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin: clamp(10px, 1.8dvh, 16px) 0;
+}
+
+.pr-toolbar .pg-search { flex: 1 1 280px; }
+
+.pr-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pr-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 18px;
+  min-height: 380px;
+}
+
+.pr-mapcard {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.pr-mapbox {
+  position: relative;
+  flex: 1;
+  min-height: 200px;
+  /* i pane di Leaflet hanno z-index 400+: restano confinati qui dentro */
+  isolation: isolate;
+  background: var(--surface-2);
+}
+
+.pr-map {
+  position: absolute;
+  inset: 0;
+}
+
+.pr-pin {
+  --c: #f97316;
+  width: 34px;
+  height: 34px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: var(--c);
+  border: 2px solid #fff;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+  display: grid;
+  place-items: center;
+}
+
+.pr-pin b {
+  transform: rotate(45deg);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pr-pin.grande {
+  width: 44px;
+  height: 44px;
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--c) 30%, transparent), 0 8px 18px rgba(0, 0, 0, 0.45);
+}
+
+.pr-pin.grande b { font-size: 15px; }
+
+.pr-io {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #3b82f6;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 10px rgba(59, 130, 246, 0.22);
+}
+
+/* barra della selezione sotto la mappa: data (o avatar officina), dettagli
+   su una riga ciascuno con ellissi, bottoni che si stringono */
+.pr-bar {
+  --c: var(--accent);
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: clamp(10px, 1.8dvh, 16px) 18px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.pr-data.pr-data--bar {
+  width: 58px;
+  padding: 8px 0 9px;
+  border-radius: 14px;
+}
+
+.pr-data--bar b { font-size: 24px; }
+
+.pr-off-av.pr-off-av--bar {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  font-size: 22px;
+}
+
+.pr-bar-main { min-width: 0; }
+
+.pr-bar-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pr-bar h3 {
+  margin: 2px 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pr-bar-info {
+  display: flex;
+  gap: 4px 16px;
+  flex-wrap: wrap;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.pr-bar-info > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.pr-bar-info > span > i { color: var(--accent); flex-shrink: 0; }
+.pr-bar-info b { color: var(--c); font-weight: 700; }
+.pr-bar-info .pr-ellissi { display: block; }
+.pr-bar-info .pr-ellissi i { margin-right: 6px; }
+
+.pr-bar-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.pr-bar-btns .btn-dash {
+  height: 40px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+
+.pr-bar-lbl {
+  min-width: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pr-ellissi {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pr-stato {
+  --c: var(--accent);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+  white-space: nowrap;
+}
+
+.pr-stelle {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 13px;
+  color: #fbbf24;
+}
+
+.pr-stelle b { color: var(--text); }
+.pr-stelle span { color: var(--muted); }
+
+.pr-vuoto {
+  position: absolute;
+  z-index: 1001;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.pr-vuoto i {
+  font-size: 46px;
+  color: var(--accent);
+}
+
+.pr-vuoto h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text);
+}
+
+.pr-vuoto p {
+  margin: 0 0 6px;
+  max-width: 420px;
+  font-size: 14px;
+}
+
+.pr-lista {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* stesso scorrimento della lista "Il mio garage": barra sottile arancione
+   e sfumatura in basso finché c'è altro da vedere (.sfuma) */
+.pr-lista-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 12px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--accent) 45%, transparent) transparent;
+}
+
+.pr-lista-body.sfuma {
+  -webkit-mask: linear-gradient(#000 85%, transparent);
+  mask: linear-gradient(#000 85%, transparent);
+}
+
+/* il bottone dell'assistente sta sopra l'angolo in basso a destra della
+   lista: l'ultima riga può scorrere fino a sopra di lui */
+body:has(.ai-fab) .pr-lista-body { padding-bottom: 72px; }
+
+.pr-gruppo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 4px 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.pr-gruppo::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.pr-row,
+.pr-off {
+  --c: var(--accent);
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 10px 10px 10px 12px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.pr-off { grid-template-columns: 44px minmax(0, 1fr); }
+
+.pr-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--c);
+}
+
+.pr-row:hover,
+.pr-off:hover { border-color: color-mix(in srgb, var(--c) 45%, transparent); }
+
+.pr-row.attiva,
+.pr-off.attiva {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+
+.pr-row.passata { opacity: 0.8; }
+
+.pr-data {
+  text-align: center;
+  border-radius: 10px;
+  padding: 5px 0 6px;
+  background: color-mix(in srgb, var(--c) 13%, transparent);
+}
+
+.pr-data span {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: var(--c);
+}
+
+.pr-data b {
+  font-size: 20px;
+  line-height: 1;
+  color: var(--text);
+}
+
+.pr-off-av {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.pr-main { min-width: 0; }
+
+.pr-nome {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pr-sub {
+  margin-top: 1px;
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pr-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+  min-width: 0;
+}
+
+.pr-row .pr-stato { --c: inherit; }
+
+.pr-tra {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c);
+  white-space: nowrap;
+}
+
+.pr-stelline {
+  font-size: 12px;
+  color: #fbbf24;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.pr-km {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.pr-mini-btn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 9px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pr-mini-btn:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.pr-ordina {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pr-nores {
+  padding: 26px 10px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* una colonna: la pagina scorre e la griglia prende l'altezza del contenuto
+   (con flex: 1 veniva schiacciata a 380px e tagliava la card della mappa) */
+@media (max-width: 1080px) {
+  .pr-grid {
+    grid-template-columns: minmax(0, 1fr);
+    flex: none;
+    min-height: 0;
+  }
+
+  .pr-mapbox { flex: none; height: 420px; }
+  .pr-lista { max-height: 520px; }
+}
+
+/* telefono: i bottoni della barra vanno su una riga loro, a tutta larghezza */
+@media (max-width: 700px) {
+  .pr-bar { grid-template-columns: auto minmax(0, 1fr); }
+  .pr-bar-btns { grid-column: 1 / -1; }
+  .pr-bar-btns .btn-dash { flex: 1; min-width: 0; }
+}
+
+/* ── Overlay prenotazione e dettagli (stile comune .ov-*) ── */
+.pr-servizi-scelta { margin-bottom: 16px; }
+
+.ov-in.pr-note { margin-bottom: 12px; }
+
+.pr-det {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+
+.pr-det p {
+  margin: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13.5px;
+}
+
+.pr-det i { color: var(--accent); }
+
+.pr-timeline {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pr-timeline li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.pr-timeline i {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
+}
+
+/* distanza e tempo del percorso disegnato sulla mappa */
+.pr-bar-info > .pr-rotta {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.pr-bar-btns .btn-dash.pr-btn-ic { width: 40px; padding: 0; }

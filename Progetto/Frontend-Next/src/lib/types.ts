@@ -32,7 +32,8 @@ export interface ProfiloUtente extends UtenteLoggato {
 export interface DatiGenerici {
   tipo_veicolo?: string;
   alimentazione?: string;
-  cilindrata?: number | null;
+  /** VarChar(5) nello schema Prisma: arriva come stringa (es. "1242"). */
+  cilindrata?: string | number | null;
   cavalli?: number | null;
 }
 
@@ -151,7 +152,8 @@ export interface OfficinaCatalogo {
      calcolata lato client da lat/lng (src/lib/geo.ts) */
   aperta?: boolean;
   orario?: string;
-  disponibilita?: string;
+  /** GET /officina/all oggi manda un booleano (true = disponibile subito). */
+  disponibilita?: string | boolean;
   indirizzo?: string;
   telefono?: string;
   latitude?: number | string;
@@ -170,12 +172,14 @@ export interface Intervento {
   id_veicolo?: number;
   data: string;
   categoria: CategoriaIntervento;
+  /** Tipo di intervento (colonna rinominata da `nome` a `tipo` nello schema Prisma). */
   tipo: string;
   descrizione?: string | null;
   mediante?: string | null;
-  /** Città in cui è avvenuto l'intervento (facoltativa). */
-  citta?: Citta | null;
   costo?: number | string | null;
+  sigla_citta?: string | null;
+  /** Relazione inclusa da GET/POST/PUT /interventi (include: { citta: true }). */
+  citta?: Citta | null;
 }
 
 export interface NuovoInterventoBody {
@@ -185,6 +189,6 @@ export interface NuovoInterventoBody {
   tipo: string;
   descrizione: string | null;
   mediante: string | null;
-  sigla_citta: string | null;
   costo: number | null;
+  sigla_citta: string | null;
 }
