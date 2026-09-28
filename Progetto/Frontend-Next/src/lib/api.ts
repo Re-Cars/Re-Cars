@@ -203,6 +203,26 @@ export function cercaVeicoloPerTarga(targa: string): Promise<RisultatoRicercaVei
   return fetchApi(`/veicolo/cerca/${targa}`);
 }
 
+/** Dati del libretto inseriti a mano: POST /veicolo/manuale (tra parentesi la riga del libretto). */
+export interface NuovoVeicoloManuale {
+  targa: string; // (A)
+  tipo_veicolo: string;
+  marca: string; // (D.1)
+  modello: string; // (D.3)
+  dataimmatricolazione: string; // (B) AAAA-MM-GG
+  alimentazione?: string; // (P.3)
+  cilindrata?: number; // (P.1) cc
+  potenza_kw?: number; // (P.2)
+  numporte?: number;
+  nomeassicurazione?: string;
+  datascadenzarca?: string;
+  datascadenzabollo?: string;
+}
+
+export function aggiungiVeicoloManuale(body: NuovoVeicoloManuale): Promise<unknown> {
+  return fetchApi("/veicolo/manuale", { method: "POST", body: JSON.stringify(body) });
+}
+
 export function aggiungiVeicolo(targa: string, idUtente: number): Promise<unknown> {
   return fetchApi("/veicolo", {
     method: "POST",

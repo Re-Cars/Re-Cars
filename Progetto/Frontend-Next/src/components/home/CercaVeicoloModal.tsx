@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import VeicoloChip, { isMoto } from "@/components/home/VeicoloChip";
+import Overlay from "@/components/ui/Overlay";
 import { calcolaSalute } from "@/lib/scadenze";
 import type { VeicoloDettaglio } from "@/lib/types";
 
@@ -40,13 +41,8 @@ export default function CercaVeicoloModal({
     setQuery("");
     setFiltro("tutti");
     const t = setTimeout(() => inputRef.current?.focus(), 30);
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onChiudi();
-    window.addEventListener("keydown", onKey);
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [aperta, onChiudi]);
+    return () => clearTimeout(t);
+  }, [aperta]);
 
   if (!aperta) return null;
 
@@ -57,53 +53,28 @@ export default function CercaVeicoloModal({
     .filter((v) => !q || `${v.marca ?? ""} ${v.modello ?? ""} ${v.targa}`.toLowerCase().includes(q));
 
   return (
-    <div className="dash-overlay" onClick={(e) => e.target === e.currentTarget && onChiudi()}>
-      <div className="dash-modal dash-modal--cerca" role="dialog" aria-modal="true" aria-labelledby="cerca-titolo">
-        <div className="dash-modal-head">
-          <h2 id="cerca-titolo" className="dash-title">
-            <i className="ti ti-search" />
-            Cerca nel garage
-          </h2>
-          <span className="dash-count">{veicoli.length}</span>
-          <button type="button" className="dash-icon-btn" aria-label="Chiudi" onClick={onChiudi}>
-            <i className="ti ti-x" />
+    <Overlay onChiudi={onChiudi} titolo="Cerca nel garage" icona="ti-search" larghezza={520}>
+      <input
+        ref={inputRef}
+        className="ov-in dash-cerca-in"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Cerca per targa, marca o modello…"
+        aria-label="Cerca nel garage"
+      />
+      <div className="ov-seg chips dash-cerca-filtri">
+        {FILTRI.map((f) => (
+          <button key={f.id} type="button" className={filtro === f.id ? "on" : ""} onClick={() => setFiltro(f.id)}>
+            {f.label} <small>{veicoli.filter(f.test).length}</small>
           </button>
-        </div>
-        <div className="dash-search">
-          <i className="ti ti-search" />
-          <input
-            ref={inputRef}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Cerca per targa, marca o modello…"
-          />
-        </div>
-        <div className="dash-filtri">
-          {FILTRI.map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              className={`dash-fchip${filtro === f.id ? " on" : ""}`}
-              onClick={() => setFiltro(f.id)}
-            >
-              {f.label} <small>{veicoli.filter(f.test).length}</small>
-            </button>
-          ))}
-        </div>
-        <div className="dash-modal-list">
-          {risultati.map((v) => (
-            <VeicoloChip
-              key={v.id}
-              veicolo={v}
-              attivo={v.id === selezionatoId}
-              onSeleziona={() => onSeleziona(v.id)}
-            />
-          ))}
-          {risultati.length === 0 && (
-            <p className="dash-garage-vuoto">Nessun veicolo corrisponde alla ricerca.</p>
-          )}
-        </div>
+        ))}
       </div>
-    </div>
+      <div className="dash-modal-list">
+        {risultati.map((v) => (
+          <VeicoloChip key={v.id} veicolo={v} attivo={v.id === selezionatoId} onSeleziona={() => onSeleziona(v.id)} />
+        ))}
+        {risultati.length === 0 && <p className="dash-garage-vuoto">Nessun veicolo corrisponde alla ricerca.</p>}
+      </div>
+    </Overlay>
   );
 }

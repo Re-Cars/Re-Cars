@@ -11,8 +11,20 @@ import {
 } from '@nestjs/common';
 import { VeicoloService } from './veicolo.service';
 import { CreateVeicoloDto } from './dto/create-veicolo.dto';
+import { CreateVeicoloManualeDto } from './dto/create-veicolo-manuale.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
 import type { Request } from 'express';
+
+/**
+ * Solo gli utenti hanno un garage: con il token di un'officina `sub` è
+ * l'id dell'officina e il veicolo finirebbe all'utente con lo stesso id.
+ */
+function soloUtente(req: Request): number {
+  if (req.user?.tipo === 'officina') {
+    throw new ForbiddenException('Le officine non hanno un garage');
+  }
+  return Number(req.user?.sub);
+}
 
 @Controller('veicolo')
 export class VeicoloController {
@@ -21,8 +33,19 @@ export class VeicoloController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async salva(@Body() dto: CreateVeicoloDto, @Req() req: Request) {
-    const userId = Number(req.user?.sub);
+    const userId = soloUtente(req);
     return this.veicoloService.cercaESalva(dto, userId);
+  }
+
+  /** Veicolo inserito a mano con i dati del libretto. */
+  @UseGuards(JwtAuthGuard)
+  @Post('manuale')
+  async salvaManuale(
+    @Body() dto: CreateVeicoloManualeDto,
+    @Req() req: Request,
+  ) {
+    const userId = soloUtente(req);
+    return this.veicoloService.salvaManuale(dto, userId);
   }
 
   @UseGuards(JwtAuthGuard)

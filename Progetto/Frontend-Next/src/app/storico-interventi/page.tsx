@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import Layout from "@/components/Layout";
+import Overlay from "@/components/ui/Overlay";
 import VeicoloPicker from "@/components/VeicoloPicker";
 import { useAuth } from "@/context/AuthContext";
 import { useSfumaturaScroll } from "@/hooks/useSfumaturaScroll";
@@ -26,12 +27,12 @@ const TIPI_INTERVENTO: Record<CategoriaIntervento, string[]> = {
   annotazioni: ["Problemi", "luci", "motore", "elettrico", "rumori", "altro"],
 };
 
-const FILTRI: { id: string; label: string; dot?: string; classe: string }[] = [
-  { id: "all", label: "Tutti", classe: "active-all" },
-  { id: "ordinario", label: "Ordinario", dot: "#2b88b8", classe: "active-ordinario" },
-  { id: "straordinario", label: "Straordinario", dot: "#ef4444", classe: "active-straordinario" },
-  { id: "annotazioni", label: "Annotazione problemi", dot: "#f8782f", classe: "active-annotazioni" },
-  { id: "gestione", label: "Spese di gestione", dot: "#22c55e", classe: "active-gestione" },
+const FILTRI: { id: string; label: string; dot?: string }[] = [
+  { id: "all", label: "Tutti" },
+  { id: "ordinario", label: "Ordinario", dot: "#2b88b8" },
+  { id: "straordinario", label: "Straordinario", dot: "#ef4444" },
+  { id: "annotazioni", label: "Annotazione problemi", dot: "#f8782f" },
+  { id: "gestione", label: "Spese di gestione", dot: "#22c55e" },
 ];
 
 interface FormIntervento {
@@ -85,6 +86,8 @@ export default function StoricoInterventiPage() {
 
   // modali
   const [modalNuovo, setModalNuovo] = useState(false);
+  const [erroreModale, setErroreModale] = useState("");
+  const [inSalvataggio, setInSalvataggio] = useState(false);
   const [form, setForm] = useState<FormIntervento>(FORM_VUOTO);
   const [idInModifica, setIdInModifica] = useState<number | null>(null);
   const [modalPdf, setModalPdf] = useState(false);
@@ -148,12 +151,14 @@ export default function StoricoInterventiPage() {
 
   /* ---------- CRUD ---------- */
   const apriNuovo = () => {
+    setErroreModale("");
     setIdInModifica(null);
     setForm({ ...FORM_VUOTO, data: new Date().toISOString().split("T")[0] });
     setModalNuovo(true);
   };
 
   const apriModifica = (item: Intervento) => {
+    setErroreModale("");
     setIdInModifica(item.id);
     setForm({
       data: item.data,
@@ -169,11 +174,11 @@ export default function StoricoInterventiPage() {
 
   const salva = async () => {
     if (!form.data || !form.categoria || !form.tipo) {
-      alert("Data, categoria e tipo intervento sono obbligatori.");
+      setErroreModale("Data, categoria e tipo di intervento sono obbligatori.");
       return;
     }
     if (!veicoloAttivo) {
-      alert("Nessun veicolo attivo selezionato.");
+      setErroreModale("Nessun veicolo selezionato.");
       return;
     }
     // la città è facoltativa, ma se scritta deve essere una di quelle in anagrafica
@@ -189,11 +194,13 @@ export default function StoricoInterventiPage() {
         }
       }
       if (!trovata) {
-        alert("Città non riconosciuta: sceglila dall'elenco dei suggerimenti.");
+        setErroreModale("Città non riconosciuta: sceglila dall'elenco dei suggerimenti.");
         return;
       }
       siglaCitta = trovata.sigla;
     }
+    setErroreModale("");
+    setInSalvataggio(true);
     const payload = {
       data: form.data,
       categoria: form.categoria,
@@ -218,7 +225,9 @@ export default function StoricoInterventiPage() {
       setModalNuovo(false);
     } catch (err) {
       if (gestisci401(err)) return;
-      alert(err instanceof ApiError ? err.message : "Errore durante il salvataggio. Riprova.");
+      setErroreModale(err instanceof ApiError ? err.message : "Errore durante il salvataggio. Riprova.");
+    } finally {
+      setInSalvataggio(false);
     }
   };
 
@@ -520,97 +529,86 @@ export default function StoricoInterventiPage() {
 
       {/* Modal nuovo/modifica intervento */}
       {modalNuovo && (
-        <div
-          className="modal-overlay open"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setModalNuovo(false);
-          }}
+        <Overlay
+          onChiudi={() => setModalNuovo(false)}
+          titolo={idInModifica === null ? "Nuovo intervento" : "Modifica intervento"}
+          icona={idInModifica === null ? "ti-plus" : "ti-pencil"}
+          larghezza={640}
+          bloccato={inSalvataggio}
+          sottotitolo={veicoloAttivo ? `${veicoloAttivo.nome} · ${veicoloAttivo.targa}` : undefined}
+          piede={
+            <>
+              <span className="ov-nota" />
+              <button type="button" className="btn-dash btn-dash-ghost" disabled={inSalvataggio} onClick={() => setModalNuovo(false)}>
+                Annulla
+              </button>
+              <button type="button" className="btn-dash btn-dash-primary" disabled={inSalvataggio} onClick={() => void salva()}>
+                <i className="ti ti-check" />
+                {inSalvataggio ? "Salvataggio…" : idInModifica === null ? "Salva" : "Salva modifiche"}
+              </button>
+            </>
+          }
         >
-          <div className="modal">
-            <div className="modal-title">
-              <i className={`fa-solid ${idInModifica === null ? "fa-plus" : "fa-pen"}`} style={{ color: "#f97316" }} />{" "}
-              {idInModifica === null ? "Nuovo intervento" : "Modifica intervento"}
-            </div>
-            <div className="form-grid">
-              <div className="form-row">
-                <label>Data</label>
-                <input
-                  type="date"
-                  value={form.data}
-                  onChange={(e) => setForm((f) => ({ ...f, data: e.target.value }))}
-                />
+          {erroreModale && (
+            <p className="ov-err" role="alert">
+              <i className="ti ti-alert-circle" />
+              {erroreModale}
+            </p>
+          )}
+          <div className="ov-grp">Categoria</div>
+          <div className="ov-seg st-categorie">
+            {FILTRI.filter((f) => f.dot).map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                className={form.categoria === f.id ? "on" : ""}
+                style={{ ["--c" as string]: f.dot }}
+                onClick={() => setForm((x) => ({ ...x, categoria: f.id as CategoriaIntervento, tipo: "" }))}
+              >
+                <span className="pg-dot" />
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          {form.categoria !== "" && (
+            <>
+              <div className="ov-grp">Tipo di intervento</div>
+              <div className="ov-seg chips st-tipi">
+                {nomiForm.map((n) => (
+                  <button key={n} type="button" className={form.tipo === n ? "on" : ""} onClick={() => setForm((x) => ({ ...x, tipo: n }))}>
+                    {n}
+                  </button>
+                ))}
               </div>
-              <div className="form-row">
-                <label>Categoria</label>
-                <select
-                  value={form.categoria}
-                  onChange={(e) =>
-                    setForm((f) => ({
-                      ...f,
-                      categoria: e.target.value as CategoriaIntervento | "",
-                      tipo: "",
-                    }))
-                  }
-                >
-                  <option value="">Seleziona...</option>
-                  <option value="ordinario">Ordinario</option>
-                  <option value="straordinario">Straordinario</option>
-                  <option value="gestione">Spese di gestione</option>
-                  <option value="annotazioni">Annotazioni</option>
-                </select>
-              </div>
+            </>
+          )}
+
+          <div className="ov-grp">Dettagli</div>
+          <div className="ov-grid">
+            <div className="ov-f">
+              <label htmlFor="st-data">Data</label>
+              <input id="st-data" className="ov-in" type="date" value={form.data} onChange={(e) => setForm((f) => ({ ...f, data: e.target.value }))} />
             </div>
-            <div className="form-row">
-              <label>Tipo intervento</label>
-              <select value={form.tipo} onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value }))}>
-                {form.categoria === "" ? (
-                  <option value="">Prima seleziona categoria...</option>
-                ) : (
-                  <>
-                    <option value="">Seleziona...</option>
-                    {nomiForm.map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </>
-                )}
-              </select>
-            </div>
-            <div className="form-row">
-              <label>Descrizione (opzionale)</label>
+            <div className="ov-f">
+              <label htmlFor="st-costo">Costo €</label>
               <input
-                type="text"
-                placeholder="es. cambio olio motore 5W30"
-                value={form.descrizione}
-                onChange={(e) => setForm((f) => ({ ...f, descrizione: e.target.value }))}
+                id="st-costo"
+                className="ov-in"
+                type="number"
+                inputMode="decimal"
+                placeholder="0,00"
+                step="0.01"
+                min={0}
+                value={form.costo}
+                onChange={(e) => setForm((f) => ({ ...f, costo: e.target.value }))}
               />
             </div>
-            <div className="form-grid">
-              <div className="form-row">
-                <label>Fornitore/Mediante (opzionale)</label>
-                <input
-                  type="text"
-                  placeholder="es. officina/benzinaio/negozio"
-                  value={form.mediante}
-                  onChange={(e) => setForm((f) => ({ ...f, mediante: e.target.value }))}
-                />
-              </div>
-              <div className="form-row">
-                <label>Costo (opzionale)</label>
-                <input
-                  type="number"
-                  placeholder="€ 0.00"
-                  step="0.01"
-                  value={form.costo}
-                  onChange={(e) => setForm((f) => ({ ...f, costo: e.target.value }))}
-                />
-              </div>
-            </div>
-            <div className="form-row">
-              <label>Città (opzionale)</label>
+            <div className="ov-f w2">
+              <label htmlFor="st-citta">Città</label>
               <input
-                type="text"
+                id="st-citta"
+                className="ov-in"
                 list="storico-citta"
                 placeholder="es. Trapani"
                 autoComplete="off"
@@ -623,118 +621,113 @@ export default function StoricoInterventiPage() {
                 ))}
               </datalist>
             </div>
-            <div className="modal-actions">
-              <button type="button" className="btn-cancel" onClick={() => setModalNuovo(false)}>
-                Cancella
-              </button>
-              <button type="button" className="btn-save" onClick={() => void salva()}>
-                {idInModifica === null ? "Salva" : "Salva modifiche"}
-              </button>
+            <div className="ov-f w2">
+              <label htmlFor="st-desc">Descrizione</label>
+              <input
+                id="st-desc"
+                className="ov-in"
+                placeholder="es. cambio olio motore 5W30"
+                maxLength={255}
+                value={form.descrizione}
+                onChange={(e) => setForm((f) => ({ ...f, descrizione: e.target.value }))}
+              />
+            </div>
+            <div className="ov-f w2">
+              <label htmlFor="st-forn">Fornitore</label>
+              <input
+                id="st-forn"
+                className="ov-in"
+                placeholder="officina, benzinaio, negozio…"
+                maxLength={100}
+                value={form.mediante}
+                onChange={(e) => setForm((f) => ({ ...f, mediante: e.target.value }))}
+              />
             </div>
           </div>
-        </div>
+        </Overlay>
       )}
 
       {/* Modal genera PDF */}
       {modalPdf && (
-        <div
-          className="modal-overlay open"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setModalPdf(false);
-          }}
+        <Overlay
+          onChiudi={() => setModalPdf(false)}
+          titolo="Genera PDF"
+          icona="ti-file-type-pdf"
+          larghezza={600}
+          sottotitolo={veicoloAttivo ? `Report di ${veicoloAttivo.nome} · ${veicoloAttivo.targa}` : undefined}
+          piede={
+            <>
+              <span className="ov-nota" />
+              <button type="button" className="btn-dash btn-dash-ghost" onClick={() => void generaPdf(true)}>
+                <i className="ti ti-eye" />
+                Anteprima
+              </button>
+              <button type="button" className="btn-dash btn-dash-primary" onClick={() => void generaPdf(false)}>
+                <i className="ti ti-download" />
+                Scarica
+              </button>
+            </>
+          }
         >
-          <div className="modal modal-pdf">
-            <div className="modal-title">
-              <i className="fa-solid fa-file-pdf" style={{ color: "#f97316" }} /> Genera PDF
-            </div>
-
-            <div className="form-grid">
-              <div className="form-row">
-                <label>Anno</label>
-                <select value={pdfAnno} onChange={(e) => setPdfAnno(e.target.value)}>
-                  {anniDisponibili.map((a) => (
-                    <option key={a} value={a}>
-                      {a}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-row">
-                <label>Periodo</label>
-                <select value={pdfMese} onChange={(e) => setPdfMese(e.target.value as PdfPeriodo)}>
-                  <option value="all">Tutti i mesi</option>
-                  <option value="sem1">Gennaio - Giugno</option>
-                  <option value="sem2">Luglio - Dicembre</option>
-                  {["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"].map(
-                    (m, i) => (
-                      <option key={m} value={String(i)}>
-                        {m}
-                      </option>
-                    ),
-                  )}
-                </select>
-              </div>
-            </div>
-
-            <div className="form-row">
-              <label>Tipologia</label>
-              <div className="pdf-filters">
-                {FILTRI.map((f) => (
-                  <button
-                    key={f.id}
-                    type="button"
-                    className={`filter-btn${pdfFiltro === f.id ? ` ${f.classe}` : ""}`}
-                    onClick={() => setPdfFiltro(f.id)}
-                  >
-                    {f.dot && <span className="dot" style={{ background: f.dot }} />} {f.label}
-                  </button>
+          <div className="ov-grp">Periodo</div>
+          <div className="ov-grid">
+            <div className="ov-f w2">
+              <label htmlFor="pdf-anno">Anno</label>
+              <select id="pdf-anno" className="ov-in" value={pdfAnno} onChange={(e) => setPdfAnno(e.target.value)}>
+                {anniDisponibili.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
-
-            <div className="form-row">
-              <label>Anteprima</label>
-              <div className="pdf-anteprima">
-                <label className="pdf-check">
-                  <input
-                    type="checkbox"
-                    checked={pdfInfoVeicolo}
-                    onChange={(e) => setPdfInfoVeicolo(e.target.checked)}
-                  />{" "}
-                  Info generali veicolo
-                </label>
-                <label className="pdf-check">
-                  <input
-                    type="checkbox"
-                    checked={pdfCostoGenerale}
-                    onChange={(e) => setPdfCostoGenerale(e.target.checked)}
-                  />{" "}
-                  Tabella costo generale
-                </label>
-                <label className="pdf-check">
-                  <input
-                    type="checkbox"
-                    checked={pdfCronologia}
-                    onChange={(e) => setPdfCronologia(e.target.checked)}
-                  />{" "}
-                  Tabella cronologia interventi
-                </label>
-              </div>
-            </div>
-
-            <div className="modal-actions">
-              <button type="button" className="btn-cancel" onClick={() => setModalPdf(false)}>
-                Cancella
-              </button>
-              <button type="button" className="btn-preview" onClick={() => void generaPdf(true)}>
-                <i className="fa-solid fa-eye" /> Anteprima
-              </button>
-              <button type="button" className="btn-save" onClick={() => void generaPdf(false)}>
-                <i className="fa-solid fa-download" /> Download
-              </button>
+            <div className="ov-f w2">
+              <label htmlFor="pdf-mese">Mesi</label>
+              <select id="pdf-mese" className="ov-in" value={pdfMese} onChange={(e) => setPdfMese(e.target.value as PdfPeriodo)}>
+                <option value="all">Tutto l&apos;anno</option>
+                <option value="sem1">Gennaio - Giugno</option>
+                <option value="sem2">Luglio - Dicembre</option>
+                {NOMI_MESI.map((m, i) => (
+                  <option key={m} value={String(i)}>
+                    {m}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
-        </div>
+
+          <div className="ov-grp">Interventi</div>
+          <div className="ov-seg chips st-pdf-filtri">
+            {FILTRI.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                className={pdfFiltro === f.id ? "on" : ""}
+                style={f.dot ? { ["--c" as string]: f.dot } : undefined}
+                onClick={() => setPdfFiltro(f.id)}
+              >
+                {f.dot ? <span className="pg-dot" /> : <i className="ti ti-filter" />}
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="ov-grp">Contenuto</div>
+          <div className="st-pdf-sezioni">
+            <label className="ov-check">
+              <input type="checkbox" checked={pdfInfoVeicolo} onChange={(e) => setPdfInfoVeicolo(e.target.checked)} />
+              Dati del veicolo
+            </label>
+            <label className="ov-check">
+              <input type="checkbox" checked={pdfCostoGenerale} onChange={(e) => setPdfCostoGenerale(e.target.checked)} />
+              Riepilogo dei costi
+            </label>
+            <label className="ov-check">
+              <input type="checkbox" checked={pdfCronologia} onChange={(e) => setPdfCronologia(e.target.checked)} />
+              Cronologia degli interventi
+            </label>
+          </div>
+        </Overlay>
       )}
     </Layout>
   );

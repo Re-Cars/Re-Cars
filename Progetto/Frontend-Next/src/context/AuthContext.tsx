@@ -21,6 +21,7 @@ import {
   STORAGE_KEYS,
 } from "@/lib/storage";
 import type { UtenteLoggato, VeicoloCompatto, VeicoloDettaglio } from "@/lib/types";
+import { dueRuote } from "@/lib/veicolo";
 
 interface AuthContextValue {
   /** Profilo salvato al login; null finché non idratato o se non loggati. */
@@ -47,7 +48,7 @@ function mappaVeicolo(v: VeicoloDettaglio): VeicoloCompatto {
     targa: v.targa,
     // confronto case-insensitive: stesso di VeicoloCard/VeicoloInfoCard,
     // così lo switcher non può mostrare un'icona diversa dal resto del sito
-    tipo: (v.dati_generici[0]?.tipo_veicolo ?? "").toLowerCase() === "moto" ? "motorcycle" : "car",
+    tipo: dueRuote(v.dati_generici[0]?.tipo_veicolo) ? "motorcycle" : "car",
   };
 }
 

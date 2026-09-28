@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import Layout from "@/components/Layout";
+import Overlay from "@/components/ui/Overlay";
 import { useSfumaturaScroll } from "@/hooks/useSfumaturaScroll";
 import {
   aggiornaStatoPrenotazione,
@@ -241,6 +242,7 @@ export default function PrenotazioniPage() {
   const [slot, setSlot] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [feedbackModal, setFeedbackModal] = useState<{ testo: string; errore: boolean } | null>(null);
+  const [inPrenotazione, setInPrenotazione] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   // overlay dettagli prenotazione
@@ -495,14 +497,17 @@ export default function PrenotazioniPage() {
   };
 
   const confermaPrenotazione = async () => {
-    if (!selezionata) return;
+    if (!selezionata || inPrenotazione) return;
     if (!servizio || !dataPren || !slot) {
-      setFeedbackModal({
-        testo: "Errore: Compila tutti i campi obbligatori (Servizio, Data, Orario).",
-        errore: true,
-      });
+      setFeedbackModal({ testo: "Scegli servizio, giorno e orario.", errore: true });
       return;
     }
+    if (new Date(`${dataPren}T${slot}:00`) <= new Date()) {
+      setFeedbackModal({ testo: "Quell'orario è già passato: scegline uno più avanti.", errore: true });
+      return;
+    }
+    setInPrenotazione(true);
+    setFeedbackModal(null);
     try {
       await creaPrenotazione({
         officinaId: selezionata.id,
@@ -518,6 +523,8 @@ export default function PrenotazioniPage() {
     } catch (err) {
       console.error("Errore durante l'invio della prenotazione:", err);
       setFeedbackModal({ testo: "Impossibile elaborare la prenotazione. Riprova più tardi.", errore: true });
+    } finally {
+      setInPrenotazione(false);
     }
   };
 
@@ -931,108 +938,96 @@ export default function PrenotazioniPage() {
       </main>
 
       {/* Modal prenotazione */}
-      {modalAperto && (
-        <div
-          id="modal-prenotazione"
-          style={{ display: "flex" }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setModalAperto(false);
-          }}
+      {modalAperto && selezionata && (
+        <Overlay
+          onChiudi={() => setModalAperto(false)}
+          titolo="Prenota appuntamento"
+          icona="ti-calendar-plus"
+          larghezza={600}
+          bloccato={inPrenotazione}
+          sottotitolo={
+            <>
+              <b>{selezionata.nome}</b> · {selezionata.indirizzo}
+            </>
+          }
+          piede={
+            <>
+              <span className="ov-nota">
+                <i className="ti ti-info-circle" />
+                L&apos;officina conferma la richiesta: lo stato lo vedi in &quot;Le mie prenotazioni&quot;.
+              </span>
+              <button
+                type="button"
+                className="btn-dash btn-dash-ghost"
+                disabled={inPrenotazione}
+                onClick={() => setModalAperto(false)}
+              >
+                Annulla
+              </button>
+              <button
+                type="button"
+                className="btn-dash btn-dash-primary"
+                disabled={inPrenotazione}
+                onClick={() => void confermaPrenotazione()}
+              >
+                <i className="ti ti-check" />
+                {inPrenotazione ? "Invio…" : "Conferma"}
+              </button>
+            </>
+          }
         >
-          <div className="modal-box">
-            <button type="button" className="btn-modal-close" onClick={() => setModalAperto(false)}>
-              <i className="fa-solid fa-xmark" />
-            </button>
+          {feedbackModal && (
+            <p className="ov-err" role="alert">
+              <i className="ti ti-alert-circle" />
+              {feedbackModal.testo}
+            </p>
+          )}
+          <div className="ov-grp">Servizio</div>
+          <div className="ov-seg chips pr-servizi-scelta">
+            {selezionata.servizi.map((s) => (
+              <button key={s} type="button" className={servizio === s ? "on" : ""} onClick={() => setServizio(s)}>
+                {s}
+              </button>
+            ))}
+          </div>
 
-            <div>
-              <h2 className="modal-title">
-                <i className="fa-solid fa-calendar-check" style={{ color: "#f97316", marginRight: 8 }} />
-                Prenota Appuntamento
-              </h2>
-              <p className="modal-subtitle">{selezionata?.nome}</p>
+          <div className="ov-grp">Quando</div>
+          <div className="ov-grid">
+            <div className="ov-f">
+              <label htmlFor="pr-data">Giorno</label>
+              <input
+                id="pr-data"
+                className="ov-in"
+                type="date"
+                value={dataPren}
+                min={new Date().toISOString().split("T")[0]}
+                onChange={(e) => setDataPren(e.target.value)}
+              />
             </div>
-
-            <div>
-              <label className="modal-label">Servizio</label>
-              <div className="input-group" style={{ border: "1px solid var(--border)" }}>
-                <i className="fa-solid fa-screwdriver-wrench" />
-                <select value={servizio} onChange={(e) => setServizio(e.target.value)}>
-                  <option value="">Seleziona un servizio...</option>
-                  {selezionata?.servizi.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="modal-label">Data</label>
-              <div className="input-group" style={{ border: "1px solid var(--border)" }}>
-                <i className="fa-regular fa-calendar" />
-                <input
-                  type="date"
-                  value={dataPren}
-                  min={new Date().toISOString().split("T")[0]}
-                  onChange={(e) => setDataPren(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="modal-label">Orario</label>
-              <div className="modal-slots-container">
+            <div className="ov-f" style={{ gridColumn: "span 3" }}>
+              <span className="ov-lbl">Orario</span>
+              <div className="ov-seg slot">
                 {SLOT_ORARI.map((orario) => (
-                  <button
-                    key={orario}
-                    type="button"
-                    className={`slot-btn${slot === orario ? " attivo" : ""}`}
-                    onClick={() => setSlot(orario)}
-                  >
+                  <button key={orario} type="button" className={slot === orario ? "on" : ""} onClick={() => setSlot(orario)}>
                     {orario}
                   </button>
                 ))}
               </div>
             </div>
-
-            <div>
-              <label className="modal-label">Note (opzionale)</label>
-              <div className="input-group input-group-textarea" style={{ border: "1px solid var(--border)" }}>
-                <i className="fa-regular fa-comment" />
-                <textarea
-                  rows={2}
-                  placeholder="Es. portare a freddo, problema ai freni..."
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {feedbackModal && (
-              <div
-                style={{
-                  display: "block",
-                  padding: "10px 12px",
-                  borderRadius: 10,
-                  fontSize: "0.85rem",
-                  background: feedbackModal.errore ? "rgba(239,68,68,0.15)" : "rgba(34,197,94,0.15)",
-                  color: feedbackModal.errore ? "#f87171" : "#4ade80",
-                }}
-              >
-                {feedbackModal.testo}
-              </div>
-            )}
-
-            <button
-              type="button"
-              className="btn-aggiungi-garage btn-confirm-booking"
-              onClick={() => void confermaPrenotazione()}
-            >
-              <i className="fa-solid fa-check" /> Conferma Prenotazione
-            </button>
           </div>
-        </div>
+
+          <div className="ov-grp">
+            Note <span>· facoltative</span>
+          </div>
+          <textarea
+            className="ov-in pr-note"
+            rows={2}
+            maxLength={200}
+            placeholder="Es. portare a freddo, problema ai freni…"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+        </Overlay>
       )}
 
       {/* Overlay dettagli prenotazione */}
@@ -1042,74 +1037,66 @@ export default function PrenotazioniPage() {
           const stato = dettaglioPren.stato ?? "in_attesa";
           const annullabile = stato === "in_attesa" || stato === "confermata";
           return (
-            <div className="pb-overlay" onClick={() => setDettaglioPren(null)}>
-              <div className="pb-modal" onClick={(e) => e.stopPropagation()}>
-                <button
-                  type="button"
-                  className="pb-modal-close"
-                  aria-label="Chiudi"
-                  onClick={() => setDettaglioPren(null)}
-                >
-                  <i className="ti ti-x" />
-                </button>
-
-                <div className="pb-modal-head">
-                  <h3 className="pb-modal-nome">{dettaglioPren.officina?.nome ?? "Officina"}</h3>
-                  <span className={`pb-badge pb-badge-${stato}`}>{STATO_LABEL[stato] ?? stato}</span>
-                </div>
-
-                <div className="pb-modal-info">
-                  {dettaglioPren.officina?.indirizzo && (
-                    <p className="pb-riga">
-                      <i className="ti ti-map-pin" /> {dettaglioPren.officina.indirizzo}
-                    </p>
-                  )}
-                  <p className="pb-riga">
-                    <i className="ti ti-calendar" /> {formattaDataOra(dettaglioPren.dataprenotazione)}
-                  </p>
-                  <p className="pb-riga">
-                    <i className="ti ti-tool" /> {servizioPren}
-                  </p>
-                  {notePren && (
-                    <p className="pb-riga">
-                      <i className="ti ti-note" /> {notePren}
-                    </p>
-                  )}
-                </div>
-
-                <div className="pb-storico">
-                  <p className="pb-storico-label">Storico stato</p>
-                  {storicoStati(stato).map((s) => (
-                    <div key={s} className="pb-storico-step">
-                      <span className={`pb-storico-icona pb-badge-${s}`}>
-                        <i className={`ti ${STATO_ICONA[s] ?? "ti-clock"}`} />
-                      </span>
-                      <span>{STATO_LABEL[s] ?? s}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {annullabile && (
-                  <div className="pb-modal-btns">
+            <Overlay
+              onChiudi={() => setDettaglioPren(null)}
+              titolo={dettaglioPren.officina?.nome ?? "Officina"}
+              icona="ti-calendar-event"
+              larghezza={480}
+              bloccato={inAnnullamento}
+              sottotitolo={
+                <span className="pr-stato" style={{ ["--c" as string]: COLORE_STATO[stato] ?? "#f97316" }}>
+                  <i className={`ti ${STATO_ICONA[stato] ?? "ti-clock"}`} />
+                  {STATO_LABEL[stato] ?? stato}
+                </span>
+              }
+              piede={
+                <>
+                  <span className="ov-nota" />
+                  {annullabile && (
                     <button
                       type="button"
-                      className="pb-btn-annulla"
+                      className="btn-dash btn-dash-danger-o"
                       disabled={inAnnullamento}
                       onClick={() => void annullaPrenotazione(dettaglioPren)}
                     >
-                      {inAnnullamento ? "Annullamento..." : "Annulla prenotazione"}
+                      <i className="ti ti-calendar-x" />
+                      {inAnnullamento ? "Annullamento…" : "Annulla prenotazione"}
                     </button>
-                    <button
-                      type="button"
-                      className="pb-btn-chiudi"
-                      onClick={() => setDettaglioPren(null)}
-                    >
-                      Chiudi
-                    </button>
-                  </div>
+                  )}
+                  <button type="button" className="btn-dash btn-dash-ghost" onClick={() => setDettaglioPren(null)}>
+                    Chiudi
+                  </button>
+                </>
+              }
+            >
+              <div className="pr-det">
+                {dettaglioPren.officina?.indirizzo && (
+                  <p>
+                    <i className="ti ti-map-pin" /> {dettaglioPren.officina.indirizzo}
+                  </p>
+                )}
+                <p>
+                  <i className="ti ti-calendar" /> {formattaDataOra(dettaglioPren.dataprenotazione)}
+                </p>
+                <p>
+                  <i className="ti ti-tool" /> {servizioPren}
+                </p>
+                {notePren && (
+                  <p>
+                    <i className="ti ti-note" /> {notePren}
+                  </p>
                 )}
               </div>
-            </div>
+              <div className="ov-grp">Storico stato</div>
+              <ol className="pr-timeline">
+                {storicoStati(stato).map((s) => (
+                  <li key={s} style={{ ["--c" as string]: COLORE_STATO[s] ?? "#f97316" }}>
+                    <i className={`ti ${STATO_ICONA[s] ?? "ti-clock"}`} />
+                    {STATO_LABEL[s] ?? s}
+                  </li>
+                ))}
+              </ol>
+            </Overlay>
           );
         })()}
 

@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 
+import IconaGarage from "@/components/IconaGarage";
 import { calcolaSalute, scadenzeVeicolo, type ScadenzaDettaglio } from "@/lib/scadenze";
 import type { VeicoloDettaglio } from "@/lib/types";
+import { dueRuote } from "@/lib/veicolo";
 
 const ETICHETTA_SALUTE = {
   ok: "In regola",
@@ -45,7 +47,7 @@ export default function InfoVeicoloPanel({ veicolo }: { veicolo: VeicoloDettagli
   if (!veicolo) {
     return (
       <section className="panel dash-info dash-info--vuota">
-        <i className="ti ti-car-garage" />
+        <IconaGarage />
         <p>Aggiungi il tuo primo veicolo per vedere qui dati tecnici e scadenze.</p>
       </section>
     );
@@ -53,7 +55,7 @@ export default function InfoVeicoloPanel({ veicolo }: { veicolo: VeicoloDettagli
 
   const dg = veicolo.dati_generici[0] ?? {};
   const ds = veicolo.dati_specifici[0] ?? {};
-  const isMoto = (dg.tipo_veicolo ?? "").toLowerCase() === "moto";
+  const isMoto = dueRuote(dg.tipo_veicolo);
   const salute = calcolaSalute(veicolo);
   const scadenze = scadenzeVeicolo(veicolo);
   const critiche = scadenze.filter((s) => s.livello !== "ok");

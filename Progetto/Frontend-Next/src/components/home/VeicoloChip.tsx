@@ -2,6 +2,7 @@
 
 import { calcolaSalute, nomeVeicolo, type SaluteVeicolo } from "@/lib/scadenze";
 import type { VeicoloDettaglio } from "@/lib/types";
+import { dueRuote } from "@/lib/veicolo";
 
 const ETICHETTA_SALUTE: Record<SaluteVeicolo, string> = {
   ok: "In regola",
@@ -10,7 +11,7 @@ const ETICHETTA_SALUTE: Record<SaluteVeicolo, string> = {
 };
 
 export function isMoto(v: VeicoloDettaglio): boolean {
-  return (v.dati_generici[0]?.tipo_veicolo ?? "").toLowerCase() === "moto";
+  return dueRuote(v.dati_generici[0]?.tipo_veicolo);
 }
 
 interface VeicoloChipProps {

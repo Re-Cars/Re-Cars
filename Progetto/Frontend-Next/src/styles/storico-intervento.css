@@ -115,54 +115,6 @@
     margin-right: 4px;
 }
 
-.filter-btn {
-    padding: 5px 14px;
-    border-radius: 20px;
-    border: 1.5px solid rgba(249, 115, 22, 0.2);
-    background: transparent;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--c-muted);
-    transition: all 0.18s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.filter-btn .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.filter-btn.active-all {
-    background: rgba(82, 97, 105, 0.1);
-    color: var(--tutti);
-    border-color: rgba(82, 97, 105, 0.3);
-}
-.filter-btn.active-ordinario {
-    background: var(--ordinario-bg);
-    color: var(--ordinario);
-    border-color: var(--ordinario-border);
-}
-.filter-btn.active-straordinario {
-    background: var(--straordinario-bg);
-    color: var(--straordinario);
-    border-color: var(--straordinario-border);
-}
-.filter-btn.active-gestione {
-    background: var(--gestione-bg);
-    color: var(--gestione);
-    border-color: var(--gestione-border);
-}
-.filter-btn.active-annotazioni {
-    background: var(--iv-orange2);
-    color: var(--iv-orange);
-    border-color: rgba(249, 115, 22, 0.35);
-}
-
 /* Filtro per data */
 .filter-date-wrap {
     display: flex;
@@ -433,143 +385,6 @@
 /* ----------------------------------------------------
    MODAL (NUOVO E MODIFICA)
 ----------------------------------------------------- */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-}
-.modal-overlay.open {
-    opacity: 1;
-    pointer-events: all;
-}
-.modal {
-    background: var(--surface);
-    border-radius: 14px;
-    padding: 28px;
-    width: 480px;
-    max-width: 95vw;
-    border: 1px solid var(--border);
-    transform: translateY(10px);
-    transition: transform 0.2s;
-}
-.modal-overlay.open .modal {
-    transform: translateY(0);
-}
-.modal-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text);
-}
-.form-row {
-    margin-bottom: 14px;
-}
-.form-row label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 6px;
-}
-.form-row input,
-.form-row select,
-.form-row textarea {
-    width: 100%;
-    padding: 9px 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    font-size: 13px;
-    color: var(--text);
-    background: var(--input-bg);
-    outline: none;
-    transition: border-color 0.15s;
-    font-family: inherit;
-    box-sizing: border-box;
-}
-.form-row input:focus,
-.form-row select:focus,
-.form-row textarea:focus {
-    border-color: #f97316;
-}
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-.modal-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-}
-.btn-cancel {
-    padding: 9px 20px;
-    border-radius: 8px;
-    border: 1.5px solid var(--border);
-    background: none;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    font-family: inherit;
-    transition: all 0.15s;
-}
-.btn-cancel:hover {
-    border-color: #ef4444;
-    color: #ef4444;
-    background: rgba(239, 68, 68, 0.05);
-}
-.btn-save {
-    padding: 9px 24px;
-    border-radius: 8px;
-    border: none;
-    background: linear-gradient(135deg, #f97316, #ea580c);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    color: white;
-    font-family: inherit;
-    transition: all 0.15s;
-}
-.btn-save:hover {
-    transform: scale(1.03);
-    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
-}
-.btn-preview {
-    padding: 9px 20px;
-    border-radius: 8px;
-    border: 1.5px solid rgba(249, 115, 22, 0.4);
-    background: rgba(249, 115, 22, 0.08);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--iv-orange);
-    font-family: inherit;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    transition: all 0.15s;
-}
-.btn-preview:hover {
-    background: rgba(249, 115, 22, 0.15);
-    border-color: var(--iv-orange);
-}
 
 /* ----------------------------------------------------
    RESPONSIVE
@@ -639,11 +454,7 @@
         padding: 8px 10px;
         gap: 6px;
     }
-    .filter-btn {
-        flex-shrink: 0;
-        font-size: 11px;
-        padding: 4px 10px;
-    }
+    
     .filter-date-wrap {
         flex-shrink: 0;
         padding: 4px 10px;
@@ -680,13 +491,8 @@
         height: 44px;
         font-size: 1.3rem;
     }
-    .modal {
-        padding: 20px 16px;
-        border-radius: 14px;
-    }
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
+    
+    
 }
 
 /* ======================================================
@@ -751,66 +557,10 @@
 }
 
 /* Bottone genera PDF nella card riepilogo */
-.pdf-btn {
-    background: linear-gradient(135deg, #f97316, #ea580c);
-    color: #fff;
-    border: none;
-    padding: 12px 22px;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.3s;
-    box-shadow: 0 6px 16px -4px rgba(249, 115, 22, 0.5);
-    white-space: nowrap;
-}
-
-.pdf-btn:hover {
-    transform: scale(1.03);
-    box-shadow: 0 8px 20px -4px rgba(249, 115, 22, 0.6);
-}
 
 /* ----------------------------------------------------
    MODAL GENERA PDF
 ----------------------------------------------------- */
-.modal-pdf {
-    width: 520px;
-}
-
-.pdf-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.pdf-anteprima {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 4px 2px;
-}
-
-.pdf-check {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: var(--c-text);
-    cursor: pointer;
-    text-transform: none;
-    font-weight: 400;
-    letter-spacing: normal;
-}
-
-.pdf-check input {
-    width: auto;
-    accent-color: #f97316;
-    cursor: pointer;
-}
 
 /* Responsive riepilogo spese */
 @media (max-width: 600px) {
@@ -821,9 +571,7 @@
     .spesa-box {
         min-width: 0;
     }
-    .pdf-btn {
-        justify-content: center;
-    }
+    
 }
 /* ====================================================
    Storico interventi — layout del nuovo stile (pg-*):
@@ -1224,4 +972,26 @@ body:has(.ai-fab) .st .st-split { padding-right: 70px; }
 @media (max-width: 640px) {
   .st-row { grid-template-columns: 44px minmax(0, 1fr); }
   .st-costo, .st-azioni { grid-column: 2; }
+}
+
+/* ── Overlay intervento e PDF (stile comune .ov-*) ── */
+.st-categorie,
+.st-tipi,
+.st-pdf-filtri { margin-bottom: 16px; }
+
+.st-categorie button .pg-dot,
+.st-pdf-filtri button .pg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c);
+}
+
+.st-categorie button.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent); }
+
+.st-pdf-sezioni {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
 }

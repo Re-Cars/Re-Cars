@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 
 import Layout from "@/components/Layout";
+import Overlay from "@/components/ui/Overlay";
 import { useAuth } from "@/context/AuthContext";
 import {
   aggiornaUtente as apiAggiornaUtente,
@@ -24,10 +25,10 @@ const CONFIG_CAMPI: Record<
   CampoModificabile,
   { icona: string; titolo: string; placeholder: string; type: string }
 > = {
-  username: { icona: "fa-user", titolo: "Cambia username", placeholder: "Nuovo username", type: "text" },
-  email: { icona: "fa-envelope", titolo: "Cambia email", placeholder: "Nuova email", type: "email" },
-  cellulare: { icona: "fa-phone", titolo: "Numero di telefono", placeholder: "Es. 3331234567", type: "tel" },
-  password: { icona: "fa-key", titolo: "Cambia password", placeholder: "Nuova password", type: "password" },
+  username: { icona: "ti-user", titolo: "Cambia username", placeholder: "Nuovo username", type: "text" },
+  email: { icona: "ti-mail", titolo: "Cambia email", placeholder: "Nuova email", type: "email" },
+  cellulare: { icona: "ti-phone", titolo: "Numero di telefono", placeholder: "Es. 3331234567", type: "tel" },
+  password: { icona: "ti-key", titolo: "Cambia password", placeholder: "Nuova password", type: "password" },
 };
 
 const NOMI_PIANI: Record<string, string> = { base: "Base", premium: "Premium", pro: "Pro" };
@@ -334,94 +335,94 @@ export default function AccountPage() {
 
       {/* Overlay modifica campo */}
       {campoInModifica && (
-        <div className="modifica-campo-overlay" onClick={() => setCampoInModifica(null)}>
-          <div className="modifica-campo-box" onClick={(e) => e.stopPropagation()}>
-            <p className="modifica-campo-title">
-              <i className={`fa-solid ${CONFIG_CAMPI[campoInModifica].icona}`} />{" "}
-              {CONFIG_CAMPI[campoInModifica].titolo}
-            </p>
-            <input
-              type={CONFIG_CAMPI[campoInModifica].type}
-              placeholder={CONFIG_CAMPI[campoInModifica].placeholder}
-              value={valoreCampo}
-              autoFocus
-              onChange={(e) => setValoreCampo(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") void salvaModifica();
-              }}
-            />
-            <p className="modifica-campo-error">{erroreCampo}</p>
-            <div className="modifica-campo-btns">
-              <button type="button" className="btn-annulla" onClick={() => setCampoInModifica(null)}>
+        <Overlay
+          onChiudi={() => setCampoInModifica(null)}
+          titolo={CONFIG_CAMPI[campoInModifica].titolo}
+          icona={CONFIG_CAMPI[campoInModifica].icona}
+          larghezza={440}
+          piede={
+            <>
+              <span className="ov-nota" />
+              <button type="button" className="btn-dash btn-dash-ghost" onClick={() => setCampoInModifica(null)}>
                 Annulla
               </button>
-              <button type="button" className="acc-btn-pill" onClick={() => void salvaModifica()}>
-                <div className="acc-icon-circle">
-                  <i className="fa-solid fa-check" />
-                </div>
+              <button type="button" className="btn-dash btn-dash-primary" onClick={() => void salvaModifica()}>
+                <i className="ti ti-check" />
                 Salva
               </button>
-            </div>
-          </div>
-        </div>
+            </>
+          }
+        >
+          {erroreCampo && (
+            <p className="ov-err" role="alert">
+              <i className="ti ti-alert-circle" />
+              {erroreCampo}
+            </p>
+          )}
+          <input
+            className="ov-in acc2-campo"
+            type={CONFIG_CAMPI[campoInModifica].type}
+            placeholder={CONFIG_CAMPI[campoInModifica].placeholder}
+            aria-label={CONFIG_CAMPI[campoInModifica].titolo}
+            value={valoreCampo}
+            autoFocus
+            onChange={(e) => setValoreCampo(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") void salvaModifica();
+            }}
+          />
+        </Overlay>
       )}
 
       {/* Overlay conferma eliminazione account */}
       {confermaElimina && (
-        <div className="conferma-account-overlay" onClick={() => setConfermaElimina(false)}>
-          <div className="conferma-account-box" onClick={(e) => e.stopPropagation()}>
-            <div className="conferma-account-icon">
-              <i className="fa-solid fa-triangle-exclamation" />
-            </div>
-            <p className="conferma-account-title">Elimina account</p>
-            <p className="conferma-account-sub">
-              Questa azione è irreversibile. Tutti i tuoi dati, veicoli e prenotazioni verranno
-              eliminati permanentemente.
-            </p>
-            <div className="conferma-account-btns">
-              <button type="button" className="btn-annulla" onClick={() => setConfermaElimina(false)}>
+        <Overlay
+          onChiudi={() => setConfermaElimina(false)}
+          titolo="Eliminare l'account?"
+          icona="ti-alert-triangle"
+          larghezza={460}
+          sottotitolo="L'operazione non è reversibile: verranno eliminati anche veicoli, storico e prenotazioni."
+          piede={
+            <>
+              <span className="ov-nota" />
+              <button type="button" className="btn-dash btn-dash-ghost" onClick={() => setConfermaElimina(false)}>
                 Annulla
               </button>
-              <button
-                type="button"
-                className="acc-btn-pill-danger"
-                onClick={() => void confermaEliminaAccount()}
-              >
-                <div className="acc-icon-circle-danger">
-                  <i className="fa-solid fa-trash" />
-                </div>
-                Elimina
+              <button type="button" className="btn-dash btn-dash-danger" onClick={() => void confermaEliminaAccount()}>
+                <i className="ti ti-trash" />
+                Elimina account
               </button>
-            </div>
-          </div>
-        </div>
+            </>
+          }
+        />
       )}
 
       {/* Overlay cropper avatar */}
       {immagineDaRitagliare && (
-        <div className="cropper-overlay">
-          <div className="cropper-box">
-            <p className="cropper-title">
-              <i className="fa-solid fa-crop-simple" /> Ritaglia la tua foto
-            </p>
-            <div className="cropper-area">
-              {/* immagine sorgente per Cropper.js, non gestibile con next/image */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img ref={cropperImgRef} src={immagineDaRitagliare} alt="Da ritagliare" />
-            </div>
-            <div className="cropper-btns">
-              <button type="button" className="btn-annulla" onClick={() => setImmagineDaRitagliare(null)}>
+        <Overlay
+          onChiudi={() => setImmagineDaRitagliare(null)}
+          titolo="Ritaglia la tua foto"
+          icona="ti-crop"
+          larghezza={480}
+          piede={
+            <>
+              <span className="ov-nota" />
+              <button type="button" className="btn-dash btn-dash-ghost" onClick={() => setImmagineDaRitagliare(null)}>
                 Annulla
               </button>
-              <button type="button" className="acc-btn-pill" onClick={() => void confermaCrop()}>
-                <div className="acc-icon-circle">
-                  <i className="fa-solid fa-check" />
-                </div>
+              <button type="button" className="btn-dash btn-dash-primary" onClick={() => void confermaCrop()}>
+                <i className="ti ti-check" />
                 Applica
               </button>
-            </div>
+            </>
+          }
+        >
+          <div className="cropper-area">
+            {/* immagine sorgente per Cropper.js, non gestibile con next/image */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img ref={cropperImgRef} src={immagineDaRitagliare} alt="Da ritagliare" />
           </div>
-        </div>
+        </Overlay>
       )}
     </Layout>
   );

@@ -142,8 +142,8 @@ model officina {
 model veicolo {
   id                 Int                  @id(map: "veicoli_pkey") @default(autoincrement())
   targa              String?              @db.Char(7)
-  marca              String?              @db.VarChar(10)
-  modello            String?              @db.Char(12)
+  marca              String?              @db.VarChar(30)
+  modello            String?              @db.VarChar(40)
   id_utente          Int
   utente             utente               @relation(fields: [id_utente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "veicoli_id_utente_fkey")
   dati_generici      dati_generici[]

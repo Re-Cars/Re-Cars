@@ -4,6 +4,7 @@ import { type MouseEvent } from "react";
 
 import { giorniAllaData } from "@/lib/scadenze";
 import type { VeicoloDettaglio } from "@/lib/types";
+import { dueRuote } from "@/lib/veicolo";
 
 type StatoMantenimento = "attiva" | "scaduta";
 
@@ -37,7 +38,7 @@ export default function VeicoloInfoCard({ veicolo }: VeicoloInfoCardProps) {
   const ds = veicolo?.dati_specifici[0] ?? {};
 
   const nomeVeicolo = `${veicolo?.marca ?? ""} ${veicolo?.modello ?? ""}`.trim() || "Veicolo";
-  const isMoto = (dg.tipo_veicolo ?? "").toLowerCase() === "moto";
+  const isMoto = dueRuote(dg.tipo_veicolo);
   const iconaVeicolo = isMoto ? "fa-motorcycle" : "fa-car";
 
   const statoBollo = statoDaData(ds.datascadenzabollo, ds.isbolloattivo);

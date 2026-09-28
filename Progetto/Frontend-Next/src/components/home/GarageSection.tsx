@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import AggiungiVeicoloOverlay from "@/components/AggiungiVeicoloOverlay";
+import IconaGarage from "@/components/IconaGarage";
 import CercaVeicoloModal from "@/components/home/CercaVeicoloModal";
 import EliminaVeicoloModal from "@/components/home/EliminaVeicoloModal";
 import VeicoloChip from "@/components/home/VeicoloChip";
@@ -40,7 +41,7 @@ export default function GarageSection({
     <section id="garage" className="panel dash-garage" aria-label="Il mio garage">
       <div className="dash-garage-head">
         <h2 className="dash-title">
-          <i className="ti ti-building-warehouse" />
+          <IconaGarage />
           Il mio garage
         </h2>
         <span className="dash-count">{veicoli.length}</span>
