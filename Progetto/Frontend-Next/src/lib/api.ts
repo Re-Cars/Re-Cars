@@ -203,6 +203,26 @@ export function cercaVeicoloPerTarga(targa: string): Promise<RisultatoRicercaVei
   return fetchApi(`/veicolo/cerca/${targa}`);
 }
 
+/** Dati del libretto inseriti a mano: POST /veicolo/manuale (tra parentesi la riga del libretto). */
+export interface NuovoVeicoloManuale {
+  targa: string; // (A)
+  tipo_veicolo: string;
+  marca: string; // (D.1)
+  modello: string; // (D.3)
+  dataimmatricolazione: string; // (B) AAAA-MM-GG
+  alimentazione?: string; // (P.3)
+  cilindrata?: number; // (P.1) cc
+  potenza_kw?: number; // (P.2)
+  numporte?: number;
+  nomeassicurazione?: string;
+  datascadenzarca?: string;
+  datascadenzabollo?: string;
+}
+
+export function aggiungiVeicoloManuale(body: NuovoVeicoloManuale): Promise<unknown> {
+  return fetchApi("/veicolo/manuale", { method: "POST", body: JSON.stringify(body) });
+}
+
 export function aggiungiVeicolo(targa: string, idUtente: number): Promise<unknown> {
   return fetchApi("/veicolo", {
     method: "POST",
@@ -356,4 +376,123 @@ export function aggiornaIntervento(
 
 export function eliminaIntervento(id: number): Promise<unknown> {
   return fetchApi(`/interventi/${id}`, { method: "DELETE" });
+}
+
+/* ====================== ASSISTENTE ====================== */
+
+export type AzioneAssistente =
+  | { tipo: "apri_pagina"; etichetta: string; href: string }
+  | { tipo: "chiedi"; etichetta: string; domanda: string };
+
+export type EventoAssistente =
+  | { type: "delta"; text: string }
+  | { type: "done"; answer: string; actions: AzioneAssistente[]; used_llm: boolean };
+
+export interface RichiestaAssistente {
+  messaggio: string;
+  storico: { ruolo: "utente" | "assistente"; testo: string }[];
+  pagina?: string;
+}
+
+/**
+ * POST /assistente/chat: risposta in Server-Sent Events, letta un evento
+ * alla volta. La chiave Gemini sta solo nel backend. Lancia ApiError sui
+ * non-2xx (429 = troppe domande, col messaggio del backend).
+ */
+export async function* chatAssistente(
+  body: RichiestaAssistente,
+  signal?: AbortSignal,
+): AsyncGenerator<EventoAssistente> {
+  const response = await fetch(`${API_BASE_URL}/assistente/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(body),
+    signal,
+  });
+  if (!response.ok || !response.body) {
+    let messaggio: string | null = null;
+    try {
+      messaggio = estraiMessaggio(await response.json());
+    } catch {
+      /* corpo non JSON */
+    }
+    throw new ApiError(response.status, messaggio ?? `Errore ${response.status}`);
+  }
+
+  const lettore = response.body.pipeThrough(new TextDecoderStream()).getReader();
+  let buffer = "";
+  for (;;) {
+    const { value, done } = await lettore.read();
+    if (done) break;
+    buffer += value;
+    let fine: number;
+    while ((fine = buffer.indexOf("\n\n")) >= 0) {
+      const blocco = buffer.slice(0, fine);
+      buffer = buffer.slice(fine + 2);
+      for (const riga of blocco.split("\n")) {
+        if (!riga.startsWith("data:")) continue;
+        try {
+          yield JSON.parse(riga.slice(5).trim()) as EventoAssistente;
+        } catch {
+          /* evento malformato: si ignora */
+        }
+      }
+    }
+  }
+}
+
+/* ====================== NOTIFICHE PUSH ====================== */
+
+/** Chiave VAPID pubblica del backend (503 se le notifiche non sono configurate). */
+export function getChiaveNotifiche(): Promise<{ chiave: string }> {
+  return fetchApi("/notifiche/chiave-pubblica");
+}
+
+export function iscriviNotifiche(iscrizione: PushSubscriptionJSON): Promise<unknown> {
+  return fetchApi("/notifiche/iscrizione", {
+    method: "POST",
+    body: JSON.stringify({ endpoint: iscrizione.endpoint, keys: iscrizione.keys }),
+  });
+}
+
+export function disiscriviNotifiche(endpoint: string): Promise<unknown> {
+  return fetchApi("/notifiche/iscrizione", { method: "DELETE", body: JSON.stringify({ endpoint }) });
+}
+
+export function notificaDiProva(): Promise<{ inviate: number }> {
+  return fetchApi("/notifiche/prova", { method: "POST" });
+}
+
+/* ====================== CARBURANTI ====================== */
+
+export type Carburante = "benzina" | "gasolio" | "gpl" | "metano";
+
+/** Distributore di GET /carburanti/vicini (open data MIMIT, prezzi delle 8:00). */
+export interface ImpiantoCarburante {
+  id: number;
+  bandiera: string;
+  nome: string;
+  indirizzo: string;
+  comune: string;
+  provincia: string;
+  lat: number;
+  lng: number;
+  /** €/l (€/kg per il metano): self se disponibile, altrimenti servito. */
+  prezzo: number;
+  self: boolean;
+  aggiornato: string | null;
+  distanzaKm: number;
+}
+
+export interface RispostaCarburanti {
+  estrazione: string | null;
+  carburante: Carburante;
+  raggio: number;
+  impianti: ImpiantoCarburante[];
+}
+
+export function getCarburantiVicini(lat: number, lng: number, carburante: Carburante, raggio = 5): Promise<RispostaCarburanti> {
+  const q = new URLSearchParams({ lat: lat.toFixed(5), lng: lng.toFixed(5), carburante, raggio: String(raggio) });
+  return fetchApi(`/carburanti/vicini?${q}`);
 }

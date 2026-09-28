@@ -15,6 +15,9 @@ import { StripeModule } from './stripe/stripe.module';
 import { PrenotazioneModule } from './prenotazione/prenotazione.module';
 import { AppMailerModule } from './mailer.module';
 import { StoricoModule } from './storico_interventi/storico.module';
+import { AssistenteModule } from './assistente/assistente.module';
+import { NotificheModule } from './notifiche/notifiche.module';
+import { CarburantiModule } from './carburanti/carburanti.module';
 
 @Module({
   imports: [
@@ -34,6 +37,9 @@ import { StoricoModule } from './storico_interventi/storico.module';
     OfficinaModule,
     StripeModule,
     PrenotazioneModule,
+    AssistenteModule,
+    NotificheModule,
+    CarburantiModule,
   ],
   controllers: [AppController, UtenteController, VeicoloController],
   providers: [AppService, UtenteService, VeicoloService, JwtStrategy],

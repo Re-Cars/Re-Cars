@@ -3,10 +3,12 @@ import { OfficinaService } from './officina.service';
 import { OfficinaController } from './officina.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { NotificheModule } from '../notifiche/notifiche.module';
 
 @Module({
   imports: [
     ConfigModule,
+    NotificheModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({

@@ -1,0 +1,623 @@
+================================================================================
+EXPORT CHAT — RE|CARS: redesign UI/UX dashboard utente (Frontend-Next)
+================================================================================
+
+COME USARE QUESTO FILE
+----------------------
+Sei un'istanza di Claude Code che riprende un lavoro iniziato in un'altra sessione
+(su un altro PC). Questo file e' un export RIASSUNTO ma fedele della chat: le
+richieste dell'utente sono riportate quasi alla lettera, le tue risposte/decisioni
+precedenti sono condensate, e il prompt di implementazione finale e' incluso per
+INTERO e VERBATIM (sezione 6). NON e' una trascrizione parola per parola: i tool
+output enormi (CSS, HTML degli artifact) sono stati omessi.
+
+Prima di fare qualsiasi modifica al codice:
+ 1. Leggi tutto il file (in particolare sezioni 4 e 5: stato attuale e decisioni aperte).
+ 2. Rileggi il codice reale: alcune cose potrebbero essere cambiate dopo l'export.
+ 3. L'utente ha detto esplicitamente "poi passiamo al codice dopo che ti ho confermato
+    che vada tutto bene": NON scrivere codice finche' l'utente non ha confermato le
+    scelte ancora aperte (sezione 4).
+
+Lingua di lavoro con l'utente: italiano.
+
+
+================================================================================
+1. CONTESTO PROGETTO E AMBIENTE
+================================================================================
+
+Repo: /home/salvatore/work/ReCars   (branch di lavoro: branch_salvatore, main = main)
+Sotto-progetti:
+  - Progetto/Backend        NestJS 11, Prisma, PostgreSQL, Stripe (pnpm)
+  - Progetto/Frontend       vanilla HTML/CSS/JS (legacy, non toccato)
+  - Progetto/Frontend-Next  Next.js 16.2 + React 19 + Tailwind v4 + CSS custom
+                            properties in src/app/globals.css (pnpm, dev su porta 3001)
+  - ReCars-mobile           Expo / React Native (npm)
+
+Tutto il lavoro di questa chat riguarda SOLO Progetto/Frontend-Next. Nessuna modifica
+al backend e' necessaria per quanto discusso (vedi bug distanza officine: calcolo
+lato client).
+
+Regole del CLAUDE.md di repo rilevanti: mai toccare prisma/schema.prisma senza
+migration; non cambiare il contratto cookie JWT; il frontend Next usa
+credentials:'include'. Per modifiche UI: avviare `pnpm dev` (porta 3001) e verificare
+a occhio in light e dark theme.
+
+Stato git al momento dell'export: working tree pulito su branch_salvatore, NESSUNA
+modifica al codice applicata durante questa chat (solo mockup grafici e prompt).
+Ultimo commit visto: 5cc1605 "modifiche per deploy backend su render e frontend-next su vercel".
+
+Un file di prompt intermedio PROMPT-dashboard-ux.md era stato creato in
+Progetto/Frontend-Next e poi risultava non piu' presente (cancellato); il suo
+contenuto completo e' nella sezione 6 di questo file.
+
+
+================================================================================
+2. DESIGN SYSTEM DI FRONTEND-NEXT (estratto dal codice reale)
+================================================================================
+
+Token (src/app/globals.css), tema dark (default visivo dell'app):
+  --bg #08082a        --surface/--card-bg/--header-bg #141445   --surface-2 #22253a
+  --surface-hover #1a1a55   --text #e8e8ff   --muted #a0a8b8
+  --accent #f97316 (arancione brand)   --accent-bright #fdba74
+  --border-subtle rgba(255,255,255,.08)
+  --hp-well #0d0d38 (dark) / #eeeef6 (light)   --hp-giallo #fbbf24 (dark) / #b45309 (light)
+  --iv-ok #34c77b   --iv-bad #f87171   --iv-warn #fbbf24
+  Light: --bg #f8f8fc, --surface #ffffff, --text #1a1a2e (card-bg e header-bg restano navy).
+Font: Inter (next/font, variabile --font-inter). Icone: Font Awesome 6 (fa-*) e
+Tabler Icons webfont (ti ti-*) via CDN in layout.tsx (mix incoerente).
+Tema: next-themes, classe `dark` su <html>.
+
+Layout pagine autenticate: src/components/Layout.tsx = Sidebar (off-canvas, hamburger)
++ Header (griglia 3 colonne, logo animato al centro, toggle tema e avatar a destra)
++ Breadcrumb (non in homepage) + VeicoloSwitcher (NON in homepage: mostraSwitcher={false}).
+
+Homepage (src/app/homepage/page.tsx): <main className="hp-main"> max-width 1080px, gap 40px:
+  GarageSection ("Il mio garage") -> ScadenzeAvvisi -> AzioniRapide.
+  - GarageSection.tsx: VISIBILI_COMPRESSA=3, griglia .garage-grid (1/2/3 colonne),
+    card VeicoloCard + AggiungiVeicoloCard (tratteggiata con bordo conic-gradient
+    animato: @property --ag-angle + @keyframes ag-trace). La card "aggiungi" compare
+    nella griglia principale SOLO se extra.length===0, altrimenti in coda al pannello
+    espandibile (.garage-extra, trucco grid-template-rows 0fr->1fr, overflow:hidden
+    su .garage-extra-inner) con bottone "Mostra tutti i veicoli / Mostra meno".
+  - VeicoloCard.tsx: placeholder icona uniforme (.veicolo-card-placeholder, 120px,
+    bg var(--hp-well), icona ti-car), targa-pill, nome, badge salute
+    (ok verde / attenzione arancione / urgente rosso). Usa useTilt (hooks/useTilt.ts:
+    perspective(1000px) rotateX/rotateY, scale 1.03, via style inline).
+  - ScadenzeAvvisi.tsx + lib/scadenze.ts: righe con colori rosso (scaduta),
+    arancione (<=30gg), giallo (31-90gg); vuoto = "Tutto in regola" (verde).
+  - AzioniRapide.tsx: 3 card (.azione-card, bordo top accent) SENZA titolo di sezione.
+VeicoloSwitcher.tsx: pill del veicolo attivo (.home-intro-veicolo: icona + nome + targa)
+  + bottone garage (icona magazzino + contatore + chevron) che apre .switcher-dropdown
+  (lista veicoli con elimina + pulsante "Aggiungi veicolo" con bordo conic animato).
+AggiungiVeicoloOverlay.tsx: modale semplice (.hp-modal*), logica: REGEX_TARGA,
+  cercaVeicoloPerTarga, aggiungiVeicolo, storico targhe in localStorage, errori 404/409/403.
+Pagina /cerca-veicolo ha invece uno stile piu' curato (.cerca-hero, .cerca-targa-wrap,
+  .cerca-features, .vehicle-result-card) — l'overlay NON lo riusa oggi.
+
+Scoperta a margine: in globals.css esiste CSS morto (.home-cards-section, .cards-scene,
+.home-card, .cards-center-btn, animazioni ring/pulse) — layout a "carte circolari" della
+vecchia homepage vanilla, NON usato da nessun .tsx (verificato con grep). Candidato a
+pulizia, non richiesto dall'utente.
+
+
+================================================================================
+3. CRONOLOGIA DELLA CONVERSAZIONE (condensata)
+================================================================================
+
+--- TURNO 1 — richiesta iniziale (utente) ---
+"leggi e acquisisci le informazioni su come si presenta il frontend all'interno della
+cartella Frontend-Next e presentami delle preview grafiche per migliorare l'estetica
+della UI/UX per migliorare anche l'esperienza dell'utente e risultare il tutto piu'
+piacevole e soddisfacente dell'utente"
+
+Cosa e' stato fatto: analisi del codice (sezione 2) e creazione di un "design canvas"
+(artifact su claude.ai, vedi sezione 7) con due mockup 1440x1000: "Before"
+(ricostruzione della homepage) e "After" (proposta con sidebar persistente comprimibile,
+header+breadcrumb+switcher unificati, Scadenze e Azioni rapide affiancate).
+
+--- TURNO 2 — feedback dettagliato (utente, riassunto quasi letterale) ---
+ a) Vuole il menu hamburger CHIUSO com'e' ora, che si apre al click (=> la sidebar
+    persistente proposta NON va bene), ma con le tre linee "contornate" (riquadro bordato)
+    come nella preview Before (nel frontend attuale non c'e' quel bordo).
+ b) Le tre card in fondo non hanno il titolo "Azioni rapide": vuole titolo + icona
+    dedicata come gli altri due titoli (suggerisce un fulmine/flash).
+ c) Gli piace la distinzione colori scadenze: rosso scaduto, arancione imminente,
+    giallo piu' lontano, verde tutto ok.
+ d) Card veicolo in alto: non lo convince lo spazio centrale con l'icona auto, perche'
+    ci possono essere anche moto => vuole cambiare l'impronta visiva delle card.
+ e) La card "aggiungi veicolo" va bene com'e', ma al click NON vuole l'overlay semplice e
+    "brutto": vuole qualcosa di piu' elaborato e bello, in stile "aggiungi veicolo" del
+    veicolo switcher.
+ f) In "Lista veicoli" c'e' ripetizione: bottone "aggiungi" sopra + card aggiungi => tenere
+    solo la card.
+ g) Dashboard: spazio perfetto = 3 card (inclusa card aggiungi); con 4-5 veicoli come
+    deve essere la visualizzazione? (magari card piu' piccole?)
+ h) Prenotazioni: nelle card officina la distanza mostra sempre 0 km (utente a Trapani,
+    officine a Milano) => deve mostrare i km reali.
+ i) Barra di ricerca officine: grigia, stona => stile vetro / in palette.
+ j) Bug: nei dettagli dei suoi 2 veicoli bollo e revisione NON sono scaduti, ma nelle
+    "Scadenze e avvisi" della dashboard risultano scaduti. Secondo l'utente quelli corretti
+    sono i dettagli veicolo (coincidono col JSON).
+ k) Vuole prima una preview, poi, se confermata, tutto convertito in prompt per Claude da
+    terminale con Sonnet 5.
+
+Indagine svolta (con subagente Explore, file:riga verificati):
+ * BUG SCADENZE — la causa e' l'OPPOSTO di quanto ipotizzato dall'utente:
+   - Backend: getVeicoliByUtente e getVeicoloById usano lo stesso include
+     { dati_generici, dati_specifici } (Backend/src/veicolo/veicolo.service.ts:168-189):
+     nessuna differenza di dati tra le due rotte. La homepage chiama getVeicoliUtente e poi
+     getVeicolo(id) per ogni veicolo (homepage/page.tsx:33-34).
+   - src/lib/scadenze.ts (homepage) calcola lo stato CONFRONTANDO LA DATA con oggi
+     (giorniAllaData:29-36, livelloDaGiorni:57-62, riga 96:
+     `attivo === false ? "rossa" : livelloDaGiorni(giorni)`).
+   - src/app/info-veicolo/page.tsx:52-53 calcola
+       statoBollo = ds.datascadenzabollo && ds.isbolloattivo ? "attiva" : "scaduta"
+       statoRca   = ds.datascadenzarca && ds.isinsured ? "attiva" : "scaduta"
+     SENZA mai guardare la data. Se il flag e' true ma la data e' passata => info-veicolo
+     dice "Attiva", homepage dice "Scaduto". Quindi e' info-veicolo a essere sbagliato;
+     la homepage e' corretta. Il commento in scadenze.ts:70-73 ("stessa logica di
+     info-veicolo") e' obsoleto/falso.
+   - Rischio latente: giorniAllaData usa new Date(stringaISO) + setHours(0,0,0,0) locale;
+     con stringhe date-only ISO puo' dare off-by-one a fusi con offset negativo (non per
+     l'Italia). Tipi: isbolloattivo/isinsured dichiarati boolean opzionale ma il backend
+     puo' restituire null (veicolo.service.ts:77-78,156,160).
+   - La card veicolo (calcolaSalute) e' coerente con la homepage; l'unico outlier e'
+     info-veicolo.
+   (Nota: all'utente e' stato detto esplicitamente che la correzione va fatta su
+   info-veicolo, "a meno che il flag debba prevalere sulla data": l'utente ha poi
+   confermato il prompt senza obiezioni.)
+ * BUG DISTANZA OFFICINE:
+   - Non esiste nessun calcolo di distanza (ne' frontend ne' backend; nessun haversine).
+   - prenotazioni/page.tsx:53: `distanza_km: parseFloat(String(o.distanza_km ?? 0))` — il
+     campo non e' mai restituito da GET /officina/all (Backend/src/officina/
+     officina.service.ts findAll ~457-488, che restituisce latitude/longitude con
+     fallback a Milano 45.4642/9.19 se null) => sempre 0.
+   - La geolocalizzazione utente e' gia' acquisita in usaGps() (page.tsx ~282-295) ma
+     serve solo a centrare la mappa Leaflet (riga 290).
+   - Fix scelto: haversine lato CLIENT in src/lib/geo.ts + posizione utente in state,
+     con gestione GPS negato (niente "0 km": placeholder "Distanza non disponibile").
+ * AggiungiVeicoloOverlay e' visivamente separato da cerca-veicolo (classi .hp-modal* vs
+   .cerca-hero / .vehicle-result-card): riusare lo stile di cerca-veicolo richiede di
+   riscrivere il markup dell'overlay, non un semplice restyling.
+ * lista-veicoli/page.tsx:64-67 contiene il bottone .lv-btn-aggiungi duplicato + alla
+   riga 79 la AggiungiVeicoloCard: duplicazione confermata SOLO li' (GarageSection non
+   ha il bottone). lista-veicoli mostra tutti i veicoli in una griglia piatta (nessun
+   compresso/espanso).
+ * Barra ricerca officine: <div className="input-group search-bar-wrapper"> in
+   prenotazioni/page.tsx ~365-377; stile in src/styles/prenotazione-utente.css:133-148
+   (background var(--input-bg) = grigio/lavanda #f5f5fb light / #2a2d3e dark).
+
+Mockup del turno 2 (aggiornati sull'artifact): Main (homepage con hamburger bordato,
+card veicolo "tipo-aware", titolo Azioni rapide con fulmine), Before (riferimento),
+GarageVariants (proposta 4 colonne per 4-5 veicoli), AggiungiVeicoloModal (nuovo modale
+elaborato), PrenotazioniSearch (barra vetro + card officina con km reali d'esempio).
+
+--- TURNO 3 — conferme e nuove indicazioni (utente) ---
+"va bene situazione del main, overlay di aggiungi veicolo anche, ricerca officine e card
+officine con km reali va bene anche, garage variants non mi piace e manterrei le card
+della dashboard cosi' come sono con l'opzione che all'aggiunta di piu veicoli compaia il
+mostra tutti i veicoli a comparsa ma da migliorare il fatto che una volta comparse le card
+nel menu a comparsa vengano tagliate dalla linea dei bordi diciamo non appena si passa
+con il mouse sopra ma che siano fluttuanti sopra diciamo. unica cosa vorrei che la card
+aggiungi veicolo comparisse sempre come terza e i veicoli aggiunti in piu che vanno a
+finire nel menu a comparsa vadano sotto in modo che ci sia sempre in evidenza a schermo la
+card di aggiunta veicolo presente per non lasciare l'utente spaesato. metti tutto su
+prompt in modo da far modificare gia il tutto su terminale con sonnet 5"
+
+Esito: confermati Main, modale aggiungi veicolo, barra ricerca + km reali. RIFIUTATA la
+proposta GarageVariants (nessuna griglia a 4 colonne). Nuove regole per la griglia:
+card "aggiungi" SEMPRE 3a; veicoli extra (dal 3o in poi) nel pannello a comparsa;
+fix del taglio da overflow durante l'hover (useTilt applica transform inline che viene
+tagliato da overflow:hidden permanente su .garage-extra-inner).
+Causa verificata: .garage-extra-inner { overflow:hidden } resta attivo anche a pannello
+aperto. Soluzione consigliata: overflow visible solo a transizione conclusa (classe
+modificatrice impostata da onTransitionEnd, rimossa subito alla chiusura).
+Generato il prompt di implementazione (sezione 6).
+
+--- TURNO 4 ---
+Utente: non riesce a leggere il file .md del prompt, chiede di riscriverlo "uguale senza
+cambiare una virgola" in chat. Fatto (contenuto identico a sezione 6).
+
+--- TURNO 5 ---
+Utente: incollando il prompt nel terminale claude vede "[...Truncated text #5 +171
+lines...]". Spiegazione: e' l'anteprima cosmetica dei paste lunghi del CLI (il testo
+completo viene inviato). Soluzione robusta: file PROMPT-dashboard-ux.md dentro
+Progetto/Frontend-Next e in terminale dire "Leggi PROMPT-dashboard-ux.md e implementa tutti i
+punti nell'ordine indicato, poi cancella il file quando hai finito." (in alternativa:
+claude "$(cat PROMPT-dashboard-ux.md)").
+Nota: al turno 6 il file non esisteva piu' e git status era pulito: nessuna modifica al
+codice risulta applicata da quella sessione terminale.
+
+--- TURNO 6 — nuova richiesta (utente) ---
+"leggi il codice attuale di Frontend-Next e proponimi delle alternative visive e meglio
+integrate per una user experience piu' efficiente della sezione il mio garage nella
+dashboard principale in alternativa alle card attuali. vorrei che la card o in
+alternativa un altro tipo di oggetto visivo sia sempre presente e ben visibile per
+indicare all'utente che li' si clicca per aggiungere i propri veicoli. potresti provare
+anche a prendere spunto dal veicolo switcher e il pill del veicolo attivo nelle altre
+schermate e magari unirli per creare un qualcosa di piu' compatto e interattivo.
+proponimi pero' diverse preview e diversi layout di questa sezione. poi passiamo al codice
+dopo che ti ho confermato che vada tutto bene."
+
+Risposta: 4 opzioni (artifact pagina 2), con 5 veicoli d'esempio (3 auto + 2 moto):
+ - Opz.1 Rail compatta + scheda in evidenza
+ - Opz.2 Griglia classica, tile "+" sempre PRIMA + scroll orizzontale (no espandi/comprimi)
+ - Opz.3 Pillola segmentata (switcher fuso, la piu' radicale/compatta)
+ - Opz.4 Griglia invariata + pulsante "+" flottante accanto al titolo (fix minimo)
+
+--- TURNO 7 — feedback (utente) ---
+"GarageOpz3Segmentata e GarageOpz1Rail come idee mi piacciono ma proponimele in salse
+diverse con diversi approcci"
+Risposta: 6 varianti (artifact pagina 3), vedi sezione 5.
+
+--- TURNO 8 (questo) ---
+Utente chiede questo export in history-recars.txt su branch_salvatore, per passarlo a
+Claude Code sul PC di casa.
+
+
+================================================================================
+4. STATO ATTUALE E DECISIONI APERTE (LEGGERE ATTENTAMENTE)
+================================================================================
+
+CONFERMATO dall'utente (pronto per implementazione):
+  [x] Hamburger: resta chiuso/off-canvas, si apre al click; SOLO aggiungere il riquadro
+      bordato attorno alle 3 linee (prompt punto 1).
+  [x] Card veicolo "tipo-aware" auto vs moto (prompt punto 2) — approvata nel mockup Main.
+  [x] "Azioni rapide": titolo + icona fulmine (punto 3).
+  [x] Nuovo modale "Aggiungi veicolo" elaborato (punto 6).
+  [x] Lista veicoli: togliere il bottone duplicato (punto 7).
+  [x] Barra ricerca officine in stile vetro (punto 8).
+  [x] Distanza officine reale, calcolo client-side haversine (punto 9).
+  [x] Fix scadenze in info-veicolo (punto 10).
+  [x] Colori scadenze invariati (rosso/arancione/giallo/verde).
+
+RIFIUTATO: griglia a 4 colonne / GarageVariants.
+
+ANCORA APERTO — la sezione "Il mio garage" della dashboard:
+  Il turno 3 aveva fissato: card "aggiungi" sempre 3a + pannello "mostra tutti" con fix
+  hover (punti 4 e 5 del prompt). Ma nei turni 6-7 l'utente ha chiesto ALTERNATIVE alle
+  card attuali e ha detto che gli piacciono l'idea "Opz.1 Rail" e l'idea "Opz.3 Pillola
+  segmentata". NON ha ancora scelto una variante finale (ne' un mix). Quando la sceglie,
+  i punti 4 e 5 del prompt (GarageSection: card aggiungi 3a + fix overflow hover)
+  probabilmente saranno SOSTITUITI dalla nuova soluzione: chiedere conferma all'utente.
+  Requisito trasversale gia' espresso: l'azione "aggiungi veicolo" deve essere SEMPRE
+  visibile e in posizione fissa/prevedibile, mai nascosta dallo scroll o dal conteggio.
+  Probabile prossimo passo: l'utente scegliera' una variante (o un mix) => solo allora
+  implementare, aggiornando il prompt della sezione 6 (punti 4-5) di conseguenza.
+  Prima di scrivere codice, mostrare/riassumere la variante scelta e farsi confermare.
+
+
+================================================================================
+5. SPECIFICHE DELLE OPZIONI "IL MIO GARAGE" (per implementare quella scelta)
+================================================================================
+
+Elementi comuni a tutte (card "tipo-aware" gia' approvata):
+  - Chip tipo: auto = #2b88b8 (icona/tinta chiara #60b8e0), moto = #7c6fe0 (icona/tinta
+    chiara #a79bf0). Nuovi custom properties consigliati: --type-auto, --type-moto
+    (stesso valore in :root e .dark).
+  - Pannello immagine card: 120px (o meno nelle varianti compatte), radius 12,
+    background linear-gradient(135deg, <tipo a ~0.38 alpha>, var(--hp-well) 75%)
+    (mantenere var(--hp-well) come base => funziona in light e dark), chip "Auto"/"Moto"
+    in alto a sinistra (pillola, sfondo tipo pieno, testo bianco), icona grande
+    outline in basso a destra con opacita' ~.55.
+  - Tipo del veicolo: veicolo.dati_generici[0]?.tipo_veicolo, confronto
+    .toLowerCase() === "moto" (stesso di info-veicolo/page.tsx:49). (VeicoloCompatto usa
+    invece tipo: "car" | "motorcycle" nello switcher.)
+  - Stato salute: ok = --iv-ok, attenzione = --accent, urgente = --iv-bad (come badge-salute).
+  - Bordo animato del "+" : riusare il pattern conic-gradient esistente
+    (--ag-angle / ag-trace di .aggiungi-card::before, oppure --switcher-angle /
+    switcher-trace di .switcher-aggiungi-btn-wrap): non inventarne uno nuovo.
+
+FAMIGLIA "GRIGLIA"
+ Opz.2 — Griglia classica, tile "+" sempre prima: card larghe ~190px in una striscia con
+   scroll orizzontale (scroll-snap), la tile "+" per prima e ancorata (sticky left),
+   dissolvenza sul bordo destro, pallini indicatori; niente espandi/comprimi.
+ Opz.4 — Fix minimo: griglia 3 colonne + "Mostra tutti (N altri)" come oggi, e un
+   pulsante "+" circolare (38px, bordo conic animato) fisso accanto al titolo.
+
+FAMIGLIA "RAIL" (piaciuta)
+ Opz.1 (base) — Rail orizzontale di chip (56px alt., icona-cerchio 36px tipo-colored,
+   nome 13px/600, targa 11px muted, puntino stato) con il chip attivo evidenziato
+   (bordo accent, sfondo accent 10%); il "+" e' un CERCHIO fisso 56px con bordo conic,
+   FUORI dall'area scrollabile (mai nascosto). Sotto: card "in evidenza" del veicolo
+   selezionato (pannello 110x88, nome 18px, targa-pill, badge salute, link "Vai alla
+   scheda ->").
+ Opz.1b — Affiancata: colonna verticale (230px) di chip a sinistra, con "+" come PRIMA
+   voce (pillola con bordo conic), e scheda grande a destra (pannello 120x96, nome 20px,
+   badge, link "Vai alla scheda tecnica"). Stile lista+anteprima; scroll verticale con
+   molti veicoli.
+ Opz.1c — Chip espandibile: una sola riga; il chip attivo si allarga (flex 2.6) mostrando
+   nome+targa+stato+link "Scheda", gli altri si comprimono a icona+sigla; il "+" ha
+   larghezza fissa (52px), mai schiacciato. Niente scheda separata.
+ Opz.1d — Hero + dock: banner a piena larghezza (190px, gradiente pieno tipo-colore, icona
+   watermark, nome 24px, targa in vetro, badge, link) con una rail-dock semitrasparente
+   (blur, ombra) sovrapposta sul bordo inferiore; il "+" e' un quadratino tratteggiato
+   a destra nel dock. La piu' scenografica.
+
+FAMIGLIA "PILLOLA SEGMENTATA" (piaciuta)
+ Opz.3 (base) — Un'unica barra segmentata (radius 20, padding 6): un segmento per veicolo
+   (icona-cerchio 26px + nome 12.5px + targa 10px), attivo con bg --surface-2 e
+   sottolineatura accent, ultimo segmento "+" tratteggiato (56px); sotto una riga info
+   del veicolo attivo (targa-pill, badge, "Vai alla scheda").
+ Opz.3b — Tab bar: contenitore quasi squadrato, divisori verticali sottili, indicatore
+   a sottolineatura (2px accent) sull'attivo, "+" come ultimo tab; sotto mini-card di
+   dettaglio (44px pannello + nome/targa + badge + link "Scheda").
+ Opz.3c — Solo icone: fila di cerchi 46px (tipo-colored) con puntino stato sul bordo,
+   attivo con bordo accent; "+" cerchio tratteggiato; a destra, solo per l'attivo,
+   nome + targa + stato + link. Massima compattezza.
+ Opz.3d — Segmento espanso: barra alta 72px dove il segmento attivo e' largo (flex 2.4:
+   icona 38 + nome + targa + puntino stato) e gli altri sono stretti (52px, solo icona +
+   puntino); "+" tratteggiato da 52px in fondo. Tutto in un unico controllo, nessuna riga
+   sotto.
+
+Trade-off dichiarati all'utente: Rail/Pillola = piu' compatte ma perdono la "vetrina"
+a card grandi e la vista d'insieme di piu' veicoli; Opz.2/4 = piu' conservative.
+Comportamento previsto per le viste interattive (da implementare come stato React):
+selezionare un veicolo = selezionaVeicolo(id) del context (useAuth), e' lo stesso
+"veicolo attivo" usato altrove; "Vai alla scheda" = router.push(`/info-veicolo?id=${id}`),
+come fa oggi GarageSection.apriVeicolo.
+
+
+================================================================================
+6. PROMPT DI IMPLEMENTAZIONE — TESTO COMPLETO (VERBATIM)
+================================================================================
+(Nota: i punti 4 e 5 potrebbero essere superati dalla scelta finale sulla sezione
+"Il mio garage" — vedi sezione 4. Gli altri punti sono confermati.)
+
+--------------------------------------------------------------------------------
+
+# Implementazione: ritocchi UI/UX dashboard utente RE|CARS
+
+Lavora nel progetto `Progetto/Frontend-Next` (Next.js 16, pnpm, Tailwind v4 + CSS custom properties in `src/app/globals.css`). Nessuna di queste modifiche tocca `Progetto/Backend` — sono tutte frontend-only. Non toccare `prisma/schema.prisma`, non serve.
+
+Prima di iniziare: `pnpm install` se necessario, poi tieni `pnpm dev` (porta 3001) attivo per verificare visivamente ogni punto mentre lo implementi — sono tutte modifiche visive/di interazione, vanno controllate a occhio nel browser (light e dark theme), non solo lette nel codice.
+
+Applica i punti nell'ordine. Ogni punto è indipendente dagli altri, puoi committarli separatamente se preferisci.
+
+---
+
+## 1. Hamburger: aggiungere il riquadro bordato (solo estetica, nessun cambio di comportamento)
+
+Il menu resta esattamente come oggi: chiuso di default, sidebar off-canvas, si apre al click sull'hamburger. **Non toccare la logica di apertura/chiusura.**
+
+File: `src/components/Sidebar.tsx` (markup delle `.line` dentro `.hamburger9`) e `src/app/globals.css` (regole `.hamburger9` e `.hamburger9 .line`, cercare `HAMBURGER` nel file).
+
+Oggi le 3 barre (`.hamburger9 .line`) sono linee "nude" (`background-color: #ff6b2b`, nessun contenitore). Aggiungi un riquadro visibile dietro/attorno alle 3 linee quando l'hamburger è chiuso:
+- dimensione contenitore ~34x34px, `border-radius: 8px`
+- `background: var(--surface)`, `border: 1px solid var(--border-subtle)`
+- le 3 linee restano centrate dentro, stessa animazione di apertura (X) già esistente
+
+Attenzione al trucco CSS esistente: `.hamburger9` è posizionato `absolute` dentro `.sidebar` (che è `fixed`, off-canvas a `left:-280px` da chiusa), e il suo `left:304px` di base lo fa comunque comparire a schermo (~24px dal bordo sinistro) anche a sidebar chiusa. Il nuovo riquadro deve seguire lo stesso posizionamento/stato aperto-chiuso — non introdurre un secondo elemento separato, stiliizza il contenitore che già c'è.
+
+---
+
+## 2. Card veicolo: identità visiva "tipo-aware" (auto vs moto)
+
+File: `src/components/home/VeicoloCard.tsx` (funzione `VeicoloCard`) e `src/app/globals.css` (classe `.veicolo-card-placeholder`, vicino a `.veicolo-card`).
+
+Oggi il riquadro icona (`.veicolo-card-placeholder`) è identico per ogni veicolo: sfondo piatto `var(--hp-well)` + icona auto generica (`ti-car`), 120px di altezza. Sostituiscilo con un pannello che riflette il tipo di veicolo:
+
+- **Rileva il tipo** da `veicolo.dati_generici[0]?.tipo_veicolo` (stringa), con lo stesso confronto già usato in `src/app/info-veicolo/page.tsx:49` (`.toLowerCase() === "moto"`) — così le due pagine restano coerenti.
+- Aggiungi due nuovi custom properties in `globals.css` (stesso valore in `:root` e `.dark`, come `--accent`): `--type-auto: #2b88b8;` e `--type-moto: #7c6fe0;`.
+- Il pannello resta 120px, `border-radius:12px`, ma con:
+  - sfondo: `linear-gradient(135deg, <colore-tipo a bassa opacità ~0.35-0.4>, var(--hp-well) 75%)` — **mantieni `var(--hp-well)` come base** così il pannello resta coerente in light e dark theme (in chiaro `--hp-well` è chiaro, in scuro è navy scuro);
+  - una chip in alto a sinistra: pillola piccola, sfondo pieno nel colore del tipo, testo bianco, icona + label "Auto"/"Moto" (icona auto o icona moto a seconda del tipo — puoi disegnarle come SVG inline in stile outline coerente con le altre icone Tabler già in uso, oppure trovare/aggiungere icone `ti-car`/`ti-motorbike` equivalenti se disponibili nel set Tabler già caricato);
+  - un'icona grande (auto o moto) in basso a destra, ~55-65% opacità, colore più chiaro del tipo (es. `#60b8e0` per auto, un violetto chiaro tipo `#a79bf0` per moto), come "watermark" decorativo.
+- Il resto della card (targa pill, nome, badge salute) resta identico — non toccare quella parte.
+
+---
+
+## 3. "Azioni rapide": titolo + icona (fulmine)
+
+File: `src/components/home/AzioniRapide.tsx`.
+
+Oggi la sezione non ha nessun `<h2>` sopra le 3 card (a differenza di "Il mio garage" e "Scadenze e avvisi", che hanno `<h2 className="hp-section-title">` con icona). Aggiungi lo stesso pattern:
+
+```tsx
+<h2 className="hp-section-title">
+  <i className="ti ti-bolt" />
+  Azioni rapide
+</h2>
+```
+
+(usa `ti-bolt` se esiste nel set Tabler Icons già caricato via CDN in `layout.tsx`; se non esiste una variante esatta, usa l'icona fulmine più vicina disponibile in quel set — non serve un SVG custom qui, è l'unico punto dove l'app usa già font-icon invece di SVG inline). Nessun'altra modifica alla sezione.
+
+---
+
+## 4. Griglia garage: card "Aggiungi veicolo" sempre in 3ª posizione fissa
+
+File: `src/components/home/GarageSection.tsx`.
+
+**Non cambiare il numero di colonne della griglia** (resta `repeat(3,1fr)` desktop / responsive esistente in `.garage-grid`) e **non introdurre nessuna logica a 4 colonne** — quella proposta è stata scartata, il meccanismo "mostra tutti i veicoli" esistente va mantenuto così com'è nella parte di interazione (bottone toggle, animazione grid-template-rows), cambia solo *quali* veicoli finiscono in quale sezione.
+
+Comportamento attuale (da cambiare): `VISIBILI_COMPRESSA = 3`; `visibili = veicoli.slice(0,3)`; la card "aggiungi" appare nella griglia compressa **solo se** `extra.length === 0` (cioè con ≤3 veicoli), altrimenti compare in coda alla sezione espandibile. Risultato: la card aggiungi "salta" di posizione a seconda di quanti veicoli hai, e con 4+ veicoli sparisce dalla vista principale.
+
+Nuovo comportamento richiesto:
+- `VISIBILI_COMPRESSA` passa da `3` a `2` (`visibili = veicoli.slice(0,2)`, `extra = veicoli.slice(2)`).
+- La card "aggiungi veicolo" (`cardAggiungi`) va **sempre** renderizzata nella griglia principale come 3° elemento (dopo i primi 2 veicoli, se presenti), **indipendentemente** da quanti veicoli ci sono in totale — quindi togli la condizione `{extra.length === 0 && cardAggiungi}` e rendila incondizionata.
+- La card "aggiungi" **non** deve più comparire duplicata in coda alla sezione espandibile (`garage-grid-extra`) — rimuovi quel `{cardAggiungi}` dalla sezione extra, che deve contenere solo `extra.map(...)`.
+- Se `veicoli.length <= 2` il comportamento è invariato nella sostanza (griglia compressa = veicoli + card aggiungi, nessuna sezione extra perché `extra.length === 0`).
+
+Obiettivo: l'utente vede sempre la card "aggiungi veicolo" in una posizione fissa e prevedibile (3° slot), non deve mai chiedersi dove sia finita.
+
+---
+
+## 5. Fix: le card nel pannello "mostra tutti i veicoli" vengono tagliate al passaggio del mouse
+
+File: `src/app/globals.css` (regole `.garage-extra`, `.garage-extra-inner`, cercare `garage-extra` nel file) e `src/components/home/GarageSection.tsx`.
+
+Causa: `.garage-extra-inner { overflow: hidden; }` è permanente. Le card veicolo usano `useTilt` (`src/hooks/useTilt.ts`), che applica via JS un `transform: perspective(1000px) rotateX(...) rotateY(...) scale(1.03)` inline al passaggio del mouse — quel leggero ingrandimento/inclinazione viene tagliato dal bordo del contenitore quando il pannello è espanso, perché `overflow:hidden` resta attivo anche a transizione conclusa.
+
+`overflow:hidden` **serve** durante l'animazione di apertura/chiusura (il trucco `grid-template-rows: 0fr → 1fr` su `.garage-extra` ha bisogno che il contenuto sia clippato mentre la riga cresce da altezza 0, altrimenti si vede uno "strappo" di contenuto durante l'animazione). Va quindi mantenuto **solo mentre l'animazione è in corso**, e rimosso (o messo a `visible`) una volta che il pannello è completamente aperto, così le card possono "fluttuare" sopra senza essere tagliate.
+
+Implementazione consigliata: aggiungi in `GarageSection.tsx` uno state locale (es. `const [extraAssestato, setExtraAssestato] = useState(false)`) e un listener `onTransitionEnd` sul div `.garage-extra` che, quando la proprietà transizionata è `grid-template-rows` **e** `espanso === true`, imposta `extraAssestato = true`; quando si richiude (`espanso` torna `false`), rimetti `extraAssestato = false` immediatamente (non aspettare la fine della transizione di chiusura, altrimenti il contenuto "sborda" mentre il pannello si sta ancora richiudendo). Applica poi una classe modificatrice su `.garage-extra-inner` tipo `garage-extra-inner--assestato` che in CSS fa `overflow: visible` (mentre la regola base resta `overflow: hidden`).
+
+Verifica alla fine: apri il pannello, aspetta che l'animazione finisca, passa il mouse su una card nell'ultima riga — la card deve inclinarsi/ingrandirsi liberamente senza che il bordo del pannello la tagli. Poi richiudi il pannello e verifica che l'animazione di chiusura resti pulita (nessun contenuto che sborda mentre si accorcia).
+
+---
+
+## 6. Nuovo modale "Aggiungi veicolo" (sostituisce l'overlay attuale)
+
+File: `src/components/AggiungiVeicoloOverlay.tsx` (da riscrivere nel markup/stile, **mantenendo intatta tutta la logica esistente**: validazione targa con `REGEX_TARGA`, chiamate a `cercaVeicoloPerTarga`/`aggiungiVeicolo`, storico ultime targhe via `getStoricoTarghe`/`salvaStoricoTarga`/`rimuoviStoricoTarga`, gestione errori 404/409/403, stati `inRicerca`/`inAggiunta`/`nonTrovato`/`errore`). Non toccare `src/lib/api.ts` né `src/lib/storage.ts`.
+
+Oggi usa un modale semplice (`.hp-modal*`, definite in `globals.css` verso la riga 4478) completamente separato — visivamente — dallo stile già più curato di `/cerca-veicolo` (`.cerca-hero`, `.cerca-targa-wrap`, `.cerca-features`, `.vehicle-result-card`, tutte già presenti in `globals.css`). Riusa quello stile invece di reinventarlo:
+
+- **Sfondo/overlay**: mantieni l'overlay a schermo intero con `background: rgba(0,0,0,0.6)`, ma il box centrale prende lo stile di `.cerca-hero` (sfondo `#141445`, `border-radius:20px`, `border: 0.5px solid rgba(249,115,22,0.3)`, `padding: 40px 32px`, larghezza ~560-600px).
+- **Bordo animato**: avvolgi il box con lo stesso pattern conic-gradient già usato per `.aggiungi-card::before` (custom property `--ag-angle` + `@keyframes ag-trace`, o il pattern equivalente di `.switcher-aggiungi-btn-wrap` con `--switcher-angle`/`switcher-trace`) — riusa uno dei due pattern esistenti invece di crearne un terzo, per coerenza.
+- **Header**: X di chiusura in alto a destra (cerchio piccolo, sfondo `rgba(255,255,255,0.06)`), sotto titolo centrato con icona auto + "Aggiungi un veicolo" (stile `.cerca-hero-title`), sottotitolo (`.cerca-hero-sub`).
+- **Riga feature** (facoltativa ma consigliata per coerenza con `/cerca-veicolo`): 3 mini-card `.cerca-feat` con icona + label breve (es. "Dati automatici", "Storico incluso", "Verifica istantanea").
+- **Campo targa**: riusa lo stile `.cerca-targa-wrap` (input scuro semi-trasparente, `letter-spacing` largo, maiuscolo, icona check verde / x rossa a destra secondo `validita`), bottone di ricerca in stile pillola arancione (`.btn-info-veicolo` o simile).
+- **Storico ultime targhe**: mantieni la funzionalità esistente ma restylizzala coi tag `.cerca-storico-tag` (pillola con targa + x di rimozione al hover), invece dei `.hp-recente-pill` attuali.
+- **Risultato ricerca**: riusa la struttura di `.vehicle-result-card` (header con targa-pill arancione + nome, divider, griglia 2 colonne per i campi tecnici, badge/stato bollo e assicurazione con pallino colorato invece dei semplici badge attuali), footer con bottone "Aggiungi al garage" in stile pillola gradiente arancione (`.btn-landing`/`.abb-btn.cta`).
+- **Stato "non trovato"**: mantieni la funzionalità, restylizza in coerenza (es. icona grande + testo centrato, stesso tono del resto del modale).
+- **Loading**: se vuoi aggiungere un indicatore di caricamento durante la ricerca, riusa il pattern già pronto `.cerca-loading`/`.cerca-dots` invece di inventarne uno.
+
+Il componente resta usato sia da `homepage` (via `GarageSection`) sia da `lista-veicoli` — nessuna modifica alla firma delle props (`aperto`, `onChiudi`, `onAggiunto`).
+
+---
+
+## 7. Lista veicoli: rimuovere il bottone "+ Aggiungi veicolo" duplicato
+
+File: `src/app/lista-veicoli/page.tsx`.
+
+Oggi c'è sia il bottone `.lv-btn-aggiungi` (righe ~64-67, dentro `.lv-head`) sia la card tratteggiata `AggiungiVeicoloCard` in coda alla griglia (riga ~79) — entrambi aprono lo stesso overlay. Rimuovi il bottone `.lv-btn-aggiungi` (e il div `.lv-head` può restare solo con titolo + contatore, senza il bottone), mantieni solo la card in griglia, coerente con `GarageSection` della homepage che ha un solo punto d'ingresso.
+
+Nota: questa pagina mostra *tutti* i veicoli in un'unica griglia piatta (nessun meccanismo "mostra tutti/compressa" come in homepage) — **non serve** applicarci la logica del punto 4 (posizione fissa 3ª per la card aggiungi): qui la card aggiungi resta semplicemente l'ultimo elemento della griglia, come oggi.
+
+---
+
+## 8. Ricerca officine: barra di ricerca in stile vetro invece che grigia
+
+File: `src/styles/prenotazione-utente.css` (classe `.search-bar-wrapper`, righe ~138-148, e le due media query che la ridefiniscono più sotto nel file, righe ~590-625 — aggiornale in modo coerente).
+
+Oggi: `background: var(--input-bg)` (grigio/lavanda chiaro in light theme, grigio-blu scuro piatto in dark theme), `border: 1px solid var(--border)`. Sostituisci con lo stile "vetro scuro" già usato in `.cerca-targa-wrap input` (`globals.css`, cercare `cerca-targa-wrap input`):
+
+```css
+.search-bar-wrapper {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+.search-bar-wrapper:focus-within {
+  border-color: var(--accent);
+}
+```
+
+Il markup (`src/app/prenotazioni/page.tsx` righe ~365-377, `<div className="search-container"><div className="input-group search-bar-wrapper">...`) non cambia, solo il CSS. Verifica che l'icona lente e il placeholder restino leggibili sia in light che in dark theme — se in light theme lo sfondo semi-trasparente bianco risulta troppo chiaro/invisibile, valuta una variante scoped a `.dark .search-bar-wrapper` con questi valori e una versione più tenue (bordo/ombra, non sfondo grigio piatto) per il tema chiaro.
+
+---
+
+## 9. Distanza officine: calcolo reale al posto di "0 km" hardcoded
+
+File principale: `src/app/prenotazioni/page.tsx`.
+
+**Causa del bug** (verificata, non è un'ipotesi): il backend (`GET /officina/all`, gestito da `Backend/src/officina/officina.service.ts` → `findAll()`) non restituisce mai un campo `distanza_km` — nessun calcolo esiste, né lato client né lato server. Il frontend fa semplicemente `distanza_km: parseFloat(String(o.distanza_km ?? 0))` (riga 53), quindi il fallback `?? 0` scatta sempre. La geolocalizzazione dell'utente viene già acquisita (`navigator.geolocation.getCurrentPosition`, dentro `usaGps()`, righe ~282-295) ma oggi serve solo a centrare la mappa Leaflet (`mapRef.current?.setView(...)`, riga 290) — non viene mai confrontata con le coordinate delle officine, che invece sono già disponibili in `o.lat`/`o.lng` (righe 59-60, con fallback a Milano se il backend non ha coordinate).
+
+Implementazione (**tutta frontend, nessuna modifica al backend**):
+
+1. Aggiungi una funzione haversine pura, ad esempio in un nuovo file `src/lib/geo.ts`:
+   ```ts
+   export function distanzaKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+     const R = 6371;
+     const dLat = ((lat2 - lat1) * Math.PI) / 180;
+     const dLng = ((lng2 - lng1) * Math.PI) / 180;
+     const a =
+       Math.sin(dLat / 2) ** 2 +
+       Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+   }
+   ```
+2. In `prenotazioni/page.tsx`, tieni in uno state la posizione utente (es. `const [posUtente, setPosUtente] = useState<{lat:number; lng:number} | null>(null)`), popolata sia da `usaGps()` (aggiungi `setPosUtente({lat: pos.coords.latitude, lng: pos.coords.longitude})` accanto al già esistente `setView`) sia, se possibile, tentata automaticamente al mount della pagina con lo stesso `navigator.geolocation.getCurrentPosition` (permesso browser permettendo).
+3. In `normalizzaOfficina` (o subito dopo, quando hai sia le officine che `posUtente`), calcola `distanza_km` con `distanzaKm(posUtente.lat, posUtente.lng, o.lat, o.lng)` invece di leggere il campo inesistente dal backend. L'ordinamento già esistente (`.sort((a,b) => a.distanza_km - b.distanza_km)`, riga 279) continua a funzionare invariato.
+4. **Gestisci il caso senza geolocalizzazione** (permesso negato, browser senza supporto, o non ancora richiesta): non mostrare "0 km" (sarebbe un bug travestito da fix) — mostra invece un placeholder tipo "Distanza non disponibile" o nascondi il badge km finché `posUtente` è `null`, sia nella card lista (riga ~493) sia nel pannello di dettaglio (riga ~609).
+
+---
+
+## 10. Bug scadenze: info-veicolo non controlla mai la data reale
+
+File: `src/app/info-veicolo/page.tsx` (righe 52-53) e `src/lib/scadenze.ts` (righe 29-36, 57-62, 74-100) — **solo lettura per capire la logica corretta, non serve modificarlo, è già giusto.**
+
+**Causa esatta**: `src/lib/scadenze.ts` (usato dalla sezione "Scadenze e avvisi" in homepage) calcola correttamente lo stato confrontando `datascadenzabollo`/`datascadenzarca` con la data odierna (funzioni `giorniAllaData` + `livelloDaGiorni`, con l'unica eccezione che un flag `isbolloattivo`/`isinsured` esplicitamente `false` forza comunque lo stato "scaduto" anche a data futura — `attivo === false ? "rossa" : livelloDaGiorni(giorni)`, riga 96). `info-veicolo/page.tsx` invece calcola lo stato SENZA mai guardare la data:
+
+```ts
+const statoBollo: StatoMantenimento = ds.datascadenzabollo && ds.isbolloattivo ? "attiva" : "scaduta";
+const statoRca: StatoMantenimento = ds.datascadenzarca && ds.isinsured ? "attiva" : "scaduta";
+```
+
+Se il flag booleano è `true` ma la data è già passata, questa riga mostra comunque "Attiva" — sbagliato, la data passata rende il documento davvero scaduto. La homepage (che controlla la data) è quella corretta; **info-veicolo va allineato a `scadenze.ts`**, non il contrario.
+
+Fix: sostituisci il calcolo inline in `info-veicolo/page.tsx` riusando le funzioni già esportate da `lib/scadenze.ts` (`giorniAllaData`), così le due pagine non potranno più divergere in futuro:
+
+```ts
+import { giorniAllaData } from "@/lib/scadenze";
+
+function statoDaData(data: string | null | undefined, attivo: boolean | null | undefined): StatoMantenimento {
+  if (!data) return "scaduta";
+  const giorni = giorniAllaData(data);
+  if (giorni === null) return "scaduta";
+  if (attivo === false) return "scaduta"; // stesso override di calcolaScadenze
+  return giorni < 0 ? "scaduta" : "attiva";
+}
+
+const statoBollo = statoDaData(ds.datascadenzabollo, ds.isbolloattivo);
+const statoRca = statoDaData(ds.datascadenzarca, ds.isinsured);
+```
+
+(Adatta i nomi/tipi esatti se `ds.datascadenzabollo`/`ds.isbolloattivo` hanno una tipizzazione leggermente diversa nel file — controlla `src/lib/types.ts` per la shape esatta di `dati_specifici`.)
+
+Non serve altro: non toccare `lib/scadenze.ts`, la sua logica è già quella corretta e diventa la fonte di verità condivisa.
+
+---
+
+## Verifica finale
+
+Per ciascun punto, apri la pagina coinvolta nel browser (`pnpm dev`, porta 3001) in **entrambi** i temi (light/dark, toggle in header) e controlla:
+- homepage: hamburger bordato, card veicolo tipo-aware (serve un veicolo di tipo "moto" in garage per vedere la variante — se non c'è, verifica comunque che la logica sia corretta leggendo il codice), titolo "Azioni rapide", posizione fissa della card aggiungi con 1/2/3/4+ veicoli, hover sulle card nel pannello espanso senza tagli;
+- modale "Aggiungi veicolo" da homepage e da lista-veicoli;
+- lista-veicoli: un solo punto d'ingresso per aggiungere;
+- prenotazioni: barra di ricerca in stile vetro, distanza km reale (o placeholder se GPS negato) invece di "0 km" fisso;
+- info-veicolo: bollo/assicurazione scaduti per data passata anche con flag `true`, coerenti con quanto mostrato in "Scadenze e avvisi".
+
+--------------------------------------------------------------------------------
+(fine del prompt verbatim)
+--------------------------------------------------------------------------------
+
+
+================================================================================
+7. MATERIALI ESTERNI (design canvas) E LIMITI
+================================================================================
+
+Artifact (claude.ai, privato, account dell'utente):
+  https://claude.ai/code/artifact/76945850-094d-493a-81af-80ea6854a0ea
+  Titolo: "RE|CARS Dashboard Redesign" — canvas multi-pagina:
+    pagina 1 "Dashboard — round 2": Before, Main, GarageVariants (scartata),
+             AggiungiVeicoloModal, PrenotazioniSearch
+    pagina 2 "Il mio garage — alternative": GarageOpz1Rail, GarageOpz2Griglia,
+             GarageOpz3Segmentata, GarageOpz4FAB
+    pagina 3 "Il mio garage — Rail e Pillola, altre salse": GarageOpz1bAffiancato,
+             GarageOpz1cEspandibile, GarageOpz1dHeroDock, GarageOpz3bTabBar,
+             GarageOpz3cIcone, GarageOpz3dSegmentoEspanso
+  I file sorgente dei mockup (.dc.html) stavano nella scratchpad temporanea della vecchia
+  sessione e NON sono nel repo: la fonte da consultare e' l'artifact (se questa sessione
+  e' sullo stesso account claude.ai) oppure le specifiche testuali della sezione 5.
+  I mockup usano dati d'esempio (Fiat Panda AB123CD auto ok; Yamaha NMAX EF456GH moto
+  attenzione; Fiat 500 IJ789KL auto ok; Honda SH MN012OP moto urgente; ecc.) e, per la
+  card officina, km d'esempio (972 km Milano, 6 km Trapani): NON sono dati reali.
+
+Limiti di questo export (onesta'):
+  - E' una sintesi: alcune risposte lunghe dell'assistente sono condensate; i tool output
+    (CSS completo, HTML degli artifact) non sono inclusi.
+  - I numeri di riga citati (es. prenotazioni/page.tsx:53, info-veicolo/page.tsx:52-53)
+    erano corretti alla data dell'export (working tree pulito, nessuna modifica):
+    ricontrollarli prima di modificare.
+  - Nessun test automatico e' stato eseguito: nessun codice del frontend e' stato toccato.
+
+PROSSIMO PASSO SUGGERITO PER TE (Claude Code):
+  1. Saluta l'utente e riassumi in 3-4 righe cosa e' confermato e cosa e' aperto (sez. 4).
+  2. Chiedi quale variante di "Il mio garage" sceglie (o quale mix): 1b/1c/1d (rail),
+     3b/3c/3d (pillola), oppure altre.
+  3. Con la scelta fatta, aggiorna i punti 4-5 del prompt, mostra il riepilogo, e SOLO
+     dopo conferma implementa punto per punto verificando con `pnpm dev` (light/dark).
+================================================================================
+FINE EXPORT
+================================================================================

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#141445" />
+  <title>RE|CARS · Offline</title>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      box-sizing: border-box;
+      background: #08082a;
+      color: #e8e8ff;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      text-align: center;
+    }
+    img { width: 72px; height: 72px; border-radius: 18px; }
+    h1 { margin: 18px 0 6px; font-size: 22px; }
+    h1 span { display: inline-block; width: 0.13em; height: 0.9em; margin: 0 0.18em; vertical-align: -0.08em; border-radius: 0.06em; background: #f97316; }
+    p { margin: 0 0 20px; color: #a0a8b8; max-width: 320px; line-height: 1.5; }
+    button {
+      height: 44px; padding: 0 22px; border: 1px solid #dd5a0b; border-radius: 12px; cursor: pointer;
+      font: 600 15px inherit; font-family: inherit; color: #fff;
+      background: linear-gradient(180deg, #fb8b3e, #f97316 48%, #ea580c);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 3px 8px rgba(0, 0, 0, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="/icons/icon-192.png" alt="" />
+    <h1>RE<span></span>CARS</h1>
+    <p>Sei offline. Quando torna la connessione puoi riprendere da dove eri rimasto.</p>
+    <button type="button" onclick="location.reload()">Riprova</button>
+  </main>
+</body>
+</html>

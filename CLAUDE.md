@@ -74,6 +74,11 @@ Frontend and mobile have no `.env` files — their API base URL is a hardcoded c
 | `STRIPE_PRICE_BUSINESS` | Stripe Price ID for the officina "business" plan |
 | `STRIPE_PRICE_BUSINESS_PRO` | Stripe Price ID for the officina "business pro" plan |
 | `STRIPE_WEBHOOK_SECRET` | Secret used to verify Stripe webhook signatures |
+| `GEMINI_API_KEY` | Google Gemini API key (free tier) for the in-app assistant — backend only, never in the frontend or the repo |
+| `GEMINI_MODEL` | Optional Gemini model (default `gemini-flash-lite-latest`) |
+| `ASSISTENTE_LIMITE_MINUTO` / `ASSISTENTE_LIMITE_GIORNO` | Optional per-user assistant limits (default 6/min, 50/day) |
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT` | Web Push keys for PWA notifications (`npx web-push generate-vapid-keys`); without them notifications stay off |
+| `NOTIFICHE_CRON_SECRET` | Shared secret for `POST /notifiche/controllo-giornaliero`, called daily by `.github/workflows/notifiche-giornaliere.yml` |
 
 ## 4. Architecture notes
 
@@ -86,6 +91,8 @@ Frontend and mobile have no `.env` files — their API base URL is a hardcoded c
 **Mobile vehicle switcher.** The mobile app mirrors the web frontend's "active vehicle" concept via `hooks/use-veicoli.ts`: it fetches `GET /veicolo/utente/:id`, keeps the selected vehicle id in `AsyncStorage` (`veicoloAttivoId`), and exposes `seleziona()`/`elimina()`. `components/utente/VeicoloSwitcher.tsx` is the UI on top of this hook. The web frontend has an equivalent but separately-implemented switcher in `functions-app.js` (global `veicoli[]` / `veicoloAttivoIndex`, `localStorage`) — the two are **not** shared code, keep them in sync manually when changing the underlying API contract.
 
 **NestJS module structure.** Most domains have a dedicated `*.module.ts` (`officina`, `prenotazione`, `stripe`, `storico_interventi`), but `utente` and `veicolo` do **not** — their controllers/services/providers are registered directly in `AppModule`. `JwtModule.registerAsync` is configured redundantly in both `AppModule` and `OfficinaModule` (same secret). No global API prefix is set (`setGlobalPrefix` unused) — routes are "bare" (`/auth/...`, `/veicolo/...`, `/officina/...`, `/prenotazioni`, `/interventi/...`, `/abbonamento/...`).
+
+**PWA and push notifications.** Frontend-Next is installable (`src/app/manifest.ts`, `public/sw.js`, icons in `public/icons/`). Users enable notifications per device from Account → "App e notifiche": the browser subscription is stored in `push_iscrizione`; the backend `NotificheModule` sends Web Push (VAPID) on booking status changes (officina confirm/cancel/complete) and in a daily check (deadlines at 30/7/1/0 days, reminder the day before an appointment), deduplicated through `notifica_inviata`. The middleware matcher must keep excluding the PWA files (`sw.js`, `manifest.webmanifest`, `icons/`, `offline.html`), otherwise they redirect to /login.
 
 **Stripe is fully server-driven.** Neither the web frontend nor the mobile app load the Stripe SDK/publishable key client-side. Both simply `POST /abbonamento/checkout` and redirect the browser/WebView to the returned Checkout Session URL. Subscription state changes only happen server-side via the `/abbonamento/webhook` endpoint (`checkout.session.completed`, `customer.subscription.deleted`).
 
