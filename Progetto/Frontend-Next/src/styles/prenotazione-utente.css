@@ -946,3 +946,11 @@ body:has(.ai-fab) .pr-lista-body { padding-bottom: 72px; }
   background: color-mix(in srgb, var(--c) 15%, transparent);
   border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
 }
+
+/* distanza e tempo del percorso disegnato sulla mappa */
+.pr-bar-info > .pr-rotta {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.pr-bar-btns .btn-dash.pr-btn-ic { width: 40px; padding: 0; }

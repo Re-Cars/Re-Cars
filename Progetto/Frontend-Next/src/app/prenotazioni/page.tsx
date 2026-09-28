@@ -15,6 +15,7 @@ import {
   type PrenotazioneUtente,
 } from "@/lib/api";
 import { distanzaKm, formattaKm } from "@/lib/geo";
+import { calcolaPercorso, formattaDurata, type Percorso, type Punto } from "@/lib/percorso";
 import type { OfficinaCatalogo } from "@/lib/types";
 import "@/styles/prenotazione-utente.css";
 
@@ -252,6 +253,14 @@ export default function PrenotazioniPage() {
   const mapDivRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Leaflet.Map | null>(null);
   const livelloRef = useRef<Leaflet.LayerGroup | null>(null);
+  const rottaRef = useRef<Leaflet.LayerGroup | null>(null);
+  /** Percorso stradale verso la prenotazione o l'officina selezionata. */
+  const [percorso, setPercorso] = useState<{
+    destinazione: string;
+    stato: "calcolo" | "ok" | "errore";
+    dati?: Percorso;
+  } | null>(null);
+  const percorsoAttivoRef = useRef(false);
   const leafletRef = useRef<typeof Leaflet | null>(null);
   const [mappaPronta, setMappaPronta] = useState(false);
 
@@ -385,6 +394,7 @@ export default function PrenotazioniPage() {
         maxZoom: 19,
       }).addTo(mapRef.current);
       livelloRef.current = L.layerGroup().addTo(mapRef.current);
+      rottaRef.current = L.layerGroup().addTo(mapRef.current);
       setMappaPronta(true);
     })();
     return () => {
@@ -425,7 +435,10 @@ export default function PrenotazioniPage() {
     // la barra sotto la mappa cambia altezza tra le due viste: Leaflet va
     // riallineato alle dimensioni reali prima di centrare
     mappa.invalidateSize({ animate: false });
-    const centra = (lat: number, lng: number, zoom: number) => mappa.setView([lat, lng], zoom, { animate: false });
+    const centra = (lat: number, lng: number, zoom: number) => {
+      // con un percorso sulla mappa l'inquadratura la decide il percorso
+      if (!percorsoAttivoRef.current) mappa.setView([lat, lng], zoom, { animate: false });
+    };
 
     const punti: [number, number][] = [];
     if (posUtente) {
@@ -466,6 +479,116 @@ export default function PrenotazioniPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mappaPronta, vista, officine, posUtente, selezionata?.id, inEvidenza?.id, idPrenMostrate, idOfficineMostrate]);
+
+  /* ---------- percorso sulla mappa ---------- */
+  const posizioneAttuale = (): Promise<Punto> =>
+    posUtente
+      ? Promise.resolve(posUtente)
+      : new Promise((ok, ko) => {
+          if (!navigator.geolocation) return ko(new Error("GPS non supportato"));
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const punto = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+              setPosUtente(punto);
+              ok(punto);
+            },
+            ko,
+            { timeout: 10000 },
+          );
+        });
+
+  const mostraPercorso = async (destinazione: string, verso: Punto) => {
+    setPercorso({ destinazione, stato: "calcolo" });
+    try {
+      const da = await posizioneAttuale();
+      const dati = await calcolaPercorso(da, verso);
+      setPercorso((p) => (p?.destinazione === destinazione ? { destinazione, stato: "ok", dati } : p));
+    } catch (err) {
+      console.error("Percorso non disponibile:", err);
+      setPercorso((p) => (p?.destinazione === destinazione ? { destinazione, stato: "errore" } : p));
+      mostraToast("Percorso non disponibile: puoi aprirlo in Google Maps");
+    }
+  };
+
+  // il percorso vale per la selezione in cui è stato chiesto
+  const idDestinazione = vista === "prenotazioni" ? `pren-${inEvidenza?.id}` : `off-${selezionata?.id}`;
+  useEffect(() => {
+    setPercorso((p) => (p && p.destinazione !== idDestinazione ? null : p));
+  }, [idDestinazione]);
+
+  // disegno: bordo bianco sotto la linea arancione, inquadratura su tutto il tragitto
+  useEffect(() => {
+    const L = leafletRef.current;
+    const mappa = mapRef.current;
+    const rotta = rottaRef.current;
+    percorsoAttivoRef.current = percorso?.stato === "ok";
+    if (!mappaPronta || !L || !mappa || !rotta) return;
+    rotta.clearLayers();
+    if (percorso?.stato !== "ok" || !percorso.dati) return;
+    const linea = percorso.dati.linea;
+    L.polyline(linea, { color: "#ffffff", weight: 9, opacity: 0.9, lineJoin: "round" }).addTo(rotta);
+    L.polyline(linea, { color: "#f97316", weight: 5, lineJoin: "round" }).addTo(rotta);
+    mappa.invalidateSize({ animate: false });
+    mappa.fitBounds(L.latLngBounds(linea), { padding: [48, 48] });
+  }, [percorso, mappaPronta]);
+
+  /** Bottoni del percorso nella barra sotto la mappa. */
+  const bottoniPercorso = (destinazione: string, verso: Punto | null, indirizzo: string) => {
+    const attivo = percorso?.destinazione === destinazione ? percorso : null;
+    if (!verso || attivo?.stato === "errore") {
+      return (
+        <a className="btn-dash btn-dash-primary" href={urlIndicazioni(indirizzo)} target="_blank" rel="noopener noreferrer">
+          <i className="ti ti-brand-google-maps" />
+          <span>Apri in Maps</span>
+        </a>
+      );
+    }
+    if (attivo?.stato === "ok") {
+      return (
+        <>
+          <button
+            type="button"
+            className="btn-dash btn-dash-ghost pr-btn-ic"
+            title="Nascondi il percorso"
+            aria-label="Nascondi il percorso"
+            onClick={() => setPercorso(null)}
+          >
+            <i className="ti ti-x" />
+          </button>
+          <a
+            className="btn-dash btn-dash-primary"
+            href={urlIndicazioni(indirizzo)}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Navigazione passo passo in Google Maps"
+          >
+            <i className="ti ti-navigation" />
+            <span>Naviga</span>
+          </a>
+        </>
+      );
+    }
+    return (
+      <button
+        type="button"
+        className="btn-dash btn-dash-primary"
+        disabled={attivo?.stato === "calcolo"}
+        onClick={() => void mostraPercorso(destinazione, verso)}
+      >
+        <i className="ti ti-route" />
+        <span>{attivo?.stato === "calcolo" ? "Calcolo…" : "Indicazioni"}</span>
+      </button>
+    );
+  };
+
+  /** Riga "12,4 km · 18 min in auto" quando il percorso è sulla mappa. */
+  const infoPercorso = (destinazione: string) =>
+    percorso?.destinazione === destinazione && percorso.stato === "ok" && percorso.dati ? (
+      <span className="pr-rotta">
+        <i className="ti ti-car" />
+        {formattaKm(percorso.dati.distanzaKm)} · {formattaDurata(percorso.dati.durataMin)} in auto
+      </span>
+    ) : null;
 
   /* ---------- GPS ---------- */
   const usaGps = () => {
@@ -637,6 +760,7 @@ export default function PrenotazioniPage() {
                 {km !== null ? ` · ${formattaKm(km)}` : ""}
               </span>
             )}
+            {infoPercorso(`pren-${inEvidenza.id}`)}
           </div>
         </div>
         <div className="pr-bar-btns">
@@ -657,17 +781,8 @@ export default function PrenotazioniPage() {
               <span>Chiama</span>
             </a>
           )}
-          {inEvidenza.officina?.indirizzo && (
-            <a
-              className="btn-dash btn-dash-primary"
-              href={urlIndicazioni(inEvidenza.officina.indirizzo)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <i className="ti ti-route" />
-              <span>Indicazioni</span>
-            </a>
-          )}
+          {inEvidenza.officina?.indirizzo &&
+            bottoniPercorso(`pren-${inEvidenza.id}`, o ? { lat: o.lat, lng: o.lng } : null, inEvidenza.officina.indirizzo)}
         </div>
       </div>
     );
@@ -708,6 +823,7 @@ export default function PrenotazioniPage() {
               <i className="ti ti-map-pin" />
               {selezionata.indirizzo} · {etichettaDistanza(selezionata, "distanza n.d.")}
             </span>
+            {infoPercorso(`off-${selezionata.id}`)}
           </div>
         </div>
         <div className="pr-bar-btns">
@@ -716,6 +832,20 @@ export default function PrenotazioniPage() {
               <i className="ti ti-phone" />
               <span>Chiama</span>
             </a>
+          )}
+          {percorso?.destinazione === `off-${selezionata.id}` && percorso.stato === "ok" ? (
+            bottoniPercorso(`off-${selezionata.id}`, selezionata, selezionata.indirizzo)
+          ) : (
+            <button
+              type="button"
+              className="btn-dash btn-dash-ghost"
+              title="Percorso sulla mappa"
+              disabled={percorso?.destinazione === `off-${selezionata.id}` && percorso.stato === "calcolo"}
+              onClick={() => void mostraPercorso(`off-${selezionata.id}`, selezionata)}
+            >
+              <i className="ti ti-route" />
+              <span>Percorso</span>
+            </button>
           )}
           <button type="button" className="btn-dash btn-dash-primary" onClick={apriModal}>
             <i className="ti ti-calendar-plus" />
