@@ -27,18 +27,31 @@ export class NotificheService {
     private readonly prisma: PrismaService,
     config: ConfigService,
   ) {
-    const pubblica = config.get<string>('VAPID_PUBLIC_KEY');
-    const privata = config.get<string>('VAPID_PRIVATE_KEY');
+    // spazi e virgolette copiati per errore nel .env / su Render
+    const pulisci = (v: string | undefined) =>
+      v?.trim().replace(/^["']|["']$/g, '') || undefined;
+    const pubblica = pulisci(config.get<string>('VAPID_PUBLIC_KEY'));
+    const privata = pulisci(config.get<string>('VAPID_PRIVATE_KEY'));
+    let soggetto =
+      pulisci(config.get<string>('VAPID_SUBJECT')) ??
+      'mailto:noreply@recars.it';
+    // web-push vuole "mailto:indirizzo" o un URL https: un'email nuda si accetta
+    if (/^[^\s@:]+@[^\s@]+$/.test(soggetto)) soggetto = `mailto:${soggetto}`;
+
+    let attiva: string | null = null;
     if (pubblica && privata) {
-      webpush.setVapidDetails(
-        config.get<string>('VAPID_SUBJECT') ?? 'mailto:noreply@recars.it',
-        pubblica,
-        privata,
-      );
-      this.chiavePubblica = pubblica;
-    } else {
-      this.chiavePubblica = null;
+      try {
+        webpush.setVapidDetails(soggetto, pubblica, privata);
+        attiva = pubblica;
+      } catch (err) {
+        // chiavi sbagliate non devono far cadere tutto il backend
+        this.logger.error(
+          `Notifiche push disattivate, chiavi VAPID non valide: ${(err as Error).message}. ` +
+            'Rigenerale con "npx web-push generate-vapid-keys" (non con openssl).',
+        );
+      }
     }
+    this.chiavePubblica = attiva;
   }
 
   get attive(): boolean {
