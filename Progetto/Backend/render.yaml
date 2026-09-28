@@ -61,3 +61,16 @@ services:
         sync: false
       - key: STRIPE_PRICE_BUSINESS_PRO
         sync: false
+      # Assistente AI (facoltativa: senza, l'assistente risponde con un ripiego)
+      - key: GEMINI_API_KEY
+        sync: false
+      # Notifiche push (facoltative: senza chiavi il modulo resta spento).
+      # Chiavi generate una volta con: npx web-push generate-vapid-keys
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        sync: false
+      - key: NOTIFICHE_CRON_SECRET
+        sync: false

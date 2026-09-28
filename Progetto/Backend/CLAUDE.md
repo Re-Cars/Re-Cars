@@ -32,6 +32,7 @@ Bootstrap details (`src/main.ts`): `NestFactory.create(AppModule, { rawBody: tru
 | `storico_interventi` (`StoricoModule`) | yes | |
 | `stripe` (`StripeModule`) | yes | |
 | `assistente` (`AssistenteModule`) | yes | Gemini chat assistant (`GeminiClient`, REST + SSE, reads `GEMINI_API_KEY`/`GEMINI_MODEL`); per-user in-memory rate limit |
+| `notifiche` (`NotificheModule`) | yes | Web Push (VAPID, `web-push`): device subscriptions, daily deadlines/appointment reminders, booking status notifications; imported by `OfficinaModule`. Off without `VAPID_*` keys |
 | `PrismaModule` / `PrismaService` | yes | Wraps `@prisma/adapter-pg`, reads `DATABASE_URL` |
 | `AppMailerModule` (`mailer.module.ts`) | yes | Wraps `@nestjs-modules/mailer` + Nodemailer, reads `MAIL_USER`/`MAIL_PASS` |
 
@@ -69,6 +70,7 @@ No global prefix. `AppController` has no `@Controller()` path argument (root).
 
 ### `VeicoloController` (`@Controller('veicolo')`, no dedicated module — declared in `AppModule`)
 - `POST /veicolo` — `JwtAuthGuard` — looks up plate in mock dataset `data/veicoli.json`, enforces plan limits (base=1, premium=5, pro=unlimited), creates `veicolo` + `dati_generici` + `dati_specifici`
+- `POST /veicolo/manuale` — `JwtAuthGuard`, users only — vehicle typed in by the user from the registration document (`CreateVeicoloManualeDto`: targa auto `AA123BB` or moto `AA12345`, tipo, marca ≤30, modello ≤40, dataimmatricolazione, optional alimentazione/cilindrata/potenza_kw/porte/assicurazione/scadenze); same plate-uniqueness and plan-limit checks as `POST /veicolo`, kW converted to CV, saved in a transaction
 - `GET /veicolo/cerca/:targa` — `JwtAuthGuard` — plate lookup only (no persistence)
 - `GET /veicolo/utente/:id` — `JwtAuthGuard` — list a user's vehicles with `dati_generici`/`dati_specifici`
 - `GET /veicolo/:id` — **no guard** — vehicle detail by id
@@ -99,6 +101,12 @@ No global prefix. `AppController` has no `@Controller()` path argument (root).
 - `PUT /interventi/:id` — update (`UpdateInterventoDto`)
 - `DELETE /interventi/:id`
 
+### `NotificheController` (`@Controller('notifiche')`)
+- `GET /notifiche/chiave-pubblica` — public — VAPID public key for `PushManager.subscribe` (503 if not configured)
+- `POST /notifiche/iscrizione` / `DELETE /notifiche/iscrizione` — `JwtAuthGuard`, users only — save/remove this browser's push subscription (upsert by endpoint)
+- `POST /notifiche/prova` — `JwtAuthGuard` — test notification to the user's devices
+- `POST /notifiche/controllo-giornaliero` — header `x-cron-secret` = `NOTIFICHE_CRON_SECRET` (401 otherwise, 503 if unset) — sends today's deadline alerts and tomorrow's appointment reminders; idempotent thanks to `notifica_inviata`. Expired subscriptions (404/410 from the push service) are deleted.
+
 ### `StripeController` (`@Controller('abbonamento')`)
 - `POST /abbonamento/checkout` — `JwtAuthGuard` — creates a Stripe Checkout Session (`mode: 'subscription'`) based on plan/user type, returns `{ url }`
 - `POST /abbonamento/webhook` — public, verified via Stripe signature (`STRIPE_WEBHOOK_SECRET` + `rawBody`)
@@ -124,6 +132,7 @@ Models: `utente`, `officina`, `citta`, `veicolo`, `dati_generici`, `dati_specifi
 ## Testing
 
 - Unit specs for `app`, `officina`, `prenotazione` are smoke tests (`should be defined`) except `AppController`'s "Hello World!" check. `utente`, `veicolo`, `stripe`, `storico_interventi` have no specs.
+- `notifiche` has real coverage: date logic in the Italian timezone, thresholds, reminders, revoked subscriptions, daily-check deduplication. `veicolo` covers the manual-entry DTO and service.
 - `assistente` has real coverage: partial-JSON streaming, action whitelist, rate limit, fallback messages, and an integration spec of `POST /assistente/chat` with a mocked `fetch` (Gemini SSE).
 - One e2e spec (`test/app.e2e-spec.ts`) checks `GET /` only.
 - When touching business logic (plan limits, ownership checks, webhook handling), add real assertions — do not assume existing tests cover regressions.

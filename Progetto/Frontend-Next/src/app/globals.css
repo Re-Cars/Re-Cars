@@ -5749,3 +5749,27 @@ textarea.ov-in {
 .ov-in.dash-cerca-in { margin-bottom: 12px; }
 .dash-cerca-filtri { margin-bottom: 12px; }
 .dash-cerca-filtri small { opacity: 0.7; }
+
+/* Account · App e notifiche (components/pwa/SezioneAppNotifiche) */
+.acc2-azioni { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+.acc2-stato-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--iv-ok);
+}
+
+.acc2-txt small.acc2-err,
+.acc2-txt small.acc2-ok {
+  margin-top: 3px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12.5px;
+}
+
+.acc2-txt small.acc2-err { color: var(--iv-bad); }
+.acc2-txt small.acc2-ok { color: var(--iv-ok); }
+

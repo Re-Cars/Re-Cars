@@ -441,3 +441,26 @@ export async function* chatAssistente(
     }
   }
 }
+
+/* ====================== NOTIFICHE PUSH ====================== */
+
+/** Chiave VAPID pubblica del backend (503 se le notifiche non sono configurate). */
+export function getChiaveNotifiche(): Promise<{ chiave: string }> {
+  return fetchApi("/notifiche/chiave-pubblica");
+}
+
+export function iscriviNotifiche(iscrizione: PushSubscriptionJSON): Promise<unknown> {
+  return fetchApi("/notifiche/iscrizione", {
+    method: "POST",
+    body: JSON.stringify({ endpoint: iscrizione.endpoint, keys: iscrizione.keys }),
+  });
+}
+
+export function disiscriviNotifiche(endpoint: string): Promise<unknown> {
+  return fetchApi("/notifiche/iscrizione", { method: "DELETE", body: JSON.stringify({ endpoint }) });
+}
+
+export function notificaDiProva(): Promise<{ inviate: number }> {
+  return fetchApi("/notifiche/prova", { method: "POST" });
+}
+

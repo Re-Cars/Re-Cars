@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 
 import Layout from "@/components/Layout";
+import SezioneAppNotifiche from "@/components/pwa/SezioneAppNotifiche";
 import Overlay from "@/components/ui/Overlay";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -309,6 +310,8 @@ export default function AccountPage() {
               </Link>
             </div>
           </section>
+
+          <SezioneAppNotifiche />
 
           <section className="pg-card acc2-danger">
             <div className="pg-card-h">

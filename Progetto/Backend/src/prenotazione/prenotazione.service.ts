@@ -118,6 +118,36 @@ export class PrenotazioniService {
     return prenotazione;
   }
 
+  async annullaDaUtente(
+    prenotazioneId: number,
+    utenteId: number,
+    stato: string,
+  ) {
+    if (stato !== 'annullata') {
+      throw new BadRequestException(
+        "Puoi solo annullare una prenotazione: conferma e completamento spettano all'officina",
+      );
+    }
+    const prenotazione = await this.prisma.prenotazione.findUnique({
+      where: { id: prenotazioneId },
+    });
+    if (!prenotazione || prenotazione.id_utente !== utenteId) {
+      throw new NotFoundException('Prenotazione non trovata');
+    }
+    if (
+      prenotazione.stato !== 'in_attesa' &&
+      prenotazione.stato !== 'confermata'
+    ) {
+      throw new BadRequestException(
+        `Una prenotazione ${prenotazione.stato.replace('_', ' ')} non si può annullare`,
+      );
+    }
+    return this.prisma.prenotazione.update({
+      where: { id: prenotazioneId },
+      data: { stato: 'annullata' },
+    });
+  }
+
   async trovaPerUtente(utenteId: number) {
     // 1. Controlla se l'utente esiste (opzionale, ma garantisce consistenza nei log)
     const utenteEsiste = await this.prisma.utente.findUnique({

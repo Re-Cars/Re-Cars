@@ -74,3 +74,57 @@ describe('PrenotazioniService.crea', () => {
     expect(mailer.sendMail).toHaveBeenCalled();
   });
 });
+
+describe('PrenotazioniService.annullaDaUtente', () => {
+  const prisma = {
+    prenotazione: { findUnique: jest.fn(), update: jest.fn() },
+  };
+  const service = new PrenotazioniService(
+    prisma as unknown as PrismaService,
+    {} as MailerService,
+  );
+
+  beforeEach(() => jest.clearAllMocks());
+
+  it('annulla una propria prenotazione in attesa', async () => {
+    prisma.prenotazione.findUnique.mockResolvedValue({
+      id: 5,
+      id_utente: 7,
+      stato: 'in_attesa',
+    });
+    await service.annullaDaUtente(5, 7, 'annullata');
+    expect(prisma.prenotazione.update).toHaveBeenCalledWith({
+      where: { id: 5 },
+      data: { stato: 'annullata' },
+    });
+  });
+
+  it("non permette all'utente di confermare", async () => {
+    await expect(service.annullaDaUtente(5, 7, 'confermata')).rejects.toThrow(
+      /solo annullare/,
+    );
+  });
+
+  it('non tocca le prenotazioni di altri utenti', async () => {
+    prisma.prenotazione.findUnique.mockResolvedValue({
+      id: 5,
+      id_utente: 8,
+      stato: 'in_attesa',
+    });
+    await expect(service.annullaDaUtente(5, 7, 'annullata')).rejects.toThrow(
+      /non trovata/,
+    );
+    expect(prisma.prenotazione.update).not.toHaveBeenCalled();
+  });
+
+  it('non annulla una prenotazione già completata', async () => {
+    prisma.prenotazione.findUnique.mockResolvedValue({
+      id: 5,
+      id_utente: 7,
+      stato: 'completata',
+    });
+    await expect(service.annullaDaUtente(5, 7, 'annullata')).rejects.toThrow(
+      /non si può annullare/,
+    );
+  });
+});

@@ -73,22 +73,49 @@ enum stato_prenotazione {
 // ──────────────────────────────────── MODELLI ────────────────────────────────────────
 
 model utente {
-  id                 Int               @id(map: "utenti_pkey") @default(autoincrement())
-  username           String            @unique(map: "utenti_username_key") @db.VarChar(20)
-  password           String            @db.VarChar(255)
-  email              String            @unique(map: "utenti_email_key") @db.VarChar(255)
-  cellulare          String?           @unique(map: "utenti_cellulare_key") @db.VarChar(20)
-  avatar             String?           @db.Text
-  tipo               tipo_utente       @default(privato)
-  stripe_customer_id String?           @unique @db.VarChar(255)
-  ragione_sociale    String?           @db.VarChar(100)
-  partita_iva        String?           @unique @db.VarChar(11)
-  codice_sdi         String?           @db.VarChar(7)
+  id                 Int                @id(map: "utenti_pkey") @default(autoincrement())
+  username           String             @unique(map: "utenti_username_key") @db.VarChar(20)
+  password           String             @db.VarChar(255)
+  email              String             @unique(map: "utenti_email_key") @db.VarChar(255)
+  cellulare          String?            @unique(map: "utenti_cellulare_key") @db.VarChar(20)
+  avatar             String?            @db.Text
+  tipo               tipo_utente        @default(privato)
+  stripe_customer_id String?            @unique @db.VarChar(255)
+  ragione_sociale    String?            @db.VarChar(100)
+  partita_iva        String?            @unique @db.VarChar(11)
+  codice_sdi         String?            @db.VarChar(7)
   abbonamento        abbonamento[]
   prenotazione       prenotazione[]
   veicolo            veicolo[]
+  push_iscrizione    push_iscrizione[]
+  notifica_inviata   notifica_inviata[]
 
   @@index([id, email], map: "idx_utente_id_email")
+}
+
+/// Un dispositivo/browser iscritto alle notifiche push (Web Push, VAPID).
+model push_iscrizione {
+  id        Int      @id @default(autoincrement())
+  id_utente Int
+  endpoint  String   @unique @db.Text
+  p256dh    String   @db.VarChar(200)
+  auth      String   @db.VarChar(100)
+  creato_il DateTime @default(now()) @db.Timestamp(6)
+  utente    utente   @relation(fields: [id_utente], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([id_utente])
+}
+
+/// Notifiche programmate già inviate (scadenze, promemoria): il controllo
+/// giornaliero può girare più volte senza mandare doppioni.
+model notifica_inviata {
+  id         Int      @id @default(autoincrement())
+  id_utente  Int
+  chiave     String   @db.VarChar(120)
+  inviata_il DateTime @default(now()) @db.Timestamp(6)
+  utente     utente   @relation(fields: [id_utente], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([id_utente, chiave])
 }
 
 model abbonamento {
