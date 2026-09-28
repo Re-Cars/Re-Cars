@@ -5766,3 +5766,111 @@ textarea.ov-in {
 
 .acc2-txt small.acc2-err { color: var(--iv-bad); }
 .acc2-txt small.acc2-ok { color: var(--iv-ok); }
+
+/* Aggiungi veicolo · Da foto libretto (components/LibrettoFoto) */
+.lf { display: flex; flex-direction: column; gap: 14px; margin-bottom: 14px; }
+
+.lf-privacy {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(var(--iv-ok-rgb), 0.08);
+  border: 1px solid rgba(var(--iv-ok-rgb), 0.3);
+}
+
+.lf-privacy i { font-size: 22px; color: var(--iv-ok); }
+
+.lf-privacy p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.lf-privacy b { color: var(--text); }
+
+.lf-area {
+  position: relative;
+  height: clamp(160px, 30dvh, 260px);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1.5px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  display: grid;
+  place-items: center;
+}
+
+.lf-area.con-foto { border-style: solid; background: #000; }
+
+.lf-area img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.lf-guida {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 320px;
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.lf-guida i { font-size: 44px; color: var(--accent); }
+
+.lf-lettura {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(180deg, transparent, rgba(5, 5, 25, 0.9) 35%);
+}
+
+.lf-barra {
+  height: 6px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.lf-barra i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #fb8b3e, #f97316);
+  transition: width 0.3s ease;
+}
+
+.lf-bottoni { display: flex; gap: 10px; }
+.lf-bottoni .btn-dash { flex: 1; }
+
+/* campi riempiti dalla foto: verdi se letti col codice, arancioni se dedotti */
+.ov-in.dalla-foto { border-color: rgba(var(--iv-ok-rgb), 0.6); background: rgba(var(--iv-ok-rgb), 0.06); }
+.ov-in.da-verificare { border-color: color-mix(in srgb, var(--accent) 70%, transparent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+
+.av2-foto-nota {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--muted);
+  background: rgba(var(--iv-ok-rgb), 0.08);
+  border: 1px solid rgba(var(--iv-ok-rgb), 0.3);
+}
+
+.av2-foto-nota i { font-size: 18px; color: var(--iv-ok); }
+.av2-foto-nota b { color: var(--text); }

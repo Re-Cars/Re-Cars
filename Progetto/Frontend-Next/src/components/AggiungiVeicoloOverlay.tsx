@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 
+import LibrettoFoto from "@/components/LibrettoFoto";
 import Overlay from "@/components/ui/Overlay";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -11,6 +12,7 @@ import {
   cercaVeicoloPerTarga,
   type NuovoVeicoloManuale,
 } from "@/lib/api";
+import type { DatiLibretto } from "@/lib/libretto";
 import { getStoricoTarghe, rimuoviStoricoTarga, salvaStoricoTarga } from "@/lib/storage";
 import type { RisultatoRicercaVeicolo } from "@/lib/types";
 
@@ -24,7 +26,7 @@ const TIPI_PRINCIPALI = [
 ];
 const ALTRI_TIPI = ["Autocarro", "Camper", "Autobus", "Quad"];
 
-type Scheda = "cerca" | "manuale";
+type Scheda = "cerca" | "manuale" | "foto";
 
 interface FormManuale {
   tipo_veicolo: string;
@@ -57,6 +59,22 @@ const FORM_VUOTO: FormManuale = {
 };
 
 const pulisciTarga = (t: string) => t.replace(/\s+/g, "").toUpperCase();
+
+/**
+ * "MERCEDES-BENZ" → "Mercedes-Benz", "CLASSE A 180 D" → "Classe A 180 D":
+ * le sigle brevi e le parti con cifre restano maiuscole (BMW, KTM, A180D, MT-07).
+ */
+function nomeLeggibile(testo: string): string {
+  return testo
+    .split(" ")
+    .map((parola) =>
+      parola
+        .split("-")
+        .map((p) => (p.length <= 3 || /\d/.test(p) ? p : p.charAt(0) + p.slice(1).toLowerCase()))
+        .join("-"),
+    )
+    .join(" ");
+}
 const intero = (s: string) => (s.trim() ? Number.parseInt(s, 10) : undefined);
 
 /** Primo campo non valido del form manuale (null se è tutto a posto). */
@@ -103,6 +121,10 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
   const [errore, setErrore] = useState("");
   const [form, setForm] = useState<FormManuale>(FORM_VUOTO);
   const [campoErrato, setCampoErrato] = useState<keyof FormManuale | null>(null);
+  /** Campi riempiti dalla foto: evidenziati finché l'utente non li tocca. */
+  const [dallaFoto, setDallaFoto] = useState<{ letti: Set<keyof FormManuale>; daVerificare: Set<keyof FormManuale> } | null>(
+    null,
+  );
 
   // reset dello stato a ogni apertura + lettura storico da localStorage
   useEffect(() => {
@@ -114,6 +136,7 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
     setErrore("");
     setForm(FORM_VUOTO);
     setCampoErrato(null);
+    setDallaFoto(null);
     setStorico(getStoricoTarghe());
   }, [aperto]);
 
@@ -121,6 +144,24 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
     setScheda(s);
     setErrore("");
     setCampoErrato(null);
+  };
+
+  /** Dati letti dalla foto → form manuale da controllare. */
+  const compilaDaFoto = (dati: DatiLibretto, daVerificare: (keyof DatiLibretto)[]) => {
+    const valori: Partial<FormManuale> = {
+      targa: dati.targa,
+      dataimmatricolazione: dati.dataimmatricolazione,
+      marca: dati.marca ? nomeLeggibile(dati.marca) : undefined,
+      modello: dati.modello ? nomeLeggibile(dati.modello) : undefined,
+      tipo_veicolo: dati.tipo_veicolo,
+      alimentazione: dati.alimentazione,
+      cilindrata: dati.cilindrata?.toString(),
+      potenza_kw: dati.potenza_kw?.toString(),
+    };
+    const letti = (Object.keys(valori) as (keyof FormManuale)[]).filter((k) => valori[k] !== undefined);
+    setForm((f) => ({ ...f, ...Object.fromEntries(letti.map((k) => [k, valori[k]])) }));
+    setDallaFoto({ letti: new Set(letti), daVerificare: new Set(daVerificare as (keyof FormManuale)[]) });
+    cambiaScheda("manuale");
   };
 
   const erroreAggiunta = (err: unknown) => {
@@ -206,8 +247,21 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
 
   const campo = (nome: keyof FormManuale) => ({
     value: form[nome],
-    className: `ov-in${campoErrato === nome ? " errato" : ""}`,
-    onChange: (e: { target: { value: string } }) => setForm((f) => ({ ...f, [nome]: e.target.value })),
+    className: `ov-in${campoErrato === nome ? " errato" : ""}${
+      dallaFoto?.daVerificare.has(nome) ? " da-verificare" : dallaFoto?.letti.has(nome) ? " dalla-foto" : ""
+    }`,
+    onChange: (e: { target: { value: string } }) => {
+      setForm((f) => ({ ...f, [nome]: e.target.value }));
+      // toccato dall'utente: non serve più evidenziarlo
+      setDallaFoto((d) => {
+        if (!d || (!d.letti.has(nome) && !d.daVerificare.has(nome))) return d;
+        const letti = new Set(d.letti);
+        const daVerificare = new Set(d.daVerificare);
+        letti.delete(nome);
+        daVerificare.delete(nome);
+        return { letti, daVerificare };
+      });
+    },
   });
   const altroTipo = !TIPI_PRINCIPALI.some((t) => t.valore === form.tipo_veicolo);
 
@@ -220,7 +274,9 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
       sottotitolo={
         scheda === "cerca"
           ? "Cerca la targa: recuperiamo marca, modello e documenti. Se non la troviamo puoi inserire tu i dati."
-          : "Copia i dati dal libretto: accanto a ogni campo c'è il codice della riga dove trovarlo."
+          : scheda === "foto"
+            ? "Fotografa il libretto: leggiamo i dati del veicolo e li trovi già scritti nel modulo, da controllare."
+            : "Copia i dati dal libretto: accanto a ogni campo c'è il codice della riga dove trovarlo."
       }
       piede={
         scheda === "manuale" ? (
@@ -254,10 +310,9 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
           <i className="ti ti-forms" />
           <span>Inserisci a mano</span>
         </button>
-        <button type="button" role="tab" aria-label="Da foto libretto (in arrivo)" disabled title="In arrivo">
+        <button type="button" role="tab" aria-label="Da foto libretto" aria-selected={scheda === "foto"} className={scheda === "foto" ? "on" : ""} onClick={() => cambiaScheda("foto")}>
           <i className="ti ti-camera" />
           <span>Da foto libretto</span>
-          <small>presto</small>
         </button>
       </div>
 
@@ -268,7 +323,9 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
         </p>
       )}
 
-      {scheda === "cerca" ? (
+      {scheda === "foto" ? (
+        <LibrettoFoto onLetto={compilaDaFoto} />
+      ) : scheda === "cerca" ? (
         <>
           <form className="av2-cerca" onSubmit={(e) => void cerca(e)}>
             <input
@@ -378,6 +435,16 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
             void aggiungiManuale();
           }}
         >
+          {dallaFoto && dallaFoto.letti.size > 0 && (
+            <p className="av2-foto-nota">
+              <i className="ti ti-camera-check" />
+              <span>
+                Letti dalla foto <b>{dallaFoto.letti.size}</b> campi: controllali prima di salvare
+                {dallaFoto.daVerificare.size > 0 && <>, soprattutto quelli in arancione (dedotti senza il codice della riga)</>}
+                .
+              </span>
+            </p>
+          )}
           <div className="ov-grp">Veicolo</div>
           <div className="ov-grid">
             <div className="ov-f w2">

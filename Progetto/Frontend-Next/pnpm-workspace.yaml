@@ -10,3 +10,5 @@ allowBuilds:
   unrs-resolver: true
   # dipendenza opzionale: il suo postinstall stampa solo il messaggio di sponsorizzazione
   core-js: false
+  # lettura del libretto dalla foto: anche qui il postinstall stampa solo la sponsorizzazione
+  tesseract.js: false
