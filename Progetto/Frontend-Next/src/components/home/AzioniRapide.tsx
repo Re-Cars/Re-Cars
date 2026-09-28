@@ -1,56 +1,57 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import { nomeVeicolo, scadenzeVeicolo, type ScadenzaDettaglio } from "@/lib/scadenze";
+import CarburanteModal, {
+  carburanteDelVeicolo,
+  ETICHETTA_CARBURANTE,
+  posizione,
+  prezzoIt,
+} from "@/components/home/CarburanteModal";
+import { getCarburantiVicini } from "@/lib/api";
+import { nomeVeicolo } from "@/lib/scadenze";
 import type { VeicoloDettaglio } from "@/lib/types";
 
 interface AzioniRapideProps {
   /** Spesa dell'anno in corso su tutto il garage (null finché non calcolata). */
   speseAnno: number | null;
-  veicoli: VeicoloDettaglio[];
-  /** Porta un veicolo nella scheda della dashboard. */
-  onSeleziona: (id: number) => void;
-}
-
-const NOME_SCADENZA: Record<ScadenzaDettaglio["tipo"], string> = {
-  bollo: "Bollo",
-  assicurazione: "Assicurazione",
-  revisione: "Revisione",
-};
-
-/**
- * La scadenza più urgente di tutto il garage: prima quelle scadute o non
- * attive, poi la più vicina. La scheda del veicolo mostra solo il veicolo
- * selezionato, questa card guarda tutti i veicoli insieme.
- */
-function scadenzaPiuVicina(veicoli: VeicoloDettaglio[]) {
-  let migliore: { veicolo: VeicoloDettaglio; scadenza: ScadenzaDettaglio } | null = null;
-  const peso = (s: ScadenzaDettaglio) => (s.livello === "rossa" ? -Infinity : (s.giorni ?? Infinity));
-  for (const veicolo of veicoli) {
-    for (const scadenza of scadenzeVeicolo(veicolo)) {
-      if (scadenza.giorni === null && scadenza.livello !== "rossa") continue;
-      if (!migliore || peso(scadenza) < peso(migliore.scadenza)) migliore = { veicolo, scadenza };
-    }
-  }
-  return migliore;
-}
-
-function quando(s: ScadenzaDettaglio): string {
-  if (s.livello === "rossa") return s.giorni !== null && s.giorni < 0 ? "Scaduta" : "Non attiva";
-  if (s.giorni === 0) return "Oggi";
-  if (s.giorni === 1) return "Domani";
-  return `Tra ${s.giorni} giorni`;
+  /** Veicolo nella scheda: decide il carburante da cercare. */
+  veicolo: VeicoloDettaglio | null;
 }
 
 /**
  * Le tre azioni rapide della dashboard: storico (con la spesa dell'anno),
- * prenotazioni e la prossima scadenza del garage. Le prime due coincidono
+ * prenotazioni e carburante più economico vicino. Le prime due coincidono
  * con le voci della Sidebar (tenerle allineate a mano).
  */
-export default function AzioniRapide({ speseAnno, veicoli, onSeleziona }: AzioniRapideProps) {
+export default function AzioniRapide({ speseAnno, veicolo }: AzioniRapideProps) {
   const anno = new Date().getFullYear();
-  const prossima = scadenzaPiuVicina(veicoli);
+  const [carburanteAperto, setCarburanteAperto] = useState(false);
+  const [prezzoMigliore, setPrezzoMigliore] = useState<number | null>(null);
+
+  const alimentazione = veicolo?.dati_generici[0]?.alimentazione;
+  const carburante = carburanteDelVeicolo(alimentazione);
+
+  // se la posizione è già stata concessa, la card mostra subito il prezzo più
+  // basso entro 5 km; altrimenti la si chiede solo al tocco (niente popup all'avvio)
+  useEffect(() => {
+    setPrezzoMigliore(null);
+    if (!carburante || !navigator.permissions) return;
+    let annullato = false;
+    navigator.permissions
+      .query({ name: "geolocation" })
+      .then(async (permesso) => {
+        if (permesso.state !== "granted") return;
+        const { lat, lng } = await posizione();
+        const r = await getCarburantiVicini(lat, lng, carburante, 5);
+        if (!annullato && r.impianti[0]) setPrezzoMigliore(r.impianti[0].prezzo);
+      })
+      .catch(() => undefined);
+    return () => {
+      annullato = true;
+    };
+  }, [carburante]);
 
   return (
     <nav className="dash-azioni" aria-label="Azioni rapide">
@@ -81,27 +82,33 @@ export default function AzioniRapide({ speseAnno, veicoli, onSeleziona }: Azioni
         <i className="ti ti-chevron-right dash-az-go" />
       </Link>
 
-      <button
-        type="button"
-        className={`dash-az lv-${prossima?.scadenza.livello ?? "ok"}`}
-        disabled={!prossima}
-        onClick={() => prossima && onSeleziona(prossima.veicolo.id)}
-        title={prossima ? `Mostra ${nomeVeicolo(prossima.veicolo)} nella scheda` : undefined}
-      >
-        <span className="dash-az-ic"><i className="ti ti-alarm" /></span>
+      <button type="button" className="dash-az" onClick={() => setCarburanteAperto(true)}>
+        <span className="dash-az-ic"><i className="ti ti-gas-station" /></span>
         <span className="dash-az-txt">
           <span className="dash-az-t">
-            Prossima scadenza
-            <span className="dash-az-kpi dash-az-kpi--lv">{prossima ? quando(prossima.scadenza) : "Nessuna"}</span>
+            Carburante vicino
+            {prezzoMigliore !== null && carburante && (
+              <span className="dash-az-kpi">
+                {prezzoIt(prezzoMigliore)} {carburante === "metano" ? "€/kg" : "€/l"}
+              </span>
+            )}
           </span>
           <span className="dash-az-d">
-            {prossima
-              ? `${NOME_SCADENZA[prossima.scadenza.tipo]} · ${nomeVeicolo(prossima.veicolo)}`
-              : "Bollo, assicurazione e revisione sotto controllo"}
+            {carburante
+              ? `${ETICHETTA_CARBURANTE[carburante]} · il prezzo più basso vicino a te`
+              : "Distributori vicino a te, con i prezzi del giorno"}
           </span>
         </span>
-        {prossima && <i className="ti ti-chevron-right dash-az-go" />}
+        <i className="ti ti-chevron-right dash-az-go" />
       </button>
+
+      {carburanteAperto && (
+        <CarburanteModal
+          onChiudi={() => setCarburanteAperto(false)}
+          iniziale={carburante}
+          nomeVeicolo={veicolo ? nomeVeicolo(veicolo) : undefined}
+        />
+      )}
     </nav>
   );
 }

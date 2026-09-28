@@ -463,3 +463,36 @@ export function disiscriviNotifiche(endpoint: string): Promise<unknown> {
 export function notificaDiProva(): Promise<{ inviate: number }> {
   return fetchApi("/notifiche/prova", { method: "POST" });
 }
+
+/* ====================== CARBURANTI ====================== */
+
+export type Carburante = "benzina" | "gasolio" | "gpl" | "metano";
+
+/** Distributore di GET /carburanti/vicini (open data MIMIT, prezzi delle 8:00). */
+export interface ImpiantoCarburante {
+  id: number;
+  bandiera: string;
+  nome: string;
+  indirizzo: string;
+  comune: string;
+  provincia: string;
+  lat: number;
+  lng: number;
+  /** €/l (€/kg per il metano): self se disponibile, altrimenti servito. */
+  prezzo: number;
+  self: boolean;
+  aggiornato: string | null;
+  distanzaKm: number;
+}
+
+export interface RispostaCarburanti {
+  estrazione: string | null;
+  carburante: Carburante;
+  raggio: number;
+  impianti: ImpiantoCarburante[];
+}
+
+export function getCarburantiVicini(lat: number, lng: number, carburante: Carburante, raggio = 5): Promise<RispostaCarburanti> {
+  const q = new URLSearchParams({ lat: lat.toFixed(5), lng: lng.toFixed(5), carburante, raggio: String(raggio) });
+  return fetchApi(`/carburanti/vicini?${q}`);
+}

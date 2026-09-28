@@ -3990,7 +3990,7 @@ input:-webkit-autofill:active {
   font-size: 20px;
 }
 
-/* "Prossima scadenza" è un bottone (seleziona il veicolo), non un link */
+/* "Carburante vicino" è un bottone (apre la finestra), non un link */
 button.dash-az {
   width: 100%;
   font: inherit;
@@ -4004,17 +4004,7 @@ button.dash-az:disabled {
   box-shadow: var(--edge-hl), var(--elev-1);
 }
 
-.dash-az.lv-rossa .dash-az-ic,
-.dash-az.lv-arancione .dash-az-ic,
-.dash-az.lv-gialla .dash-az-ic {
-  color: var(--lv);
-  background: color-mix(in srgb, var(--lv) 13%, transparent);
-}
 
-.dash-az-kpi.dash-az-kpi--lv {
-  color: var(--lv);
-  background: color-mix(in srgb, var(--lv) 14%, transparent);
-}
 
 /* ---------------- modali della dashboard (ricerca, eliminazione) ---------------- */
 
@@ -5874,3 +5864,98 @@ textarea.ov-in {
 
 .av2-foto-nota i { font-size: 18px; color: var(--iv-ok); }
 .av2-foto-nota b { color: var(--text); }
+
+/* Carburante vicino (components/home/CarburanteModal) */
+.cv-filtri {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 14px;
+}
+
+.cv-attesa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 36px 16px;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+.cv-attesa i { font-size: 34px; color: var(--accent); }
+
+.cv-riprova {
+  margin-left: auto;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.cv-lista {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cv-lista li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+
+.cv-lista li.migliore {
+  border-color: rgba(var(--iv-ok-rgb), 0.5);
+  background: rgba(var(--iv-ok-rgb), 0.07);
+}
+
+.cv-pos {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.migliore .cv-pos { color: #fff; background: var(--iv-ok); }
+
+.cv-info { min-width: 0; display: flex; flex-direction: column; }
+.cv-info b { font-size: 14.5px; }
+
+.cv-info span {
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cv-prezzo { display: flex; flex-direction: column; align-items: flex-end; }
+.cv-prezzo b { font-size: 18px; font-weight: 800; }
+.migliore .cv-prezzo b { color: var(--iv-ok); }
+.cv-prezzo span { font-size: 11.5px; color: var(--muted); }
+
+.cv-lista .btn-dash.cv-naviga { height: 36px; padding: 0 10px; font-size: 12.5px; }
+
+@media (max-width: 520px) {
+  .cv-lista li { grid-template-columns: 28px minmax(0, 1fr) auto; }
+  .cv-naviga { grid-column: 2 / -1; justify-self: start; }
+}

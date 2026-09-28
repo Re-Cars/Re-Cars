@@ -96,7 +96,7 @@ export default function HomePage() {
           onElimina={onElimina}
         />
         <InfoVeicoloPanel veicolo={selezionato} />
-        <AzioniRapide speseAnno={speseAnno} veicoli={veicoli} onSeleziona={selezionaVeicolo} />
+        <AzioniRapide speseAnno={speseAnno} veicolo={selezionato} />
       </main>
     </Layout>
   );

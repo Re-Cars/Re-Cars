@@ -33,6 +33,7 @@ Bootstrap details (`src/main.ts`): `NestFactory.create(AppModule, { rawBody: tru
 | `stripe` (`StripeModule`) | yes | |
 | `assistente` (`AssistenteModule`) | yes | Gemini chat assistant (`GeminiClient`, REST + SSE, reads `GEMINI_API_KEY`/`GEMINI_MODEL`); per-user in-memory rate limit |
 | `notifiche` (`NotificheModule`) | yes | Web Push (VAPID, `web-push`): device subscriptions, daily deadlines/appointment reminders, booking status notifications; imported by `OfficinaModule`. Off without `VAPID_*` keys |
+| `carburanti` (`CarburantiModule`) | yes | Fuel prices from MIMIT open data (two daily CSVs: stations + 8 a.m. prices), downloaded at startup and at most every 6 h, kept in memory (no DB tables). URLs overridable with `CARBURANTI_URL_ANAGRAFICA` / `CARBURANTI_URL_PREZZI` |
 | `PrismaModule` / `PrismaService` | yes | Wraps `@prisma/adapter-pg`, reads `DATABASE_URL` |
 | `AppMailerModule` (`mailer.module.ts`) | yes | Wraps `@nestjs-modules/mailer` + Nodemailer, reads `MAIL_USER`/`MAIL_PASS` |
 
@@ -107,6 +108,9 @@ No global prefix. `AppController` has no `@Controller()` path argument (root).
 - `POST /notifiche/prova` — `JwtAuthGuard` — test notification to the user's devices
 - `POST /notifiche/controllo-giornaliero` — header `x-cron-secret` = `NOTIFICHE_CRON_SECRET` (401 otherwise, 503 if unset) — sends today's deadline alerts and tomorrow's appointment reminders; idempotent thanks to `notifica_inviata`. Expired subscriptions (404/410 from the push service) are deleted.
 
+### `CarburantiController` (`@Controller('carburanti')`)
+- `GET /carburanti/vicini?lat=&lng=&carburante=benzina|gasolio|gpl|metano&raggio=5` — `JwtAuthGuard` — up to 10 stations within the radius (1–30 km), cheapest first (self price when available, otherwise full service), with distance and MIMIT extraction date. 503 if the MIMIT data could not be downloaded and no previous copy is in memory.
+
 ### `StripeController` (`@Controller('abbonamento')`)
 - `POST /abbonamento/checkout` — `JwtAuthGuard` — creates a Stripe Checkout Session (`mode: 'subscription'`) based on plan/user type, returns `{ url }`
 - `POST /abbonamento/webhook` — public, verified via Stripe signature (`STRIPE_WEBHOOK_SECRET` + `rawBody`)
@@ -132,6 +136,7 @@ Models: `utente`, `officina`, `citta`, `veicolo`, `dati_generici`, `dati_specifi
 ## Testing
 
 - Unit specs for `app`, `officina`, `prenotazione` are smoke tests (`should be defined`) except `AppController`'s "Hello World!" check. `utente`, `veicolo`, `stripe`, `storico_interventi` have no specs.
+- `carburanti` covers CSV parsing (both separators, BOM, bad rows), fuel mapping, radius/price ordering and the 503 path with a mocked `fetch`.
 - `notifiche` has real coverage: date logic in the Italian timezone, thresholds, reminders, revoked subscriptions, daily-check deduplication. `veicolo` covers the manual-entry DTO and service.
 - `assistente` has real coverage: partial-JSON streaming, action whitelist, rate limit, fallback messages, and an integration spec of `POST /assistente/chat` with a mocked `fetch` (Gemini SSE).
 - One e2e spec (`test/app.e2e-spec.ts`) checks `GET /` only.
