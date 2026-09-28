@@ -2969,15 +2969,9 @@ input:-webkit-autofill:active {
     gap: 10px;
   }
 
-  
-
   .cropper-area {
     height: 220px;
   }
-
-  
-
-  
 
   .ps-wrap {
     padding: 16px;
@@ -5772,4 +5766,3 @@ textarea.ov-in {
 
 .acc2-txt small.acc2-err { color: var(--iv-bad); }
 .acc2-txt small.acc2-ok { color: var(--iv-ok); }
-

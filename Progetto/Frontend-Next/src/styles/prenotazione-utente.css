@@ -301,8 +301,6 @@
         grid-template-columns: repeat(2, 1fr);
     }
 
-    
-
     #mappa-leaflet {
         height: 220px;
     }
@@ -321,18 +319,10 @@
         grid-template-columns: 1fr;
     }
 
-    
-
-    
-
     #mappa-leaflet {
         height: 200px;
         min-height: 200px;
     }
-
-    
-
-    
 
     .btn-open-map {
         top: 8px;

@@ -463,4 +463,3 @@ export function disiscriviNotifiche(endpoint: string): Promise<unknown> {
 export function notificaDiProva(): Promise<{ inviate: number }> {
   return fetchApi("/notifiche/prova", { method: "POST" });
 }
-

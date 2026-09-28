@@ -37,4 +37,3 @@ ALTER TABLE "push_iscrizione" ADD CONSTRAINT "push_iscrizione_id_utente_fkey" FO
 
 -- AddForeignKey
 ALTER TABLE "notifica_inviata" ADD CONSTRAINT "notifica_inviata_id_utente_fkey" FOREIGN KEY ("id_utente") REFERENCES "utente"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-

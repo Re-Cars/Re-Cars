@@ -454,7 +454,7 @@
         padding: 8px 10px;
         gap: 6px;
     }
-    
+
     .filter-date-wrap {
         flex-shrink: 0;
         padding: 4px 10px;
@@ -491,8 +491,7 @@
         height: 44px;
         font-size: 1.3rem;
     }
-    
-    
+
 }
 
 /* ======================================================
@@ -571,7 +570,7 @@
     .spesa-box {
         min-width: 0;
     }
-    
+
 }
 /* ====================================================
    Storico interventi — layout del nuovo stile (pg-*):
