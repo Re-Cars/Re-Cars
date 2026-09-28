@@ -827,8 +827,95 @@
 }
 /* ====================================================
    Storico interventi — layout del nuovo stile (pg-*):
-   lista a sinistra, costi di gestione e PDF a destra.
+   lista a sinistra, costi di gestione a destra. Sopra
+   i 1080px la pagina sta in una schermata (come la
+   dashboard): scorre solo la lista degli interventi.
 -----------------------------------------------------*/
+@media (min-width: 1081px) {
+  body:has(.st) {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .pg.st {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding-top: clamp(12px, 2dvh, 24px);
+    padding-bottom: clamp(16px, 3dvh, 30px);
+  }
+
+  .st .pg-hero { padding: clamp(10px, 1.8dvh, 18px) 24px; }
+  .st .pg-kpis { margin: clamp(10px, 1.8dvh, 18px) 0; }
+  .st .pg-kpi { padding: clamp(8px, 1.4dvh, 16px) 16px; }
+  .st .pg-kpi-ic { width: clamp(34px, 5dvh, 44px); height: clamp(34px, 5dvh, 44px); font-size: 20px; }
+  .st .pg-kpi b { font-size: clamp(17px, 2.6dvh, 22px); }
+
+  .st .st-grid {
+    flex: 1;
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  .st .st-grid > .pg-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .st .st-lista {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--accent) 45%, transparent) transparent;
+  }
+
+  .st .st-lista.sfuma {
+    -webkit-mask: linear-gradient(#000 85%, transparent);
+    mask: linear-gradient(#000 85%, transparent);
+  }
+
+  .st .st-side {
+    position: static;
+    min-height: 0;
+  }
+
+  /* il grafico prende l'altezza che resta nella card dei costi */
+  .st .st-costi {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .st .st-chart {
+    flex: 1;
+    min-height: 70px;
+    height: auto;
+  }
+
+  .st .st-split { padding-bottom: 14px; }
+
+  /* filtri su una riga sola (scorrono di lato se non ci stanno) */
+  .st .st-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .st .st-chips .pg-chip { flex-shrink: 0; }
+}
+
+/* schermi bassi: via il sottotitolo dell'hero, più righe nella lista */
+@media (min-width: 1081px) and (max-height: 800px) {
+  .st .pg-hero p { display: none; }
+}
+
+/* il bottone dell'assistente sta sopra l'angolo della card dei costi */
+body:has(.ai-fab) .st .st-split { padding-right: 70px; }
 .st-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 390px;
@@ -1096,66 +1183,38 @@
 .st-legenda {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   font-size: 13px;
 }
 
 .st-legenda div {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
+  min-width: 0;
 }
 
 .st-legenda span {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+  min-width: 0;
   color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .st-legenda span::before {
   content: "";
+  display: inline-block;
   width: 9px;
   height: 9px;
+  margin-right: 7px;
   border-radius: 50%;
   background: var(--c);
 }
 
+.st-legenda b { white-space: nowrap; }
+
 .st-legenda b { color: var(--text); }
-
-.st-pdf {
-  width: 100%;
-  padding: 16px 18px;
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  cursor: pointer;
-  text-align: left;
-  font-family: inherit;
-  color: var(--text);
-}
-
-.st-pdf:hover { border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
-
-.st-pdf-txt {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.st-pdf-txt b { font-size: 14.5px; }
-
-.st-pdf-txt span {
-  font-size: 12.5px;
-  color: var(--muted);
-}
-
-.st-pdf > i {
-  color: var(--accent);
-  font-size: 18px;
-}
 
 @media (max-width: 1080px) {
   .st-grid { grid-template-columns: minmax(0, 1fr); }

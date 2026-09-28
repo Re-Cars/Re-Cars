@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Layout from "@/components/Layout";
 import VeicoloPicker from "@/components/VeicoloPicker";
 import { useAuth } from "@/context/AuthContext";
+import { useSfumaturaScroll } from "@/hooks/useSfumaturaScroll";
 import {
   aggiornaIntervento,
   ApiError,
@@ -68,7 +69,9 @@ const euro = (n: number) =>
 
 /**
  * Storico interventi del veicolo attivo: tabella con filtri per categoria,
- * CRUD (aggiungi/modifica/elimina), riepilogo spese mese/anno e report PDF.
+ * CRUD (aggiungi/modifica/elimina), riepilogo spese mese/anno e report PDF
+ * (bottone "Genera PDF" nell'hero). Sopra i 1080px la pagina sta in una
+ * schermata: scorre solo la lista degli interventi.
  */
 export default function StoricoInterventiPage() {
   const { veicoloAttivo, gestisci401 } = useAuth();
@@ -126,6 +129,8 @@ export default function StoricoInterventiPage() {
         !q ||
         [i.tipo, i.descrizione, i.mediante, i.citta?.nome].some((t) => t?.toLowerCase().includes(q)),
     );
+  // la pagina non scorre: scorre solo la lista, con la sfumatura del garage
+  const [listaRef, sfumaLista] = useSfumaturaScroll<HTMLDivElement>(`${filtrati.length}-${veicoloAttivo?.id}`);
 
   /* ---------- riepilogo spese ---------- */
   const oggi = new Date();
@@ -309,7 +314,7 @@ export default function StoricoInterventiPage() {
 
   return (
     <Layout breadcrumb="Storico Interventi">
-      <main className="pg">
+      <main className="pg st">
         <section className="pg-hero">
           <div className="pg-hero-ttl">
             <h1>
@@ -396,7 +401,7 @@ export default function StoricoInterventiPage() {
               ))}
             </div>
 
-            <div className="st-lista">
+            <div ref={listaRef} className={`st-lista${sfumaLista ? " sfuma" : ""}`}>
               {gruppi.map((g) => {
                 const totGruppo = g.voci.reduce((somma, i) => somma + (Number(i.costo) || 0), 0);
                 return (
@@ -509,14 +514,6 @@ export default function StoricoInterventiPage() {
               )}
             </section>
 
-            <button type="button" className="pg-card st-pdf" onClick={() => setModalPdf(true)}>
-              <span className="pg-kpi-ic"><i className="ti ti-file-type-pdf" /></span>
-              <span className="st-pdf-txt">
-                <b>Report PDF del veicolo</b>
-                <span>Dati tecnici, cronologia e riepilogo costi, per mese o anno.</span>
-              </span>
-              <i className="ti ti-arrow-right" />
-            </button>
           </aside>
         </div>
       </main>

@@ -704,7 +704,30 @@
   padding-bottom: clamp(18px, 3.2dvh, 32px);
 }
 
-.pren .pg-hero { padding: clamp(12px, 2dvh, 16px) 24px; }
+.pren .pg-hero { padding: clamp(10px, 1.8dvh, 16px) 24px; }
+
+/* titolo e contatori sulla stessa riga: l'hero resta basso e la mappa ha
+   più spazio */
+.pren .pg-hero-ttl {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+}
+
+.pren .pr-stats { margin-top: 0; }
+
+/* schermo intero senza scroll della pagina (come la dashboard): lo spazio
+   lo assorbono mappa e lista, che scorrono al loro interno */
+@media (min-width: 1081px) {
+  body:has(.pren) {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .pren .pr-grid { min-height: 0; }
+  .pren .pr-mapbox { min-height: 120px; }
+}
 
 .pr-stats {
   display: flex;
