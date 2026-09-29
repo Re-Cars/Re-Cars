@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import RegistraServiceWorker from "@/components/pwa/RegistraServiceWorker";
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
+import "@/styles/mobile.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,6 +22,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#141445",
+  // a tutto schermo sotto notch e barra di stato: gli spazi li danno i safe-area-inset
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

@@ -39,7 +39,7 @@ export class AssistenteController {
       );
     }
     try {
-      this.assistente.limite.consuma(String(user.sub));
+      await this.assistente.consumaDomanda(Number(user.sub));
     } catch (err) {
       if (err instanceof LimiteSuperato) {
         res.setHeader('Retry-After', String(err.riprovaTraSecondi));

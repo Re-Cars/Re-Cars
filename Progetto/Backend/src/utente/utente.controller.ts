@@ -16,7 +16,7 @@ import { LoginUtenteDto } from './dto/login-utente.dto';
 import { UpdateUtenteDto } from './dto/update-utente.dto';
 import { LoginAziendaDto } from './dto/login-azienda.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
-import { authCookieOptions } from '../auth-cookie.util';
+import { authCookieOptions, SESSIONE_MS } from '../auth-cookie.util';
 import type { Request, Response } from 'express';
 
 @Controller('auth')
@@ -30,7 +30,11 @@ export class UtenteController {
   ) {
     const { access_token, utente } =
       await this.utenteService.registra(datiRicevuti);
-    response.cookie('access_token', access_token, authCookieOptions(3600000));
+    response.cookie(
+      'access_token',
+      access_token,
+      authCookieOptions(SESSIONE_MS),
+    );
     return { utente };
   }
 
@@ -43,7 +47,11 @@ export class UtenteController {
       await this.utenteService.login(datiRicevuti);
 
     // Impostiamo il cookie HttpOnly nel browser
-    response.cookie('access_token', access_token, authCookieOptions(3600000));
+    response.cookie(
+      'access_token',
+      access_token,
+      authCookieOptions(SESSIONE_MS),
+    );
 
     return { utente };
   }
@@ -55,7 +63,11 @@ export class UtenteController {
   ) {
     const { access_token, utente } =
       await this.utenteService.loginAzienda(datiRicevuti);
-    response.cookie('access_token', access_token, authCookieOptions(3600000));
+    response.cookie(
+      'access_token',
+      access_token,
+      authCookieOptions(SESSIONE_MS),
+    );
     return { utente };
   }
 

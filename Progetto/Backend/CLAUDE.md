@@ -49,7 +49,7 @@ No `APP_GUARD` is registered globally — every protected route opts in explicit
   - private/company user login: `{ sub: utente.id, email, tipo }`
   - company login by P.IVA: `{ sub: utente.id, partita_iva, tipo }`
   - officina login: `{ sub: officina.id, partita_iva, tipo: 'officina' }`
-- Cookie set on every register/login response: `access_token`, `httpOnly: true, secure: true, sameSite: 'none', maxAge: 3600000`.
+- Cookie set on every register/login response: `access_token`, `httpOnly: true, secure: true, sameSite: 'none', maxAge: SESSIONE_MS` (30 days, same as the JWT `expiresIn`, see `src/auth-cookie.util.ts`).
 - There is no `@Roles`/`RolesGuard`/`@Public` decorator anywhere. Fine-grained authorization (e.g. "does this prenotazione belong to this officina") is done manually in service methods by comparing `req.user.sub` to the resource's owner id.
 - **Unauthenticated routes to be aware of**: `GET /veicolo/:id` and the entire `StoricoController` (`/interventi/*`) have no guard applied — do not assume they are protected.
 
@@ -70,9 +70,9 @@ No global prefix. `AppController` has no `@Controller()` path argument (root).
 - `PATCH /auth/utente/:id` — `JwtAuthGuard` — update profile (`UpdateUtenteDto`: username, email, cellulare, avatar, password)
 
 ### `VeicoloController` (`@Controller('veicolo')`, no dedicated module — declared in `AppModule`)
-- `POST /veicolo` — `JwtAuthGuard` — looks up plate in mock dataset `data/veicoli.json`, enforces plan limits (base=1, premium=5, pro=unlimited), creates `veicolo` + `dati_generici` + `dati_specifici`
+- `POST /veicolo` — `JwtAuthGuard`, Premium only — looks up plate in mock dataset `data/veicoli.json`, enforces plan limits (`LIMITE_VEICOLI` in `src/piano.ts`: Gratis 1, Premium unlimited), creates `veicolo` + `dati_generici` + `dati_specifici`
 - `POST /veicolo/manuale` — `JwtAuthGuard`, users only — vehicle typed in by the user from the registration document (`CreateVeicoloManualeDto`: targa auto `AA123BB` or moto `AA12345`, tipo, marca ≤30, modello ≤40, dataimmatricolazione, optional alimentazione/cilindrata/potenza_kw/porte/assicurazione/scadenze); same plate-uniqueness and plan-limit checks as `POST /veicolo`, kW converted to CV, saved in a transaction
-- `GET /veicolo/cerca/:targa` — `JwtAuthGuard` — plate lookup only (no persistence)
+- `GET /veicolo/cerca/:targa` — `JwtAuthGuard`, Premium only (`richiediPremium`) — plate lookup only (no persistence). `POST /veicolo` (add by plate) is Premium only too; `POST /veicolo/manuale` is open to both plans, all within `LIMITE_VEICOLI`
 - `GET /veicolo/utente/:id` — `JwtAuthGuard` — list a user's vehicles with `dati_generici`/`dati_specifici`
 - `GET /veicolo/:id` — **no guard** — vehicle detail by id
 - `DELETE /veicolo/:id` — `JwtAuthGuard` — deletes vehicle and its `dati_generici`/`dati_specifici`
@@ -106,28 +106,33 @@ No global prefix. `AppController` has no `@Controller()` path argument (root).
 - `GET /notifiche/chiave-pubblica` — public — VAPID public key for `PushManager.subscribe` (503 if not configured)
 - `POST /notifiche/iscrizione` / `DELETE /notifiche/iscrizione` — `JwtAuthGuard`, users only — save/remove this browser's push subscription (upsert by endpoint)
 - `POST /notifiche/prova` — `JwtAuthGuard` — test notification to the user's devices
-- `POST /notifiche/controllo-giornaliero` — header `x-cron-secret` = `NOTIFICHE_CRON_SECRET` (401 otherwise, 503 if unset) — sends today's deadline alerts and tomorrow's appointment reminders; idempotent thanks to `notifica_inviata`. Expired subscriptions (404/410 from the push service) are deleted.
+- `POST /notifiche/controllo-giornaliero` — header `x-cron-secret` = `NOTIFICHE_CRON_SECRET` (401 otherwise, 503 if unset) — sends today's deadline alerts, tomorrow's appointment reminders and Premium-ending reminders (7/1/0 days, auto-renew off); marks subscriptions past `data_fine` as `scaduto` (even with push off); idempotent thanks to `notifica_inviata`. Expired subscriptions (404/410 from the push service) are deleted.
 
 ### `CarburantiController` (`@Controller('carburanti')`)
-- `GET /carburanti/vicini?lat=&lng=&carburante=benzina|gasolio|gpl|metano&raggio=5` — `JwtAuthGuard` — up to 10 stations within the radius (1–30 km), cheapest first (self price when available, otherwise full service), with distance and MIMIT extraction date. 503 if the MIMIT data could not be downloaded and no previous copy is in memory.
+- `GET /carburanti/vicini?lat=&lng=&carburante=benzina|gasolio|gpl|metano&raggio=5` — `JwtAuthGuard`, Premium only — up to 10 stations within the radius (1–30 km), cheapest first (self price when available, otherwise full service), with distance and MIMIT extraction date. 503 if the MIMIT data could not be downloaded and no previous copy is in memory.
 
 ### `StripeController` (`@Controller('abbonamento')`)
-- `POST /abbonamento/checkout` — `JwtAuthGuard` — creates a Stripe Checkout Session (`mode: 'subscription'`) based on plan/user type, returns `{ url }`
+- `POST /abbonamento/checkout` — `JwtAuthGuard` — creates a Stripe Checkout Session (`mode: 'subscription'`, card saved, renews monthly), returns `{ url }`. A user who already has a Stripe subscription gets 409 (no double Premium)
+- `GET /abbonamento/stato` — `JwtAuthGuard` — `{ piano, rinnovoAutomatico, dataFine, prossimoRinnovo, gestibile }`, read live from Stripe (falls back to the DB if Stripe is unreachable) and syncs `data_fine`
+- `POST /abbonamento/rinnovo` — `JwtAuthGuard` — body `{ automatico: boolean }` (`RinnovoDto`) — sets Stripe `cancel_at_period_end`; off → `data_fine` = end of the paid period
+- `POST /abbonamento/portale` — `JwtAuthGuard` — body `{ baseUrl? }` — Stripe billing portal URL (change card, invoices). Needs the portal configured once in the Stripe dashboard
 - `POST /abbonamento/webhook` — public, verified via Stripe signature (`STRIPE_WEBHOOK_SECRET` + `rawBody`)
-- `POST /abbonamento/disdici` — `JwtAuthGuard` — cancels active subscription **locally only**, does not call Stripe's API to actually cancel it
+- `POST /abbonamento/disdici` — `JwtAuthGuard` — with a Stripe subscription it switches auto-renew off (still active until `data_fine`, no further charges); rows without a Stripe id are closed immediately
 
 ### `AssistenteController` (`@Controller('assistente')`)
-- `POST /assistente/chat` — `JwtAuthGuard`, users only (`tipo === 'officina'` → 403) — body `{ messaggio, storico?, pagina? }`, answers as Server-Sent Events: `{type:'delta', text}` chunks, then `{type:'done', answer, actions, used_llm}`. Actions are validated against a page whitelist (`assistente.prompt.ts`); the model can only propose, never modify data. 429 + `Retry-After` over `ASSISTENTE_LIMITE_MINUTO`/`ASSISTENTE_LIMITE_GIORNO`. Without `GEMINI_API_KEY`, or on Gemini quota errors, it still answers `done` with a fallback message.
+- `POST /assistente/chat` — `JwtAuthGuard`, users only (`tipo === 'officina'` → 403) — body `{ messaggio, storico?, pagina? }`, answers as Server-Sent Events: `{type:'delta', text}` chunks, then `{type:'done', answer, actions, used_llm}`. Actions are validated against a page whitelist (`assistente.prompt.ts`); the model can only propose, never modify data. 429 + `Retry-After` over `ASSISTENTE_LIMITE_MINUTO` or the plan's daily cap (`ASSISTENTE_LIMITE_GIORNO` Premium, `ASSISTENTE_LIMITE_GIORNO_GRATIS` Gratis). Without `GEMINI_API_KEY`, or on Gemini quota errors, it still answers `done` with a fallback message.
 
 ## Stripe webhooks
 
-`StripeService.costruisciEvento(rawBody, signature)` → `stripe.webhooks.constructEvent(...)`. Returns 400 on signature failure. Handled event types:
-- `checkout.session.completed` — reads `session.metadata` (`piano`, `tipo`, `id`), cancels any existing active subscription for that utente/officina, creates a new `abbonamento` row (`stato: 'attivo'`, `stripe_subscription_id: session.subscription`)
-- `customer.subscription.deleted` — sets `stato: 'annullato'` on every `abbonamento` matching that `stripe_subscription_id`
+`StripeService.costruisciEvento(rawBody, signature)` → `stripe.webhooks.constructEvent(...)`. Returns 400 on signature failure. Handled event types (enable all four on the Stripe endpoint):
+- `checkout.session.completed` — reads `session.metadata` (`piano`, `tipo`, `id`), closes the previous active row (and its old Stripe subscription immediately, so an officina plan change is not billed twice), creates a new `abbonamento` row (`stato: 'attivo'`, `stripe_subscription_id`)
+- `customer.subscription.updated` — syncs `data_fine` with `cancel_at_period_end`/`cancel_at` (also when changed from the billing portal); `canceled`/`unpaid`/`incomplete_expired` → `scaduto`
+- `customer.subscription.deleted` — `stato: 'scaduto'` + push "Premium terminato"
+- `invoice.payment_failed` — push "pagamento non riuscito" (deduplicated per period via `notifica_inviata`)
 
-Not handled: `invoice.payment_failed`, `customer.subscription.updated`, and others. Always responds `200 { received: true }` after processing.
+`statoRinnovo()` (pure, tested) reads renewal and dates from a subscription (period end is on the subscription item since API 2025). Price resolution: `premium`→`STRIPE_PRICE_PREMIUM`, `officina_business`→`STRIPE_PRICE_BUSINESS`, `officina_business_pro`→`STRIPE_PRICE_BUSINESS_PRO` (`pro` is no longer sold; legacy `pro` rows count as Premium). `apiVersion: '2026-05-27.dahlia'` is pinned in the SDK client.
 
-Price resolution is a static map inside `StripeService`: `premium`→`STRIPE_PRICE_PREMIUM`, `pro`→`STRIPE_PRICE_PRO`, `officina_business`→`STRIPE_PRICE_BUSINESS`, `officina_business_pro`→`STRIPE_PRICE_BUSINESS_PRO`. `apiVersion: '2026-05-27.dahlia'` is pinned in the SDK client.
+Known gap: `PATCH`/`DELETE /officina/abbonamento` still change officina plans in the DB only, without touching Stripe.
 
 ## Prisma schema quick reference
 
@@ -137,6 +142,7 @@ Models: `utente`, `officina`, `citta`, `veicolo`, `dati_generici`, `dati_specifi
 
 - Unit specs for `app`, `officina`, `prenotazione` are smoke tests (`should be defined`) except `AppController`'s "Hello World!" check. `utente`, `veicolo`, `stripe`, `storico_interventi` have no specs.
 - `carburanti` covers CSV parsing (both separators, BOM, bad rows), fuel mapping, radius/price ordering and the 503 path with a mocked `fetch`.
+- `stripe` covers `statoRinnovo`, status/renewal/cancel endpoints, the 409 on a second Premium and the updated/deleted/payment_failed webhooks with a mocked `StripeService`.
 - `notifiche` has real coverage: date logic in the Italian timezone, thresholds, reminders, revoked subscriptions, daily-check deduplication. `veicolo` covers the manual-entry DTO and service.
 - `assistente` has real coverage: partial-JSON streaming, action whitelist, rate limit, fallback messages, and an integration spec of `POST /assistente/chat` with a mocked `fetch` (Gemini SSE).
 - One e2e spec (`test/app.e2e-spec.ts`) checks `GET /` only.

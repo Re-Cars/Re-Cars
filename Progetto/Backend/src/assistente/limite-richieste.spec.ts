@@ -34,4 +34,14 @@ describe('LimiteRichieste', () => {
       limite.consuma('u1', new Date('2026-09-26T08:00:00.000Z')),
     ).not.toThrow();
   });
+
+  it('il tetto giornaliero può dipendere dal piano', () => {
+    const limite = new LimiteRichieste(100, 50);
+    limite.consuma('gratis', t0, 1);
+    expect(() => limite.consuma('gratis', dopo(1000), 1)).toThrow(
+      /1 domande al giorno/,
+    );
+    limite.consuma('premium', t0, 50);
+    expect(() => limite.consuma('premium', dopo(1000), 50)).not.toThrow();
+  });
 });

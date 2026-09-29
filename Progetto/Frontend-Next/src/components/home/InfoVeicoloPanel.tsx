@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 import IconaGarage from "@/components/IconaGarage";
 import { calcolaSalute, scadenzeVeicolo, type ScadenzaDettaglio } from "@/lib/scadenze";
@@ -42,8 +43,12 @@ function formattaCilindrata(c: string | number | null | undefined): string {
  * Scheda del veicolo selezionato in dashboard: hero con marca/modello e
  * targa, dati chiave (cilindrata, anno di immatricolazione, potenza,
  * alimentazione) e "Stato monitoraggio" di bollo, assicurazione e revisione.
+ * Su telefono dati e scadenze stanno chiusi: si aprono toccando la scheda
+ * (su schermi larghi sono sempre visibili, la classe "aperta" non conta).
  */
 export default function InfoVeicoloPanel({ veicolo }: { veicolo: VeicoloDettaglio | null }) {
+  const [aperta, setAperta] = useState(false);
+
   if (!veicolo) {
     return (
       <section className="panel dash-info dash-info--vuota">
@@ -70,8 +75,8 @@ export default function InfoVeicoloPanel({ veicolo }: { veicolo: VeicoloDettagli
   const kw = dg.cavalli ? Math.round(dg.cavalli * 0.7355) : null;
 
   return (
-    <section className="panel dash-info" aria-label="Veicolo selezionato">
-      <div className={`dash-hero ${isMoto ? "moto" : "auto"}`}>
+    <section className={`panel dash-info${aperta ? " aperta" : ""}`} aria-label="Veicolo selezionato">
+      <div className={`dash-hero ${isMoto ? "moto" : "auto"}`} onClick={() => setAperta((v) => !v)}>
         <div className="dash-hero-top">
           <span className={`dash-pill-stato salute-${salute}`}>
             <span className="dash-pill-dot" />
@@ -96,14 +101,27 @@ export default function InfoVeicoloPanel({ veicolo }: { veicolo: VeicoloDettagli
           )}
         </div>
         <div className="dash-hero-actions">
-          <Link href="/prenotazioni" className="btn-dash btn-dash-primary">
+          <button
+            type="button"
+            className="dash-hero-toggle"
+            aria-expanded={aperta}
+            aria-controls="dash-info-dettagli"
+            onClick={(e) => {
+              e.stopPropagation();
+              setAperta((v) => !v);
+            }}
+          >
+            {aperta ? "Nascondi dettagli" : "Dati e scadenze"}
+            <i className="ti ti-chevron-down" />
+          </button>
+          <Link href="/prenotazioni" className="btn-dash btn-dash-primary" onClick={(e) => e.stopPropagation()}>
             <i className="ti ti-calendar-plus" />
             Prenota intervento
           </Link>
         </div>
       </div>
 
-      <div className="dash-info-body">
+      <div className="dash-info-body" id="dash-info-dettagli">
         <div className="dash-specs">
           <div className="dash-spec dash-spec--key">
             <span className="dash-spec-ic"><i className="ti ti-engine" /></span>

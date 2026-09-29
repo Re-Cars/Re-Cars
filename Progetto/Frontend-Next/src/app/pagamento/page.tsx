@@ -8,6 +8,7 @@ import { Suspense, useEffect, useState } from "react";
 import BrandTitle from "@/components/BrandTitle";
 import { useAuth } from "@/context/AuthContext";
 import { getAbbonamento } from "@/lib/api";
+import { dimenticaPiano, nomePiano, pianoDa } from "@/hooks/usePiano";
 
 /**
  * Pagina di ritorno dal checkout Stripe: legge il session_id dall'URL,
@@ -27,6 +28,7 @@ function ContenutoPagamento() {
       .then((data) => {
         if (annullato) return;
         const piano = data.abbonamento?.[0]?.piano ?? "base";
+        dimenticaPiano(utente.id);
         setPianoAggiornato(piano);
         aggiornaUtente({ ...utente, piano });
       })
@@ -37,8 +39,6 @@ function ContenutoPagamento() {
     // si ricarica una volta per id utente
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [utente?.id]);
-
-  const nomiPiani: Record<string, string> = { base: "Base", premium: "Premium", pro: "Pro" };
 
   return (
     <div className="ps-wrap">
@@ -53,8 +53,8 @@ function ContenutoPagamento() {
 
         <span className="ps-badge">
           <span className="ps-badge-dot" />
-          {pianoAggiornato && pianoAggiornato !== "base"
-            ? `Piano ${nomiPiani[pianoAggiornato] ?? pianoAggiornato} attivo`
+          {pianoAggiornato && pianoDa(pianoAggiornato) === "premium"
+            ? `Piano ${nomePiano(pianoAggiornato)} attivo`
             : "Abbonamento attivo"}
         </span>
 

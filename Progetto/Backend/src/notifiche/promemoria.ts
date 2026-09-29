@@ -166,3 +166,54 @@ export function avvisoCambioStato(
     tag: `prenotazione-${p.id}`,
   };
 }
+
+/** Giorni prima della fine di un abbonamento senza rinnovo automatico. */
+export const GIORNI_AVVISO_ABBONAMENTO = [7, 1, 0];
+
+/**
+ * Premium con rinnovo automatico spento: avviso a 7, 1 e 0 giorni dalla
+ * fine, con l'invito a riattivarlo (altrimenti si torna a Gratis).
+ */
+export function avvisoFineAbbonamento(
+  abbonamento: { id: number; data_fine: Date | null },
+  oggi: string,
+): NotificaProgrammata | null {
+  if (!abbonamento.data_fine) return null;
+  const giorni = giorniA(abbonamento.data_fine, oggi);
+  if (!GIORNI_AVVISO_ABBONAMENTO.includes(giorni)) return null;
+  return {
+    chiave: `abbonamento:${abbonamento.id}:fine:${giorni}`,
+    titolo:
+      giorni === 0
+        ? 'Il tuo Premium scade oggi'
+        : `Premium in scadenza ${quando(giorni)}`,
+    testo: `Il rinnovo automatico è spento: dal ${dataIt(abbonamento.data_fine)} torni al piano Gratis. Riattivalo da Abbonamenti per non perdere le funzioni Premium.`,
+    url: '/abbonamenti',
+    tag: `abbonamento-${abbonamento.id}`,
+  };
+}
+
+/** Avvisi mandati dal webhook di Stripe (una volta per abbonamento e periodo). */
+export function avvisoAbbonamento(
+  tipo: 'pagamento_fallito' | 'terminato',
+  idAbbonamento: number,
+  periodo: string,
+): NotificaProgrammata {
+  return tipo === 'pagamento_fallito'
+    ? {
+        chiave: `abbonamento:${idAbbonamento}:pagamento:${periodo}`,
+        titolo: 'Pagamento del rinnovo non riuscito',
+        testo:
+          'Non siamo riusciti ad addebitare il rinnovo di Premium. Aggiorna la carta da Abbonamenti → Gestisci pagamento: Stripe riprova nei prossimi giorni.',
+        url: '/abbonamenti',
+        tag: `abbonamento-${idAbbonamento}`,
+      }
+    : {
+        chiave: `abbonamento:${idAbbonamento}:terminato`,
+        titolo: 'Premium terminato',
+        testo:
+          "Sei tornato al piano Gratis: veicoli e storico restano, le funzioni Premium si sbloccano riattivando l'abbonamento.",
+        url: '/abbonamenti',
+        tag: `abbonamento-${idAbbonamento}`,
+      };
+}

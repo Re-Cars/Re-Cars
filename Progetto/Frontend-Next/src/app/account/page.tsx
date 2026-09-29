@@ -19,6 +19,7 @@ import {
 } from "@/lib/api";
 import { clearAll, setAvatarSalvato } from "@/lib/storage";
 import type { ProfiloUtente } from "@/lib/types";
+import { nomePiano, pianoDa } from "@/hooks/usePiano";
 
 type CampoModificabile = "username" | "email" | "cellulare" | "password";
 
@@ -32,7 +33,6 @@ const CONFIG_CAMPI: Record<
   password: { icona: "ti-key", titolo: "Cambia password", placeholder: "Nuova password", type: "password" },
 };
 
-const NOMI_PIANI: Record<string, string> = { base: "Base", premium: "Premium", pro: "Pro" };
 
 /**
  * Il mio account: card profilo (avatar con upload + crop, piano, contatori)
@@ -171,9 +171,10 @@ export default function AccountPage() {
 
   const abbonamento = profilo?.abbonamento?.[0];
   const piano = abbonamento?.piano ?? "base";
+  // data_fine c'è solo se il rinnovo automatico è spento: è il giorno in cui si torna a Gratis
   const sottotitoloPiano = abbonamento?.data_fine
-    ? `Rinnovo il ${new Date(abbonamento.data_fine).toLocaleDateString("it-IT")}`
-    : piano === "base"
+    ? `Attivo fino al ${new Date(abbonamento.data_fine).toLocaleDateString("it-IT")} · rinnovo spento`
+    : pianoDa(piano) === "base"
       ? "Piano gratuito · Nessun rinnovo"
       : "Rinnovo automatico mensile";
 
@@ -211,7 +212,7 @@ export default function AccountPage() {
             <div className="acc2-badges">
               <span className="acc2-badge">
                 <i className="ti ti-crown" />
-                {NOMI_PIANI[piano] ?? piano}
+                {nomePiano(piano)}
               </span>
               {profilo?.tipo && (
                 <span className="acc2-badge grigio">
@@ -300,7 +301,7 @@ export default function AccountPage() {
             <div className="acc2-piano">
               <div className="acc2-piano-txt">
                 <b>
-                  {NOMI_PIANI[piano] ?? piano}
+                  {nomePiano(piano)}
                   <span className="abb2-attivo">Attivo</span>
                 </b>
                 <span>{sottotitoloPiano}</span>

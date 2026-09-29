@@ -21,6 +21,10 @@ function crea(conChiavi = true) {
     notifica_inviata: { findUnique: jest.fn(), create: jest.fn() },
     veicolo: { findMany: jest.fn().mockResolvedValue([]) },
     prenotazione: { findMany: jest.fn().mockResolvedValue([]) },
+    abbonamento: {
+      updateMany: jest.fn().mockResolvedValue({ count: 0 }),
+      findFirst: jest.fn().mockResolvedValue(null),
+    },
   };
   const env: Record<string, string> = conChiavi
     ? { VAPID_PUBLIC_KEY: 'pub', VAPID_PRIVATE_KEY: 'priv' }
@@ -100,6 +104,7 @@ describe('NotificheService', () => {
       utenti: 1,
       scadenze: 1,
       promemoria: 0,
+      abbonamenti: 0,
     });
     expect(prisma.notifica_inviata.create).toHaveBeenCalledWith({
       data: { id_utente: 7, chiave: 'bollo:3:2026-10-05:7' },
@@ -110,7 +115,24 @@ describe('NotificheService', () => {
       utenti: 1,
       scadenze: 0,
       promemoria: 0,
+      abbonamenti: 0,
     });
     expect(inviaMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('a fine periodo un Premium senza rinnovo torna Gratis, anche con le notifiche spente', async () => {
+    const { prisma, service } = crea(false);
+    prisma.abbonamento.updateMany.mockResolvedValueOnce({ count: 2 });
+    const r = await service.controlloGiornaliero(
+      new Date('2026-09-28T07:00:00Z'),
+    );
+    expect(r.abbonamenti).toBe(2);
+    expect(prisma.abbonamento.updateMany).toHaveBeenCalledWith({
+      where: {
+        stato: 'attivo',
+        data_fine: { lt: new Date('2026-09-28T00:00:00Z') },
+      },
+      data: { stato: 'scaduto' },
+    });
   });
 });

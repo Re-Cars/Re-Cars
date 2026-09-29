@@ -29,7 +29,12 @@ export class LimiteRichieste {
     private readonly alGiorno: number,
   ) {}
 
-  consuma(utente: string, adesso = new Date()): void {
+  /** `tettoGiorno` sostituisce il tetto giornaliero (dipende dal piano dell'utente). */
+  consuma(
+    utente: string,
+    adesso = new Date(),
+    tettoGiorno = this.alGiorno,
+  ): void {
     const giorno = adesso.toISOString().slice(0, 10);
     const ms = adesso.getTime();
     let c = this.perUtente.get(utente);
@@ -39,11 +44,11 @@ export class LimiteRichieste {
     }
     c.minuto = c.minuto.filter((t) => ms - t < 60_000);
 
-    if (c.oggi >= this.alGiorno) {
+    if (c.oggi >= tettoGiorno) {
       const mezzanotte =
         new Date(`${giorno}T00:00:00.000Z`).getTime() + 86_400_000;
       throw new LimiteSuperato(
-        `Hai raggiunto il limite di ${this.alGiorno} domande al giorno all'assistente. Riprova domani.`,
+        `Hai raggiunto il limite di ${tettoGiorno} domande al giorno all'assistente. Riprova domani.`,
         Math.ceil((mezzanotte - ms) / 1000),
       );
     }

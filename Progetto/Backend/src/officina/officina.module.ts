@@ -4,6 +4,7 @@ import { OfficinaController } from './officina.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NotificheModule } from '../notifiche/notifiche.module';
+import { SESSIONE_JWT } from '../auth-cookie.util';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { NotificheModule } from '../notifiche/notifiche.module';
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1h' },
+        signOptions: { expiresIn: SESSIONE_JWT },
       }),
       inject: [ConfigService],
     }),

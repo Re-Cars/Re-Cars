@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import Layout from "@/components/Layout";
+import BloccoPremium from "@/components/ui/BloccoPremium";
 import Overlay from "@/components/ui/Overlay";
 import VeicoloPicker from "@/components/VeicoloPicker";
 import { useAuth } from "@/context/AuthContext";
+import { usePiano } from "@/hooks/usePiano";
 import { useSfumaturaScroll } from "@/hooks/useSfumaturaScroll";
 import {
   aggiornaIntervento,
@@ -74,6 +76,15 @@ const euro = (n: number) =>
  * (bottone "Genera PDF" nell'hero). Sopra i 1080px la pagina sta in una
  * schermata: scorre solo la lista degli interventi.
  */
+/** Valore in euro dei KPI al posto della cifra, con il piano Gratis. */
+function KpiPremium() {
+  return (
+    <b className="kpi-premium">
+      <i className="ti ti-lock" /> Premium
+    </b>
+  );
+}
+
 export default function StoricoInterventiPage() {
   const { veicoloAttivo, gestisci401 } = useAuth();
   const [interventi, setInterventi] = useState<Intervento[]>([]);
@@ -91,6 +102,9 @@ export default function StoricoInterventiPage() {
   const [form, setForm] = useState<FormIntervento>(FORM_VUOTO);
   const [idInModifica, setIdInModifica] = useState<number | null>(null);
   const [modalPdf, setModalPdf] = useState(false);
+  // costi di gestione, riepilogo spese e PDF sono Premium (calcolati qui nel browser)
+  const { piano, premium } = usePiano();
+  const bloccato = piano !== null && !premium;
   const [pdfAnno, setPdfAnno] = useState(String(new Date().getFullYear()));
   const [pdfMese, setPdfMese] = useState<PdfPeriodo>("all");
   const [pdfFiltro, setPdfFiltro] = useState("all");
@@ -335,7 +349,7 @@ export default function StoricoInterventiPage() {
           <VeicoloPicker />
           <div className="pg-hero-cta">
             <button type="button" className="btn-dash btn-dash-glass" onClick={() => setModalPdf(true)}>
-              <i className="ti ti-file-type-pdf" />
+              <i className={`ti ${bloccato ? "ti-lock" : "ti-file-type-pdf"}`} />
               Genera PDF
             </button>
             <button type="button" className="btn-dash btn-dash-primary" onClick={apriNuovo}>
@@ -348,14 +362,14 @@ export default function StoricoInterventiPage() {
         <div className="pg-kpis">
           <div className="pg-kpi">
             <span className="pg-kpi-ic"><i className="ti ti-calendar" /></span>
-            <span className="pg-kpi-txt"><small>Spese questo mese</small><b>{euro(totMese)}</b></span>
+            <span className="pg-kpi-txt"><small>Spese questo mese</small>{bloccato ? <KpiPremium /> : <b>{euro(totMese)}</b>}</span>
           </div>
           <div className="pg-kpi">
             <span className="pg-kpi-ic"><i className="ti ti-currency-euro" /></span>
             <span className="pg-kpi-txt">
               <small>Spese {annoCorrente}</small>
-              <b>{euro(totAnno)}</b>
-              {variazione !== null && (
+              {bloccato ? <KpiPremium /> : <b>{euro(totAnno)}</b>}
+              {!bloccato && variazione !== null && (
                 <em className={`st-var ${variazione > 0 ? "su" : "giu"}`}>
                   {variazione > 0 ? "+" : ""}
                   {variazione}% vs {annoCorrente - 1}
@@ -369,7 +383,7 @@ export default function StoricoInterventiPage() {
           </div>
           <div className="pg-kpi" style={{ ["--c" as string]: "var(--iv-ok)" }}>
             <span className="pg-kpi-ic"><i className="ti ti-gauge" /></span>
-            <span className="pg-kpi-txt"><small>Media al mese</small><b>{euro(mediaMese)}</b></span>
+            <span className="pg-kpi-txt"><small>Media al mese</small>{bloccato ? <KpiPremium /> : <b>{euro(mediaMese)}</b>}</span>
           </div>
         </div>
 
@@ -484,7 +498,7 @@ export default function StoricoInterventiPage() {
                   <i className="ti ti-currency-euro" />
                   Costi di gestione
                 </h2>
-                <select className="st-anno" value={annoCosti} onChange={(e) => setAnnoCosti(e.target.value)}>
+                <select className="st-anno" hidden={bloccato} value={annoCosti} onChange={(e) => setAnnoCosti(e.target.value)}>
                   {anniDisponibili.map((a) => (
                     <option key={a} value={a}>
                       {a}
@@ -492,34 +506,45 @@ export default function StoricoInterventiPage() {
                   ))}
                 </select>
               </div>
-              <div className="st-costi-tot">
-                <b>{euro(totaleCosti)}</b>
-                <span>nel {annoCosti}{veicoloAttivo ? ` · ${veicoloAttivo.nome}` : ""}</span>
-              </div>
-              <div className="st-chart" role="img" aria-label={`Spese mensili ${annoCosti}`}>
-                {perMese.map((v, m) => (
-                  <div key={m} title={`${NOMI_MESI[m]}: ${euro(v)}`}>
-                    <i className={v ? "" : "zero"} style={{ height: v ? `${(v / massimoMese) * 100}%` : undefined }} />
-                    <span>{MESI_BREVI[m]}</span>
+              {bloccato ? (
+                <BloccoPremium
+                  compatto
+                  icona="ti-chart-bar"
+                  titolo="Costi di gestione"
+                  testo="Quanto spendi per il veicolo, mese per mese e per categoria."
+                />
+              ) : (
+                <>
+                  <div className="st-costi-tot">
+                    <b>{euro(totaleCosti)}</b>
+                    <span>nel {annoCosti}{veicoloAttivo ? ` · ${veicoloAttivo.nome}` : ""}</span>
                   </div>
-                ))}
-              </div>
-              {perCategoria.length > 0 && (
-                <div className="st-split">
-                  <div className="st-split-bar">
-                    {perCategoria.map((c) => (
-                      <i key={c.categoria} style={{ flex: c.totale, background: COLORE_CATEGORIA[c.categoria] }} />
-                    ))}
-                  </div>
-                  <div className="st-legenda">
-                    {perCategoria.map((c) => (
-                      <div key={c.categoria}>
-                        <span style={{ ["--c" as string]: COLORE_CATEGORIA[c.categoria] }}>{catLabel(c.categoria)}</span>
-                        <b>{euro(c.totale)}</b>
+                  <div className="st-chart" role="img" aria-label={`Spese mensili ${annoCosti}`}>
+                    {perMese.map((v, m) => (
+                      <div key={m} title={`${NOMI_MESI[m]}: ${euro(v)}`}>
+                        <i className={v ? "" : "zero"} style={{ height: v ? `${(v / massimoMese) * 100}%` : undefined }} />
+                        <span>{MESI_BREVI[m]}</span>
                       </div>
                     ))}
                   </div>
-                </div>
+                  {perCategoria.length > 0 && (
+                    <div className="st-split">
+                      <div className="st-split-bar">
+                        {perCategoria.map((c) => (
+                          <i key={c.categoria} style={{ flex: c.totale, background: COLORE_CATEGORIA[c.categoria] }} />
+                        ))}
+                      </div>
+                      <div className="st-legenda">
+                        {perCategoria.map((c) => (
+                          <div key={c.categoria}>
+                            <span style={{ ["--c" as string]: COLORE_CATEGORIA[c.categoria] }}>{catLabel(c.categoria)}</span>
+                            <b>{euro(c.totale)}</b>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </section>
 
@@ -648,7 +673,17 @@ export default function StoricoInterventiPage() {
       )}
 
       {/* Modal genera PDF */}
-      {modalPdf && (
+      {modalPdf && bloccato && (
+        <Overlay onChiudi={() => setModalPdf(false)} titolo="Genera PDF" icona="ti-file-type-pdf" larghezza={520}>
+          <BloccoPremium
+            icona="ti-file-type-pdf"
+            titolo="Report PDF dello storico"
+            testo="Un documento con interventi e spese del veicolo, da stampare o da inviare quando lo vendi o lo porti in officina."
+          />
+        </Overlay>
+      )}
+
+      {modalPdf && !bloccato && (
         <Overlay
           onChiudi={() => setModalPdf(false)}
           titolo="Genera PDF"

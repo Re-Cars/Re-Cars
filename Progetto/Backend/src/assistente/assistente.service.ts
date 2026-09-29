@@ -17,6 +17,7 @@ import {
   SCHEMA_RISPOSTA,
 } from './assistente.prompt';
 import { LimiteRichieste } from './limite-richieste';
+import { pianoUtente, type Piano } from '../piano';
 import type { ChatDto } from './dto/chat.dto';
 import { testoParziale } from './testo-parziale';
 
@@ -58,11 +59,22 @@ export class AssistenteService {
     Number(process.env.ASSISTENTE_LIMITE_MINUTO) || 6,
     Number(process.env.ASSISTENTE_LIMITE_GIORNO) || 50,
   );
+  /** Domande al giorno per piano: Premium usa ASSISTENTE_LIMITE_GIORNO. */
+  readonly tettoGiorno: Record<Piano, number> = {
+    base: Number(process.env.ASSISTENTE_LIMITE_GIORNO_GRATIS) || 10,
+    premium: Number(process.env.ASSISTENTE_LIMITE_GIORNO) || 50,
+  };
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly gemini: GeminiClient,
   ) {}
+
+  /** Conta una domanda contro i limiti del piano dell'utente (lancia LimiteSuperato). */
+  async consumaDomanda(idUtente: number, adesso = new Date()): Promise<void> {
+    const piano = await pianoUtente(this.prisma, idUtente);
+    this.limite.consuma(String(idUtente), adesso, this.tettoGiorno[piano]);
+  }
 
   /**
    * Dati reali (e minimi) dell'utente per il prompt: veicoli con scadenze,
@@ -127,7 +139,7 @@ export class AssistenteService {
     });
 
     return [
-      `Piano: ${abbonamento?.piano ?? 'base'}`,
+      `Piano: ${abbonamento?.piano && abbonamento.piano !== 'base' ? 'Premium' : 'Gratis'}`,
       `Veicoli nel garage (${veicoli.length}):`,
       ...(righeVeicoli.length ? righeVeicoli : ['- nessun veicolo']),
       'Prenotazioni recenti e future:',

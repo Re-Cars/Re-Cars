@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 
+import { EVENTO_APRI_ASSISTENTE } from "@/components/assistente/Assistente";
 import BrandTitle from "@/components/BrandTitle";
 import { useAuth } from "@/context/AuthContext";
 import { getAvatarSalvato } from "@/lib/storage";
@@ -12,7 +13,8 @@ import { getAvatarSalvato } from "@/lib/storage";
 /**
  * Header dell'app: logo RE|CARS centrato (griglia a tre colonne 1fr auto 1fr),
  * hamburger flottante a sinistra, toggle dark/light e avatar con dropdown
- * (Account, Abbonamenti, Logout) a destra.
+ * (Account, Abbonamenti, Logout) a destra. Su telefono al posto
+ * dell'hamburger c'è l'assistente (le pagine sono nella barra in basso).
  */
 export default function Header() {
   const { utente, logout } = useAuth();
@@ -40,7 +42,17 @@ export default function Header() {
 
   return (
     <header className="header">
-      <div className="header-left" />
+      <div className="header-left">
+        <button
+          type="button"
+          className="header-ai"
+          aria-label="Apri l'assistente RE|CARS"
+          data-apri-assistente
+          onClick={() => window.dispatchEvent(new Event(EVENTO_APRI_ASSISTENTE))}
+        >
+          <i className="ti ti-sparkles" />
+        </button>
+      </div>
       <div className="header-center">
         <Link href="/homepage">
           <Image

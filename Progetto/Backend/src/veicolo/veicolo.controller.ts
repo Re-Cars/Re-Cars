@@ -50,8 +50,8 @@ export class VeicoloController {
 
   @UseGuards(JwtAuthGuard)
   @Get('cerca/:targa')
-  cerca(@Param('targa') targa: string) {
-    return this.veicoloService.cercaSoloDati(targa);
+  cerca(@Param('targa') targa: string, @Req() req: Request) {
+    return this.veicoloService.cercaSoloDati(targa, soloUtente(req));
   }
 
   @UseGuards(JwtAuthGuard)

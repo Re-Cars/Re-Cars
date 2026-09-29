@@ -69,7 +69,7 @@ describe('AssistenteService', () => {
     expect(contesto).toContain('Fiat Panda');
     expect(contesto).toContain('bollo scade il 10/10/2026');
     expect(contesto).toContain('assicurazione UnipolSai SCADUTA');
-    expect(contesto).toContain('Piano: premium');
+    expect(contesto).toContain('Piano: Premium');
   });
 
   it('manda il testo a pezzi e alla fine le azioni validate', async () => {

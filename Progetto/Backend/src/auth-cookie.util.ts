@@ -1,6 +1,16 @@
 import type { CookieOptions } from 'express';
 
 /**
+ * Durata dell'accesso: come in Kilo, dopo il login il dispositivo resta
+ * collegato per 30 giorni senza richiedere di nuovo email e password.
+ * Stessa durata per il JWT (expiresIn), il cookie access_token e il cookie
+ * flag rc_session del frontend (src/lib/auth.ts).
+ */
+export const SESSIONE_GIORNI = 30;
+export const SESSIONE_MS = SESSIONE_GIORNI * 24 * 60 * 60 * 1000;
+export const SESSIONE_JWT = `${SESSIONE_GIORNI}d` as const;
+
+/**
  * Opzioni del cookie httpOnly `access_token`, sensibili all'ambiente.
  *
  * In produzione (HTTPS reale) serve `secure: true` + `sameSite: 'none'` per

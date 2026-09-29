@@ -9,6 +9,9 @@ import CarburanteModal, {
   posizione,
   prezzoIt,
 } from "@/components/home/CarburanteModal";
+import BloccoPremium from "@/components/ui/BloccoPremium";
+import Overlay from "@/components/ui/Overlay";
+import { usePiano } from "@/hooks/usePiano";
 import { getCarburantiVicini } from "@/lib/api";
 import { nomeVeicolo } from "@/lib/scadenze";
 import type { VeicoloDettaglio } from "@/lib/types";
@@ -21,13 +24,15 @@ interface AzioniRapideProps {
 }
 
 /**
- * Le tre azioni rapide della dashboard: storico (con la spesa dell'anno),
- * prenotazioni e carburante più economico vicino. Le prime due coincidono
- * con le voci della Sidebar (tenerle allineate a mano).
+ * Le tre azioni rapide della dashboard: storico (con la spesa dell'anno,
+ * Premium), prenotazioni e distributori vicini (Premium). Le prime due
+ * coincidono con le voci della Sidebar (tenerle allineate a mano).
  */
 export default function AzioniRapide({ speseAnno, veicolo }: AzioniRapideProps) {
   const anno = new Date().getFullYear();
   const [carburanteAperto, setCarburanteAperto] = useState(false);
+  const { piano, premium } = usePiano();
+  const bloccato = piano !== null && !premium;
   const [prezzoMigliore, setPrezzoMigliore] = useState<number | null>(null);
 
   const alimentazione = veicolo?.dati_generici[0]?.alimentazione;
@@ -37,7 +42,7 @@ export default function AzioniRapide({ speseAnno, veicolo }: AzioniRapideProps) 
   // basso entro 5 km; altrimenti la si chiede solo al tocco (niente popup all'avvio)
   useEffect(() => {
     setPrezzoMigliore(null);
-    if (!carburante || !navigator.permissions) return;
+    if (!premium || !carburante || !navigator.permissions) return;
     let annullato = false;
     navigator.permissions
       .query({ name: "geolocation" })
@@ -51,7 +56,7 @@ export default function AzioniRapide({ speseAnno, veicolo }: AzioniRapideProps) 
     return () => {
       annullato = true;
     };
-  }, [carburante]);
+  }, [carburante, premium]);
 
   return (
     <nav className="dash-azioni" aria-label="Azioni rapide">
@@ -65,7 +70,7 @@ export default function AzioniRapide({ speseAnno, veicolo }: AzioniRapideProps) 
         <span className="dash-az-txt">
           <span className="dash-az-t">Storico interventi</span>
           <span className="dash-az-d">
-            {speseAnno !== null
+            {speseAnno !== null && premium
               ? `Spesi nel ${anno}: € ${speseAnno.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
               : "Interventi e costi di gestione dei tuoi veicoli"}
           </span>
@@ -86,7 +91,8 @@ export default function AzioniRapide({ speseAnno, veicolo }: AzioniRapideProps) 
         <span className="dash-az-ic"><i className="ti ti-gas-station" /></span>
         <span className="dash-az-txt">
           <span className="dash-az-t">
-            Carburante vicino
+            Distributori vicini
+            {bloccato && <i className="ti ti-lock dash-az-lock" aria-label="Premium" />}
             {prezzoMigliore !== null && carburante && (
               <span className="dash-az-kpi">
                 {prezzoIt(prezzoMigliore)} {carburante === "metano" ? "€/kg" : "€/l"}
@@ -94,15 +100,25 @@ export default function AzioniRapide({ speseAnno, veicolo }: AzioniRapideProps) 
             )}
           </span>
           <span className="dash-az-d">
-            {carburante
+            {carburante && !bloccato
               ? `${ETICHETTA_CARBURANTE[carburante]} · il prezzo più basso vicino a te`
-              : "Distributori vicino a te, con i prezzi del giorno"}
+              : "I distributori intorno a te, con i prezzi del giorno"}
           </span>
         </span>
         <i className="ti ti-chevron-right dash-az-go" />
       </button>
 
-      {carburanteAperto && (
+      {carburanteAperto && bloccato && (
+        <Overlay onChiudi={() => setCarburanteAperto(false)} titolo="Distributori vicini" icona="ti-gas-station" larghezza={520}>
+          <BloccoPremium
+            icona="ti-gas-station"
+            titolo="Distributori vicini"
+            testo="I distributori intorno a te ordinati per prezzo, con i prezzi ufficiali del giorno e la strada per arrivarci."
+          />
+        </Overlay>
+      )}
+
+      {carburanteAperto && !bloccato && (
         <CarburanteModal
           onChiudi={() => setCarburanteAperto(false)}
           iniziale={carburante}

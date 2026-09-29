@@ -5,6 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { LIMITE_VEICOLI, pianoUtente, richiediPremium } from '../piano';
 import { CreateVeicoloDto } from './dto/create-veicolo.dto';
 import { CreateVeicoloManualeDto } from './dto/create-veicolo-manuale.dto';
 import * as datiMock from '../../data/veicoli.json';
@@ -60,7 +61,12 @@ export class VeicoloService {
     private jwtService: JwtService,
   ) {}
 
-  cercaSoloDati(targa: string) {
+  async cercaSoloDati(targa: string, userId: number) {
+    await richiediPremium(
+      this.prisma,
+      userId,
+      'La ricerca del veicolo dalla targa',
+    );
     const veicoli = (datiMock as unknown as VeicoliMockData).data;
     const trovato = veicoli.find(
       (v) => v.LicensePlate.toUpperCase() === targa.toUpperCase(),
@@ -81,6 +87,11 @@ export class VeicoloService {
   }
 
   async cercaESalva(dto: CreateVeicoloDto, userId: number) {
+    await richiediPremium(
+      this.prisma,
+      userId,
+      "L'aggiunta del veicolo dalla targa",
+    );
     const veicoli = (datiMock as unknown as VeicoliMockData).data;
     const trovato = veicoli.find(
       (v) => v.LicensePlate.toUpperCase() === dto.targa.toUpperCase(),
@@ -193,28 +204,13 @@ export class VeicoloService {
   }
 
   private async verificaLimitePiano(userId: number) {
-    const count = await this.prisma.veicolo.count({
-      where: { id_utente: userId },
-    });
-
-    const abbonamento = await this.prisma.abbonamento.findFirst({
-      where: { id_utente: userId, stato: 'attivo' },
-      orderBy: { data_inizio: 'desc' },
-    });
-
-    const piano = abbonamento?.piano || 'base';
-
-    const limiti: Record<string, number> = {
-      base: 1,
-      premium: 5,
-      pro: Infinity,
-    };
-
-    const limite = limiti[piano] ?? 1;
-
-    if (count >= limite) {
+    const [count, piano] = await Promise.all([
+      this.prisma.veicolo.count({ where: { id_utente: userId } }),
+      pianoUtente(this.prisma, userId),
+    ]);
+    if (count >= LIMITE_VEICOLI[piano]) {
       throw new ForbiddenException(
-        `Il piano ${piano} consente massimo ${limite === Infinity ? 'illimitati' : limite} veicoli. Passa a un piano superiore.`,
+        `Il piano Gratis comprende ${LIMITE_VEICOLI.base} veicolo: con Premium puoi aggiungerne quanti vuoi.`,
       );
     }
   }

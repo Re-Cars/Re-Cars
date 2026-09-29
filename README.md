@@ -74,8 +74,7 @@ Le variabili d'ambiente sono necessarie solo per il **Backend** (frontend e mobi
 | `FRONTEND_BASE_URL` | Base URL del frontend, usata per costruire i `success_url`/`cancel_url` di Stripe Checkout (fallback: `http://127.0.0.1:5500/Frontend`) | `http://127.0.0.1:5500/Frontend` |
 | `STRIPE_SECRET_KEY` | Chiave segreta dell'account Stripe, usata dall'SDK server-side | `sk_test_xxxxxxxxxxxxxxxxxxxxxxxx` |
 | `STRIPE_PUBLISHABLE_KEY` | Chiave pubblica Stripe (presente in `.env`, non risulta consumata nel codice backend attuale) | `pk_test_xxxxxxxxxxxxxxxxxxxxxxxx` |
-| `STRIPE_PRICE_PREMIUM` | Price ID Stripe del piano utente "Premium" | `price_xxxxxxxxxxxxxxxxxx` |
-| `STRIPE_PRICE_PRO` | Price ID Stripe del piano utente "Pro" | `price_xxxxxxxxxxxxxxxxxx` |
+| `STRIPE_PRICE_PREMIUM` | Price ID Stripe del piano utente "Premium" (9,99 €/mese, rinnovo mensile) | `price_xxxxxxxxxxxxxxxxxx` |
 | `STRIPE_PRICE_BUSINESS` | Price ID Stripe del piano officina "Business" | `price_xxxxxxxxxxxxxxxxxx` |
 | `STRIPE_PRICE_BUSINESS_PRO` | Price ID Stripe del piano officina "Business Pro" | `price_xxxxxxxxxxxxxxxxxx` |
 | `STRIPE_WEBHOOK_SECRET` | Secret usato per verificare la firma degli eventi webhook Stripe | `whsec_xxxxxxxxxxxxxxxxxxxxxxxx` |

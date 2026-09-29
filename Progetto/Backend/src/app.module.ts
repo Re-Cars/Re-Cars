@@ -18,6 +18,7 @@ import { StoricoModule } from './storico_interventi/storico.module';
 import { AssistenteModule } from './assistente/assistente.module';
 import { NotificheModule } from './notifiche/notifiche.module';
 import { CarburantiModule } from './carburanti/carburanti.module';
+import { SESSIONE_JWT } from './auth-cookie.util';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { CarburantiModule } from './carburanti/carburanti.module';
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1h' },
+        signOptions: { expiresIn: SESSIONE_JWT },
       }),
       inject: [ConfigService],
     }),

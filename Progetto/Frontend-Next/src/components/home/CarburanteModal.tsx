@@ -54,7 +54,7 @@ interface CarburanteModalProps {
 }
 
 /**
- * "Carburante vicino": distributori entro pochi km ordinati per prezzo,
+ * "Distributori vicini" (Premium): distributori entro pochi km ordinati per prezzo,
  * dagli open data del Ministero (GET /carburanti/vicini). Il tocco su un
  * distributore apre la navigazione.
  */
@@ -99,7 +99,7 @@ export default function CarburanteModal({ onChiudi, iniziale, nomeVeicolo }: Car
   return (
     <Overlay
       onChiudi={onChiudi}
-      titolo="Carburante vicino"
+      titolo="Distributori vicini"
       icona="ti-gas-station"
       larghezza={600}
       sottotitolo={
