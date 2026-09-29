@@ -3,6 +3,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 
 import LibrettoFoto from "@/components/LibrettoFoto";
+import BloccoPremium from "@/components/ui/BloccoPremium";
+import { usePiano } from "@/hooks/usePiano";
 import Overlay from "@/components/ui/Overlay";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -110,6 +112,9 @@ interface AggiungiVeicoloOverlayProps {
  */
 export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }: AggiungiVeicoloOverlayProps) {
   const { utente, gestisci401 } = useAuth();
+  const { piano, premium } = usePiano();
+  // targa e foto del libretto sono Premium (il backend blocca comunque la targa)
+  const bloccata = (s: Scheda) => piano !== null && !premium && s !== "manuale";
 
   const [scheda, setScheda] = useState<Scheda>("cerca");
   const [targa, setTarga] = useState("");
@@ -129,7 +134,7 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
   // reset dello stato a ogni apertura + lettura storico da localStorage
   useEffect(() => {
     if (!aperto) return;
-    setScheda("cerca");
+    setScheda(premium ? "cerca" : "manuale");
     setTarga("");
     setRisultato(null);
     setNonTrovato(false);
@@ -138,7 +143,13 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
     setCampoErrato(null);
     setDallaFoto(null);
     setStorico(getStoricoTarghe());
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- il piano sceglie solo la scheda iniziale
   }, [aperto]);
+
+  // piano arrivato dopo l'apertura: con Gratis si parte dall'inserimento a mano
+  useEffect(() => {
+    if (aperto && piano === "base") setScheda((s) => (s === "cerca" ? "manuale" : s));
+  }, [aperto, piano]);
 
   const cambiaScheda = (s: Scheda) => {
     setScheda(s);
@@ -167,7 +178,7 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
   const erroreAggiunta = (err: unknown) => {
     if (gestisci401(err)) return;
     if (err instanceof ApiError && err.status === 409) setErrore("Veicolo già presente in un garage.");
-    else if (err instanceof ApiError && err.status === 403) setErrore("Hai raggiunto il limite di veicoli del tuo piano.");
+    else if (err instanceof ApiError && err.status === 403) setErrore(err.message);
     else if (err instanceof ApiError && err.status === 400) setErrore(err.message);
     else setErrore("Errore durante l'aggiunta del veicolo.");
   };
@@ -305,6 +316,7 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
         <button type="button" role="tab" aria-label="Cerca targa" aria-selected={scheda === "cerca"} className={scheda === "cerca" ? "on" : ""} onClick={() => cambiaScheda("cerca")}>
           <i className="ti ti-search" />
           <span>Cerca targa</span>
+          {bloccata("cerca") && <i className="ti ti-lock ov-tab-lock" aria-label="Premium" />}
         </button>
         <button type="button" role="tab" aria-label="Inserisci a mano" aria-selected={scheda === "manuale"} className={scheda === "manuale" ? "on" : ""} onClick={() => cambiaScheda("manuale")}>
           <i className="ti ti-forms" />
@@ -313,6 +325,7 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
         <button type="button" role="tab" aria-label="Da foto libretto" aria-selected={scheda === "foto"} className={scheda === "foto" ? "on" : ""} onClick={() => cambiaScheda("foto")}>
           <i className="ti ti-camera" />
           <span>Da foto libretto</span>
+          {bloccata("foto") && <i className="ti ti-lock ov-tab-lock" aria-label="Premium" />}
         </button>
       </div>
 
@@ -323,7 +336,21 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
         </p>
       )}
 
-      {scheda === "foto" ? (
+      {bloccata(scheda) ? (
+        scheda === "foto" ? (
+          <BloccoPremium
+            icona="ti-camera"
+            titolo="Lettura del libretto da foto"
+            testo="Fotografa il libretto e trovi marca, modello, targa e dati tecnici già scritti. Con Gratis puoi inserirli a mano."
+          />
+        ) : (
+          <BloccoPremium
+            icona="ti-search"
+            titolo="Aggiunta dalla targa"
+            testo="Scrivi la targa e recuperiamo noi dati tecnici, bollo e assicurazione. Con Gratis puoi inserirli a mano."
+          />
+        )
+      ) : scheda === "foto" ? (
         <LibrettoFoto onLetto={compilaDaFoto} />
       ) : scheda === "cerca" ? (
         <>

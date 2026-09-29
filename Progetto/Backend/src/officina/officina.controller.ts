@@ -15,7 +15,7 @@ import { CreateOfficinaDto } from './dto/create-officina.dto';
 import { LoginOfficinaDto } from './dto/login-officina.dto';
 import { UpdateOfficinaDto } from './dto/update-officina.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
-import { authCookieOptions } from '../auth-cookie.util';
+import { authCookieOptions, SESSIONE_MS } from '../auth-cookie.util';
 import type { Response } from 'express';
 import { CurrentUser } from '../current-user.decorator';
 import type { JwtPayload } from '../jwt-payload.interface';
@@ -33,7 +33,11 @@ export class OfficinaController {
   ) {
     const { access_token, officina } =
       await this.officinaService.registra(datiRicevuti);
-    response.cookie('access_token', access_token, authCookieOptions(3600000));
+    response.cookie(
+      'access_token',
+      access_token,
+      authCookieOptions(SESSIONE_MS),
+    );
     return { officina };
   }
 
@@ -44,7 +48,11 @@ export class OfficinaController {
   ) {
     const { access_token, officina } =
       await this.officinaService.login(datiRicevuti);
-    response.cookie('access_token', access_token, authCookieOptions(3600000));
+    response.cookie(
+      'access_token',
+      access_token,
+      authCookieOptions(SESSIONE_MS),
+    );
     return { officina };
   }
 

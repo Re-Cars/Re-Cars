@@ -55,8 +55,6 @@ services:
         sync: false
       - key: STRIPE_PRICE_PREMIUM
         sync: false
-      - key: STRIPE_PRICE_PRO
-        sync: false
       - key: STRIPE_PRICE_BUSINESS
         sync: false
       - key: STRIPE_PRICE_BUSINESS_PRO

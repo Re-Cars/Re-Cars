@@ -37,12 +37,20 @@ function leggiSessione(): Messaggio[] {
   }
 }
 
+/** Solo il **grassetto** (nomi di pulsanti e voci nei percorsi): niente markdown completo. */
+function conGrassetto(testo: string) {
+  return testo.split(/\*\*(.+?)\*\*/g).map((pezzo, i) => (i % 2 ? <b key={i}>{pezzo}</b> : pezzo));
+}
+
 /**
  * Assistente RE|CARS: bottone flottante sempre presente nelle pagine utente
  * e pannello chat. Le risposte arrivano in streaming da POST /assistente/chat
  * (Gemini, chiave solo nel backend); le azioni proposte sono link a pagine
  * del sito o domande suggerite, già validate dal backend.
  */
+/** Evento che apre/chiude il pannello da fuori (bottone dell'Header su telefono). */
+export const EVENTO_APRI_ASSISTENTE = "recars:assistente";
+
 export default function Assistente() {
   const pathname = usePathname();
   const { utente } = useAuth();
@@ -57,6 +65,13 @@ export default function Assistente() {
   const fabRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => setMessaggi(leggiSessione()), []);
+
+  // su telefono il pannello si apre dal bottone in alto a sinistra (Header)
+  useEffect(() => {
+    const apri = () => setAperto((v) => !v);
+    window.addEventListener(EVENTO_APRI_ASSISTENTE, apri);
+    return () => window.removeEventListener(EVENTO_APRI_ASSISTENTE, apri);
+  }, []);
 
   useEffect(() => {
     try {
@@ -77,7 +92,8 @@ export default function Assistente() {
     // tocco o click fuori dal pannello: si chiude (il FAB gestisce da sé il toggle)
     const onFuori = (e: PointerEvent) => {
       const t = e.target as Node;
-      if (!panelRef.current?.contains(t) && !fabRef.current?.contains(t)) setAperto(false);
+      const daBottone = t instanceof Element && t.closest("[data-apri-assistente]");
+      if (!panelRef.current?.contains(t) && !fabRef.current?.contains(t) && !daBottone) setAperto(false);
     };
     window.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onFuori);
@@ -187,7 +203,7 @@ export default function Assistente() {
             <div className="ai-msg bot">{BENVENUTO}</div>
             {messaggi.map((m, i) => (
               <div key={i} className={`ai-msg ${m.ruolo === "utente" ? "me" : "bot"}${m.errore ? " errore" : ""}`}>
-                {m.testo}
+                {m.ruolo === "utente" ? m.testo : conGrassetto(m.testo)}
                 {m.inCorso && <span className="ai-caret" />}
                 {m.azioni?.some((a) => a.tipo === "apri_pagina") && (
                   <div className="ai-azioni">

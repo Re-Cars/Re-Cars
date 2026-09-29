@@ -1,4 +1,6 @@
 import {
+  avvisoAbbonamento,
+  avvisoFineAbbonamento,
   avvisoCambioStato,
   giorniA,
   oggiInItalia,
@@ -79,5 +81,27 @@ describe('promemoria', () => {
       'Prenotazione confermata',
     );
     expect(avvisoCambioStato(pren, 'in_attesa')).toBeNull();
+  });
+
+  it('avvisa della fine del Premium a 7, 1 e 0 giorni se il rinnovo è spento', () => {
+    const abb = (fine: string | null) => ({
+      id: 4,
+      data_fine: fine ? new Date(`${fine}T00:00:00Z`) : null,
+    });
+    expect(avvisoFineAbbonamento(abb('2026-10-05'), '2026-09-28')?.chiave).toBe(
+      'abbonamento:4:fine:7',
+    );
+    expect(avvisoFineAbbonamento(abb('2026-09-28'), '2026-09-28')?.titolo).toBe(
+      'Il tuo Premium scade oggi',
+    );
+    expect(avvisoFineAbbonamento(abb('2026-10-01'), '2026-09-28')).toBeNull();
+    expect(avvisoFineAbbonamento(abb(null), '2026-09-28')).toBeNull();
+  });
+
+  it('gli avvisi di Stripe hanno una chiave per periodo (niente doppioni)', () => {
+    expect(avvisoAbbonamento('pagamento_fallito', 4, '1790000000').chiave).toBe(
+      'abbonamento:4:pagamento:1790000000',
+    );
+    expect(avvisoAbbonamento('terminato', 4, '').url).toBe('/abbonamenti');
   });
 });

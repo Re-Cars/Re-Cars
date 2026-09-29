@@ -69,20 +69,19 @@ Frontend and mobile have no `.env` files — their API base URL is a hardcoded c
 | `FRONTEND_BASE_URL` | Base URL used to build Stripe success/cancel redirect URLs |
 | `STRIPE_SECRET_KEY` | Stripe secret API key (server-side SDK) |
 | `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key (present in `.env`, currently unused by backend code) |
-| `STRIPE_PRICE_PREMIUM` | Stripe Price ID for the user "premium" plan |
-| `STRIPE_PRICE_PRO` | Stripe Price ID for the user "pro" plan |
+| `STRIPE_PRICE_PREMIUM` | Stripe Price ID for the user "premium" plan (9,99 €/month; the former "pro" price) |
 | `STRIPE_PRICE_BUSINESS` | Stripe Price ID for the officina "business" plan |
 | `STRIPE_PRICE_BUSINESS_PRO` | Stripe Price ID for the officina "business pro" plan |
 | `STRIPE_WEBHOOK_SECRET` | Secret used to verify Stripe webhook signatures |
 | `GEMINI_API_KEY` | Google Gemini API key (free tier) for the in-app assistant — backend only, never in the frontend or the repo |
 | `GEMINI_MODEL` | Optional Gemini model (default `gemini-flash-lite-latest`) |
-| `ASSISTENTE_LIMITE_MINUTO` / `ASSISTENTE_LIMITE_GIORNO` | Optional per-user assistant limits (default 6/min, 50/day) |
+| `ASSISTENTE_LIMITE_MINUTO` / `ASSISTENTE_LIMITE_GIORNO` / `ASSISTENTE_LIMITE_GIORNO_GRATIS` | Optional per-user assistant limits (default 6/min; 50/day Premium, 10/day Gratis) |
 | `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT` | Web Push keys for PWA notifications (`npx web-push generate-vapid-keys`); without them notifications stay off |
 | `NOTIFICHE_CRON_SECRET` | Shared secret for `POST /notifiche/controllo-giornaliero`, called daily by `.github/workflows/notifiche-giornaliere.yml` |
 
 ## 4. Architecture notes
 
-**JWT authentication (dual transport).** The backend issues a JWT on register/login (`JwtService.sign`, payload `{ sub, email|partita_iva, tipo }`, `expiresIn: '1h'`) and accepts it two ways at once, via `ExtractJwt.fromExtractors` in `src/jwt.strategy.ts`:
+**JWT authentication (dual transport).** The backend issues a JWT on register/login (`JwtService.sign`, payload `{ sub, email|partita_iva, tipo }`, valid 30 days like Kilo: `SESSIONE_JWT`/`SESSIONE_MS` in `src/auth-cookie.util.ts`, same max-age as the frontend's `rc_session` flag cookie, whose value `u`/`o` lets the middleware send an already-logged-in device from `/` and `/login` straight to its home) and accepts it two ways at once, via `ExtractJwt.fromExtractors` in `src/jwt.strategy.ts`:
 1. an httpOnly cookie named `access_token` (`secure`, `sameSite: 'none'`) — used by the **web frontend**, which relies on `credentials: 'include'` on every `fetch`. Frontend-Next never calls the backend directly: the browser calls `/api/...` on the site's own domain and `next.config.ts` rewrites it to `NEXT_PUBLIC_API_URL`, so the cookie is first-party (Safari and other browsers that block third-party cookies dropped it when the backend was on another domain, and login bounced back to the landing page). Keep `api/` excluded from the middleware matcher;
 2. an `Authorization: Bearer <token>` header — used by the **mobile app**, which stores the token in `AsyncStorage` (key `yd_access_token`) and injects the header via `apiFetch()` in `constants/api.ts`.
 
@@ -94,7 +93,9 @@ Frontend and mobile have no `.env` files — their API base URL is a hardcoded c
 
 **PWA and push notifications.** Frontend-Next is installable (`src/app/manifest.ts`, `public/sw.js`, icons in `public/icons/`). Users enable notifications per device from Account → "App e notifiche": the browser subscription is stored in `push_iscrizione`; the backend `NotificheModule` sends Web Push (VAPID) on booking status changes (officina confirm/cancel/complete) and in a daily check (deadlines at 30/7/1/0 days, reminder the day before an appointment), deduplicated through `notifica_inviata`. The middleware matcher must keep excluding the PWA files (`sw.js`, `manifest.webmanifest`, `icons/`, `offline.html`), otherwise they redirect to /login.
 
-**Stripe is fully server-driven.** Neither the web frontend nor the mobile app load the Stripe SDK/publishable key client-side. Both simply `POST /abbonamento/checkout` and redirect the browser/WebView to the returned Checkout Session URL. Subscription state changes only happen server-side via the `/abbonamento/webhook` endpoint (`checkout.session.completed`, `customer.subscription.deleted`).
+**User plans: Gratis and Premium.** `src/piano.ts` is the single source: `pianoUtente()` maps the active `abbonamento` to `'base'` (Gratis) or `'premium'` (the legacy `pro` and the azienda plans count as Premium; officina plans don't), `LIMITE_VEICOLI` is 1 / unlimited, `richiediPremium()` throws a 403 with a readable message. Premium-only in the backend: vehicle lookup/add by plate (`GET /veicolo/cerca/:targa`, `POST /veicolo`), `GET /carburanti/vicini`, the higher assistant daily cap. Premium-only in the UI only (computed in the browser): libretto OCR, costi di gestione, PDF report. The frontend reads the plan via `usePiano()`. The Premium price lives in Stripe (`STRIPE_PRICE_PREMIUM`), not in code; `STRIPE_PRICE_PRO` was removed (Premium now uses the former Pro price).
+
+**Stripe is fully server-driven.** Neither the web frontend nor the mobile app load the Stripe SDK/publishable key client-side. Both simply `POST /abbonamento/checkout` and redirect the browser/WebView to the returned Checkout Session URL. Subscriptions renew automatically every month on the saved card; the user can switch auto-renew off/on (`POST /abbonamento/rinnovo` → Stripe `cancel_at_period_end`), "Passa a Gratis" switches it off (Premium stays until the paid period ends), and `POST /abbonamento/portale` opens the Stripe billing portal (card, invoices). `abbonamento.data_fine` is set only when auto-renew is off (the day the user goes back to Gratis); the daily check marks past ones `scaduto` and sends push reminders at 7/1/0 days. Webhooks: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed` (all four must be enabled on the Stripe endpoint).
 
 **Prisma foreign keys have no cascade.** Every relation in `prisma/schema.prisma` is `onDelete: NoAction, onUpdate: NoAction`. Cascading deletes (e.g. deleting an `officina` also removing its `abbonamento`/`prenotazione`) are implemented manually in the relevant `*.service.ts` — do not assume the database will clean up related rows for you.
 

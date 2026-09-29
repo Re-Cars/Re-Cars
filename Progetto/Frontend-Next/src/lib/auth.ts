@@ -14,11 +14,18 @@ import type { UtenteLoggato } from "./types";
  * decidere i redirect delle route protette.
  */
 export const SESSION_COOKIE = "rc_session";
-const SESSION_COOKIE_MAX_AGE = 60 * 60; // 1h, come la scadenza del JWT
+// 30 giorni come il JWT (Backend/src/auth-cookie.util.ts): l'accesso resta salvato sul dispositivo
+const SESSION_COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
 
-function setSessionCookie(): void {
+/**
+ * Valore del flag: "u" utente, "o" officina. Serve al middleware per aprire
+ * direttamente la home giusta a chi ha già fatto l'accesso. Le officine non
+ * hanno username né tipo (privato/azienda), gli utenti sì.
+ */
+function setSessionCookie(profilo: UtenteLoggato): void {
   if (typeof document === "undefined") return;
-  document.cookie = `${SESSION_COOKIE}=1; path=/; max-age=${SESSION_COOKIE_MAX_AGE}; samesite=lax`;
+  const tipo = profilo.username !== undefined || profilo.tipo !== undefined ? "u" : "o";
+  document.cookie = `${SESSION_COOKIE}=${tipo}; path=/; max-age=${SESSION_COOKIE_MAX_AGE}; samesite=lax`;
 }
 
 function clearSessionCookie(): void {
@@ -29,7 +36,7 @@ function clearSessionCookie(): void {
 /** Salva il profilo dopo login/registrazione e marca la sessione per il middleware. */
 export function salvaSessione(utente: UtenteLoggato): void {
   setUtenteLoggato(utente);
-  setSessionCookie();
+  setSessionCookie(utente);
 }
 
 export function isLoggato(): boolean {

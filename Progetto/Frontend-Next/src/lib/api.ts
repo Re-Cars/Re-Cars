@@ -243,8 +243,39 @@ export function avviaCheckoutStripe(
   });
 }
 
-export function disdiciAbbonamento(): Promise<unknown> {
+/** "Passa a Gratis": spegne il rinnovo, Premium resta fino a fine periodo pagato. */
+export function disdiciAbbonamento(): Promise<{ message: string; dataFine?: string | null }> {
   return fetchApi("/abbonamento/disdici", { method: "POST" });
+}
+
+export interface StatoAbbonamento {
+  piano: string;
+  /** null: abbonamento senza Stripe (nessun rinnovo da gestire). */
+  rinnovoAutomatico: boolean | null;
+  /** Solo con rinnovo spento: giorno in cui si torna a Gratis. */
+  dataFine: string | null;
+  prossimoRinnovo: string | null;
+  /** true se c'è un abbonamento Stripe (rinnovo e portale disponibili). */
+  gestibile: boolean;
+}
+
+export function getStatoAbbonamento(): Promise<StatoAbbonamento> {
+  return fetchApi("/abbonamento/stato");
+}
+
+export function impostaRinnovoAutomatico(automatico: boolean): Promise<StatoAbbonamento> {
+  return fetchApi("/abbonamento/rinnovo", {
+    method: "POST",
+    body: JSON.stringify({ automatico }),
+  });
+}
+
+/** Portale Stripe: cambio carta e fatture. */
+export function apriPortalePagamento(baseUrl: string): Promise<{ url: string }> {
+  return fetchApi("/abbonamento/portale", {
+    method: "POST",
+    body: JSON.stringify({ baseUrl }),
+  });
 }
 
 /**

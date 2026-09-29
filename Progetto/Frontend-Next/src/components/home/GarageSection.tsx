@@ -23,7 +23,8 @@ interface GarageSectionProps {
  * "Il mio garage" in dashboard: bottone "Aggiungi veicolo" sempre in cima,
  * lista di tutti i veicoli con scorrimento interno sempre attivo e, in
  * fondo, "Cerca veicolo" che apre la ricerca nel garage (solo ricerca: per
- * aggiungere si usa il bottone in cima).
+ * aggiungere si usa il bottone in cima). Su telefono lista e ricerca stanno
+ * chiuse: si aprono toccando il titolo (su schermi larghi sempre visibili).
  */
 export default function GarageSection({
   veicoli,
@@ -33,19 +34,27 @@ export default function GarageSection({
   onElimina,
 }: GarageSectionProps) {
   const [aggiungiAperto, setAggiungiAperto] = useState(false);
+  const [aperto, setAperto] = useState(false);
   const [cercaAperta, setCercaAperta] = useState(false);
   const [daEliminare, setDaEliminare] = useState<VeicoloDettaglio | null>(null);
   const [listaRef, sfumatura] = useSfumaturaScroll<HTMLDivElement>(veicoli.length);
 
   return (
-    <section id="garage" className="panel dash-garage" aria-label="Il mio garage">
-      <div className="dash-garage-head">
+    <section id="garage" className={`panel dash-garage${aperto ? " aperto" : ""}`} aria-label="Il mio garage">
+      <button
+        type="button"
+        className="dash-garage-head"
+        aria-expanded={aperto}
+        aria-controls="garage-lista"
+        onClick={() => setAperto((v) => !v)}
+      >
         <h2 className="dash-title">
           <IconaGarage />
           Il mio garage
         </h2>
         <span className="dash-count">{veicoli.length}</span>
-      </div>
+        <i className="ti ti-chevron-down dash-garage-freccia" aria-hidden="true" />
+      </button>
 
       <button type="button" className="dash-add-btn" onClick={() => setAggiungiAperto(true)}>
         <span className="dash-add-plus">
@@ -54,7 +63,7 @@ export default function GarageSection({
         Aggiungi veicolo
       </button>
 
-      <div ref={listaRef} className={`dash-garage-list${sfumatura ? " sfuma" : ""}`}>
+      <div ref={listaRef} id="garage-lista" className={`dash-garage-list${sfumatura ? " sfuma" : ""}`}>
         {veicoli.map((v) => (
           <VeicoloChip
             key={v.id}

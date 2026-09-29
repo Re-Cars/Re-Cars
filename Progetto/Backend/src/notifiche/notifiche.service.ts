@@ -6,6 +6,7 @@ import { PrismaService } from '../prisma.service';
 import { IscrizioneDto } from './dto/iscrizione.dto';
 import {
   avvisoCambioStato,
+  avvisoFineAbbonamento,
   oggiInItalia,
   promemoriaPrenotazione,
   scadenzeDaAvvisare,
@@ -149,9 +150,21 @@ export class NotificheService {
    * domani, solo per gli utenti con almeno un dispositivo iscritto.
    */
   async controlloGiornaliero(adesso = new Date()) {
-    const risultato = { utenti: 0, scadenze: 0, promemoria: 0 };
-    if (!this.attive) return risultato;
+    const risultato = { utenti: 0, scadenze: 0, promemoria: 0, abbonamenti: 0 };
     const oggi = oggiInItalia(adesso);
+    // abbonamenti con rinnovo spento arrivati a fine periodo: si torna a
+    // Gratis anche se il webhook di Stripe non è arrivato (va fatto anche
+    // con le notifiche spente)
+    risultato.abbonamenti = (
+      await this.prisma.abbonamento.updateMany({
+        where: {
+          stato: 'attivo',
+          data_fine: { lt: new Date(`${oggi}T00:00:00Z`) },
+        },
+        data: { stato: 'scaduto' },
+      })
+    ).count;
+    if (!this.attive) return risultato;
     const utenti = await this.prisma.push_iscrizione.findMany({
       distinct: ['id_utente'],
       select: { id_utente: true },
@@ -167,6 +180,15 @@ export class NotificheService {
         for (const avviso of scadenzeDaAvvisare(v, oggi)) {
           if (await this.inviaUnaVolta(id_utente, avviso)) risultato.scadenze++;
         }
+      }
+
+      const abbonamento = await this.prisma.abbonamento.findFirst({
+        where: { id_utente, stato: 'attivo', data_fine: { not: null } },
+        select: { id: true, data_fine: true },
+      });
+      const fine = abbonamento && avvisoFineAbbonamento(abbonamento, oggi);
+      if (fine && (await this.inviaUnaVolta(id_utente, fine))) {
+        risultato.scadenze++;
       }
 
       const prenotazioni = await this.prisma.prenotazione.findMany({
@@ -188,6 +210,18 @@ export class NotificheService {
       `Controllo giornaliero ${oggi}: ${risultato.scadenze} scadenze, ${risultato.promemoria} promemoria`,
     );
     return risultato;
+  }
+
+  /** Avviso sull'abbonamento dal webhook di Stripe (mai bloccante, senza doppioni). */
+  async avvisaAbbonamento(idUtente: number, notifica: NotificaProgrammata) {
+    if (!this.attive) return;
+    try {
+      await this.inviaUnaVolta(idUtente, notifica);
+    } catch (err) {
+      this.logger.warn(
+        `Avviso abbonamento non inviato: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
   }
 
   /** Chiamata dall'officina quando conferma, annulla o completa. */
