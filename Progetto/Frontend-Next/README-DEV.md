@@ -65,4 +65,5 @@ ciascuno il proprio stato in localStorage per origine.
 
 - `.env.local` (sviluppo): `PORT=3001`, `NEXT_PUBLIC_API_URL=http://localhost:3000`
 - `.env.production` (build di produzione): `NEXT_PUBLIC_API_URL=https://tuo-backend.onrender.com`
+- `NEXT_PUBLIC_API_URL` è solo la destinazione del proxy: il browser chiama sempre `/api/...` sul dominio del sito e `next.config.ts` inoltra al backend, così il cookie di sessione è di prima parte (necessario per Safari).
   (placeholder da sostituire con l'URL reale del backend al deploy)

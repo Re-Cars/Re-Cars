@@ -21,18 +21,12 @@ import "@/styles/prenotazione-utente.css";
 
 const SLOT_ORARI = ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"];
 const COLORI_AVATAR = ["#f97316", "#ea580c", "#d97706", "#16a34a", "#1e3a8a", "#7c3aed", "#0891b2"];
-const ICONE_CATEGORIA: Record<string, string> = {
-  Meccanica: "ti-tool",
-  Carrozzeria: "ti-car-crash",
-  Elettrico: "ti-bolt",
-};
 
 /** Officina normalizzata come in functions-prenotazione-utente.js. */
 interface Officina {
   id: number;
   nome: string;
   specialita: string;
-  categoria: string;
   stelle: number;
   recensioni: number;
   /* niente distanza_km: il backend non la restituisce, si calcola a runtime
@@ -52,7 +46,6 @@ function normalizzaOfficina(o: OfficinaCatalogo): Officina {
     id: o.id,
     nome: o.nome ?? "Officina senza nome",
     specialita: o.specialita ?? "Meccanica Generale",
-    categoria: o.categoria ?? "Meccanica",
     stelle: parseFloat(String(o.stelle ?? 4.5)),
     recensioni: parseInt(String(o.recensioni ?? 12), 10),
     aperta: o.aperta !== undefined ? o.aperta : true,
@@ -228,7 +221,6 @@ export default function PrenotazioniPage() {
   const [ricerca, setRicerca] = useState("");
   const [ricercaPren, setRicercaPren] = useState("");
   const [filtroStato, setFiltroStato] = useState<FiltroStato>("tutte");
-  const [filtroCategoria, setFiltroCategoria] = useState<string | null>(null);
   const [sortAsc, setSortAsc] = useState(true);
   const [selezionata, setSelezionata] = useState<Officina | null>(null);
   const [prenSelezionataId, setPrenSelezionataId] = useState<number | null>(null);
@@ -352,17 +344,15 @@ export default function PrenotazioniPage() {
     tutte.find((p) => p.id === prenSelezionataId) ?? prossima ?? tutte[tutte.length - 1] ?? null;
 
   /* ---------- officine: filtri / ordinamento ---------- */
-  const categorie = [...new Set(officine.map((o) => o.categoria).filter(Boolean))];
   const q = ricerca.toLowerCase().trim();
   const visibili = officine
     .filter((o) => {
-      const matchCat = !filtroCategoria || o.categoria === filtroCategoria;
-      const matchQ =
+      return (
         !q ||
         o.nome.toLowerCase().includes(q) ||
         o.specialita.toLowerCase().includes(q) ||
-        o.servizi.some((s) => s.toLowerCase().includes(q));
-      return matchCat && matchQ;
+        o.servizi.some((s) => s.toLowerCase().includes(q))
+      );
     })
     .sort((a, b) => {
       // senza posizione non c'è un criterio: si mantiene l'ordine del backend
@@ -940,17 +930,6 @@ export default function PrenotazioniPage() {
                 <i className="ti ti-current-location" />
                 {posUtente ? "Aggiorna posizione" : "Usa la mia posizione"}
               </button>
-              {categorie.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  className={`pg-chip${filtroCategoria === cat ? " on" : ""}`}
-                  onClick={() => setFiltroCategoria(filtroCategoria === cat ? null : cat)}
-                >
-                  <i className={`ti ${ICONE_CATEGORIA[cat] ?? "ti-tool"}`} />
-                  {cat}
-                </button>
-              ))}
             </div>
           </div>
         )}

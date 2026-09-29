@@ -83,7 +83,7 @@ Frontend and mobile have no `.env` files — their API base URL is a hardcoded c
 ## 4. Architecture notes
 
 **JWT authentication (dual transport).** The backend issues a JWT on register/login (`JwtService.sign`, payload `{ sub, email|partita_iva, tipo }`, `expiresIn: '1h'`) and accepts it two ways at once, via `ExtractJwt.fromExtractors` in `src/jwt.strategy.ts`:
-1. an httpOnly cookie named `access_token` (`secure`, `sameSite: 'none'`) — used by the **web frontend**, which relies on `credentials: 'include'` on every `fetch`;
+1. an httpOnly cookie named `access_token` (`secure`, `sameSite: 'none'`) — used by the **web frontend**, which relies on `credentials: 'include'` on every `fetch`. Frontend-Next never calls the backend directly: the browser calls `/api/...` on the site's own domain and `next.config.ts` rewrites it to `NEXT_PUBLIC_API_URL`, so the cookie is first-party (Safari and other browsers that block third-party cookies dropped it when the backend was on another domain, and login bounced back to the landing page). Keep `api/` excluded from the middleware matcher;
 2. an `Authorization: Bearer <token>` header — used by the **mobile app**, which stores the token in `AsyncStorage` (key `yd_access_token`) and injects the header via `apiFetch()` in `constants/api.ts`.
 
 `JwtAuthGuard` is applied per-route (`@UseGuards(JwtAuthGuard)`), not globally — there is no `APP_GUARD`. Some routes are intentionally or accidentally unauthenticated (see Backend `CLAUDE.md` for the list); check guards explicitly before assuming a route is protected.

@@ -29,5 +29,5 @@ export function middleware(request: NextRequest) {
 export const config = {
   // esclude asset statici, immagini, file di sistema Next e della PWA (manifest,
   // service worker, icone, pagina offline): devono caricarsi anche senza login
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|manifest.webmanifest|sw.js|offline.html|icons/|Img/).*)"],
+  matcher: ["/((?!api/|_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|manifest.webmanifest|sw.js|offline.html|icons/|Img/).*)"],
 };
