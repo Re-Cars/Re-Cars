@@ -352,3 +352,71 @@
   .abb2-rinnovo-azioni { width: 100%; }
   .abb2-rinnovo-azioni > * { flex: 1 1 auto; justify-content: center; }
 }
+
+/* ====================================================
+   COMPORTAMENTO DA APP (come Kilo): niente zoom col doppio
+   tocco, niente riquadro grigio al tocco, niente "rimbalzo"
+   o ricarica tirando la pagina, testo che non si ingrandisce
+   ruotando il telefono. Lo zoom con due dita lo blocca
+   components/pwa/GestiApp.tsx (Safari ignora il viewport).
+-----------------------------------------------------*/
+html {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
+body { overscroll-behavior: none; }
+
+@media (max-width: 720px) {
+  /* niente scorrimento laterale: "clip" non crea un contenitore di
+     scorrimento, così l'header resta fisso in alto */
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  /* sotto i 16px Safari ingrandisce la pagina quando si tocca un campo */
+  input,
+  select,
+  textarea { font-size: 16px !important; }
+
+  /* titolo RE|CARS accanto al logo anche su telefono */
+  .header-center a { gap: 8px; }
+  .header-brand {
+    display: inline-flex !important;
+    font-size: 1.3rem;
+    white-space: nowrap;
+  }
+  .header-logo-img { height: 30px; }
+
+  /* ---------- notch e barra home dell'iPhone ---------- */
+  /* finestre sopra la pagina: mai sotto la notch (la X resta visibile) */
+  .ov-overlay {
+    padding: calc(10px + var(--sa-top)) 10px calc(10px + var(--sa-bottom));
+  }
+  .ov-modal {
+    max-height: calc(100dvh - 20px - var(--sa-top) - var(--sa-bottom));
+  }
+  .oc-detail-overlay,
+  .po-overlay {
+    padding-top: var(--sa-top);
+    padding-bottom: var(--sa-bottom);
+  }
+
+  /* landing, login e registrazione non hanno l'header che copre la notch */
+  .auth-body {
+    padding-top: var(--sa-top);
+    padding-bottom: var(--sa-bottom);
+  }
+  .auth-container {
+    max-height: calc(100dvh - 24px - var(--sa-top) - var(--sa-bottom));
+  }
+  .shutter-gate {
+    padding-top: var(--sa-top);
+    padding-bottom: var(--sa-bottom);
+  }
+}

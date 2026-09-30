@@ -12,6 +12,7 @@ import {
   logApiError,
   registraOfficina,
   registraUtente,
+  richiediCodiceEmail,
 } from "@/lib/api";
 import type { Citta } from "@/lib/types";
 
@@ -25,6 +26,9 @@ export default function RegistrazionePage() {
   const [tipo, setTipo] = useState<TipoRegistrazione>(null);
   const [errore, setErrore] = useState("");
   const [inCorso, setInCorso] = useState(false);
+  // verifica dell'email: prima si manda il codice, poi si registra con il codice
+  const [codiceInviatoA, setCodiceInviatoA] = useState<string | null>(null);
+  const [codice, setCodice] = useState("");
 
   // privato + azienda
   const [username, setUsername] = useState("");
@@ -71,6 +75,17 @@ export default function RegistrazionePage() {
     setInCorso(true);
     setErrore("");
     try {
+      // primo passo: codice all'email (controlla anche che sia reale e libera)
+      if (codiceInviatoA !== email.trim()) {
+        await richiediCodiceEmail(email.trim(), tipo === "officina" ? "officina" : "utente");
+        setCodiceInviatoA(email.trim());
+        setCodice("");
+        return;
+      }
+      if (!/^\d{6}$/.test(codice.trim())) {
+        setErrore("Scrivi il codice di 6 cifre che ti abbiamo mandato via email.");
+        return;
+      }
       if (tipo === "officina") {
         const data = await registraOfficina({
           email: email.trim(),
@@ -82,13 +97,14 @@ export default function RegistrazionePage() {
           telefono: telefono.trim(),
           indirizzo: indirizzo.trim(),
           sigla_citta: siglaCitta,
+          codice: codice.trim(),
         });
         aggiornaUtente(data.officina);
-        router.push("/officina");
+        router.replace("/officina");
       } else {
         const body =
           tipo === "privato"
-            ? { username: username.trim(), email: email.trim(), password, tipo: "privato" as const }
+            ? { username: username.trim(), email: email.trim(), password, tipo: "privato" as const, codice: codice.trim() }
             : {
                 username: username.trim(),
                 email: email.trim(),
@@ -97,10 +113,11 @@ export default function RegistrazionePage() {
                 ragione_sociale: ragioneSociale.trim(),
                 partita_iva: partitaIva.trim(),
                 codice_sdi: codiceSdi.trim() || null,
+                codice: codice.trim(),
               };
         const data = await registraUtente(body);
         aggiornaUtente(data.utente);
-        router.push("/homepage");
+        router.replace("/homepage");
       }
     } catch (err) {
       logApiError("registrazione", err);
@@ -329,6 +346,34 @@ export default function RegistrazionePage() {
               </div>
             )}
 
+            {codiceInviatoA === email.trim() && (
+              <div className="auth-codice">
+                <p>
+                  Ti abbiamo mandato un codice a <b>{codiceInviatoA}</b>: scrivilo qui per confermare che
+                  l&apos;email è tua. Controlla anche lo spam.
+                </p>
+                <div className="input-group">
+                  <i className="fa-solid fa-key" />
+                  <input
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    placeholder="Codice di 6 cifre"
+                    value={codice}
+                    onChange={(e) => setCodice(e.target.value.replace(/\D/g, ""))}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="auth-codice-reinvia"
+                  disabled={inCorso}
+                  onClick={() => setCodiceInviatoA(null)}
+                >
+                  Non è arrivato? Chiedine un altro
+                </button>
+              </div>
+            )}
+
             <p className="auth-error">{errore}</p>
             <button
               type="submit"
@@ -336,7 +381,19 @@ export default function RegistrazionePage() {
               style={{ width: "100%", justifyContent: "center", marginTop: 8 }}
               disabled={inCorso}
             >
-              <i className="fa-solid fa-user-plus" /> REGISTRATI
+              {inCorso ? (
+                <>
+                  <i className="fa-solid fa-circle-notch fa-spin" /> Attendi…
+                </>
+              ) : codiceInviatoA === email.trim() ? (
+                <>
+                  <i className="fa-solid fa-user-check" /> CONFERMA E REGISTRATI
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-envelope-circle-check" /> VERIFICA EMAIL
+                </>
+              )}
             </button>
           </form>
         </div>

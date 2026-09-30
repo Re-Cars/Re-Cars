@@ -2235,7 +2235,7 @@ input:-webkit-autofill:active {
   stroke-width: 3.561px;
   stroke-dasharray: 9999;
   stroke-dashoffset: 9999;
-  animation: traccia-logo 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: traccia-logo 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   animation-play-state: paused;
 }
 
@@ -6129,3 +6129,43 @@ textarea.ov-in {
 
 /* assistente nell'header: solo su telefono (styles/mobile.css) */
 .header-ai { display: none; }
+
+/* login: avviso quando il backend (Render gratuito) si sta svegliando */
+.auth-attesa {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.82);
+  animation: dash-fade 0.3s ease-out;
+}
+
+/* registrazione: passo del codice di verifica dell'email */
+.auth-codice {
+  margin-top: 6px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  animation: dash-fade 0.25s ease-out;
+}
+
+.auth-codice p {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.auth-codice .input-group { margin-bottom: 6px; }
+
+.auth-codice-reinvia {
+  border: 0;
+  background: none;
+  padding: 4px 0;
+  color: #fdba74;
+  font: inherit;
+  font-size: 12.5px;
+  text-decoration: underline;
+  cursor: pointer;
+}

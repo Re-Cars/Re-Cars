@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUtenteDto } from './dto/create-utente.dto';
@@ -23,6 +27,11 @@ export class UtenteService {
   ) {}
 
   async registra(data: CreateUtenteDto) {
+    const esistente = await this.prisma.utente.findUnique({
+      where: { email: data.email },
+    });
+    if (esistente) throw new ConflictException('Email già registrata');
+
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const utente = await this.prisma.utente.create({
@@ -95,6 +104,28 @@ export class UtenteService {
       access_token: this.jwtService.sign(payload),
       utente: risultato,
     };
+  }
+
+  /**
+   * Profilo di chi ha fatto l'accesso (dal JWT): serve all'app installata
+   * sulla home dell'iPhone, che eredita il cookie da Safari ma non il
+   * profilo salvato nel browser, e a chi ha svuotato i dati del sito.
+   */
+  async profiloSessione(id: number, tipo: string | undefined) {
+    if (tipo === 'officina') {
+      const officina = await this.prisma.officina.findUnique({
+        where: { id },
+        omit: { password: true },
+      });
+      if (!officina) throw new UnauthorizedException('Sessione non valida');
+      return { tipo: 'officina' as const, profilo: officina };
+    }
+    const utente = await this.prisma.utente.findUnique({
+      where: { id },
+      omit: { password: true },
+    });
+    if (!utente) throw new UnauthorizedException('Sessione non valida');
+    return { tipo: 'utente' as const, profilo: utente };
   }
 
   async getUtentebyID(id: number) {

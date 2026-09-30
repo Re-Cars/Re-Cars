@@ -1,0 +1,32 @@
+# Render (piano gratuito) addormenta il backend dopo 15 minuti senza
+# richieste: la prima chiamata dopo la pausa ci mette fino a un minuto e il
+# login sembra bloccato. Questo job chiama GET / ogni 10 minuti durante il
+# giorno, così il backend resta sveglio quando le persone usano l'app.
+#
+# Usa il secret BACKEND_URL (lo stesso delle notifiche giornaliere). Dalle
+# 06 alle 23 UTC sono circa 17 ore al giorno: restano ampiamente nelle 750
+# ore mensili gratuite di Render. Per spegnerlo: Actions -> "Tieni sveglio
+# il backend" -> "..." -> Disable workflow. Come tutti i job pianificati,
+# parte solo dal branch principale (main) e GitHub può ritardarlo di qualche
+# minuto.
+name: Tieni sveglio il backend
+
+on:
+  schedule:
+    - cron: "*/10 6-22 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: GET /
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+        run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "Secret BACKEND_URL non configurato: niente da fare."
+            exit 0
+          fi
+          curl -sS -o /dev/null -w "HTTP %{http_code} in %{time_total}s\n" --max-time 90 "${BACKEND_URL%/}/" || true

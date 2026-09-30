@@ -104,6 +104,8 @@ export async function fetchApi<T>(path: string, init: RequestInit = {}): Promise
 /* ====================== AUTH ====================== */
 
 export interface RegistrazionePrivatoBody {
+  /** Codice di 6 cifre ricevuto via email (richiediCodiceEmail). */
+  codice?: string;
   username: string;
   email: string;
   password: string;
@@ -111,6 +113,8 @@ export interface RegistrazionePrivatoBody {
 }
 
 export interface RegistrazioneAziendaBody {
+  /** Codice di 6 cifre ricevuto via email (richiediCodiceEmail). */
+  codice?: string;
   username: string;
   email: string;
   password: string;
@@ -121,6 +125,8 @@ export interface RegistrazioneAziendaBody {
 }
 
 export interface RegistrazioneOfficinaBody {
+  /** Codice di 6 cifre ricevuto via email (richiediCodiceEmail). */
+  codice?: string;
   email: string;
   password: string;
   nome: string;
@@ -223,6 +229,25 @@ export function aggiungiVeicolo(targa: string, idUtente: number): Promise<unknow
 
 export function eliminaVeicolo(id: number): Promise<unknown> {
   return fetchApi(`/veicolo/${id}`, { method: "DELETE" });
+}
+
+/**
+ * Profilo della sessione corrente (dal cookie): l'app installata sulla home
+ * dell'iPhone eredita il cookie da Safari ma non il profilo salvato.
+ */
+export function getProfiloSessione(): Promise<{ tipo: "utente" | "officina"; profilo: UtenteLoggato }> {
+  return fetchApi("/auth/me");
+}
+
+/** Primo passo della registrazione: manda il codice di 6 cifre all'email. */
+export function richiediCodiceEmail(
+  email: string,
+  per: "utente" | "officina" = "utente",
+): Promise<{ scadeTraMinuti: number }> {
+  return fetchApi("/auth/verifica-email", {
+    method: "POST",
+    body: JSON.stringify({ email, per }),
+  });
 }
 
 /* ====================== ABBONAMENTI / STRIPE ====================== */

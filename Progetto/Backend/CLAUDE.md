@@ -31,7 +31,8 @@ Bootstrap details (`src/main.ts`): `NestFactory.create(AppModule, { rawBody: tru
 | `prenotazione` | yes | Depends on `AppMailerModule` for confirmation emails |
 | `storico_interventi` (`StoricoModule`) | yes | |
 | `stripe` (`StripeModule`) | yes | |
-| `assistente` (`AssistenteModule`) | yes | Gemini chat assistant (`GeminiClient`, REST + SSE, reads `GEMINI_API_KEY`/`GEMINI_MODEL`); per-user in-memory rate limit |
+| `assistente` (`AssistenteModule`) | yes | Gemini chat assistant (`GeminiClient`, REST + SSE, reads `GEMINI_API_KEY`/`GEMINI_MODEL`); per-user in-memory rate limit. Logs a warning at startup without the key, and Google's error message on failures ("Assistente non disponibile: HTTP 4xx: …") |
+| `verifica-email` (`VerificaEmailModule`) | yes | Email verification codes for registration (imported by `AppModule` and `OfficinaModule`) |
 | `notifiche` (`NotificheModule`) | yes | Web Push (VAPID, `web-push`): device subscriptions, daily deadlines/appointment reminders, booking status notifications; imported by `OfficinaModule`. Off without `VAPID_*` keys |
 | `carburanti` (`CarburantiModule`) | yes | Fuel prices from MIMIT open data (two daily CSVs: stations + 8 a.m. prices), downloaded at startup and at most every 6 h, kept in memory (no DB tables). URLs overridable with `CARBURANTI_URL_ANAGRAFICA` / `CARBURANTI_URL_PREZZI` |
 | `PrismaModule` / `PrismaService` | yes | Wraps `@prisma/adapter-pg`, reads `DATABASE_URL` |
@@ -62,7 +63,9 @@ No global prefix. `AppController` has no `@Controller()` path argument (root).
 - `GET /citta?q=` — city autocomplete (min 2 chars, case-insensitive on `nome`/`sigla`, max 8 results)
 
 ### `UtenteController` (`@Controller('auth')`)
-- `POST /auth/register` — register private/company user (`CreateUtenteDto`), bcrypt-hashes password, issues JWT + cookie
+- `POST /auth/verifica-email` — public — body `{ email, per? }` (`RichiestaCodiceDto`) — checks the address (placeholder/disposable names, MX record, not already registered) and mails a 6-digit code (`VerificaEmailService`, in memory, 10 min, 5 attempts, 60 s between codes); 503 if the email cannot be sent
+- `POST /auth/register` — register private/company user (`CreateUtenteDto` incl. `codice`), 409 if the email exists, bcrypt-hashes password, issues JWT + cookie
+- `GET /auth/me` — `JwtAuthGuard` — `{ tipo: 'utente'|'officina', profilo }` of the current session (password omitted)
 - `POST /auth/login` — email + password login (`LoginUtenteDto`)
 - `POST /auth/login/azienda` — P.IVA + password login for `tipo: azienda` (`LoginAziendaDto`)
 - `POST /auth/logout` — clears the `access_token` cookie
@@ -78,7 +81,7 @@ No global prefix. `AppController` has no `@Controller()` path argument (root).
 - `DELETE /veicolo/:id` — `JwtAuthGuard` — deletes vehicle and its `dati_generici`/`dati_specifici`
 
 ### `OfficinaController` (`@Controller('officina')`)
-- `POST /officina/register` — checks P.IVA/email uniqueness, issues JWT + cookie
+- `POST /officina/register` — needs the email `codice` (see `/auth/verifica-email` with `per: 'officina'`), checks P.IVA/email uniqueness, issues JWT + cookie
 - `POST /officina/login` — P.IVA + password
 - `POST /officina/logout`
 - `GET /officina/dashboard` — `JwtAuthGuard` — today's bookings, weekly stats, active subscription, ponti disponibili

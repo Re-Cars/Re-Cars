@@ -5,11 +5,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NotificheModule } from '../notifiche/notifiche.module';
 import { SESSIONE_JWT } from '../auth-cookie.util';
+import { VerificaEmailModule } from '../verifica-email/verifica-email.module';
 
 @Module({
   imports: [
     ConfigModule,
     NotificheModule,
+    VerificaEmailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({

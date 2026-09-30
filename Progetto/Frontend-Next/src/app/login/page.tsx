@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 import AuthShell from "@/components/AuthShell";
 import { useAuth } from "@/context/AuthContext";
@@ -25,6 +25,40 @@ export default function LoginPage() {
   const [errore, setErrore] = useState("");
   const [erroreBusiness, setErroreBusiness] = useState("");
   const [inCorso, setInCorso] = useState(false);
+  // backend su Render gratuito: dopo un po' di inattività la prima risposta
+  // può metterci decine di secondi, e senza un avviso "Accedi" sembra rotto
+  const [lento, setLento] = useState(false);
+
+  useEffect(() => {
+    // sveglia il backend mentre l'utente scrive e prepara le home
+    void fetch("/api/", { cache: "no-store" }).catch(() => undefined);
+    router.prefetch("/homepage");
+    router.prefetch("/officina");
+  }, [router]);
+
+  useEffect(() => {
+    if (!inCorso) {
+      setLento(false);
+      return;
+    }
+    const t = setTimeout(() => setLento(true), 2500);
+    return () => clearTimeout(t);
+  }, [inCorso]);
+
+  const testoBottone = inCorso ? (
+    <>
+      <i className="fa-solid fa-circle-notch fa-spin" /> Accesso in corso…
+    </>
+  ) : (
+    <>
+      <i className="fa-solid fa-right-to-bracket" /> ACCEDI
+    </>
+  );
+  const avvisoLento = lento && (
+    <p className="auth-attesa" role="status">
+      Il server si sta avviando dopo una pausa: la prima volta può volerci fino a un minuto. Non serve premere di nuovo.
+    </p>
+  );
 
   const tornaATipo = () => {
     setStep("tipo");
@@ -41,8 +75,8 @@ export default function LoginPage() {
     try {
       const data = await loginUtente(email.trim(), password);
       aggiornaUtente(data.utente);
-      await caricaVeicoli();
-      router.push("/homepage");
+      void caricaVeicoli();
+      router.replace("/homepage");
     } catch (err) {
       logApiError("login utente", err);
       setErrore(err instanceof ApiError ? err.message : "Errore di connessione al server");
@@ -64,12 +98,12 @@ export default function LoginPage() {
       if (tipoBusiness === "officina") {
         const data = await loginOfficina(piva.trim(), passwordBusiness);
         aggiornaUtente(data.officina);
-        router.push("/officina");
+        router.replace("/officina");
       } else {
         const data = await loginAzienda(piva.trim(), passwordBusiness);
         aggiornaUtente(data.utente);
-        await caricaVeicoli();
-        router.push("/homepage");
+        void caricaVeicoli();
+        router.replace("/homepage");
       }
     } catch (err) {
       logApiError("login business", err);
@@ -122,8 +156,9 @@ export default function LoginPage() {
             </div>
             <p className="auth-error">{errore}</p>
             <button type="submit" className="btn-landing btn-login" disabled={inCorso}>
-              <i className="fa-solid fa-right-to-bracket" /> ACCEDI
+              {testoBottone}
             </button>
+            {avvisoLento}
           </form>
         </div>
       )}
@@ -172,8 +207,9 @@ export default function LoginPage() {
             </div>
             <p className="auth-error">{erroreBusiness}</p>
             <button type="submit" className="btn-landing btn-login" disabled={inCorso}>
-              <i className="fa-solid fa-right-to-bracket" /> ACCEDI
+              {testoBottone}
             </button>
+            {avvisoLento}
           </form>
         </div>
       )}
