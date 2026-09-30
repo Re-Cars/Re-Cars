@@ -16,6 +16,7 @@ import { LoginOfficinaDto } from './dto/login-officina.dto';
 import { UpdateOfficinaDto } from './dto/update-officina.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
 import { authCookieOptions, SESSIONE_MS } from '../auth-cookie.util';
+import { VerificaEmailService } from '../verifica-email/verifica-email.service';
 import type { Response } from 'express';
 import { CurrentUser } from '../current-user.decorator';
 import type { JwtPayload } from '../jwt-payload.interface';
@@ -24,13 +25,17 @@ import { Tipo } from '../types/tipo.decorator';
 
 @Controller('officina')
 export class OfficinaController {
-  constructor(private readonly officinaService: OfficinaService) {}
+  constructor(
+    private readonly officinaService: OfficinaService,
+    private readonly verificaEmail: VerificaEmailService,
+  ) {}
 
   @Post('register')
   async register(
     @Body() datiRicevuti: CreateOfficinaDto,
     @Res({ passthrough: true }) response: Response,
   ) {
+    this.verificaEmail.verifica(datiRicevuti.email, datiRicevuti.codice);
     const { access_token, officina } =
       await this.officinaService.registra(datiRicevuti);
     response.cookie(

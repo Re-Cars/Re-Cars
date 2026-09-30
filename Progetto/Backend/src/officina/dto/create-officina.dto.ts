@@ -6,10 +6,16 @@ import {
   MinLength,
   IsArray,
   IsEnum,
+  Matches,
 } from 'class-validator';
 import { tipo_officina } from '@prisma/client';
 
 export class CreateOfficinaDto {
+  /** Codice di 6 cifre mandato da POST /auth/verifica-email. */
+  @IsOptional()
+  @Matches(/^\d{6}$/, { message: 'Il codice di verifica ha 6 cifre' })
+  codice?: string;
+
   @IsNotEmpty({ message: "L'email è obbligatoria" })
   @IsEmail({}, { message: 'Email non valida' })
   email!: string;

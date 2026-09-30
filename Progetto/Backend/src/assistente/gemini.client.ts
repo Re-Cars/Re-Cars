@@ -143,8 +143,25 @@ export class GeminiClient {
       throw new GeminiQuotaEsaurita('Limite di richieste Gemini raggiunto');
     }
     if (!risposta.ok || !risposta.body) {
-      await risposta.body?.cancel();
-      throw new GeminiErrore(`HTTP ${risposta.status}`);
+      // il motivo di Google (chiave non valida, paese non supportato,
+      // modello inesistente...) finisce nel log di Render: senza, "HTTP 400"
+      // non basta a capire cosa sistemare
+      const motivo = await risposta
+        .text()
+        .then((t) => {
+          try {
+            const j = JSON.parse(t) as {
+              error?: { message?: string; status?: string };
+            };
+            return j.error?.message ?? t;
+          } catch {
+            return t;
+          }
+        })
+        .catch(() => '');
+      throw new GeminiErrore(
+        `HTTP ${risposta.status}${motivo ? `: ${motivo.slice(0, 300)}` : ''}`,
+      );
     }
 
     const lettore = risposta.body

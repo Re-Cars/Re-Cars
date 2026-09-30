@@ -19,6 +19,7 @@ import { AssistenteModule } from './assistente/assistente.module';
 import { NotificheModule } from './notifiche/notifiche.module';
 import { CarburantiModule } from './carburanti/carburanti.module';
 import { SESSIONE_JWT } from './auth-cookie.util';
+import { VerificaEmailModule } from './verifica-email/verifica-email.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { SESSIONE_JWT } from './auth-cookie.util';
     AssistenteModule,
     NotificheModule,
     CarburantiModule,
+    VerificaEmailModule,
   ],
   controllers: [AppController, UtenteController, VeicoloController],
   providers: [AppService, UtenteService, VeicoloService, JwtStrategy],

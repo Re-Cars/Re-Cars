@@ -4,6 +4,7 @@ import { OfficinaService } from './officina.service';
 import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { NotificheService } from '../notifiche/notifiche.service';
+import { VerificaEmailService } from '../verifica-email/verifica-email.service';
 
 describe('OfficinaController', () => {
   let controller: OfficinaController;
@@ -19,6 +20,7 @@ describe('OfficinaController', () => {
           provide: NotificheService,
           useValue: { avvisaCambioStato: jest.fn() },
         },
+        { provide: VerificaEmailService, useValue: { verifica: jest.fn() } },
       ],
     }).compile();
 

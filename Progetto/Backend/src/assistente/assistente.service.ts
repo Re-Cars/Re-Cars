@@ -68,7 +68,13 @@ export class AssistenteService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly gemini: GeminiClient,
-  ) {}
+  ) {
+    if (!gemini.configurato && process.env.NODE_ENV !== 'test') {
+      this.logger.warn(
+        "GEMINI_API_KEY non impostata: l'assistente risponderà sempre che non è disponibile",
+      );
+    }
+  }
 
   /** Conta una domanda contro i limiti del piano dell'utente (lancia LimiteSuperato). */
   async consumaDomanda(idUtente: number, adesso = new Date()): Promise<void> {

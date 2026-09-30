@@ -11,8 +11,13 @@ import {
   type ReactNode,
 } from "react";
 
-import { ApiError, eliminaVeicolo as apiEliminaVeicolo, getVeicoliUtente } from "@/lib/api";
-import { logout as authLogout, salvaSessione } from "@/lib/auth";
+import {
+  ApiError,
+  eliminaVeicolo as apiEliminaVeicolo,
+  getProfiloSessione,
+  getVeicoliUtente,
+} from "@/lib/api";
+import { logout as authLogout, salvaSessione, SESSION_COOKIE } from "@/lib/auth";
 import {
   getUtenteLoggato,
   getVeicoloAttivoId,
@@ -136,13 +141,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUtente(nuovo);
   }, []);
 
-  // idratazione iniziale da localStorage + primo caricamento veicoli
+  // idratazione iniziale da localStorage + primo caricamento veicoli.
+  // Cookie di sessione presente ma profilo assente (app aggiunta alla home
+  // dell'iPhone dopo l'accesso da Safari, o dati del sito svuotati): il
+  // profilo si ricarica dal backend invece di mostrare una home senza utente.
   useEffect(() => {
     const salvato = getUtenteLoggato();
-    setUtente(salvato);
-    setPronto(true);
-    if (salvato) void caricaVeicoli();
-  }, [caricaVeicoli]);
+    if (salvato) {
+      setUtente(salvato);
+      setPronto(true);
+      void caricaVeicoli();
+      return;
+    }
+    const conSessione = document.cookie.split("; ").some((c) => c.startsWith(`${SESSION_COOKIE}=`));
+    if (!conSessione) {
+      setPronto(true);
+      return;
+    }
+    let annullato = false;
+    getProfiloSessione()
+      .then(({ tipo, profilo }) => {
+        if (annullato) return;
+        salvaSessione(profilo);
+        setUtente(profilo);
+        if (tipo === "utente") void caricaVeicoli();
+      })
+      .catch((err) => {
+        if (annullato) return;
+        // sessione scaduta o non valida: si torna al login senza avvisi
+        if (err instanceof ApiError && err.status === 401) void logout();
+      })
+      .finally(() => {
+        if (!annullato) setPronto(true);
+      });
+    return () => {
+      annullato = true;
+    };
+  }, [caricaVeicoli, logout]);
 
   // sync tra tab (il vanilla ascoltava l'evento `storage` per il veicolo attivo)
   useEffect(() => {

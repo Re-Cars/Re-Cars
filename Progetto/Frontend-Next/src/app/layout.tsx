@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 
+import GestiApp from "@/components/pwa/GestiApp";
 import RegistraServiceWorker from "@/components/pwa/RegistraServiceWorker";
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
@@ -22,7 +23,12 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#141445",
-  // a tutto schermo sotto notch e barra di stato: gli spazi li danno i safe-area-inset
+  // come un'app (Kilo): niente zoom; a tutto schermo sotto notch e barra
+  // di stato, con gli spazi dati dai safe-area-inset
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: "cover",
 };
 
@@ -52,6 +58,7 @@ export default function RootLayout({
         >
           <AuthProvider>{children}</AuthProvider>
           <RegistraServiceWorker />
+          <GestiApp />
         </ThemeProvider>
       </body>
     </html>

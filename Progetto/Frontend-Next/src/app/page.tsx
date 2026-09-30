@@ -37,7 +37,8 @@ export default function LandingPage() {
       path.style.setProperty("--path-len", `${len}`);
     }
 
-    const T = { bgFade: 800, bgPause: 400, titoloDopo: 250, logoDraw: 2200, sloganWait: 150, btnWait: 700 };
+    // sequenza breve (circa 2,5 s): più lunga sembrava lenta e macchinosa
+    const T = { bgFade: 500, bgPause: 150, titoloDopo: 150, logoDraw: 1400, sloganWait: 100, btnWait: 300 };
     const timers: ReturnType<typeof setTimeout>[] = [];
     let t = 0;
     timers.push(setTimeout(() => setFase((f) => ({ ...f, bg: true })), t));
@@ -57,12 +58,20 @@ export default function LandingPage() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
+  // mentre scorre l'animazione si sveglia il backend (Render gratuito si
+  // addormenta: la prima richiesta può metterci decine di secondi) e si
+  // prepara la pagina di login, così "Accedi" risponde subito
+  useEffect(() => {
+    router.prefetch("/login");
+    void fetch("/api/", { cache: "no-store" }).catch(() => undefined);
+  }, [router]);
+
   const apriGarage = () => {
     if (apertoRef.current) return;
     apertoRef.current = true;
     setAperto(true);
-    // la transizione della saracinesca dura 1.2s, poi si passa al login
-    setTimeout(() => router.push("/login"), 900);
+    // la saracinesca sale, poi si passa al login
+    setTimeout(() => router.push("/login"), 650);
   };
 
   // scroll con la rotellina o swipe verso l'alto aprono il garage

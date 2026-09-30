@@ -5,10 +5,16 @@ import {
   MinLength,
   IsNotEmpty,
   IsEnum,
+  Matches,
 } from 'class-validator';
 import { tipo_utente } from '@prisma/client';
 
 export class CreateUtenteDto {
+  /** Codice di 6 cifre mandato da POST /auth/verifica-email. */
+  @IsOptional()
+  @Matches(/^\d{6}$/, { message: 'Il codice di verifica ha 6 cifre' })
+  codice?: string;
+
   @IsNotEmpty({ message: 'Il nome utente è obbligatorio' })
   @IsString()
   username!: string;

@@ -48,6 +48,9 @@ export default function RegisterScreen() {
   const [tipo, setTipo] = useState<Tipo>(null);
   const [errore, setErrore] = useState("");
   const [loading, setLoading] = useState(false);
+  // verifica dell'email: prima il codice, poi la registrazione con il codice
+  const [codiceInviatoA, setCodiceInviatoA] = useState<string | null>(null);
+  const [codice, setCodice] = useState("");
 
   // campi comuni / privato / azienda
   const [username, setUsername] = useState("");
@@ -129,6 +132,35 @@ export default function RegisterScreen() {
 
     setLoading(true);
     try {
+      // primo passo: il backend controlla l'email e ci manda un codice
+      if (codiceInviatoA !== email.trim()) {
+        const r = await fetch(`${API}/auth/verifica-email`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: email.trim(),
+            per: tipo === "officina" ? "officina" : "utente",
+          }),
+        });
+        const d = await r.json();
+        if (!r.ok) {
+          setErrore(
+            Array.isArray(d.message)
+              ? d.message[0]
+              : (d.message ?? "Impossibile verificare l'email"),
+          );
+          return;
+        }
+        setCodiceInviatoA(email.trim());
+        setCodice("");
+        return;
+      }
+      if (!/^\d{6}$/.test(codice.trim())) {
+        setErrore("Scrivi il codice di 6 cifre che ti abbiamo mandato via email.");
+        return;
+      }
+      body.codice = codice.trim();
+
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -374,6 +406,29 @@ export default function RegisterScreen() {
                   </>
                 )}
 
+                {codiceInviatoA === email.trim() && (
+                  <View className="gap-2">
+                    <Text className="text-xs text-white/80">
+                      Ti abbiamo mandato un codice a {codiceInviatoA}: scrivilo qui
+                      per confermare che l&apos;email è tua. Controlla anche lo spam.
+                    </Text>
+                    <InputGroup
+                      icon="key"
+                      placeholder="Codice di 6 cifre"
+                      value={codice}
+                      onChangeText={(t) => setCodice(t.replace(/\D/g, ""))}
+                      keyboardType="number-pad"
+                      maxLength={6}
+                      textContentType="oneTimeCode"
+                    />
+                    <TouchableOpacity onPress={() => setCodiceInviatoA(null)}>
+                      <Text className="text-xs underline" style={{ color: "#fdba74" }}>
+                        Non è arrivato? Chiedine un altro
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
                 {errore !== "" && (
                   <Text
                     className="text-xs text-center"
@@ -392,7 +447,11 @@ export default function RegisterScreen() {
                 >
                   <FontAwesome6 name="user-plus" size={13} color="#ffffff" />
                   <Text className="text-sm font-bold text-white tracking-wider">
-                    {loading ? "REGISTRAZIONE..." : "REGISTRATI"}
+                    {loading
+                      ? "ATTENDI..."
+                      : codiceInviatoA === email.trim()
+                        ? "CONFERMA E REGISTRATI"
+                        : "VERIFICA EMAIL"}
                   </Text>
                 </TouchableOpacity>
               </View>
