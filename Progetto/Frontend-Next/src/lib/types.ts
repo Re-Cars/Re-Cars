@@ -35,6 +35,7 @@ export interface DatiGenerici {
   /** VarChar(5) nello schema Prisma: arriva come stringa (es. "1242"). */
   cilindrata?: string | number | null;
   cavalli?: number | null;
+  numporte?: string | null;
 }
 
 export interface DatiSpecifici {
@@ -54,6 +55,13 @@ export interface VeicoloDettaglio {
   modello?: string;
   dati_generici: DatiGenerici[];
   dati_specifici: DatiSpecifici[];
+  /** true = inserito a mano (dati modificabili), false = aggiunto dalla targa. */
+  manuale?: boolean;
+  /**
+   * Scadenze calcolate dal backend (AAAA-MM-GG): date salvate aggiornate
+   * con lo storico interventi (Bollo, Assicurazione, Revisione, Tagliando).
+   */
+  scadenze?: Record<"bollo" | "assicurazione" | "revisione" | "tagliando", string | null>;
 }
 
 /** Voce compatta usata da switcher / lista veicoli. */
@@ -108,6 +116,8 @@ export interface DashboardOfficina {
   settimanaT?: number;
   settimanaAttesa?: number;
   pontiOccupati?: number;
+  /** Ponti dell'officina (null se non configurati nel profilo). */
+  pontiDisponibili?: number | null;
   abbonamento?: Abbonamento | null;
   prenotazioniOggi?: PrenotazioneOfficina[];
 }

@@ -14,7 +14,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "RE|CARS",
+  // nella scheda del browser "Home · RE|CARS": ogni sezione ha il suo
+  // layout.tsx con il titolo della pagina
+  title: { default: "RE|CARS", template: "%s · RE|CARS" },
   description: "Gestione veicoli e prenotazione officine — Tu guida al resto pensiamo noi",
   applicationName: "RE|CARS",
   // installata su iPhone: a tutto schermo, barra di stato sopra lo sfondo scuro

@@ -32,11 +32,15 @@ export function calcolaSalute(v: VeicoloDettaglio): SaluteVeicolo {
   const ds = v.dati_specifici[0];
   if (!ds) return "ok";
 
-  const giorniBollo = ds.datascadenzabollo ? giorniAllaData(ds.datascadenzabollo) : null;
-  const giorniRca = ds.datascadenzarca ? giorniAllaData(ds.datascadenzarca) : null;
+  const bollo = v.scadenze ? v.scadenze.bollo : ds.datascadenzabollo;
+  const rca = v.scadenze ? v.scadenze.assicurazione : ds.datascadenzarca;
+  const giorniBollo = bollo ? giorniAllaData(bollo) : null;
+  const giorniRca = rca ? giorniAllaData(rca) : null;
+  // un pagamento registrato nello storico vale più del flag del dataset
+  const pagatoDopo = (g: number | null) => g !== null && g >= 0 && v.scadenze !== undefined;
 
-  const bolloScaduto = ds.isbolloattivo === false || (giorniBollo !== null && giorniBollo < 0);
-  const rcaScaduta = ds.isinsured === false || (giorniRca !== null && giorniRca < 0);
+  const bolloScaduto = (ds.isbolloattivo === false && !pagatoDopo(giorniBollo)) || (giorniBollo !== null && giorniBollo < 0);
+  const rcaScaduta = (ds.isinsured === false && !pagatoDopo(giorniRca)) || (giorniRca !== null && giorniRca < 0);
   const inScadenza =
     (giorniBollo !== null && giorniBollo >= 0 && giorniBollo <= 30) ||
     (giorniRca !== null && giorniRca >= 0 && giorniRca <= 30);
@@ -48,8 +52,8 @@ export function calcolaSalute(v: VeicoloDettaglio): SaluteVeicolo {
 
 /**
  * Prossima revisione ministeriale: 4 anni dall'immatricolazione, poi ogni
- * 2 anni. Il backend non registra le revisioni effettuate, quindi si
- * restituisce sempre la prima scadenza futura.
+ * 2 anni. Serve solo se il backend non manda `scadenze` (che tiene conto
+ * delle revisioni registrate nello storico).
  */
 export function prossimaRevisione(dataimmatricolazione: string): Date | null {
   const imm = new Date(dataimmatricolazione);
@@ -66,7 +70,7 @@ export function prossimaRevisione(dataimmatricolazione: string): Date | null {
 export type LivelloScadenza = "rossa" | "arancione" | "gialla" | "ok";
 
 export interface ScadenzaDettaglio {
-  tipo: "bollo" | "assicurazione" | "revisione";
+  tipo: "bollo" | "assicurazione" | "revisione" | "tagliando";
   data: Date | null;
   giorni: number | null;
   livello: LivelloScadenza;
@@ -82,12 +86,15 @@ function livello(giorni: number | null, attivo?: boolean | null): LivelloScadenz
 }
 
 /**
- * Bollo, assicurazione e revisione di un singolo veicolo per la scheda
- * "Stato monitoraggio" della dashboard. Stessa regola di calcolaSalute:
- * conta la data, e un flag esplicitamente `false` forza "scaduta".
+ * Bollo, assicurazione, revisione e tagliando di un singolo veicolo per la
+ * scheda "Stato monitoraggio" della dashboard. Le date arrivano già
+ * calcolate dal backend (`scadenze`: date salvate + storico interventi);
+ * stessa regola di calcolaSalute: un flag esplicitamente `false` forza
+ * "scaduta", a meno che lo storico non abbia una data successiva.
  */
 export function scadenzeVeicolo(v: VeicoloDettaglio): ScadenzaDettaglio[] {
   const ds = v.dati_specifici[0];
+  const sc = v.scadenze;
   const voce = (
     tipo: ScadenzaDettaglio["tipo"],
     raw: string | Date | null | undefined,
@@ -98,9 +105,20 @@ export function scadenzeVeicolo(v: VeicoloDettaglio): ScadenzaDettaglio[] {
     const giorni = valida ? giorniAllaData(valida) : null;
     return { tipo, data: valida, giorni, livello: livello(giorni, attivo) };
   };
+  if (sc) {
+    const attivo = (data: string | null, flag?: boolean | null) =>
+      flag === false && data && (giorniAllaData(data) ?? -1) >= 0 ? null : flag;
+    return [
+      voce("bollo", sc.bollo, attivo(sc.bollo, ds?.isbolloattivo)),
+      voce("assicurazione", sc.assicurazione, attivo(sc.assicurazione, ds?.isinsured)),
+      voce("revisione", sc.revisione),
+      voce("tagliando", sc.tagliando),
+    ];
+  }
   return [
     voce("bollo", ds?.datascadenzabollo, ds?.isbolloattivo),
     voce("assicurazione", ds?.datascadenzarca, ds?.isinsured),
     voce("revisione", ds?.dataimmatricolazione ? prossimaRevisione(ds.dataimmatricolazione) : null),
+    voce("tagliando", null),
   ];
 }

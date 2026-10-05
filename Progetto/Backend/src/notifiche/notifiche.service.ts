@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 import * as webpush from 'web-push';
 import { PrismaService } from '../prisma.service';
 import { IscrizioneDto } from './dto/iscrizione.dto';
+import { INTERVENTI_SCADENZA } from '../veicolo/scadenze';
 import {
   avvisoCambioStato,
   avvisoFineAbbonamento,
@@ -174,7 +175,13 @@ export class NotificheService {
     for (const { id_utente } of utenti) {
       const veicoli = await this.prisma.veicolo.findMany({
         where: { id_utente },
-        include: { dati_specifici: true },
+        include: {
+          dati_specifici: true,
+          storico_intervento: {
+            where: { tipo: { in: Object.keys(INTERVENTI_SCADENZA) } },
+            select: { tipo: true, data: true },
+          },
+        },
       });
       for (const v of veicoli) {
         for (const avviso of scadenzeDaAvvisare(v, oggi)) {

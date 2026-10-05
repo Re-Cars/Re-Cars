@@ -12,6 +12,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { tipo_veicolo } from '@prisma/client';
 
 export const ALIMENTAZIONI = [
@@ -101,4 +102,31 @@ export class CreateVeicoloManualeDto {
   @IsOptional()
   @IsDateString({}, { message: 'Scadenza bollo non valida' })
   datascadenzabollo?: string;
+
+  /**
+   * Ultima revisione fatta (sul libretto: "revisione effettuata ... data"):
+   * diventa il primo intervento "Revisione" dello storico.
+   */
+  @IsOptional()
+  @IsDateString({}, { message: "Data dell'ultima revisione non valida" })
+  ultimarevisione?: string;
+
+  /** Ultimo tagliando fatto: primo intervento "Tagliando" dello storico. */
+  @IsOptional()
+  @IsDateString({}, { message: "Data dell'ultimo tagliando non valida" })
+  ultimotagliando?: string;
 }
+
+/**
+ * Modifica di un veicolo inserito a mano: stessi campi della creazione
+ * tranne la targa (per cambiarla si elimina il veicolo) e le date di
+ * revisione e tagliando, che dopo la creazione vivono nello storico. Un
+ * campo facoltativo mandato come null viene svuotato.
+ */
+export class UpdateVeicoloManualeDto extends PartialType(
+  OmitType(CreateVeicoloManualeDto, [
+    'targa',
+    'ultimarevisione',
+    'ultimotagliando',
+  ] as const),
+) {}

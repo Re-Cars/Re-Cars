@@ -11,7 +11,7 @@ export const STATO_LABEL: Record<string, string> = {
 
 export function iconaVeicoloPrenotazione(p: PrenotazioneOfficina): string {
   const tipo = p.utente?.veicolo?.[0]?.dati_generici?.[0]?.tipo_veicolo;
-  return tipo === "Moto" || tipo === "Scooter" ? "fa-motorcycle" : "fa-car";
+  return tipo === "Moto" || tipo === "Scooter" ? "ti-motorbike" : "ti-car";
 }
 
 export function nomeVeicoloPrenotazione(p: PrenotazioneOfficina): string {
@@ -70,13 +70,13 @@ export default function DettaglioPrenotazioneModal({
       <div className="oc-new-modal">
         <div className="oc-new-modal-header">
           <div className="oc-new-modal-title">
-            <i className="fa-solid fa-calendar-check" />
+            <i className="ti ti-calendar-check" />
             Dettaglio prenotazione
           </div>
           <div className="oc-new-modal-header-right">
             <span className={`oc-stato ${p.stato}`}>{STATO_LABEL[p.stato] ?? p.stato}</span>
             <button type="button" className="oc-detail-close" onClick={onClose}>
-              <i className="fa-solid fa-xmark" />
+              <i className="ti ti-x" />
             </button>
           </div>
         </div>
@@ -84,7 +84,7 @@ export default function DettaglioPrenotazioneModal({
         <div className="oc-new-modal-body">
           <div className="oc-new-hero">
             <div className="oc-new-car-icon">
-              <i className={`fa-solid ${icona}`} />
+              <i className={`ti ${icona}`} />
             </div>
             <div>
               <div className="oc-new-car-name">{nomeVeicolo}</div>
@@ -101,11 +101,11 @@ export default function DettaglioPrenotazioneModal({
 
           <div className="oc-new-chips">
             <div className="oc-new-chip ora">
-              <i className="fa-solid fa-clock" /> {formattaDataOra(p.dataprenotazione)}
+              <i className="ti ti-clock" /> {formattaDataOra(p.dataprenotazione)}
             </div>
             {p.servizio && (
               <div className="oc-new-chip">
-                <i className="fa-solid fa-screwdriver-wrench" /> {p.servizio}
+                <i className="ti ti-tool" /> {p.servizio}
               </div>
             )}
           </div>
@@ -113,7 +113,7 @@ export default function DettaglioPrenotazioneModal({
           {p.descrizione && (
             <div className="oc-new-nota">
               <div className="oc-new-nota-label">
-                <i className="fa-solid fa-note-sticky" /> Note
+                <i className="ti ti-note" /> Note
               </div>
               <div className="oc-new-nota-text">{p.descrizione}</div>
             </div>
@@ -138,14 +138,14 @@ export default function DettaglioPrenotazioneModal({
                 className="oc-new-btn conferma"
                 onClick={() => onAggiornaStato(p.id, "confermata")}
               >
-                <i className="fa-solid fa-check" /> Conferma
+                <i className="ti ti-check" /> Conferma
               </button>
               <button
                 type="button"
                 className="oc-new-btn annulla"
                 onClick={() => onAggiornaStato(p.id, "annullata")}
               >
-                <i className="fa-solid fa-ban" /> Annulla
+                <i className="ti ti-ban" /> Annulla
               </button>
             </>
           )}
@@ -156,14 +156,14 @@ export default function DettaglioPrenotazioneModal({
                 className="oc-new-btn conferma"
                 onClick={() => onAggiornaStato(p.id, "completata")}
               >
-                <i className="fa-solid fa-square-check" /> Completa
+                <i className="ti ti-square-check" /> Completa
               </button>
               <button
                 type="button"
                 className="oc-new-btn annulla"
                 onClick={() => onAggiornaStato(p.id, "annullata")}
               >
-                <i className="fa-solid fa-ban" /> Annulla
+                <i className="ti ti-ban" /> Annulla
               </button>
             </>
           )}

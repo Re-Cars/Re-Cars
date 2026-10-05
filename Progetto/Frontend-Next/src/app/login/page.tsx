@@ -30,11 +30,12 @@ export default function LoginPage() {
   const [lento, setLento] = useState(false);
 
   useEffect(() => {
-    // sveglia il backend mentre l'utente scrive e prepara le home
+    // sveglia il backend mentre l'utente scrive. Niente prefetch di
+    // /homepage o /officina: prima dell'accesso il middleware risponde con
+    // il rimando a /login e il router lo terrebbe in cache, così dopo
+    // "Accedi" si restava fermi sul login fino al ricaricamento della pagina
     void fetch("/api/", { cache: "no-store" }).catch(() => undefined);
-    router.prefetch("/homepage");
-    router.prefetch("/officina");
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (!inCorso) {

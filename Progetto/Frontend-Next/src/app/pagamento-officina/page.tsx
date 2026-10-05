@@ -29,7 +29,7 @@ function ContenutoPagamentoOfficina() {
           <div className="ps-icon-ring" />
           <div className="ps-icon-ring ps-icon-ring2" />
           <div className="ps-icon-circle">
-            <i className="fa-solid fa-check" />
+            <i className="ti ti-check" />
           </div>
         </div>
 
@@ -56,12 +56,12 @@ function ContenutoPagamentoOfficina() {
 
         <div className="ps-links">
           <Link href="/abbonamenti-officina" className="ps-link">
-            <i className="fa-solid fa-credit-card ps-link-icon" />
+            <i className="ti ti-credit-card ps-link-icon" />
             Vedi abbonamento
           </Link>
           <span className="ps-link-sep">|</span>
           <Link href="/officina" className="ps-link">
-            <i className="fa-solid fa-house ps-link-icon" />
+            <i className="ti ti-home ps-link-icon" />
             Torna alla home
           </Link>
         </div>

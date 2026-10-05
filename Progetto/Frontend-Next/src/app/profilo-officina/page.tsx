@@ -148,28 +148,28 @@ export default function ProfiloOfficinaPage() {
         {/* Hero */}
         <div className="po-hero">
           <div className="po-hero-logo">
-            <i className="fa-solid fa-building-user" />
+            <i className="ti ti-building-store" />
           </div>
           <div className="po-hero-info">
             <div className="po-hero-nome">{of?.nome ?? of?.ragione_sociale ?? "Caricamento..."}</div>
             <div className="po-hero-sub">
               <span>
-                <i className="fa-solid fa-location-dot" /> {of?.indirizzo ?? "—"}, {of?.sigla_citta ?? ""}
+                <i className="ti ti-map-pin" /> {of?.indirizzo ?? "—"}, {of?.sigla_citta ?? ""}
               </span>
               <span>
-                <i className="fa-solid fa-phone" /> {of?.telefono ?? "—"}
+                <i className="ti ti-phone" /> {of?.telefono ?? "—"}
               </span>
               <span>
-                <i className="fa-solid fa-envelope" /> {of?.email ?? "—"}
+                <i className="ti ti-mail" /> {of?.email ?? "—"}
               </span>
               <span className="po-abbonamento-badge">
-                <i className="fa-solid fa-crown" />
+                <i className="ti ti-crown" />
                 <span>{NOMI_PIANI_OFFICINA[piano] ?? piano}</span>
               </span>
             </div>
             <div className="po-hero-actions">
               <button type="button" className="po-btn-primary" onClick={() => apriModifica("password")}>
-                <i className="fa-solid fa-key" /> Cambia password
+                <i className="ti ti-key" /> Cambia password
               </button>
             </div>
           </div>
@@ -208,7 +208,7 @@ export default function ProfiloOfficinaPage() {
         {/* Dati officina */}
         <div className="po-section">
           <div className="po-section-bar">
-            <i className="fa-solid fa-circle-info" />
+            <i className="ti ti-info-circle" />
             <span>Dati officina</span>
           </div>
           <div className="po-section-body">
@@ -219,7 +219,7 @@ export default function ProfiloOfficinaPage() {
                   <span>{String(of?.[campo] ?? "—") || "—"}</span>
                 </div>
                 <button type="button" className="po-btn-edit" onClick={() => apriModifica(campo)}>
-                  <i className="fa-solid fa-pen" /> Modifica
+                  <i className="ti ti-pencil" /> Modifica
                 </button>
               </div>
             ))}
@@ -229,7 +229,7 @@ export default function ProfiloOfficinaPage() {
         {/* Servizi */}
         <div className="po-section">
           <div className="po-section-bar">
-            <i className="fa-solid fa-screwdriver-wrench" />
+            <i className="ti ti-tool" />
             <span>Servizi offerti</span>
           </div>
           <div className="po-section-body">
@@ -250,7 +250,7 @@ export default function ProfiloOfficinaPage() {
                 className="po-btn-primary po-btn-salva-tipi"
                 onClick={() => void salvaTipi()}
               >
-                <i className="fa-solid fa-floppy-disk" /> Salva modifiche
+                <i className="ti ti-device-floppy" /> Salva modifiche
               </button>
             )}
           </div>
@@ -259,7 +259,7 @@ export default function ProfiloOfficinaPage() {
         {/* Abbonamento */}
         <div className="po-section">
           <div className="po-section-bar">
-            <i className="fa-solid fa-credit-card" />
+            <i className="ti ti-credit-card" />
             <span>Abbonamento</span>
           </div>
           <div className="po-section-body">
@@ -279,7 +279,7 @@ export default function ProfiloOfficinaPage() {
               </span>
             </div>
             <Link href="/abbonamenti-officina" className="po-btn-primary po-btn-gestisci">
-              <i className="fa-solid fa-arrow-right" />
+              <i className="ti ti-arrow-right" />
               Gestisci abbonamento
             </Link>
           </div>
@@ -288,7 +288,7 @@ export default function ProfiloOfficinaPage() {
         {/* Zona pericolosa */}
         <div className="po-section po-danger-section">
           <div className="po-section-bar po-danger-bar">
-            <i className="fa-solid fa-triangle-exclamation" />
+            <i className="ti ti-alert-triangle" />
             <span>Zona pericolosa</span>
           </div>
           <div className="po-section-body">
@@ -298,7 +298,7 @@ export default function ProfiloOfficinaPage() {
                 <p>Azione irreversibile. Tutti i dati e le prenotazioni verranno eliminati permanentemente.</p>
               </div>
               <button type="button" className="po-btn-danger" onClick={() => setConfermaElimina(true)}>
-                <i className="fa-solid fa-trash" /> Elimina
+                <i className="ti ti-trash" /> Elimina
               </button>
             </div>
           </div>
@@ -310,7 +310,7 @@ export default function ProfiloOfficinaPage() {
         <div className="po-overlay open" onClick={() => setCampoInModifica(null)}>
           <div className="po-modal" onClick={(e) => e.stopPropagation()}>
             <div className="po-modal-title">
-              <i className="fa-solid fa-pen po-icon-brand" />
+              <i className="ti ti-pencil po-icon-brand" />
               <span>{LABEL_CAMPI[campoInModifica] ?? campoInModifica}</span>
             </div>
             <input
@@ -342,7 +342,7 @@ export default function ProfiloOfficinaPage() {
         <div className="po-overlay open" onClick={() => setConfermaElimina(false)}>
           <div className="po-modal po-modal-danger" onClick={(e) => e.stopPropagation()}>
             <div className="po-modal-title">
-              <i className="fa-solid fa-trash po-icon-danger" />
+              <i className="ti ti-trash po-icon-danger" />
               <span>Elimina profilo</span>
             </div>
             <p className="po-modal-sub">

@@ -78,11 +78,12 @@ export class PrenotazioniService {
     const safeOrario = escapeHtml(dto.orario);
     const safeNote = dto.note ? escapeHtml(dto.note) : undefined;
 
-    // la prenotazione è già salvata: se l'email non parte (SMTP non
-    // configurato, Gmail irraggiungibile) si registra l'errore ma non si
-    // risponde 500, altrimenti l'utente riprova e crea un doppione
-    try {
-      await this.mailerService.sendMail({
+    // la prenotazione è già salvata: la conferma all'utente non aspetta
+    // l'email. Su Render gratuito l'SMTP è bloccato e l'invio restava appeso
+    // per minuti, lasciando l'overlay "in invio" anche se l'officina
+    // vedeva già la prenotazione. Se l'email non parte si registra e basta.
+    void this.mailerService
+      .sendMail({
         to: utente.email,
         subject: `Prenotazione confermata — ${safeOfficinaNome}`,
         html: `
@@ -106,14 +107,14 @@ export class PrenotazioniService {
             contentType: 'text/calendar',
           },
         ],
+      })
+      .catch((err: unknown) => {
+        this.logger.warn(
+          `Email di conferma non inviata per la prenotazione ${prenotazione.id}: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+        );
       });
-    } catch (err) {
-      this.logger.warn(
-        `Email di conferma non inviata per la prenotazione ${prenotazione.id}: ${
-          err instanceof Error ? err.message : String(err)
-        }`,
-      );
-    }
 
     return prenotazione;
   }

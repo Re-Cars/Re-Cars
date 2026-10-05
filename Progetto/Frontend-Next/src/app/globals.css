@@ -2138,7 +2138,7 @@ input:-webkit-autofill:active {
 .auth-body {
   position: relative;
   background-image: linear-gradient(rgba(2, 2, 39, 0.418), rgba(14, 14, 14, 0.5)),
-    url("/Img/garageout.jpg");
+    url("/Img/garage-aperto.webp");
   background-size: cover;
   background-position: center;
   background-color: #0e0e0e;
@@ -2155,7 +2155,7 @@ input:-webkit-autofill:active {
 .shutter-gate {
   position: fixed;
   inset: 0;
-  background-image: url("/Img/garage2.jpg");
+  background-image: url("/Img/garage-landing.webp");
   background-size: cover;
   background-position: center;
   display: flex;
@@ -2178,7 +2178,7 @@ input:-webkit-autofill:active {
   z-index: 5;
   background: #0e0e0e;
   opacity: 1;
-  transition: opacity 1s ease;
+  transition: opacity 0.7s ease;
   pointer-events: none;
 }
 
@@ -2212,14 +2212,11 @@ input:-webkit-autofill:active {
 }
 
 .landing-logo {
+  position: relative;
   width: 90px;
   height: 90px;
   margin-bottom: 8px;
-  opacity: 0;
-  transition: opacity 0.4s ease;
 }
-
-.landing-logo.show-logo { opacity: 1; }
 
 .landing-logo svg {
   width: 100%;
@@ -2233,17 +2230,83 @@ input:-webkit-autofill:active {
   stroke-linecap: square;
   stroke-miterlimit: 10;
   stroke-width: 3.561px;
-  stroke-dasharray: 9999;
-  stroke-dashoffset: 9999;
-  animation: traccia-logo 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  animation-play-state: paused;
 }
 
-.landing-logo.animate-logo .logo-path { animation-play-state: running; }
+/*
+ * Sequenza d'ingresso della landing (classe "avvia" su .landing-content),
+ * solo transform e opacity: l'auto arriva da sinistra con la scia
+ * arancione, frena abbassando il muso e si ferma al centro (0,25-1,4 s);
+ * poi stanghetta, RE e CARS, slogan e bottone. Circa 2,3 s in tutto.
+ */
+.landing-auto,
+.landing-scia {
+  opacity: 0;
+  will-change: transform;
+}
 
-@keyframes traccia-logo {
-  from { stroke-dashoffset: var(--path-len, 9999); }
-  to { stroke-dashoffset: 0; }
+.landing-auto { transform-origin: 50% 90%; }
+
+.landing-scia {
+  position: absolute;
+  right: 100%;
+  top: 35%;
+  width: 120px;
+  height: 30px;
+  margin-right: -6px;
+  pointer-events: none;
+}
+
+.landing-scia i {
+  display: block;
+  height: 2px;
+  margin: 6px 0 0 auto;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.9));
+}
+
+.landing-scia i:nth-child(1) { width: 70%; }
+.landing-scia i:nth-child(2) { width: 100%; }
+.landing-scia i:nth-child(3) { width: 55%; }
+
+.landing-content.avvia .landing-auto {
+  animation: auto-arriva 1.15s cubic-bezier(0.16, 0.84, 0.3, 1) 0.25s both;
+}
+
+.landing-content.avvia .landing-scia {
+  animation: auto-scia 1.15s ease-out 0.25s both;
+}
+
+@keyframes auto-arriva {
+  0% { opacity: 1; transform: translateX(-60vw); }
+  70% { opacity: 1; transform: translateX(6px); }
+  /* frenata: il muso si abbassa e torna su */
+  82% { opacity: 1; transform: translateX(2px) rotate(3deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes auto-scia {
+  0% { opacity: 0; transform: translateX(-60vw) scaleX(0.4); }
+  15% { opacity: 1; }
+  70% { opacity: 0.9; transform: translateX(6px) scaleX(1); }
+  100% { opacity: 0; transform: translateX(0) scaleX(0.2); }
+}
+
+/* titolo subito dopo l'arrivo dell'auto (BrandTitle ha i suoi tempi di base) */
+.landing-content .brand-title--anim .bt-bar { transition-delay: 1.05s; }
+
+.landing-content .brand-title--anim .bt-re > span {
+  transition-duration: 0.6s;
+  transition-delay: 1.2s;
+}
+
+.landing-content .brand-title--anim .bt-cars > span {
+  transition-duration: 0.6s;
+  transition-delay: 1.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-content.avvia .landing-auto { animation: none; opacity: 1; }
+  .landing-content.avvia .landing-scia { animation: none; }
 }
 
 /* Titolo RE|CARS (components/BrandTitle.tsx): lettere bianche, stanghetta
@@ -2323,10 +2386,10 @@ input:-webkit-autofill:active {
   letter-spacing: 0.02em;
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition: opacity 0.5s ease 1.85s, transform 0.5s ease 1.85s;
 }
 
-.landing-subtitle.show-subtitle { opacity: 1; transform: translateY(0); }
+.landing-content.avvia .landing-subtitle { opacity: 1; transform: translateY(0); }
 
 .action-group {
   margin-top: 60px;
@@ -2335,10 +2398,10 @@ input:-webkit-autofill:active {
   align-items: center;
   gap: 32px;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease 2.1s;
 }
 
-.action-group.show-hint { opacity: 1; }
+.landing-content.avvia .action-group { opacity: 1; }
 
 .scroll-hint {
   display: flex;
@@ -2389,10 +2452,10 @@ input:-webkit-autofill:active {
   justify-content: center;
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 0.5s ease 2.1s, transform 0.5s ease 2.1s;
 }
 
-.landing-buttons.show-btn { opacity: 1; transform: translateY(0); }
+.landing-content.avvia .landing-buttons { opacity: 1; transform: translateY(0); }
 
 .auth-container {
   position: relative;
@@ -3791,9 +3854,43 @@ input:-webkit-autofill:active {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* bollo, assicurazione, revisione, tagliando */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(8px, 1vw, 14px);
 }
+
+/* tagliando senza interventi: invito a registrarlo nello storico */
+.dash-scad-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.dash-scad-link:hover { text-decoration: underline; }
+
+/* matita "Modifica" dei veicoli inseriti a mano, nell'angolo dell'hero */
+.dash-hero-modifica {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+.dash-hero-modifica:hover { background: rgba(255, 255, 255, 0.2); }
 
 .dash-scad {
   min-height: 0;

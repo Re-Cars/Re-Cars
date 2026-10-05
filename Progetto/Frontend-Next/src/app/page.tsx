@@ -6,56 +6,36 @@ import { useEffect, useRef, useState } from "react";
 import BrandTitle from "@/components/BrandTitle";
 
 /**
- * Landing page: saracinesca del garage con sequenza animata
- * (sfondo → logo tracciato insieme al titolo → slogan → bottone ACCEDI).
- * "Aprire il garage" (scroll, swipe o click su ACCEDI) solleva la
- * saracinesca e porta alla pagina di login.
+ * Landing page: saracinesca del garage con sequenza animata. Il logo-auto
+ * entra da sinistra, frena e si ferma al centro, poi escono RE|CARS, lo
+ * slogan e il bottone ACCEDI. Tutta la sequenza è CSS (classe "avvia" in
+ * .landing-content, tempi in globals.css): niente timer React, che sul
+ * telefono facevano scattare l'animazione. Parte quando lo sfondo è pronto
+ * (al massimo dopo 600 ms). "Aprire il garage" (scroll, swipe o click su
+ * ACCEDI) solleva la saracinesca e porta alla pagina di login.
  */
 export default function LandingPage() {
   const router = useRouter();
-  const [fase, setFase] = useState({
-    bg: false,
-    logo: false,
-    logoAnim: false,
-    titolo: false,
-    slogan: false,
-    bottone: false,
-  });
+  const [avviata, setAvviata] = useState(false);
   const [aperto, setAperto] = useState(false);
-  const logoPathRef = useRef<SVGPathElement>(null);
   const apertoRef = useRef(false);
 
-  // sequenza: sfondo → logo tracciato; il titolo parte insieme al logo
-  // (stanghetta, poi RE, poi CARS: tempi in .brand-title--anim), lo slogan
-  // arriva a logo completato, poi bottone ACCEDI e "Scorri"
+  // si parte a sfondo decodificato, così la sfumatura non scatta
   useEffect(() => {
-    const path = logoPathRef.current;
-    if (path) {
-      const len = path.getTotalLength();
-      path.style.strokeDasharray = `${len}`;
-      path.style.strokeDashoffset = `${len}`;
-      path.style.setProperty("--path-len", `${len}`);
-    }
-
-    // sequenza breve (circa 2,5 s): più lunga sembrava lenta e macchinosa
-    const T = { bgFade: 500, bgPause: 150, titoloDopo: 150, logoDraw: 1400, sloganWait: 100, btnWait: 300 };
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    let t = 0;
-    timers.push(setTimeout(() => setFase((f) => ({ ...f, bg: true })), t));
-    t += T.bgFade + T.bgPause;
-    timers.push(
-      setTimeout(() => {
-        setFase((f) => ({ ...f, logo: true }));
-        timers.push(setTimeout(() => setFase((f) => ({ ...f, logoAnim: true })), 80));
-      }, t),
-    );
-    timers.push(setTimeout(() => setFase((f) => ({ ...f, titolo: true })), t + T.titoloDopo));
-    t += T.logoDraw + T.sloganWait;
-    timers.push(setTimeout(() => setFase((f) => ({ ...f, slogan: true })), t));
-    t += T.btnWait;
-    timers.push(setTimeout(() => setFase((f) => ({ ...f, bottone: true })), t));
-
-    return () => timers.forEach(clearTimeout);
+    let fatto = false;
+    const avvia = () => {
+      if (fatto) return;
+      fatto = true;
+      setAvviata(true);
+    };
+    const img = new Image();
+    img.src = "/Img/garage-landing.webp";
+    img.decode().then(avvia, avvia);
+    const riserva = setTimeout(avvia, 600);
+    return () => {
+      fatto = true;
+      clearTimeout(riserva);
+    };
   }, []);
 
   // mentre scorre l'animazione si sveglia il backend (Render gratuito si
@@ -103,29 +83,31 @@ export default function LandingPage() {
   return (
     <div className="auth-body">
       <div className="landing-overlay" />
-      <div className={`shutter-gate${fase.bg ? " show-bg" : ""}${aperto ? " lift-up" : ""}`}>
+      <div className={`shutter-gate${avviata ? " show-bg" : ""}${aperto ? " lift-up" : ""}`}>
         <div className="landing-overlay" />
-        <div className="landing-content">
+        <div className={`landing-content${avviata ? " avvia" : ""}`}>
           <div className="brand-group">
-            <div
-              className={`landing-logo${fase.logo ? " show-logo" : ""}${fase.logoAnim ? " animate-logo" : ""}`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50.54 35.951">
+            <div className="landing-logo" aria-hidden="true">
+              <span className="landing-scia">
+                <i />
+                <i />
+                <i />
+              </span>
+              <svg className="landing-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50.54 35.951">
                 <path
-                  ref={logoPathRef}
                   className="logo-path"
                   d="M44.234,35.083c0,3.957,2.775,5.643,5.032,6.6a7.812,7.812,0,0,0,7.165-.454,7.39,7.39,0,0,0,3.412-6.444v-.035a4.361,4.361,0,0,0-4.361-4.511H17.873a4.347,4.347,0,0,0-4.344,4.511v.035a7.39,7.39,0,0,0,3.412,6.444,7.812,7.812,0,0,0,7.165.454c2.257-.958,5.033-2.941,5.033-6.9,0-6.835-7.881-9.074-7.881-9.074l-3.605-.259a4.046,4.046,0,0,1-4.124-4.017V14.157a4.206,4.206,0,0,1,4.206-4.206H35.569c12.053,1.061,22.167,9.687,23.882,11.023A2.694,2.694,0,0,1,60.5,23.093h0a2.658,2.658,0,0,1-2.657,2.657h-12.8a7.578,7.578,0,0,1-7.578-7.577V15.71"
                   transform="translate(-11.745 -8.17)"
                 />
               </svg>
             </div>
-            <BrandTitle as="h1" className="landing-brand" animato visibile={fase.titolo} />
-            <p className={`landing-subtitle${fase.slogan ? " show-subtitle" : ""}`}>
+            <BrandTitle as="h1" className="landing-brand" animato visibile={avviata} />
+            <p className="landing-subtitle">
               <i>Tu guida al resto pensiamo noi</i>
             </p>
           </div>
 
-          <div className={`action-group${fase.bottone ? " show-hint" : ""}`}>
+          <div className="action-group">
             <div className={`scroll-hint${aperto ? " hint-hidden" : ""}`}>
               <span>Scorri</span>
               <div className="scroll-arrows">
@@ -136,7 +118,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className={`landing-buttons${fase.bottone ? " show-btn" : ""}`}>
+          <div className="landing-buttons">
             <button type="button" className="btn-landing" onClick={apriGarage}>
               ACCEDI
             </button>

@@ -95,7 +95,7 @@ export default function HomePage() {
           onGarageCambiato={onGarageCambiato}
           onElimina={onElimina}
         />
-        <InfoVeicoloPanel veicolo={selezionato} />
+        <InfoVeicoloPanel veicolo={selezionato} onModificato={onGarageCambiato} />
         <AzioniRapide speseAnno={speseAnno} veicolo={selezionato} />
       </main>
     </Layout>

@@ -214,10 +214,24 @@ export interface NuovoVeicoloManuale {
   nomeassicurazione?: string;
   datascadenzarca?: string;
   datascadenzabollo?: string;
+  /** Diventano i primi interventi Revisione e Tagliando dello storico. */
+  ultimarevisione?: string;
+  ultimotagliando?: string;
 }
 
 export function aggiungiVeicoloManuale(body: NuovoVeicoloManuale): Promise<unknown> {
   return fetchApi("/veicolo/manuale", { method: "POST", body: JSON.stringify(body) });
+}
+
+/** Campi modificabili di un veicolo inserito a mano: null svuota il campo. */
+export type ModificaVeicoloManuale = {
+  [K in Exclude<keyof NuovoVeicoloManuale, "targa" | "ultimarevisione" | "ultimotagliando">]?:
+    | NuovoVeicoloManuale[K]
+    | null;
+};
+
+export function modificaVeicoloManuale(id: number, body: ModificaVeicoloManuale): Promise<VeicoloDettaglio> {
+  return fetchApi(`/veicolo/${id}`, { method: "PATCH", body: JSON.stringify(body) });
 }
 
 export function aggiungiVeicolo(targa: string, idUtente: number): Promise<unknown> {

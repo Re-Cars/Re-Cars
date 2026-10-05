@@ -36,7 +36,7 @@ Bootstrap details (`src/main.ts`): `NestFactory.create(AppModule, { rawBody: tru
 | `notifiche` (`NotificheModule`) | yes | Web Push (VAPID, `web-push`): device subscriptions, daily deadlines/appointment reminders, booking status notifications; imported by `OfficinaModule`. Off without `VAPID_*` keys |
 | `carburanti` (`CarburantiModule`) | yes | Fuel prices from MIMIT open data (two daily CSVs: stations + 8 a.m. prices), downloaded at startup and at most every 6 h, kept in memory (no DB tables). URLs overridable with `CARBURANTI_URL_ANAGRAFICA` / `CARBURANTI_URL_PREZZI` |
 | `PrismaModule` / `PrismaService` | yes | Wraps `@prisma/adapter-pg`, reads `DATABASE_URL` |
-| `AppMailerModule` (`mailer.module.ts`) | yes | Wraps `@nestjs-modules/mailer` + Nodemailer, reads `MAIL_USER`/`MAIL_PASS` |
+| `AppMailerModule` (`mailer.module.ts`) | yes | Wraps `@nestjs-modules/mailer` + Nodemailer. With `BREVO_API_KEY` the transport is `BrevoTransport` (`src/brevo.transport.ts`, Brevo HTTP API, sender `BREVO_MITTENTE` or `MAIL_USER`); otherwise Gmail SMTP with `MAIL_USER`/`MAIL_PASS`. Render free blocks SMTP |
 
 No `APP_GUARD` is registered globally — every protected route opts in explicitly with `@UseGuards(JwtAuthGuard)`.
 
@@ -74,9 +74,10 @@ No global prefix. `AppController` has no `@Controller()` path argument (root).
 
 ### `VeicoloController` (`@Controller('veicolo')`, no dedicated module — declared in `AppModule`)
 - `POST /veicolo` — `JwtAuthGuard`, Premium only — looks up plate in mock dataset `data/veicoli.json`, enforces plan limits (`LIMITE_VEICOLI` in `src/piano.ts`: Gratis 1, Premium unlimited), creates `veicolo` + `dati_generici` + `dati_specifici`
-- `POST /veicolo/manuale` — `JwtAuthGuard`, users only — vehicle typed in by the user from the registration document (`CreateVeicoloManualeDto`: targa auto `AA123BB` or moto `AA12345`, tipo, marca ≤30, modello ≤40, dataimmatricolazione, optional alimentazione/cilindrata/potenza_kw/porte/assicurazione/scadenze); same plate-uniqueness and plan-limit checks as `POST /veicolo`, kW converted to CV, saved in a transaction
+- `POST /veicolo/manuale` — `JwtAuthGuard`, users only — vehicle typed in by the user from the registration document (`CreateVeicoloManualeDto`: targa auto `AA123BB` or moto `AA12345`, tipo, marca ≤30, modello ≤40, dataimmatricolazione, optional alimentazione/cilindrata/potenza_kw/porte/assicurazione/scadenze, `ultimarevisione`/`ultimotagliando` saved as the first storico interventi); same plate-uniqueness and plan-limit checks as `POST /veicolo`, kW converted to CV, saved in a transaction
 - `GET /veicolo/cerca/:targa` — `JwtAuthGuard`, Premium only (`richiediPremium`) — plate lookup only (no persistence). `POST /veicolo` (add by plate) is Premium only too; `POST /veicolo/manuale` is open to both plans, all within `LIMITE_VEICOLI`
-- `GET /veicolo/utente/:id` — `JwtAuthGuard` — list a user's vehicles with `dati_generici`/`dati_specifici`
+- `GET /veicolo/utente/:id` — `JwtAuthGuard` — list a user's vehicles with `dati_generici`/`dati_specifici`, plus `scadenze` (bollo/assicurazione/revisione/tagliando computed with the storico, `src/veicolo/scadenze.ts`) and `manuale`
+- `PATCH /veicolo/:id` — `JwtAuthGuard`, owner only, manual vehicles only (`UpdateVeicoloManualeDto`: every manual field except `targa`; `null` clears an optional field)
 - `GET /veicolo/:id` — **no guard** — vehicle detail by id
 - `DELETE /veicolo/:id` — `JwtAuthGuard` — deletes vehicle and its `dati_generici`/`dati_specifici`
 
@@ -96,7 +97,7 @@ No global prefix. `AppController` has no `@Controller()` path argument (root).
 - `GET /officina/all` — `JwtAuthGuard` — all officine, formatted for the frontend map (falls back to Milan coordinates when lat/long are missing)
 
 ### `PrenotazioniController` (`@Controller('prenotazioni')`)
-- `POST /prenotazioni` — `JwtAuthGuard` — creates a booking (`CreatePrenotazioneDto`), sends a confirmation email with a `.ics` attachment via `MailerService`
+- `POST /prenotazioni` — `JwtAuthGuard` — creates a booking (`CreatePrenotazioneDto`) and answers right away; the confirmation email with the `.ics` attachment is sent in the background (a failure is only logged)
 - `GET /prenotazioni` — `JwtAuthGuard` — bookings for the logged-in user (includes officina data), ordered by date desc
 
 ### `StoricoController` (`@Controller('interventi')`) — **no guard applied anywhere** (`JwtAuthGuard` is commented out in source)

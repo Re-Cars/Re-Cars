@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
+import BarraSchede, { SCHEDE_OFFICINA } from "@/components/BarraSchede";
 import BrandTitle from "@/components/BrandTitle";
 import { useAuth } from "@/context/AuthContext";
 import { logoutOfficina } from "@/lib/auth";
@@ -23,17 +24,17 @@ interface OfficinaLayoutProps {
 }
 
 const NAV_OFFICINA = [
-  { href: "/officina", icona: "fa-gauge", label: "Dashboard" },
-  { href: "/profilo-officina", icona: "fa-building-user", label: "Profilo Officina" },
-  { href: "/prenotazioni-officina", icona: "fa-calendar-check", label: "Prenotazioni" },
-  { href: "/officina-agenda", icona: "fa-calendar-days", label: "Agenda" },
-  { href: "/abbonamenti-officina", icona: "fa-credit-card", label: "Abbonamento" },
+  { href: "/officina", icona: "ti-layout-dashboard", label: "Dashboard" },
+  { href: "/profilo-officina", icona: "ti-building-store", label: "Profilo Officina" },
+  { href: "/prenotazioni-officina", icona: "ti-calendar-check", label: "Prenotazioni" },
+  { href: "/officina-agenda", icona: "ti-calendar-event", label: "Agenda" },
+  { href: "/abbonamenti-officina", icona: "ti-credit-card", label: "Abbonamento" },
 ] as const;
 
 /**
  * Layout comune delle pagine officina: sidebar dedicata (Dashboard, Profilo,
- * Prenotazioni, Agenda, Abbonamento), header con avatar building-user e
- * logout via POST /officina/logout.
+ * Prenotazioni, Agenda, Abbonamento), header con avatar e logout via
+ * POST /officina/logout; su telefono la barra in basso come il lato utente.
  */
 export default function OfficinaLayout({ children, briciole = [] }: OfficinaLayoutProps) {
   const router = useRouter();
@@ -93,11 +94,11 @@ export default function OfficinaLayout({ children, briciole = [] }: OfficinaLayo
         <nav className="sidebar-nav">
           {NAV_OFFICINA.map((item) => (
             <Link key={item.href} href={item.href} onClick={() => setSidebarAperta(false)}>
-              <i className={`fa-solid ${item.icona}`} /> {item.label}
+              <i className={`ti ${item.icona}`} /> {item.label}
             </Link>
           ))}
           <button type="button" className="sidebar-logout" onClick={() => void eseguiLogout()}>
-            <i className="fa-solid fa-right-from-bracket" /> Logout
+            <i className="ti ti-logout" /> Logout
           </button>
         </nav>
       </div>
@@ -123,7 +124,7 @@ export default function OfficinaLayout({ children, briciole = [] }: OfficinaLayo
             aria-label="Cambia tema"
             onClick={() => setTheme(isDark ? "light" : "dark")}
           >
-            <i className={`fa-solid ${mounted && isDark ? "fa-sun" : "fa-moon"}`} />
+            <i className={`ti ${mounted && isDark ? "ti-sun" : "ti-moon"}`} />
           </button>
           <div
             ref={avatarRef}
@@ -131,7 +132,7 @@ export default function OfficinaLayout({ children, briciole = [] }: OfficinaLayo
             onClick={() => setMenuAvatar((v) => !v)}
           >
             <div className="header-avatar">
-              <i className="fa-solid fa-building-user" />
+              <i className="ti ti-building-store" />
             </div>
             <div className={`avatar-dropdown${menuAvatar ? " open" : ""}`}>
               <div className="avatar-header">
@@ -140,7 +141,7 @@ export default function OfficinaLayout({ children, briciole = [] }: OfficinaLayo
                 </p>
               </div>
               <Link href="/profilo-officina" className="avatar-item">
-                <i className="fa-solid fa-pen" />
+                <i className="ti ti-pencil" />
                 <span>Modifica profilo</span>
               </Link>
               <button
@@ -148,7 +149,7 @@ export default function OfficinaLayout({ children, briciole = [] }: OfficinaLayo
                 className="avatar-item avatar-item-logout"
                 onClick={() => void eseguiLogout()}
               >
-                <i className="fa-solid fa-right-from-bracket" />
+                <i className="ti ti-logout" />
                 <span>Logout</span>
               </button>
             </div>
@@ -158,7 +159,7 @@ export default function OfficinaLayout({ children, briciole = [] }: OfficinaLayo
 
       <div className="breadcrumb">
         <Link href="/officina">
-          <i className="fa-solid fa-gauge" /> Dashboard
+          <i className="ti ti-layout-dashboard" /> Dashboard
         </Link>
         {briciole.map((b) => (
           <span key={b.label} style={{ display: "contents" }}>
@@ -168,7 +169,10 @@ export default function OfficinaLayout({ children, briciole = [] }: OfficinaLayo
         ))}
       </div>
 
-      {children}
+      <div className="oc-pagina">{children}</div>
+
+      {/* su telefono la navigazione è qui (il menu ☰ è nascosto) */}
+      <BarraSchede schede={SCHEDE_OFFICINA} />
     </>
   );
 }

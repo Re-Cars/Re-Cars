@@ -145,13 +145,13 @@ export default function AbbonamentiOfficinaPage() {
                   <div className="abb-piano-features">
                     {piano.feature.map((f) => (
                       <div key={f.label} className={`abb-feature ${f.ok ? "ok" : "no"}`}>
-                        <i className={`fa-solid ${f.ok ? "fa-check" : "fa-xmark"}`} /> {f.label}
+                        <i className={`ti ${f.ok ? "ti-check" : "ti-x"}`} /> {f.label}
                       </div>
                     ))}
                   </div>
                   {attivo ? (
                     <button type="button" className="abb-btn status">
-                      <i className="fa-solid fa-check" /> Piano attuale
+                      <i className="ti ti-check" /> Piano attuale
                     </button>
                   ) : (
                     <button
@@ -159,7 +159,7 @@ export default function AbbonamentiOfficinaPage() {
                       className="abb-btn cta"
                       onClick={() => void avviaCheckout(piano.key)}
                     >
-                      <i className="fa-solid fa-credit-card" /> Abbonati ora
+                      <i className="ti ti-credit-card" /> Abbonati ora
                     </button>
                   )}
                 </div>
@@ -169,7 +169,7 @@ export default function AbbonamentiOfficinaPage() {
         </div>
 
         <div className="abb-stripe-note">
-          <i className="fa-solid fa-lock" />
+          <i className="ti ti-lock" />
           Il pagamento è gestito in modo sicuro da Stripe. Non conserviamo i dati della tua carta.
           Disdici in qualsiasi momento.
         </div>

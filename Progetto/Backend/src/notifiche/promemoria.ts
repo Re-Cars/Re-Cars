@@ -1,10 +1,18 @@
 /**
  * Calcolo delle notifiche programmate (funzioni pure, senza database):
- * scadenze di bollo, assicurazione e revisione e promemoria del giorno
+ * scadenze di bollo, assicurazione, revisione e tagliando e promemoria del giorno
  * prima di un appuntamento. Le date sono confrontate come giorni del
  * calendario italiano, indipendentemente dal fuso del server (Render è
  * in UTC).
  */
+
+import {
+  calcolaScadenze,
+  type InterventoScadenza,
+  type TipoScadenza,
+} from '../veicolo/scadenze';
+
+export { prossimaRevisione } from '../veicolo/scadenze';
 
 export interface Notifica {
   titolo: string;
@@ -41,14 +49,6 @@ export function giorniA(data: Date, oggi: string): number {
   );
 }
 
-/** Prima revisione a 4 anni dall'immatricolazione, poi ogni 2 anni. */
-export function prossimaRevisione(immatricolazione: Date, oggi: string): Date {
-  const r = new Date(immatricolazione.getTime());
-  r.setUTCFullYear(r.getUTCFullYear() + 4);
-  while (giorniA(r, oggi) < 0) r.setUTCFullYear(r.getUTCFullYear() + 2);
-  return r;
-}
-
 const dataIt = (d: Date) =>
   `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`;
 
@@ -65,13 +65,16 @@ export interface VeicoloPerAvvisi {
     datascadenzabollo: Date | null;
     datascadenzarca: Date | null;
   }[];
+  /** Interventi che spostano le scadenze (Bollo, Revisione, ...). */
+  storico_intervento?: InterventoScadenza[];
 }
 
-const NOMI = {
+const NOMI: Record<TipoScadenza, string> = {
   bollo: 'Bollo',
   assicurazione: 'Assicurazione',
   revisione: 'Revisione',
-} as const;
+  tagliando: 'Tagliando',
+};
 
 /** Avvisi di scadenza da mandare oggi per un veicolo. */
 export function scadenzeDaAvvisare(
@@ -79,19 +82,14 @@ export function scadenzeDaAvvisare(
   oggi: string,
 ): NotificaProgrammata[] {
   const ds = v.dati_specifici[0];
-  if (!ds) return [];
+  const storico = v.storico_intervento ?? [];
+  if (!ds && !storico.length) return [];
   const nome =
     `${v.marca ?? ''} ${v.modello ?? ''}`.trim() || v.targa || 'Veicolo';
-  const date: [keyof typeof NOMI, Date | null][] = [
-    ['bollo', ds.datascadenzabollo],
-    ['assicurazione', ds.datascadenzarca],
-    [
-      'revisione',
-      ds.dataimmatricolazione
-        ? prossimaRevisione(ds.dataimmatricolazione, oggi)
-        : null,
-    ],
-  ];
+  const date = Object.entries(calcolaScadenze(ds, storico, oggi)) as [
+    TipoScadenza,
+    Date | null,
+  ][];
   const avvisi: NotificaProgrammata[] = [];
   for (const [tipo, data] of date) {
     if (!data) continue;
