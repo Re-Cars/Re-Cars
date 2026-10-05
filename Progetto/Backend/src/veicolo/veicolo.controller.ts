@@ -3,6 +3,7 @@ import {
   Post,
   Get,
   Delete,
+  Patch,
   Body,
   Param,
   UseGuards,
@@ -11,7 +12,10 @@ import {
 } from '@nestjs/common';
 import { VeicoloService } from './veicolo.service';
 import { CreateVeicoloDto } from './dto/create-veicolo.dto';
-import { CreateVeicoloManualeDto } from './dto/create-veicolo-manuale.dto';
+import {
+  CreateVeicoloManualeDto,
+  UpdateVeicoloManualeDto,
+} from './dto/create-veicolo-manuale.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
 import type { Request } from 'express';
 
@@ -72,6 +76,17 @@ export class VeicoloController {
     const userId = Number(req.user?.sub);
     const userType = req.user?.tipo;
     return this.veicoloService.getVeicoloById(+id, userId, userType);
+  }
+
+  /** Modifica dei dati di un veicolo inserito a mano (targa esclusa). */
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  async aggiorna(
+    @Param('id') id: string,
+    @Body() dto: UpdateVeicoloManualeDto,
+    @Req() req: Request,
+  ) {
+    return this.veicoloService.aggiornaManuale(+id, dto, soloUtente(req));
   }
 
   @UseGuards(JwtAuthGuard)

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import DettaglioPrenotazioneModal, {
@@ -9,24 +10,59 @@ import DettaglioPrenotazioneModal, {
 } from "@/components/officina/DettaglioPrenotazioneModal";
 import OfficinaLayout from "@/components/officina/OfficinaLayout";
 import { useAuth } from "@/context/AuthContext";
-import { aggiornaStatoPrenotazione, getDashboardOfficina } from "@/lib/api";
+import { aggiornaStatoPrenotazioneOfficina, getDashboardOfficina, getPrenotazioniOfficina } from "@/lib/api";
 import type { DashboardOfficina, PrenotazioneOfficina } from "@/lib/types";
 
+/** Stato della prenotazione → livello colore delle card scadenze (lato utente). */
+const LIVELLO_STATO: Record<string, string> = {
+  confermata: "ok",
+  in_attesa: "arancione",
+  completata: "nd",
+  annullata: "rossa",
+};
+
+const ora = (iso: string) => new Date(iso).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+const giorno = (iso: string) =>
+  new Date(iso).toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" });
+const targaDi = (p: PrenotazioneOfficina) => p.utente?.veicolo?.[0]?.targa ?? null;
+const servizioDi = (p: PrenotazioneOfficina) =>
+  p.descrizione?.match(/^Servizio: (.*?)(?: - Note:|$)/)?.[1] ?? p.servizio ?? "Intervento";
+const nomePiano = (piano?: string | null) =>
+  piano ? piano.replace(/^officina_/, "").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : null;
+
+function Targa({ targa }: { targa: string | null }) {
+  if (!targa) return null;
+  return (
+    <span className="targa-it targa-it--mini">
+      <span className="targa-it-eu">I</span>
+      <span className="targa-it-num">{targa}</span>
+    </span>
+  );
+}
+
 /**
- * Dashboard officina: stats (oggi/settimana/ponti), badge abbonamento,
- * switcher dei veicoli in officina oggi e lista prenotazioni con azioni.
+ * Dashboard officina con lo stesso linguaggio della home utente: hero blu
+ * con nome e piano, numeri chiave nelle card "spec", richieste da
+ * confermare (accetta/rifiuta senza aprire Prenotazioni), gli appuntamenti
+ * di oggi come card colorate per stato e le azioni rapide.
  */
 export default function OfficinaDashboardPage() {
   const { utente } = useAuth();
   const [dashboard, setDashboard] = useState<DashboardOfficina | null>(null);
+  const [daConfermare, setDaConfermare] = useState<PrenotazioneOfficina[]>([]);
   const [selezionata, setSelezionata] = useState<PrenotazioneOfficina | null>(null);
-  const [switcherAperto, setSwitcherAperto] = useState(false);
-
-  const prenotazioniOggi = dashboard?.prenotazioniOggi ?? [];
+  const [inAggiornamento, setInAggiornamento] = useState<number | null>(null);
 
   const carica = useCallback(async () => {
     try {
-      setDashboard(await getDashboardOfficina());
+      const [d, tutte] = await Promise.all([getDashboardOfficina(), getPrenotazioniOfficina()]);
+      setDashboard(d);
+      const adesso = Date.now() - 60 * 60 * 1000;
+      setDaConfermare(
+        tutte
+          .filter((p) => p.stato === "in_attesa" && new Date(p.dataprenotazione).getTime() >= adesso)
+          .sort((a, b) => a.dataprenotazione.localeCompare(b.dataprenotazione)),
+      );
     } catch (err) {
       console.error("Errore caricamento dashboard:", err);
     }
@@ -36,231 +72,237 @@ export default function OfficinaDashboardPage() {
     void carica();
   }, [carica]);
 
+  // stesso endpoint della pagina Prenotazioni: controlla che la prenotazione
+  // sia dell'officina e manda la notifica push all'utente
   const aggiornaStato = async (id: number, stato: string) => {
+    setInAggiornamento(id);
     try {
-      await aggiornaStatoPrenotazione(id, stato);
+      await aggiornaStatoPrenotazioneOfficina(id, stato);
       setSelezionata(null);
-      setDashboard((d) =>
-        d
-          ? {
-              ...d,
-              prenotazioniOggi: (d.prenotazioniOggi ?? []).map((p) =>
-                p.id === id ? { ...p, stato } : p,
-              ),
-            }
-          : d,
-      );
+      await carica();
     } catch (err) {
       console.error("Errore aggiornamento stato:", err);
+    } finally {
+      setInAggiornamento(null);
     }
   };
 
-  const azioniRapide = (p: PrenotazioneOfficina) => {
-    if (p.stato === "in_attesa") {
-      return (
-        <>
-          <button
-            type="button"
-            className="oc-action-btn conferma"
-            title="Conferma"
-            onClick={(e) => {
-              e.stopPropagation();
-              void aggiornaStato(p.id, "confermata");
-            }}
-          >
-            <i className="fa-solid fa-check" />
-          </button>
-          <button
-            type="button"
-            className="oc-action-btn annulla"
-            title="Annulla"
-            onClick={(e) => {
-              e.stopPropagation();
-              void aggiornaStato(p.id, "annullata");
-            }}
-          >
-            <i className="fa-solid fa-xmark" />
-          </button>
-        </>
-      );
-    }
-    if (p.stato === "confermata") {
-      return (
-        <button
-          type="button"
-          className="oc-action-btn completa"
-          title="Completa"
-          onClick={(e) => {
-            e.stopPropagation();
-            void aggiornaStato(p.id, "completata");
-          }}
-        >
-          <i className="fa-solid fa-square-check" />
-        </button>
-      );
-    }
-    return null;
-  };
-
-  const pianoBadge = dashboard?.abbonamento?.piano?.replace("_", " ") ?? "—";
+  const oggi = dashboard?.prenotazioniOggi ?? [];
+  const ponti = dashboard?.pontiDisponibili ?? null;
+  const occupati = dashboard?.pontiOccupati ?? 0;
+  const piano = nomePiano(dashboard?.abbonamento?.piano);
+  const nome = utente?.nome ?? utente?.ragione_sociale ?? "La tua officina";
 
   return (
     <OfficinaLayout>
-      <div className="oc-intro">
-        <div className="oc-intro-left">
-          <div className="oc-office-avatar">
-            <i className="fa-solid fa-building-user" />
-          </div>
-          <div>
-            <div className="oc-office-name">{utente?.nome ?? utente?.ragione_sociale ?? "—"}</div>
-            <div className="oc-office-sub">
-              <i className="fa-solid fa-location-dot" />
-              <span>{(utente as { sigla_citta?: string } | null)?.sigla_citta ?? ""}</span>
-              <span className="oc-abbonamento-badge">
-                <i className="fa-solid fa-crown" />
-                <span>{pianoBadge}</span>
+      <main className="od">
+        <div className="od-principale">
+          <section className="panel dash-hero od-hero" aria-label="La tua officina">
+            <div className="dash-hero-top">
+              <span className={`dash-pill-stato ${daConfermare.length ? "salute-attenzione" : ""}`}>
+                <span className="dash-pill-dot" />
+                {daConfermare.length
+                  ? `${daConfermare.length} da confermare`
+                  : "Tutto confermato"}
+              </span>
+              {piano && (
+                <span className="dash-pill-stato od-pill-piano">
+                  <i className="ti ti-crown" />
+                  {piano}
+                </span>
+              )}
+            </div>
+            <div className="dash-hero-name">
+              <div className="dash-hero-brand">Officina</div>
+              <div className="dash-hero-model">{nome}</div>
+            </div>
+            <div className="dash-hero-meta">
+              <span className="dash-hero-since">
+                <i className="ti ti-calendar" />
+                {new Date().toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}
+              </span>
+            </div>
+            <div className="dash-hero-actions">
+              <Link href="/officina-agenda" className="btn-dash btn-dash-primary">
+                <i className="ti ti-calendar-event" />
+                Apri agenda
+              </Link>
+              <Link href="/profilo-officina" className="btn-dash od-btn-vetro">
+                <i className="ti ti-settings" />
+                Profilo
+              </Link>
+            </div>
+          </section>
+
+          <div className="od-kpi dash-specs">
+            <div className="dash-spec dash-spec--key">
+              <span className="dash-spec-ic"><i className="ti ti-calendar-check" /></span>
+              <span className="dash-spec-txt">
+                <span className="dash-spec-lbl">Oggi</span>
+                <span className="dash-spec-val">
+                  {dashboard?.oggiTotale ?? "—"}
+                  <small>{dashboard?.oggiConfermate ?? 0} confermate</small>
+                </span>
+              </span>
+            </div>
+            <div className="dash-spec dash-spec--key">
+              <span className="dash-spec-ic"><i className="ti ti-calendar-week" /></span>
+              <span className="dash-spec-txt">
+                <span className="dash-spec-lbl">Settimana</span>
+                <span className="dash-spec-val">
+                  {dashboard?.settimanaT ?? "—"}
+                  <small>{dashboard?.settimanaAttesa ?? 0} in attesa</small>
+                </span>
+              </span>
+            </div>
+            <div className="dash-spec">
+              <span className="dash-spec-ic"><i className="ti ti-car-garage" /></span>
+              <span className="dash-spec-txt">
+                <span className="dash-spec-lbl">Ponti liberi</span>
+                <span className="dash-spec-val">
+                  {ponti !== null ? `${Math.max(0, ponti - occupati)}/${ponti}` : "—"}
+                  <small>{occupati} occupati</small>
+                </span>
+              </span>
+            </div>
+            <div className="dash-spec">
+              <span className="dash-spec-ic"><i className="ti ti-list-check" /></span>
+              <span className="dash-spec-txt">
+                <span className="dash-spec-lbl">Da confermare</span>
+                <span className="dash-spec-val">{dashboard ? daConfermare.length : "—"}</span>
               </span>
             </div>
           </div>
         </div>
-        <div className="veicolo-switcher">
-          <button
-            type="button"
-            className="switcher-btn"
-            onClick={() => setSwitcherAperto((v) => !v)}
-          >
-            <span>
-              <i className="fa-solid fa-car" /> {prenotazioniOggi.length} veicoli oggi
-            </span>
-            <i
-              className="fa-solid fa-chevron-down"
-              style={{ transform: switcherAperto ? "rotate(180deg)" : "rotate(0deg)" }}
-            />
-          </button>
-          <div
-            className="switcher-dropdown"
-            style={{ display: switcherAperto ? "block" : "none" }}
-          >
-            {prenotazioniOggi.length === 0 ? (
-              <div style={{ padding: 14, fontSize: 13, color: "var(--muted)", textAlign: "center" }}>
-                Nessun veicolo oggi
-              </div>
-            ) : (
-              prenotazioniOggi.map((p) => (
-                <div
-                  key={p.id}
-                  className="switcher-item"
-                  onClick={() => {
-                    setSelezionata(p);
-                    setSwitcherAperto(false);
-                  }}
-                >
-                  <i className={`fa-solid ${iconaVeicoloPrenotazione(p)}`} />
-                  <div>
-                    <div>
-                      {nomeVeicoloPrenotazione(p)} · {p.utente?.veicolo?.[0]?.targa ?? "—"}
-                    </div>
-                    <div className="sw-sub">
-                      {STATO_LABEL[p.stato] ?? p.stato} · {p.utente?.username ?? "—"}
-                    </div>
+
+        <section className="panel od-richieste" aria-label="Richieste da confermare">
+          <div className="od-head">
+            <h2 className="dash-title">
+              <i className="ti ti-list-check" />
+              Da confermare
+            </h2>
+            <span className="od-conta">{daConfermare.length}</span>
+          </div>
+          {daConfermare.length === 0 ? (
+            <p className="od-vuoto">
+              <i className="ti ti-circle-check" />
+              Nessuna richiesta in attesa
+            </p>
+          ) : (
+            <div className="od-lista">
+              {daConfermare.map((p) => (
+                <article key={p.id} className="od-req">
+                  <button type="button" className="od-req-top" onClick={() => setSelezionata(p)}>
+                    <span className="dash-spec-ic"><i className={`ti ${iconaVeicoloPrenotazione(p)}`} /></span>
+                    <span className="od-req-txt">
+                      <b>{nomeVeicoloPrenotazione(p)}</b>
+                      <small>
+                        {servizioDi(p)} · {p.utente?.username ?? "cliente"}
+                      </small>
+                    </span>
+                    <Targa targa={targaDi(p)} />
+                  </button>
+                  <div className="od-req-when">
+                    <span><i className="ti ti-calendar" />{giorno(p.dataprenotazione)}</span>
+                    <span><i className="ti ti-clock" />{ora(p.dataprenotazione)}</span>
                   </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="oc-stats-grid">
-        <div className="oc-stat-card">
-          <div className="oc-stat-accent oc-accent-orange" />
-          <div className="oc-stat-icon">
-            <i className="fa-solid fa-calendar-day" />
-          </div>
-          <div className="oc-stat-label">Prenotazioni oggi</div>
-          <div className="oc-stat-value">{dashboard?.oggiTotale ?? "—"}</div>
-          <div className="oc-stat-sub">
-            <span className="oc-stat-dot" style={{ background: "#22c55e" }} />
-            {dashboard?.oggiConfermate ?? 0} confermate
-          </div>
-        </div>
-        <div className="oc-stat-card">
-          <div className="oc-stat-accent oc-accent-blue" />
-          <div className="oc-stat-icon oc-stat-icon-blue">
-            <i className="fa-solid fa-calendar-week" />
-          </div>
-          <div className="oc-stat-label">Questa settimana</div>
-          <div className="oc-stat-value">{dashboard?.settimanaT ?? "—"}</div>
-          <div className="oc-stat-sub">
-            <span className="oc-stat-dot" style={{ background: "#fbbf24" }} />
-            {dashboard?.settimanaAttesa ?? 0} in attesa
-          </div>
-        </div>
-        <div className="oc-stat-card">
-          <div className="oc-stat-accent oc-accent-muted" />
-          <div className="oc-stat-icon oc-stat-icon-muted">
-            <i className="fa-solid fa-car-on" />
-          </div>
-          <div className="oc-stat-label">Ponti disponibili</div>
-          <div className="oc-stat-value">
-            {dashboard?.pontiOccupati ?? 0}/
-            {(utente as { ponti_disponibili?: number } | null)?.ponti_disponibili ?? "—"}
-          </div>
-          <div className="oc-stat-sub">
-            <span className="oc-stat-dot" style={{ background: "#f97316" }} />
-            {dashboard?.pontiOccupati ?? 0} occupati
-          </div>
-        </div>
-      </div>
-
-      <div className="oc-section-header">
-        <span className="oc-section-title">Veicoli in officina oggi</span>
-        <span className="oc-count-pill">{prenotazioniOggi.length} veicoli</span>
-      </div>
-
-      <div className="oc-prenotazioni-list">
-        {prenotazioniOggi.map((p) => {
-          const targa = p.utente?.veicolo?.[0]?.targa ?? "—";
-          const ora = new Date(p.dataprenotazione).toLocaleTimeString("it-IT", {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-          return (
-            <div key={p.id} className="oc-prenotazione-card" onClick={() => setSelezionata(p)}>
-              <div className="oc-veicolo-icon">
-                <i className={`fa-solid ${iconaVeicoloPrenotazione(p)}`} />
-              </div>
-              <div className="oc-veicolo-info">
-                <div className="oc-veicolo-nome">
-                  {nomeVeicoloPrenotazione(p)}
-                  <span className="oc-targa-pill">{targa}</span>
-                </div>
-                <div className="oc-veicolo-sub">
-                  Ore {ora}
-                  {p.descrizione ? ` · ${p.descrizione}` : ""}
-                </div>
-                <div className="oc-utente-row">
-                  <i className="fa-solid fa-user" />
-                  <span>
-                    {p.utente?.username ?? "—"}
-                    {p.utente?.email ? ` · ${p.utente.email}` : ""}
-                  </span>
-                </div>
-              </div>
-              <div className="oc-pren-right">
-                <span className={`oc-stato ${p.stato}`}>{STATO_LABEL[p.stato] ?? p.stato}</span>
-                {azioniRapide(p)}
-              </div>
+                  <div className="od-req-bt">
+                    <button
+                      type="button"
+                      className="btn-dash od-ok"
+                      disabled={inAggiornamento === p.id}
+                      onClick={() => void aggiornaStato(p.id, "confermata")}
+                    >
+                      <i className="ti ti-check" />
+                      Conferma
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-dash od-no"
+                      disabled={inAggiornamento === p.id}
+                      onClick={() => void aggiornaStato(p.id, "annullata")}
+                    >
+                      <i className="ti ti-x" />
+                      Rifiuta
+                    </button>
+                  </div>
+                </article>
+              ))}
             </div>
-          );
-        })}
-        {prenotazioniOggi.length === 0 && (
-          <div className="oc-empty-state" style={{ display: "flex" }}>
-            <i className="fa-solid fa-calendar-xmark" />
-            <span>Nessun veicolo in officina oggi</span>
+          )}
+        </section>
+
+        <section className="panel od-oggi" aria-label="Oggi in officina">
+          <div className="od-head">
+            <h2 className="dash-title">
+              <i className="ti ti-car-garage" />
+              Oggi in officina
+            </h2>
+            <span className="od-conta">{oggi.length === 1 ? "1 veicolo" : `${oggi.length} veicoli`}</span>
           </div>
-        )}
-      </div>
+          {oggi.length === 0 ? (
+            <p className="od-vuoto">
+              <i className="ti ti-calendar-x" />
+              Nessun appuntamento oggi
+            </p>
+          ) : (
+            <div className="od-slot-grid">
+              {oggi.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  className={`dash-scad od-slot lv-${LIVELLO_STATO[p.stato] ?? "nd"}`}
+                  onClick={() => setSelezionata(p)}
+                >
+                  <span className="dash-scad-days">{ora(p.dataprenotazione)}</span>
+                  <span className="od-slot-auto">
+                    <b>{nomeVeicoloPrenotazione(p)}</b>
+                    <Targa targa={targaDi(p)} />
+                  </span>
+                  <small>
+                    {servizioDi(p)} · {p.utente?.username ?? "cliente"}
+                  </small>
+                  <span className="od-slot-stato">
+                    <i />
+                    {STATO_LABEL[p.stato] ?? p.stato}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <nav className="dash-azioni od-azioni" aria-label="Azioni rapide">
+          <div className="dash-azioni-title">
+            <i className="ti ti-bolt" />
+            Azioni rapide
+          </div>
+          <Link href="/officina-agenda" className="dash-az">
+            <span className="dash-az-ic"><i className="ti ti-calendar-event" /></span>
+            <span className="dash-az-txt">
+              <span className="dash-az-t">Agenda</span>
+              <span className="dash-az-d">Settimana e mese, slot liberi</span>
+            </span>
+            <i className="ti ti-chevron-right dash-az-go" />
+          </Link>
+          <Link href="/prenotazioni-officina" className="dash-az">
+            <span className="dash-az-ic"><i className="ti ti-list-details" /></span>
+            <span className="dash-az-txt">
+              <span className="dash-az-t">Prenotazioni</span>
+              <span className="dash-az-d">Tutte, filtrate per stato</span>
+            </span>
+            <i className="ti ti-chevron-right dash-az-go" />
+          </Link>
+          <Link href="/abbonamenti-officina" className="dash-az">
+            <span className="dash-az-ic"><i className="ti ti-crown" /></span>
+            <span className="dash-az-txt">
+              <span className="dash-az-t">Abbonamento</span>
+              <span className="dash-az-d">{piano ? `Piano ${piano}` : "Scegli il piano dell'officina"}</span>
+            </span>
+            <i className="ti ti-chevron-right dash-az-go" />
+          </Link>
+        </nav>
+      </main>
 
       <DettaglioPrenotazioneModal
         prenotazione={selezionata}

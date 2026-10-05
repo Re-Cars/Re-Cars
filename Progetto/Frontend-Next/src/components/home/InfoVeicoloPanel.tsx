@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import AggiungiVeicoloOverlay from "@/components/AggiungiVeicoloOverlay";
 import IconaGarage from "@/components/IconaGarage";
 import { calcolaSalute, scadenzeVeicolo, type ScadenzaDettaglio } from "@/lib/scadenze";
 import type { VeicoloDettaglio } from "@/lib/types";
@@ -18,6 +19,7 @@ const SCADENZA_INFO: Record<ScadenzaDettaglio["tipo"], { nome: string; icona: st
   bollo: { nome: "Bollo", icona: "ti-receipt" },
   assicurazione: { nome: "Assicurazione", icona: "ti-shield" },
   revisione: { nome: "Revisione", icona: "ti-tool" },
+  tagliando: { nome: "Tagliando", icona: "ti-droplet-half" },
 };
 
 const STATO_LIVELLO = {
@@ -42,12 +44,22 @@ function formattaCilindrata(c: string | number | null | undefined): string {
 /**
  * Scheda del veicolo selezionato in dashboard: hero con marca/modello e
  * targa, dati chiave (cilindrata, anno di immatricolazione, potenza,
- * alimentazione) e "Stato monitoraggio" di bollo, assicurazione e revisione.
+ * alimentazione) e "Stato monitoraggio" di bollo, assicurazione, revisione
+ * e tagliando (date calcolate dal backend con lo storico interventi). Un
+ * veicolo inserito a mano si modifica dal tasto con la matita.
  * Su telefono dati e scadenze stanno chiusi: si aprono toccando la scheda
  * (su schermi larghi sono sempre visibili, la classe "aperta" non conta).
  */
-export default function InfoVeicoloPanel({ veicolo }: { veicolo: VeicoloDettaglio | null }) {
+export default function InfoVeicoloPanel({
+  veicolo,
+  onModificato,
+}: {
+  veicolo: VeicoloDettaglio | null;
+  /** Dopo il salvataggio delle modifiche (ricarica il garage). */
+  onModificato?: () => Promise<void> | void;
+}) {
   const [aperta, setAperta] = useState(false);
+  const [inModifica, setInModifica] = useState(false);
 
   if (!veicolo) {
     return (
@@ -82,6 +94,21 @@ export default function InfoVeicoloPanel({ veicolo }: { veicolo: VeicoloDettagli
             <span className="dash-pill-dot" />
             {ETICHETTA_SALUTE[salute]}
           </span>
+          {veicolo.manuale && (
+            <button
+              type="button"
+              className="dash-hero-modifica"
+              aria-label="Modifica i dati del veicolo"
+              title="Modifica i dati del veicolo"
+              onClick={(e) => {
+                e.stopPropagation();
+                setInModifica(true);
+              }}
+            >
+              <i className="ti ti-pencil" />
+              <span>Modifica</span>
+            </button>
+          )}
         </div>
         <div className="dash-hero-name">
           <div className="dash-hero-brand">{veicolo.marca ?? ""}</div>
@@ -194,12 +221,21 @@ export default function InfoVeicoloPanel({ veicolo }: { veicolo: VeicoloDettagli
                       {info.nome}
                       <small>
                         {s.tipo === "assicurazione" && ds.nomeassicurazione ? `${ds.nomeassicurazione} · ` : ""}
-                        {dataStr ? `${s.giorni !== null && s.giorni < 0 ? "scaduto il" : "scade il"} ${dataStr}` : "dato non disponibile"}
+                        {dataStr
+                          ? `${s.giorni !== null && s.giorni < 0 ? "scaduto il" : "scade il"} ${dataStr}`
+                          : s.tipo === "tagliando"
+                            ? "nessun tagliando registrato"
+                            : "dato non disponibile"}
                       </small>
                     </div>
                   </div>
                   <div className="dash-scad-mid">
-                    {s.giorni === null ? (
+                    {s.giorni === null && s.tipo === "tagliando" ? (
+                      <Link href="/storico-interventi" className="dash-scad-link">
+                        <i className="ti ti-plus" />
+                        Registralo nello storico
+                      </Link>
+                    ) : s.giorni === null ? (
                       <span className="dash-scad-days">—</span>
                     ) : (
                       <>
@@ -223,6 +259,15 @@ export default function InfoVeicoloPanel({ veicolo }: { veicolo: VeicoloDettagli
           </div>
         </div>
       </div>
+
+      <AggiungiVeicoloOverlay
+        aperto={inModifica}
+        modifica={veicolo}
+        onChiudi={() => setInModifica(false)}
+        onAggiunto={async () => {
+          await onModificato?.();
+        }}
+      />
     </section>
   );
 }

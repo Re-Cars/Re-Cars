@@ -98,18 +98,45 @@ export default function LibrettoFoto({ onLetto }: LibrettoFotoProps) {
     setFase({ tipo: "lettura", testo: "Preparo la foto", progresso: 0 });
     try {
       const [canvas, { createWorker }] = await Promise.all([preparaFoto(file), import("tesseract.js")]);
+      // la carta di circolazione piegata ha quattro facciate affiancate: letta
+      // tutta insieme l'OCR mescola le colonne, quindi dopo la foto intera si
+      // rilegge ogni quarto da solo. Le righe della foto intera vengono prima
+      // (stessa lettura di sempre per il Documento Unico), i quarti aggiungono
+      // quello che mancava.
+      const { width: W, height: H } = canvas;
+      const zone = [
+        undefined,
+        ...[
+          [0, 0],
+          [W / 2, 0],
+          [0, H / 2],
+          [W / 2, H / 2],
+        ].map(([left, top]) => ({ left: Math.round(left), top: Math.round(top), width: Math.round(W / 2), height: Math.round(H / 2) })),
+      ];
+      let passo = 0;
       const worker = await createWorker("ita", 1, {
         logger: (m: { status: string; progress: number }) => {
           if (annullato.current) return;
-          setFase({ tipo: "lettura", testo: STATI[m.status] ?? "Leggo il libretto", progresso: m.progress });
+          const lettura = m.status === "recognizing text";
+          setFase({
+            tipo: "lettura",
+            testo: lettura ? `Leggo il libretto (${passo + 1} di ${zone.length})` : (STATI[m.status] ?? "Leggo il libretto"),
+            progresso: lettura ? (passo + m.progress) / zone.length : m.progress,
+          });
         },
       });
       try {
-        const { data } = await worker.recognize(canvas, {}, { blocks: true });
-        if (annullato.current) return;
-        const righe: RigaOcr[] = (data.blocks ?? [])
-          .flatMap((b) => b.paragraphs.flatMap((p) => p.lines))
-          .map((l) => ({ text: l.text, bbox: l.bbox, words: l.words.map((w) => ({ text: w.text, bbox: w.bbox })) }));
+        const righe: RigaOcr[] = [];
+        for (const rectangle of zone) {
+          const { data } = await worker.recognize(canvas, rectangle ? { rectangle } : {}, { blocks: true });
+          if (annullato.current) return;
+          righe.push(
+            ...(data.blocks ?? [])
+              .flatMap((b) => b.paragraphs.flatMap((p) => p.lines))
+              .map((l) => ({ text: l.text, bbox: l.bbox, words: l.words.map((w) => ({ text: w.text, bbox: w.bbox })) })),
+          );
+          passo++;
+        }
         const { dati, daVerificare } = leggiLibretto(righe);
         if (Object.keys(dati).length === 0) {
           setFase({

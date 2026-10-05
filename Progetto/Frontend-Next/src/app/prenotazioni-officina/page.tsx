@@ -64,7 +64,7 @@ export default function PrenotazioniOfficinaPage() {
               void aggiornaStato(p.id, "confermata");
             }}
           >
-            <i className="fa-solid fa-check" />
+            <i className="ti ti-check" />
           </button>
           <button
             type="button"
@@ -75,7 +75,7 @@ export default function PrenotazioniOfficinaPage() {
               void aggiornaStato(p.id, "annullata");
             }}
           >
-            <i className="fa-solid fa-xmark" />
+            <i className="ti ti-x" />
           </button>
         </div>
       );
@@ -92,7 +92,7 @@ export default function PrenotazioniOfficinaPage() {
               void aggiornaStato(p.id, "completata");
             }}
           >
-            <i className="fa-solid fa-square-check" />
+            <i className="ti ti-square-check" />
           </button>
         </div>
       );
@@ -105,12 +105,12 @@ export default function PrenotazioniOfficinaPage() {
       <div className="oc-intro">
         <div className="oc-intro-left">
           <div className="oc-office-avatar">
-            <i className="fa-solid fa-calendar-check" />
+            <i className="ti ti-calendar-check" />
           </div>
           <div>
             <div className="oc-office-name">Prenotazioni</div>
             <div className="oc-office-sub">
-              <i className="fa-solid fa-building-user" />
+              <i className="ti ti-building-store" />
               <span>{utente?.nome ?? utente?.ragione_sociale ?? "—"}</span>
             </div>
           </div>
@@ -147,7 +147,7 @@ export default function PrenotazioniOfficinaPage() {
             <div key={p.id} className="oc-pren-card-wrap">
               <div className="oc-prenotazione-card" onClick={() => setSelezionata(p)}>
                 <div className="oc-veicolo-icon">
-                  <i className={`fa-solid ${iconaVeicoloPrenotazione(p)}`} />
+                  <i className={`ti ${iconaVeicoloPrenotazione(p)}`} />
                 </div>
                 <div className="oc-veicolo-info">
                   <div className="oc-veicolo-nome">
@@ -155,10 +155,10 @@ export default function PrenotazioniOfficinaPage() {
                     <span className="oc-targa-pill">{v?.targa ?? "—"}</span>
                   </div>
                   <div className="oc-veicolo-sub">
-                    <i className="fa-regular fa-calendar" /> {formattaDataOra(p.dataprenotazione)}
+                    <i className="ti ti-calendar" /> {formattaDataOra(p.dataprenotazione)}
                   </div>
                   <div className="oc-utente-row">
-                    <i className="fa-solid fa-user" />
+                    <i className="ti ti-user" />
                     <span>
                       {p.utente?.username ?? "—"}
                       {p.utente?.email ? ` · ${p.utente.email}` : ""}
@@ -172,18 +172,18 @@ export default function PrenotazioniOfficinaPage() {
               </div>
               <div className="oc-pren-card-bottom">
                 <div className="oc-pren-card-bottom-item">
-                  <i className="fa-solid fa-car" />
+                  <i className="ti ti-car" />
                   <strong>{tipo}</strong> · {anno}
                 </div>
                 {p.servizio && (
                   <div className="oc-pren-card-bottom-item">
-                    <i className="fa-solid fa-screwdriver-wrench" />
+                    <i className="ti ti-tool" />
                     {p.servizio}
                   </div>
                 )}
                 {p.utente?.cellulare && (
                   <div className="oc-pren-card-bottom-item">
-                    <i className="fa-solid fa-phone" />
+                    <i className="ti ti-phone" />
                     {p.utente.cellulare}
                   </div>
                 )}
@@ -194,7 +194,7 @@ export default function PrenotazioniOfficinaPage() {
       </div>
       {filtrate.length === 0 && (
         <div className="oc-empty-state oc-empty-state-outer" style={{ display: "flex" }}>
-          <i className="fa-solid fa-calendar-xmark" />
+          <i className="ti ti-calendar-x" />
           <span>Nessuna prenotazione trovata</span>
         </div>
       )}

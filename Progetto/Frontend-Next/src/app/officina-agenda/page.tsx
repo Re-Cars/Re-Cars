@@ -237,13 +237,13 @@ export default function OfficinaAgendaPage() {
           <div className="ag-mini-cal">
             <div className="ag-mini-cal-header">
               <button type="button" className="ag-nav-btn" onClick={() => cambiaVista(-1)}>
-                <i className="fa-solid fa-chevron-left" />
+                <i className="ti ti-chevron-left" />
               </button>
               <span>
                 {MESI_NOMI[dataCorrente.getMonth()]} {dataCorrente.getFullYear()}
               </span>
               <button type="button" className="ag-nav-btn" onClick={() => cambiaVista(1)}>
-                <i className="fa-solid fa-chevron-right" />
+                <i className="ti ti-chevron-right" />
               </button>
             </div>
             <div className="ag-mini-grid">
@@ -283,7 +283,7 @@ export default function OfficinaAgendaPage() {
             <div className="ag-main-title">{titolo}</div>
             <div className="ag-main-header-right">
               <button type="button" className="ag-oggi-btn" onClick={() => setDataCorrente(new Date())}>
-                <i className="fa-solid fa-calendar-day" /> Oggi
+                <i className="ti ti-calendar-event" /> Oggi
               </button>
               <div className="ag-view-toggle">
                 <button

@@ -12,11 +12,12 @@ import {
   aggiungiVeicoloManuale,
   ApiError,
   cercaVeicoloPerTarga,
+  modificaVeicoloManuale,
   type NuovoVeicoloManuale,
 } from "@/lib/api";
 import type { DatiLibretto } from "@/lib/libretto";
 import { getStoricoTarghe, rimuoviStoricoTarga, salvaStoricoTarga } from "@/lib/storage";
-import type { RisultatoRicercaVeicolo } from "@/lib/types";
+import type { RisultatoRicercaVeicolo, VeicoloDettaglio } from "@/lib/types";
 
 /** Targa auto (AA123BB) o moto (AA12345), stessa regola del backend. */
 const REGEX_TARGA = /^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{2}\d{5})$/;
@@ -43,6 +44,8 @@ interface FormManuale {
   nomeassicurazione: string;
   datascadenzarca: string;
   datascadenzabollo: string;
+  ultimarevisione: string;
+  ultimotagliando: string;
 }
 
 const FORM_VUOTO: FormManuale = {
@@ -58,7 +61,33 @@ const FORM_VUOTO: FormManuale = {
   nomeassicurazione: "",
   datascadenzarca: "",
   datascadenzabollo: "",
+  ultimarevisione: "",
+  ultimotagliando: "",
 };
+
+const giorno = (d: string | null | undefined) => (d ? d.slice(0, 10) : "");
+
+/** Form precompilato con i dati salvati (modifica di un veicolo a mano). */
+function formDaVeicolo(v: VeicoloDettaglio): FormManuale {
+  const dg = v.dati_generici[0] ?? {};
+  const ds = v.dati_specifici[0] ?? {};
+  return {
+    ...FORM_VUOTO,
+    tipo_veicolo: dg.tipo_veicolo ?? "Autovettura",
+    targa: v.targa,
+    dataimmatricolazione: giorno(ds.dataimmatricolazione),
+    marca: v.marca ?? "",
+    modello: v.modello ?? "",
+    alimentazione: dg.alimentazione ?? "",
+    cilindrata: dg.cilindrata ? String(dg.cilindrata) : "",
+    // nel database ci sono i CV: si torna ai kW del libretto
+    potenza_kw: dg.cavalli ? String(Math.round(dg.cavalli / 1.35962)) : "",
+    numporte: dg.numporte ? String(dg.numporte).trim() : "",
+    nomeassicurazione: ds.nomeassicurazione ?? "",
+    datascadenzarca: giorno(ds.datascadenzarca),
+    datascadenzabollo: giorno(ds.datascadenzabollo),
+  };
+}
 
 const pulisciTarga = (t: string) => t.replace(/\s+/g, "").toUpperCase();
 
@@ -85,8 +114,13 @@ function erroreForm(f: FormManuale): { campo: keyof FormManuale; messaggio: stri
     return { campo: "targa", messaggio: "Targa non valida: es. AA123BB (auto) o AA12345 (moto)." };
   if (!f.dataimmatricolazione)
     return { campo: "dataimmatricolazione", messaggio: "Inserisci la data di prima immatricolazione (riga B)." };
-  if (f.dataimmatricolazione > new Date().toISOString().slice(0, 10))
+  const oggi = new Date().toISOString().slice(0, 10);
+  if (f.dataimmatricolazione > oggi)
     return { campo: "dataimmatricolazione", messaggio: "La data di immatricolazione non può essere futura." };
+  for (const campo of ["ultimarevisione", "ultimotagliando"] as const) {
+    if (f[campo] && (f[campo] > oggi || f[campo] < f.dataimmatricolazione))
+      return { campo, messaggio: "Revisione e tagliando: la data deve essere tra l'immatricolazione e oggi." };
+  }
   if (!f.marca.trim()) return { campo: "marca", messaggio: "Inserisci la marca (riga D.1)." };
   if (!f.modello.trim()) return { campo: "modello", messaggio: "Inserisci il modello (riga D.3)." };
   for (const [campo, max] of [["cilindrata", 99999], ["potenza_kw", 2000], ["numporte", 9]] as const) {
@@ -102,15 +136,21 @@ interface AggiungiVeicoloOverlayProps {
   onChiudi: () => void;
   /** Chiamata dopo un'aggiunta andata a buon fine (ricarica il garage). */
   onAggiunto: () => Promise<void> | void;
+  /**
+   * Veicolo inserito a mano da modificare: si apre solo il modulo, già
+   * compilato, con la targa bloccata (per cambiarla si elimina il veicolo).
+   */
+  modifica?: VeicoloDettaglio | null;
 }
 
 /**
  * "Aggiungi veicolo" della dashboard, con tre schede: ricerca per targa
  * (dataset del backend), inserimento a mano dei dati del libretto (accanto
  * a ogni campo il codice della riga) e, in arrivo, lettura dalla foto del
- * libretto. Guscio e stile comuni in components/ui/Overlay.
+ * libretto. Con `modifica` diventa il modulo di modifica di un veicolo
+ * inserito a mano. Guscio e stile comuni in components/ui/Overlay.
  */
-export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }: AggiungiVeicoloOverlayProps) {
+export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto, modifica }: AggiungiVeicoloOverlayProps) {
   const { utente, gestisci401 } = useAuth();
   const { piano, premium } = usePiano();
   // targa e foto del libretto sono Premium (il backend blocca comunque la targa)
@@ -134,12 +174,12 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
   // reset dello stato a ogni apertura + lettura storico da localStorage
   useEffect(() => {
     if (!aperto) return;
-    setScheda(premium ? "cerca" : "manuale");
+    setScheda(premium && !modifica ? "cerca" : "manuale");
     setTarga("");
     setRisultato(null);
     setNonTrovato(false);
     setErrore("");
-    setForm(FORM_VUOTO);
+    setForm(modifica ? formDaVeicolo(modifica) : FORM_VUOTO);
     setCampoErrato(null);
     setDallaFoto(null);
     setStorico(getStoricoTarghe());
@@ -148,8 +188,8 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
 
   // piano arrivato dopo l'apertura: con Gratis si parte dall'inserimento a mano
   useEffect(() => {
-    if (aperto && piano === "base") setScheda((s) => (s === "cerca" ? "manuale" : s));
-  }, [aperto, piano]);
+    if (aperto && (piano === "base" || modifica)) setScheda((s) => (s === "cerca" ? "manuale" : s));
+  }, [aperto, piano, modifica]);
 
   const cambiaScheda = (s: Scheda) => {
     setScheda(s);
@@ -168,6 +208,7 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
       alimentazione: dati.alimentazione,
       cilindrata: dati.cilindrata?.toString(),
       potenza_kw: dati.potenza_kw?.toString(),
+      ultimarevisione: dati.ultimarevisione,
     };
     const letti = (Object.keys(valori) as (keyof FormManuale)[]).filter((k) => valori[k] !== undefined);
     setForm((f) => ({ ...f, ...Object.fromEntries(letti.map((k) => [k, valori[k]])) }));
@@ -228,6 +269,10 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
     }
     setCampoErrato(null);
     setErrore("");
+    if (modifica) {
+      await salvaModifica(modifica.id);
+      return;
+    }
     const body: NuovoVeicoloManuale = {
       targa: pulisciTarga(form.targa),
       tipo_veicolo: form.tipo_veicolo,
@@ -241,6 +286,8 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
       nomeassicurazione: form.nomeassicurazione.trim() || undefined,
       datascadenzarca: form.datascadenzarca || undefined,
       datascadenzabollo: form.datascadenzabollo || undefined,
+      ultimarevisione: form.ultimarevisione || undefined,
+      ultimotagliando: form.ultimotagliando || undefined,
     };
     setInAggiunta(true);
     try {
@@ -249,6 +296,34 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
       onChiudi();
     } catch (err) {
       erroreAggiunta(err);
+    } finally {
+      setInAggiunta(false);
+    }
+  };
+
+  /** Modifica: i campi facoltativi svuotati partono come null (= svuota). */
+  const salvaModifica = async (id: number) => {
+    const nullo = <T,>(v: T | undefined) => (v === undefined ? null : v);
+    setInAggiunta(true);
+    try {
+      await modificaVeicoloManuale(id, {
+        tipo_veicolo: form.tipo_veicolo,
+        marca: form.marca.trim(),
+        modello: form.modello.trim(),
+        dataimmatricolazione: form.dataimmatricolazione,
+        alimentazione: form.alimentazione || null,
+        cilindrata: nullo(intero(form.cilindrata)),
+        potenza_kw: nullo(intero(form.potenza_kw)),
+        numporte: nullo(intero(form.numporte)),
+        nomeassicurazione: form.nomeassicurazione.trim() || null,
+        datascadenzarca: form.datascadenzarca || null,
+        datascadenzabollo: form.datascadenzabollo || null,
+      });
+      await onAggiunto();
+      onChiudi();
+    } catch (err) {
+      if (gestisci401(err)) return;
+      setErrore(err instanceof ApiError ? err.message : "Errore durante il salvataggio delle modifiche.");
     } finally {
       setInAggiunta(false);
     }
@@ -279,11 +354,13 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
   return (
     <Overlay
       onChiudi={onChiudi}
-      titolo="Aggiungi un veicolo"
-      icona="ti-car"
+      titolo={modifica ? "Modifica veicolo" : "Aggiungi un veicolo"}
+      icona={modifica ? "ti-pencil" : "ti-car"}
       bloccato={inAggiunta}
       sottotitolo={
-        scheda === "cerca"
+        modifica
+          ? "Correggi i dati copiati dal libretto. Revisione e tagliando si aggiornano dallo storico interventi."
+          : scheda === "cerca"
           ? "Cerca la targa: recuperiamo marca, modello e documenti. Se non la troviamo puoi inserire tu i dati."
           : scheda === "foto"
             ? "Fotografa il libretto: leggiamo i dati del veicolo e li trovi già scritti nel modulo, da controllare."
@@ -294,7 +371,9 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
           <>
             <span className="ov-nota">
               <i className="ti ti-info-circle" />
-              La revisione è calcolata dalla data di immatricolazione.
+              {modifica
+                ? "La targa non si modifica: per cambiarla elimina il veicolo."
+                : "Senza l'ultima revisione la calcoliamo dall'immatricolazione."}
             </span>
             <button type="button" className="btn-dash btn-dash-ghost" disabled={inAggiunta} onClick={onChiudi}>
               Annulla
@@ -305,13 +384,20 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
               disabled={inAggiunta}
               onClick={() => void aggiungiManuale()}
             >
-              <i className="ti ti-plus" />
-              {inAggiunta ? "Aggiunta…" : "Aggiungi al garage"}
+              <i className={`ti ${modifica ? "ti-device-floppy" : "ti-plus"}`} />
+              {modifica
+                ? inAggiunta
+                  ? "Salvataggio…"
+                  : "Salva modifiche"
+                : inAggiunta
+                  ? "Aggiunta…"
+                  : "Aggiungi al garage"}
             </button>
           </>
         ) : undefined
       }
     >
+      {!modifica && (
       <div className="ov-tabs" role="tablist">
         <button type="button" role="tab" aria-label="Cerca targa" aria-selected={scheda === "cerca"} className={scheda === "cerca" ? "on" : ""} onClick={() => cambiaScheda("cerca")}>
           <i className="ti ti-search" />
@@ -328,6 +414,7 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
           {bloccata("foto") && <i className="ti ti-lock ov-tab-lock" aria-label="Premium" />}
         </button>
       </div>
+      )}
 
       {errore && (
         <p className="ov-err" role="alert">
@@ -505,7 +592,15 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
             </div>
             <div className="ov-f">
               <label htmlFor="av-targa">Targa <code>A</code></label>
-              <input id="av-targa" placeholder="AA123BB" maxLength={9} {...campo("targa")} onChange={(e) => setForm((f) => ({ ...f, targa: e.target.value.toUpperCase() }))} />
+              <input
+                id="av-targa"
+                placeholder="AA123BB"
+                maxLength={9}
+                {...campo("targa")}
+                readOnly={!!modifica}
+                aria-readonly={!!modifica}
+                onChange={(e) => setForm((f) => ({ ...f, targa: e.target.value.toUpperCase() }))}
+              />
             </div>
             <div className="ov-f">
               <label htmlFor="av-imm">1ª immatricolazione <code>B</code></label>
@@ -545,7 +640,7 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
           </div>
 
           <div className="ov-grp">
-            Scadenze <span>· facoltative, le puoi aggiungere dopo</span>
+            Scadenze <span>· facoltative{modifica ? "" : ", le puoi aggiungere dopo"}</span>
           </div>
           <div className="ov-grid">
             <div className="ov-f w2">
@@ -560,6 +655,18 @@ export default function AggiungiVeicoloOverlay({ aperto, onChiudi, onAggiunto }:
               <label htmlFor="av-bollo">Scadenza bollo</label>
               <input id="av-bollo" type="date" {...campo("datascadenzabollo")} />
             </div>
+            {!modifica && (
+              <>
+                <div className="ov-f">
+                  <label htmlFor="av-rev">Ultima revisione</label>
+                  <input id="av-rev" type="date" max={new Date().toISOString().slice(0, 10)} {...campo("ultimarevisione")} />
+                </div>
+                <div className="ov-f">
+                  <label htmlFor="av-tagl">Ultimo tagliando</label>
+                  <input id="av-tagl" type="date" max={new Date().toISOString().slice(0, 10)} {...campo("ultimotagliando")} />
+                </div>
+              </>
+            )}
           </div>
           {/* invio con Enter */}
           <button type="submit" hidden />

@@ -1690,3 +1690,266 @@
         padding: 18px;
     }
 }
+/* ----------------------------------------------------
+/   STESSO STILE DEL LATO UTENTE (dashboard officina e
+/   intestazioni delle altre pagine). La dashboard usa le
+/   classi della home utente (panel, dash-hero, dash-spec,
+/   dash-scad, dash-az, targa-it): qui solo la griglia e
+/   le parti che lì non esistono (richieste da confermare).
+-----------------------------------------------------*/
+
+.od {
+    width: 100%;
+    max-width: 1560px;
+    margin: 0 auto;
+    padding: clamp(12px, 2.2dvh, 26px) clamp(16px, 2.2vw, 32px) 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr);
+    gap: clamp(12px, 2dvh, 20px) clamp(14px, 1.6vw, 22px);
+    align-items: start;
+}
+
+/* hero e numeri in colonna, accanto alle richieste da confermare */
+.od-principale {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 2dvh, 20px);
+    min-width: 0;
+}
+
+.od-hero {
+    height: auto;
+    min-height: 190px;
+    border-radius: 18px;
+}
+
+.od-pill-piano { --lv: var(--accent); }
+.od-pill-piano i { font-size: 14px; }
+
+/* bottone secondario sull'hero scuro */
+.od-btn-vetro {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+}
+.od-btn-vetro:hover { background: rgba(255, 255, 255, 0.18); }
+
+.od-kpi {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.od-richieste {
+    grid-column: 2;
+    align-self: stretch;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.od-oggi,
+.od-azioni { grid-column: 1 / -1; }
+
+/* niente assistente dal lato officina: nessuno spazio per il bottone flottante */
+.od-azioni { --fab-spazio: 0px; }
+
+.od-oggi { padding: 16px; }
+
+.od-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.od-conta {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border-radius: 99px;
+    padding: 3px 10px;
+}
+
+.od-vuoto {
+    margin: 0;
+    padding: 22px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 13.5px;
+    border: 1px dashed var(--border-subtle);
+    border-radius: 14px;
+}
+.od-vuoto i { font-size: 20px; color: var(--accent); }
+
+.od-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    max-height: 430px;
+}
+
+.od-req {
+    border-radius: 14px;
+    padding: 12px;
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border-subtle));
+    background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%);
+}
+
+.od-req-top {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.od-req-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.od-req-txt b { font-size: 14px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.od-req-txt small { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.od-req-when {
+    display: flex;
+    gap: 14px;
+    margin: 9px 0;
+    font-size: 12.5px;
+    color: var(--text);
+}
+.od-req-when span { display: inline-flex; align-items: center; gap: 4px; }
+.od-req-when i { color: var(--accent); }
+
+.od-req-bt { display: flex; gap: 8px; }
+.od-req-bt .btn-dash { flex: 1; justify-content: center; }
+
+.od-ok { background: var(--success); color: #fff; border: 1px solid transparent; }
+.od-ok:hover { filter: brightness(1.08); }
+.od-no {
+    background: var(--surface);
+    color: var(--error);
+    border: 1px solid color-mix(in srgb, var(--error) 40%, transparent);
+}
+
+.od-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+/* ".od" davanti: vince sulle regole delle scadenze su telefono (mobile.css) */
+.od .od-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    gap: 4px;
+}
+.od .od-slot:hover { filter: brightness(1.03); }
+.od .od-slot .dash-scad-days { font-size: 26px; }
+.od .od-slot > * { grid-column: auto; }
+.od-slot small { font-size: 12px; color: var(--muted); }
+
+.od-slot-auto {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 13.5px;
+    color: var(--text);
+}
+
+.od-slot-auto .targa-it { margin-left: 0; }
+
+.od-slot-stato {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--lv);
+}
+.od-slot-stato i { width: 7px; height: 7px; border-radius: 50%; background: var(--lv); }
+
+/* le altre pagine: intestazione blu come l'hero della home */
+.oc-intro,
+.po-hero {
+    color: #fff;
+    background:
+        var(--hero-luce),
+        linear-gradient(115deg, color-mix(in srgb, var(--type-auto) 70%, #0b0b30) 0%, #16164a 52%, #0b0b30 100%);
+    box-shadow: var(--hero-edge), var(--elev-1);
+    border: 0;
+    border-radius: 18px;
+}
+
+.oc-intro {
+    margin: clamp(12px, 2dvh, 22px) clamp(16px, 2.2vw, 32px) 12px;
+    padding: 18px 22px;
+}
+
+.oc-intro .oc-office-name,
+.po-hero .po-hero-nome { color: #fff; }
+
+.oc-intro .oc-office-sub,
+.po-hero .po-hero-sub { color: rgba(255, 255, 255, 0.72); }
+
+.oc-intro .oc-office-avatar,
+.po-hero .po-hero-logo {
+    background: rgba(249, 115, 22, 0.2);
+    border-color: rgba(249, 115, 22, 0.45);
+}
+
+/* targa come sul lato utente (bandina blu) */
+.oc-targa-pill {
+    background: #fff;
+    color: #111;
+    border: 1.5px solid #1b1b1b;
+    border-left: 7px solid #1e40af;
+    border-radius: 4px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.oc-prenotazione-card,
+.oc-pren-card-wrap,
+.oc-stat-card,
+.po-stat-card {
+    border-radius: 14px;
+}
+
+@media (max-width: 1100px) {
+    .od { grid-template-columns: minmax(0, 1fr); }
+    .od-principale,
+    .od-richieste,
+    .od-oggi,
+    .od-azioni { grid-column: 1; grid-row: auto; }
+    .od-lista { max-height: none; }
+}
+
+@media (max-width: 720px) {
+    .od-kpi { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .od-hero { min-height: 0; grid-template-columns: minmax(0, 1fr); }
+    .od-hero .dash-hero-actions { grid-column: 1; grid-row: auto; }
+    .od-hero .dash-hero-actions { flex-direction: row; }
+    .od-hero .dash-hero-actions .btn-dash { flex: 1; min-height: 42px; justify-content: center; }
+    .od-azioni { grid-template-columns: minmax(0, 1fr); }
+    /* numeri del profilo 2x2 come quelli della dashboard */
+    .po-dashboard .po-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    /* spazio per la barra in basso */
+    .oc-pagina { padding-bottom: calc(96px + var(--sa-bottom)); }
+}

@@ -11,7 +11,12 @@
  *    riconosce il valore dalla forma: formato targa, data più vecchia, marca
  *    da un elenco noto, alimentazione da un vocabolario.
  *
- * I dati del proprietario (campi C.*) non vengono mai letti né restituiti.
+ * I dati del proprietario (campi C.*) non vengono mai letti né restituiti:
+ * le loro date (es. "NATO IL ...") non contano neanche per l'immatricolazione.
+ *
+ * Dalla nota "REVISIONE EFFETTUATA ... DATA gg.mm.aaaa" si ricava anche
+ * l'ultima revisione, che alla creazione del veicolo diventa il primo
+ * intervento "Revisione" dello storico.
  */
 
 export interface Riquadro {
@@ -41,6 +46,7 @@ export interface DatiLibretto {
   alimentazione?: string;
   cilindrata?: number;
   potenza_kw?: number;
+  ultimarevisione?: string; // AAAA-MM-GG
 }
 
 type Campo = keyof DatiLibretto;
@@ -58,8 +64,9 @@ const eValore = (parola: string) => !/[a-zàèéìòù]/.test(parola) && (/[A-Z0
  * codice). Chiude la colonna del campo precedente e non è mai un valore.
  */
 function eCodice(parola: string): boolean {
-  // tra parentesi, come nella vecchia carta di circolazione: "(A)", "(P.1)", "(P1)"
-  if (/^\([A-Za-z](?:\.?[0-9Il|](?:\.[0-9Il|])?)?\)?$/.test(parola)) return true;
+  // tra parentesi, come nella vecchia carta di circolazione: "(A)", "(P.1)", "(P1)";
+  // "(8)" è la "(B)" letta male
+  if (/^\([A-Za-z](?:\.?[0-9Il|](?:\.[0-9Il|])?)?\)?$/.test(parola) || parola === "(8)") return true;
   // "I", "l", "|" letti al posto di "1" solo dopo il punto: "DI" è la parola "di", non "D.1"
   return /^[A-Z](?:[.)]|\.?[0-9](?:\.[0-9])?[.)]?|\.[Il|](?:\.[0-9Il|])?[.)]?)$/.test(parola);
 }
@@ -67,6 +74,7 @@ function eCodice(parola: string): boolean {
 /** Codice di uno dei campi letti ("P.1", "P1)", "D.1." …) → "P.1"; null per gli altri. */
 function codice(parola: string): string | null {
   if (!eCodice(parola)) return null;
+  if (parola === "(8)") return "B";
   const m = parola.replace(/^\(/, "").toUpperCase().match(/^([ABDJP])\.?([0-9Il|]?)/);
   if (!m) return null;
   const numero = m[2].replace(/[Il|]/, "1");
@@ -96,6 +104,27 @@ export function leggiTarga(testo: string): string | null {
   return leggiTargaConCorrezioni(testo)?.targa ?? null;
 }
 
+/**
+ * Targhe candidate in un testo: solo gruppi di 1-3 parole consecutive lunghi
+ * esattamente 7 caratteri. Cercare dentro il testo tutto attaccato trovava
+ * "targhe" a cavallo di parole ("ITALIA IL 30/04/2024" → IL30042). Le parole
+ * dopo "TARGA" sono la targa precedente ("GIA' TARGA ...") e si saltano.
+ */
+function targheNelleParole(parole: string[]): { targa: string; correzioni: number }[] {
+  const pulite = parole.map((p) => p.toUpperCase().replace(/[^A-Z0-9]/g, ""));
+  const out: { targa: string; correzioni: number }[] = [];
+  for (let i = 0; i < pulite.length; i++) {
+    if (pulite.slice(Math.max(0, i - 2), i).some((p) => p === "TARGA")) continue;
+    for (let k = 1; k <= 3 && i + k <= pulite.length; k++) {
+      const gruppo = pulite.slice(i, i + k).join("");
+      if (gruppo.length !== 7 || !pulite[i]) continue;
+      const t = leggiTargaConCorrezioni(gruppo);
+      if (t) out.push(t);
+    }
+  }
+  return out;
+}
+
 function leggiTargaConCorrezioni(testo: string): { targa: string; correzioni: number } | null {
   const compatto = testo.toUpperCase().replace(/[^A-Z0-9]/g, "");
   for (const [len, schema] of [
@@ -121,6 +150,9 @@ function leggiTargaConCorrezioni(testo: string): { targa: string; correzioni: nu
   }
   return null;
 }
+
+/** Righe con i dati del proprietario: le loro date non sono del veicolo. */
+const RIGA_PROPRIETARIO = /\bNAT[OA]\b|\(C\.\d/i;
 
 /** Tutte le date gg/mm/aaaa valide (non future) come AAAA-MM-GG. */
 export function leggiDate(testo: string): string[] {
@@ -154,6 +186,11 @@ export function leggiAlimentazione(testo: string): string | null {
 /** Categoria J → tipo di veicolo del database. */
 export function leggiCategoria(testo: string): string | null {
   const t = testo.toUpperCase().replace(/\s/g, "");
+  // descrizione per esteso (J.1 della carta di circolazione)
+  if (t.includes("AUTOVETTURA")) return "Autovettura";
+  if (t.includes("MOTOCICLO")) return "Moto";
+  if (t.includes("CICLOMOTORE")) return "Scooter";
+  if (t.includes("AUTOCARRO")) return "Autocarro";
   if (/\bM1|^M1/.test(t) || t.includes("M1")) return "Autovettura";
   if (/L[1-2]E/.test(t)) return "Scooter";
   if (/L[3-5]E/.test(t)) return "Moto";
@@ -189,9 +226,18 @@ export function leggiMarca(testo: string): string | null {
   return null;
 }
 
-/** Il primo token del valore, se è tutto cifre (una "O" letta al posto dello zero va bene). */
+/**
+ * Il primo token del valore, se è tutto cifre (una "O" letta al posto dello
+ * zero va bene; i decimali a zero della carta di circolazione, "1242,00",
+ * si tolgono).
+ */
 function numero(testo: string, min: number, max: number): number | null {
-  const token = testo.trim().split(/\s+/)[0]?.replace(/O/g, "0") ?? "";
+  const token =
+    testo
+      .trim()
+      .split(/\s+/)[0]
+      ?.replace(/O/g, "0")
+      .replace(/[,.]0{1,2}$/, "") ?? "";
   if (!/^\d{1,5}$/.test(token)) return null;
   const n = Number(token);
   return n >= min && n <= max ? n : null;
@@ -203,7 +249,7 @@ function valida(campo: Campo, testo: string): string | number | null {
   if (!t) return null;
   switch (campo) {
     case "targa":
-      return leggiTarga(t);
+      return targheNelleParole(t.split(" "))[0]?.targa ?? null;
     case "dataimmatricolazione":
       return leggiDate(t)[0] ?? null;
     case "marca":
@@ -218,7 +264,28 @@ function valida(campo: Campo, testo: string): string | number | null {
       return numero(t, 40, 9999);
     case "potenza_kw":
       return numero(t, 1, 1500);
+    case "ultimarevisione":
+      return null;
   }
+}
+
+/**
+ * Codice e valore attaccati ("(P.2)044,00", "(P.3)BENZ"): si separano in due
+ * parole, dividendo il riquadro in proporzione ai caratteri.
+ */
+function separaCodici(righe: RigaOcr[]): RigaOcr[] {
+  return righe.map((r) => ({
+    ...r,
+    words: r.words.flatMap((w) => {
+      const m = w.text.match(/^(\([A-Z](?:\.?\d)?\))(.+)$/);
+      if (!m) return [w];
+      const taglio = w.bbox.x0 + ((w.bbox.x1 - w.bbox.x0) * m[1].length) / w.text.length;
+      return [
+        { text: m[1], bbox: { ...w.bbox, x1: taglio } },
+        { text: m[2], bbox: { ...w.bbox, x0: taglio } },
+      ];
+    }),
+  }));
 }
 
 /* ---------------- lettura per codici ---------------- */
@@ -270,26 +337,39 @@ function leggiPerCodici(righe: RigaOcr[]): DatiLibretto {
 function leggiPerForma(righe: RigaOcr[]): DatiLibretto {
   const testo = righe.map((r) => r.text).join("\n");
   const dati: DatiLibretto = {};
-  // targa: gruppi di 1-3 parole consecutive lunghi esattamente 7 caratteri
-  // (così non si pesca dentro un VIN o dentro "targa + date" attaccate);
-  // vince quella letta senza correzioni, a parità la prima nel documento
-  let migliore = null as { targa: string; correzioni: number } | null;
+  // targa: la carta di circolazione la ristampa in testa a ogni facciata,
+  // quindi vince quella che compare più volte; a parità quella letta con
+  // meno correzioni, poi la prima nel documento
+  const conteggi = new Map<string, { volte: number; correzioni: number; ordine: number }>();
   for (const r of righe) {
-    const parole = r.words.map((w) => w.text.toUpperCase().replace(/[^A-Z0-9]/g, "")).filter(Boolean);
-    for (let i = 0; i < parole.length; i++) {
-      for (let k = 1; k <= 3 && i + k <= parole.length; k++) {
-        const gruppo = parole.slice(i, i + k).join("");
-        if (gruppo.length !== 7) continue;
-        const t = leggiTargaConCorrezioni(gruppo);
-        if (t && (!migliore || t.correzioni < migliore.correzioni)) migliore = t;
-      }
+    for (const t of targheNelleParole(r.words.map((w) => w.text))) {
+      const c = conteggi.get(t.targa);
+      if (c) {
+        c.volte++;
+        c.correzioni = Math.min(c.correzioni, t.correzioni);
+      } else conteggi.set(t.targa, { volte: 1, correzioni: t.correzioni, ordine: conteggi.size });
     }
-    if (migliore?.correzioni === 0) break;
   }
-  if (migliore) dati.targa = migliore.targa;
-  // la prima immatricolazione è la data più vecchia del documento
-  const date = leggiDate(testo).sort();
-  if (date.length) dati.dataimmatricolazione = date[0];
+  const migliore = [...conteggi.entries()].sort(
+    ([, a], [, b]) => b.volte - a.volte || a.correzioni - b.correzioni || a.ordine - b.ordine,
+  )[0];
+  if (migliore) dati.targa = migliore[0];
+  // prima immatricolazione: la data dopo "PRIMA IMM..." (veicoli importati),
+  // altrimenti la più vecchia del documento, esclusi i dati del proprietario
+  const testoVeicolo = righe
+    .map((r) => r.text)
+    .filter((t) => !RIGA_PROPRIETARIO.test(t))
+    .join("\n");
+  const primaImm = testoVeicolo.toUpperCase().match(/PRIMA\s*IMM[^\n]{0,20}/);
+  const date = leggiDate(testoVeicolo).sort();
+  const dataPrimaImm = primaImm ? leggiDate(primaImm[0])[0] : undefined;
+  if (dataPrimaImm ?? date[0]) dati.dataimmatricolazione = dataPrimaImm ?? date[0];
+  // ultima revisione: "REVISIONE EFFETTUATA CON ESITO *REGOLARE*. DATA gg.mm.aaaa"
+  const revisioni = [...testoVeicolo.toUpperCase().matchAll(/REVISION[EI]\b[\s\S]{0,90}/g)]
+    .map((m) => leggiDate(m[0])[0])
+    .filter((d): d is string => !!d)
+    .sort();
+  if (revisioni.length) dati.ultimarevisione = revisioni[revisioni.length - 1];
   const marca = leggiMarca(testo);
   if (marca) dati.marca = marca;
   const alim = leggiAlimentazione(testo);
@@ -321,10 +401,10 @@ function leggiPerForma(righe: RigaOcr[]): DatiLibretto {
     if (dopo && dopo[1].trim().split(/\s+/).length <= 5) dati.modello = dopo[1].trim();
   }
   const cat = righe.map((r) => r.text).find((t) => /\b(M1|N1|L[1-7]E)\b/i.test(t));
-  if (cat) {
-    const tipo = leggiCategoria(cat.match(/\b(M1|N1|L[1-7]E)\b/i)?.[0] ?? "");
-    if (tipo) dati.tipo_veicolo = tipo;
-  }
+  const tipo = cat
+    ? leggiCategoria(cat.match(/\b(M1|N1|L[1-7]E)\b/i)?.[0] ?? "")
+    : leggiCategoria(righe.map((r) => r.text).find((t) => /AUTOVETTURA|MOTOCICLO|CICLOMOTORE/i.test(t)) ?? "");
+  if (tipo) dati.tipo_veicolo = tipo;
   return dati;
 }
 
@@ -332,7 +412,8 @@ function leggiPerForma(righe: RigaOcr[]): DatiLibretto {
  * Dati del veicolo dalle righe OCR. `daVerificare` elenca i campi trovati
  * solo per forma (senza il codice accanto): nel form vanno evidenziati.
  */
-export function leggiLibretto(righe: RigaOcr[]): { dati: DatiLibretto; daVerificare: Campo[] } {
+export function leggiLibretto(righeOcr: RigaOcr[]): { dati: DatiLibretto; daVerificare: Campo[] } {
+  const righe = separaCodici(righeOcr);
   const perCodici = leggiPerCodici(righe);
   const perForma = leggiPerForma(righe);
   const dati: DatiLibretto = { ...perForma, ...perCodici };

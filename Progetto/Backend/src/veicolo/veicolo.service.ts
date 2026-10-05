@@ -7,10 +7,15 @@ import {
 import { PrismaService } from '../prisma.service';
 import { LIMITE_VEICOLI, pianoUtente, richiediPremium } from '../piano';
 import { CreateVeicoloDto } from './dto/create-veicolo.dto';
-import { CreateVeicoloManualeDto } from './dto/create-veicolo-manuale.dto';
+import {
+  CreateVeicoloManualeDto,
+  UpdateVeicoloManualeDto,
+} from './dto/create-veicolo-manuale.dto';
 import * as datiMock from '../../data/veicoli.json';
 import { JwtService } from '@nestjs/jwt';
 import { tipo_veicolo } from '@prisma/client';
+import { oggiInItalia } from '../notifiche/promemoria';
+import { calcolaScadenze, INTERVENTI_SCADENZA, scadenzeJson } from './scadenze';
 
 interface VeicoloMock {
   LicensePlate: string;
@@ -52,6 +57,50 @@ interface VeicoliMockData {
   success: boolean;
   message: string;
   error: null;
+}
+
+/** Targhe del dataset di prova: gli altri veicoli sono inseriti a mano. */
+const TARGHE_DATASET = new Set(
+  (datiMock as unknown as VeicoliMockData).data.map((v) =>
+    v.LicensePlate.toUpperCase(),
+  ),
+);
+
+/** Interventi dello storico che spostano bollo, RCA, revisione e tagliando. */
+const STORICO_SCADENZE = {
+  where: { tipo: { in: Object.keys(INTERVENTI_SCADENZA) } },
+  select: { tipo: true, data: true },
+} as const;
+
+const DETTAGLIO_VEICOLO = {
+  dati_generici: true,
+  dati_specifici: true,
+  storico_intervento: STORICO_SCADENZE,
+} as const;
+
+type VeicoloLetto = {
+  targa: string | null;
+  dati_specifici: {
+    dataimmatricolazione: Date | null;
+    datascadenzabollo: Date | null;
+    datascadenzarca: Date | null;
+  }[];
+  storico_intervento: { tipo: string; data: Date }[];
+};
+
+/**
+ * Veicolo per il frontend: scadenze già calcolate (date salvate +
+ * storico) e `manuale` (true = inserito a mano, quindi modificabile).
+ */
+function conScadenze<T extends VeicoloLetto>(v: T) {
+  const { storico_intervento, ...resto } = v;
+  return {
+    ...resto,
+    manuale: !TARGHE_DATASET.has((v.targa ?? '').toUpperCase()),
+    scadenze: scadenzeJson(
+      calcolaScadenze(v.dati_specifici[0], storico_intervento, oggiInItalia()),
+    ),
+  };
 }
 
 @Injectable()
@@ -154,6 +203,20 @@ export class VeicoloService {
     await this.verificaLimitePiano(userId);
 
     const data = (iso?: string) => (iso ? new Date(iso) : null);
+    // revisione e tagliando indicati nel modulo diventano i primi interventi
+    // dello storico: da lì in poi le scadenze si aggiornano con lo storico
+    const primiInterventi = [
+      dto.ultimarevisione && {
+        data: new Date(dto.ultimarevisione),
+        categoria: 'gestione' as const,
+        tipo: 'Revisione',
+      },
+      dto.ultimotagliando && {
+        data: new Date(dto.ultimotagliando),
+        categoria: 'ordinario' as const,
+        tipo: 'Tagliando',
+      },
+    ].filter((i) => !!i);
 
     return this.prisma.$transaction(async (tx) => {
       const veicolo = await tx.veicolo.create({
@@ -188,8 +251,80 @@ export class VeicoloService {
           id_veicolo: veicolo.id,
         },
       });
+      if (primiInterventi.length) {
+        await tx.storico_intervento.createMany({
+          data: primiInterventi.map((i) => ({
+            ...i,
+            id_veicolo: veicolo.id,
+            descrizione: 'Inserito con il veicolo',
+          })),
+        });
+      }
       return veicolo;
     });
+  }
+
+  /**
+   * Modifica dei dati di un veicolo inserito a mano (non la targa). I
+   * veicoli aggiunti dalla targa prendono i dati dal servizio e non si
+   * modificano. Campi assenti = invariati, null = svuotati.
+   */
+  async aggiornaManuale(
+    id: number,
+    dto: UpdateVeicoloManualeDto,
+    userId: number,
+  ) {
+    const veicolo = await this.prisma.veicolo.findUnique({ where: { id } });
+    if (!veicolo)
+      throw new NotFoundException(`Veicolo con id ${id} non trovato`);
+    if (veicolo.id_utente !== userId) {
+      throw new ForbiddenException('Non puoi modificare un veicolo non tuo');
+    }
+    if (TARGHE_DATASET.has((veicolo.targa ?? '').toUpperCase())) {
+      throw new ForbiddenException(
+        'Questo veicolo è stato aggiunto dalla targa: i suoi dati arrivano dal servizio e non si modificano a mano.',
+      );
+    }
+
+    // undefined = non toccare, null = svuota
+    const campo = <V, R>(v: V | null | undefined, conv: (x: V) => R) =>
+      v === undefined ? undefined : v === null ? null : conv(v);
+    const data = (iso: string) => new Date(iso);
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.veicolo.update({
+        where: { id },
+        data: {
+          ...(dto.marca && { marca: dto.marca }),
+          ...(dto.modello && { modello: dto.modello }),
+        },
+      });
+      await tx.dati_generici.updateMany({
+        where: { id_veicolo: id },
+        data: {
+          ...(dto.tipo_veicolo && { tipo_veicolo: dto.tipo_veicolo }),
+          cavalli: campo(dto.potenza_kw, (kw) => Math.round(kw * 1.35962)),
+          numporte: campo(dto.numporte, String),
+          alimentazione: campo(dto.alimentazione, (a) => a),
+          cilindrata: campo(dto.cilindrata, String),
+        },
+      });
+      await tx.dati_specifici.updateMany({
+        where: { id_veicolo: id },
+        data: {
+          ...(dto.dataimmatricolazione && {
+            dataimmatricolazione: data(dto.dataimmatricolazione),
+          }),
+          nomeassicurazione: campo(dto.nomeassicurazione, (n) => n || null),
+          datascadenzarca: campo(dto.datascadenzarca, data),
+          isinsured: campo(dto.datascadenzarca, () => true),
+          datascadenzabollo: campo(dto.datascadenzabollo, data),
+          isbolloattivo: campo(dto.datascadenzabollo, () => true),
+        },
+      });
+    });
+
+    return this.getVeicoloById(id, userId);
   }
 
   private async verificaTargaLibera(targa: string) {
@@ -216,22 +351,17 @@ export class VeicoloService {
   }
 
   async getVeicoliByUtente(id_utente: number) {
-    return this.prisma.veicolo.findMany({
+    const veicoli = await this.prisma.veicolo.findMany({
       where: { id_utente },
-      include: {
-        dati_generici: true,
-        dati_specifici: true,
-      },
+      include: DETTAGLIO_VEICOLO,
     });
+    return veicoli.map(conScadenze);
   }
 
   async getVeicoloById(id: number, userId?: number, userType?: string) {
     const veicolo = await this.prisma.veicolo.findUnique({
       where: { id },
-      include: {
-        dati_generici: true,
-        dati_specifici: true,
-      },
+      include: DETTAGLIO_VEICOLO,
     });
     if (!veicolo)
       throw new NotFoundException(`Veicolo con id ${id} non trovato`);
@@ -242,7 +372,7 @@ export class VeicoloService {
       );
     }
 
-    return veicolo;
+    return conScadenze(veicolo);
   }
 
   async eliminaVeicolo(id: number, userId: number) {
